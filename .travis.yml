@@ -1,0 +1,21 @@
+language: android
+
+android:
+  components:
+    - build-tools-21.1.2
+    - android-20
+
+install:
+  - sudo apt-get install gcc
+  - sudo apt-get install g++
+  - sudo apt-get install gcc-multilib
+  - sudo apt-get install g++-multilib
+  - sudo apt-get install mingw-w64
+  - sudo apt-get install lib32z1
+  - if [ `uname -m` = x86_64]; then wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin; else wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin; fi
+  - chmod a+x ndk.bin
+  - ./ndk.bin -y | grep -v Extracting
+
+jdk: oraclejdk7
+
+script: ant compile-natives -v -Dhas-compiler=true
