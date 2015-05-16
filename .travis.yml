@@ -24,4 +24,4 @@ install:
 
 jdk: oraclejdk7
 
-script: ant compile-natives -Dhas-compiler=true
+script: sudo ant compile-natives -Dhas-compiler=true
