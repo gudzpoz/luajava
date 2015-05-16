@@ -4,18 +4,3 @@
 .DS_STORE
 
 target/
-armeabi/
-armeabi-v7a/
-linux32/
-linux64/
-windows32/
-windows64/
-macosx32/
-ios32/
-
-*.a
-*.dll
-*.dll.mdb
-*.userprefs
-*.sdf
-*.class

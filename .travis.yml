@@ -36,8 +36,8 @@ script:
   - ant -f build-android32.xml -Dhas-ndk-build=true
 
 after_script:
-  - git config --global user.email "${GIT_NAME}"
-  - git config --global user.name "${GIT_EMAIL}"
+  - git config --global user.email "${GIT_EMAIL}"
+  - git config --global user.name "${GIT_NAME}"
   - git config --global push.default matching
   - git config credential.helper "store --file=.git/credentials"
   - echo "https://${GH_TOKEN}:@github.com" > .git/credentials
