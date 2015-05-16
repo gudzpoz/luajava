@@ -24,4 +24,9 @@ install:
 
 jdk: oraclejdk7
 
-script: sudo ant compile-natives -Dhas-compiler=true
+script:
+  - sudo ant -f build-linux32 -Dhas-compiler=true
+  - sudo ant -f build-linux64 -Dhas-compiler=true
+  - sudo ant -f build-windows32 -Dhas-compiler=true
+  - sudo ant -f build-windows64 -Dhas-compiler=true
+  - sudo ant -f build-android32 -Dhas-compiler=true
