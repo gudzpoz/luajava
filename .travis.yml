@@ -29,4 +29,4 @@ script:
   - ant -f build-windows32.xml -Dhas-compiler=true
   - ant -f build-windows64.xml -Dhas-compiler=true
   - ant -f build-android32.xml -Dhas-ndk-build=true
-  - cd libs && ls -LR
+  - cd ../libs && ls -LR
