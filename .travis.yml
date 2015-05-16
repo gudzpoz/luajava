@@ -41,7 +41,7 @@ after_script:
   - git config --global user.name "${GIT_LOGIN}"
   - git config --global push.default matching
   - echo -e "machine github.com\n  login ${GIT_LOGIN}\n  password ${GIT_PASSWORD}" >> ~/.netrc
-  - echo "${GIT_LOGIN}"
+  - echo $GIT_LOGIN
   - git add libs/
   - git status -s
   - git commit -m "Built natives"
