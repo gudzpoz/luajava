@@ -14,17 +14,16 @@ addons:
     - g++-mingw-w64-i686
     - gcc-mingw-w64-x86-64
     - g++-mingw-w64-x86-64
+    - lib32z1
 
 install:
-  - if [ `uname -m` = x86_64]; then wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin; else wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin; fi
+  - if [ `uname -m` = x86_64 ]; then wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin; else wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin; fi
   - chmod a+x ndk.bin
   - ./ndk.bin -y | grep -v Extracting
   - export NDK_HOME=`pwd`/android-ndk-r10d
-
-jdk: oraclejdk7
+  - cd jni
 
 script:
-  - cd jni
   - ant -f build-linux32.xml -Dhas-compiler=true
   - ant -f build-linux64.xml -Dhas-compiler=true
   - ant -f build-windows32.xml -Dhas-compiler=true
