@@ -34,7 +34,6 @@ script:
   - ant -f build-windows32.xml -Dhas-compiler=true
   - ant -f build-windows64.xml -Dhas-compiler=true
   - ant -f build-android32.xml -Dhas-ndk-build=true
-  - cd ../libs && ls -LR && cd ../
 
 after_script:
   - git config --global user.email "${GIT_NAME}"
@@ -42,7 +41,12 @@ after_script:
   - git config --global push.default matching
   - git config credential.helper "store --file=.git/credentials"
   - echo "https://${GH_TOKEN}:@github.com" > .git/credentials
+  - cd ../libs && ls -LR && cd ../
   - git add libs/
   - git status -s
   - git commit -m "Built natives"
+  - git branch tmp
+  - git checkout master
+  - git merge tmp
+  - git branch -d tmp
   - git push https://github.com/non2d/non.natives.git master
