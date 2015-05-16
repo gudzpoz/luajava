@@ -19,7 +19,8 @@
 	<property name="gcc-opts" value="-c -Wall -O2 -mfpmath=sse -msse2 -fmessage-length=0 -m64 -std=c99 -DFT2_BUILD_LIBRARY"/>
 	<fileset id="gcc-files" dir="./">
 		<exclude name="target/"/>
-    <include name="**/*.c"/>
+    <include name="lua/*.c"/>
+    <include name="luajava.c"/>
 	</fileset>
 	
 	<!-- define g++ compiler, options and files to compile -->
@@ -81,22 +82,6 @@
 	<!-- compiles all C and C++ files to object files in the build directory -->
 	<target name="compile" depends="create-build-dir" if="has-compiler">
 		<mkdir dir="${buildDir}"/>
-		<apply failonerror="true" executable="${g++}" dest="${buildDir}" verbose="true">
-			<arg line="${g++-opts}"/>
-			<arg value="-Ijni-headers"/>
-			<arg value="-Ijni-headers/${jniPlatform}"/>
-			<arg value="-I."/>
-						<arg value="-Ilua"/>
-
-			<srcfile/>
-			<arg value="-o"/>
-			<targetfile/>
-			<fileset refid="g++-files"/>
-			<compositemapper>
-				<mapper type="glob" from="*.cpp" to="*.o"/>
-				<mapper type="glob" from="*.mm" to="*.o"/>
-			</compositemapper>
-		</apply>
 		<apply failonerror="true" executable="${gcc}" dest="${buildDir}" verbose="true">
 			<arg line="${gcc-opts}"/>
 			<arg value="-Ijni-headers"/>
