@@ -19,6 +19,7 @@ install:
   - if [ `uname -m` = x86_64]; then wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin; else wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin; fi
   - chmod a+x ndk.bin
   - ./ndk.bin -y | grep -v Extracting
+  - export NDK_HOME=`pwd`/android-ndk-r10d
 
 jdk: oraclejdk7
 
@@ -27,3 +28,4 @@ script:
   - ant -f build-linux64.xml -Dhas-compiler=true
   - ant -f build-windows32.xml -Dhas-compiler=true
   - ant -f build-windows64.xml -Dhas-compiler=true
+  - ant -f build-android32.xml -Dhas-ndk-build=true
