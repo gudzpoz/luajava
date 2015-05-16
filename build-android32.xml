@@ -1,4 +1,4 @@
-<project name="android-natives" basedir="." default="postcompile">
+<project name="luajava-Android" basedir="." default="postcompile">
 	<property environment="env" />
 	<!--  the suffix ndk-build executable -->	
 	<property name="ndkSuffix" value="" />

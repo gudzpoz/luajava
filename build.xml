@@ -1,4 +1,4 @@
-<project name="gdx-natives" basedir="." default="all">
+<project name="gdx-freetype-natives" basedir="." default="all">
 	<target name="clean">
 		<ant antfile="build-windows32.xml" target="clean"/>
 		<ant antfile="build-windows64.xml" target="clean"/>
@@ -18,13 +18,13 @@
 	</target>
 	
 	<target name="pack-natives">
-		<jar destfile="../libs/gdx-natives.jar">
-			<fileset dir="../libs/macosx32" includes="libgdx.dylib"/>
-			<fileset dir="../libs/macosx64" includes="libgdx64.dylib"/>
-			<fileset dir="../libs/windows32" includes="gdx.dll"/>
-			<fileset dir="../libs/windows64" includes="gdx64.dll"/>
-			<fileset dir="../libs/linux32" includes="libgdx.so"/>
-			<fileset dir="../libs/linux64" includes="libgdx64.so"/>
+		<jar destfile="libs/luajava-natives.jar">
+			<fileset dir="libs/windows32" includes="luajava.dll"/>
+			<fileset dir="libs/windows64" includes="luajava64.dll"/>
+			<fileset dir="libs/linux32" includes="luajava.so"/>
+			<fileset dir="libs/linux64" includes="luajava64.so"/>
+			<fileset dir="libs/macosx32" includes="luajava.dylib"/>
+			<fileset dir="libs/macosx64" includes="luajava64.dylib"/>
 
 		</jar>
 	</target>
