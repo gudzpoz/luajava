@@ -1,9 +1,4 @@
-language: android
-
-android:
-  components:
-    - build-tools-21.1.2
-    - android-20
+language: java
 
 sudo: false
 
