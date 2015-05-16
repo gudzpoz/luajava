@@ -9,12 +9,11 @@ addons:
     - gcc-multilib
     - g++-multilib
     - binutils-mingw-w64-i686
+    - binutils-mingw-w64-x86-64
     - gcc-mingw-w64-i686
     - g++-mingw-w64-i686
-    - gfortran-mingw-w64-i686
-    - gcc-mingw32
-    - mingw-w64
-    - lib32z1
+    - gcc-mingw-w64-x86-64
+    - g++-mingw-w64-x86-64
 
 install:
   - if [ `uname -m` = x86_64]; then wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin; else wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin; fi
