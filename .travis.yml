@@ -4,33 +4,24 @@ android:
   components:
     - build-tools-21.1.2
     - android-20
-    
-before_script:
-  - sudo service postgresql stop || true
-  - sudo service mysql stop || true
-  - sudo service memcached stop || true
-  - sudo service bootlogd stop || true
-  - sudo service elasticsearch stop || true
-  - sudo service mongodb stop || true
-  - sudo service neo4j stop || true
-  - sudo service cassandra stop || true
-  - sudo service riak stop || true
-  - sudo service rsync stop || true
-  - sudo service x11-common stop || true
+
+sudo: false
+
+addons:
+  apt_packages:
+    - gcc
+    - g++
+    - gcc-multilib
+    - g++-multilib
+    - binutils-mingw-w64-i686
+    - gcc-mingw-w64-i686
+    - g++-mingw-w64-i686
+    - gfortran-mingw-w64-i686
+    - gcc-mingw32
+    - mingw-w64
+    - lib32z1
 
 install:
-  - sudo apt-get update
-  - sudo apt-get install gcc
-  - sudo apt-get install g++
-  - sudo apt-get install gcc-multilib
-  - sudo apt-get install g++-multilib
-  - sudo apt-get install binutils-mingw-w64-i686
-  - sudo apt-get install gcc-mingw-w64-i686
-  - sudo apt-get install g++-mingw-w64-i686
-  - sudo apt-get install gfortran-mingw-w64-i686
-  - sudo apt-get install gcc-mingw32
-  - sudo apt-get install mingw-w64
-  - sudo apt-get install lib32z1
   - if [ `uname -m` = x86_64]; then wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin; else wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin; fi
   - chmod a+x ndk.bin
   - ./ndk.bin -y | grep -v Extracting
@@ -38,8 +29,7 @@ install:
 jdk: oraclejdk7
 
 script:
-  - sudo ant -f build-linux32.xml -Dhas-compiler=true
-  - sudo ant -f build-linux64.xml -Dhas-compiler=true
-  - sudo ant -f build-windows32.xml -Dhas-compiler=true
-  - sudo ant -f build-windows64.xml -Dhas-compiler=true
-  - sudo ant -f build-android32.xml -Dhas-compiler=true
+  - ant -f build-linux32.xml -Dhas-compiler=true
+  - ant -f build-linux64.xml -Dhas-compiler=true
+  - ant -f build-windows32.xml -Dhas-compiler=true
+  - ant -f build-windows64.xml -Dhas-compiler=true
