@@ -42,7 +42,7 @@ after_script:
   - git config --global push.default matching
   - git config credential.helper "store --file=.git/credentials"
   - echo "https://${GH_TOKEN}:@github.com" > .git/credentials
-  - git remote set-url origin https://github.com/non2d/non.natives.git
   - git add libs/
+  - git status -s
   - git commit -m "Built natives"
-  - git push
+  - git push https://github.com/non2d/non.natives.git master
