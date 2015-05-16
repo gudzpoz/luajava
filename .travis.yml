@@ -35,7 +35,7 @@ after_script:
 - echo $GIT_LOGIN
 - git add libs/
 - git status -s
-- git commit -m "Built natives"
+- git commit -m "Natives [ci skip]"
 - git branch tmp
 - git checkout master
 - git merge tmp
