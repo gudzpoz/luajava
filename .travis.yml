@@ -24,6 +24,7 @@ install:
 jdk: oraclejdk7
 
 script:
+  - cd jni
   - ant -f build-linux32.xml -Dhas-compiler=true
   - ant -f build-linux64.xml -Dhas-compiler=true
   - ant -f build-windows32.xml -Dhas-compiler=true
