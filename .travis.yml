@@ -4,6 +4,19 @@ android:
   components:
     - build-tools-21.1.2
     - android-20
+    
+before_script:
+  - sudo service postgresql stop || true
+  - sudo service mysql stop || true
+  - sudo service memcached stop || true
+  - sudo service bootlogd stop || true
+  - sudo service elasticsearch stop || true
+  - sudo service mongodb stop || true
+  - sudo service neo4j stop || true
+  - sudo service cassandra stop || true
+  - sudo service riak stop || true
+  - sudo service rsync stop || true
+  - sudo service x11-common stop || true
 
 install:
   - sudo apt-get update
@@ -25,8 +38,8 @@ install:
 jdk: oraclejdk7
 
 script:
-  - sudo ant -f build-linux32 -Dhas-compiler=true
-  - sudo ant -f build-linux64 -Dhas-compiler=true
-  - sudo ant -f build-windows32 -Dhas-compiler=true
-  - sudo ant -f build-windows64 -Dhas-compiler=true
-  - sudo ant -f build-android32 -Dhas-compiler=true
+  - sudo ant -f build-linux32.xml -Dhas-compiler=true
+  - sudo ant -f build-linux64.xml -Dhas-compiler=true
+  - sudo ant -f build-windows32.xml -Dhas-compiler=true
+  - sudo ant -f build-windows64.xml -Dhas-compiler=true
+  - sudo ant -f build-android32.xml -Dhas-compiler=true
