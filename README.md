@@ -6,21 +6,45 @@
 * Windows
 * Linux
 * Mac OS X
-* Android
+* Android (and Ouya)
 * iOS
 
 ### Compiling ###
 
-Navigate to `jni/` directory and execute
+To compile and pack natives for all platforms:
 
 ```shell
 ant
 ```
 
-To build natives for all platforms.
-
-To build natives only for specified platforms (for example for 32bit Linux), run specified ant file:
+To only compile natives:
 
 ```shell
-ant -f build-linux32.xml
+ant compile
 ```
+
+To only pack natives what was compiled before
+
+```shell
+ant pack
+```
+
+To clean compile results
+
+```shell
+ant clean
+```
+
+To compile natives only for specified platform (for example for Linux), run specified ant target:
+
+```shell
+ant compile-linux
+```
+
+targets can be:
+
+* compile-linux
+* compile-windows
+* compile-mac
+* compile-ios
+* compile-android

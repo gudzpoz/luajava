@@ -1,0 +1,50 @@
+<project name="luajava-natives" basedir="." default="all">
+	<target name="clean">
+		<ant antfile="jni/build-windows32.xml" target="clean"/>
+		<ant antfile="jni/build-windows64.xml" target="clean"/>
+		<ant antfile="jni/build-linux32.xml" target="clean"/>
+		<ant antfile="jni/build-linux64.xml" target="clean"/>
+    <ant antfile="jni/build-macosx32.xml" target="clean"/>
+    <ant antfile="jni/build-macosx64.xml" target="clean"/>
+    <ant antfile="jni/build-ios32.xml" target="clean"/>
+		<ant antfile="jni/build-android32.xml" target="clean"/>
+	</target>
+  
+  <target name="compile-windows">
+    <ant antfile="jni/build-windows32.xml"/>
+		<ant antfile="jni/build-windows64.xml"/>
+  </target>
+  
+  <target name="compile-linux">
+    <ant antfile="jni/build-linux32.xml"/>
+		<ant antfile="jni/build-linux64.xml"/>
+  </target>
+  
+  <target name="compile-macosx">
+    <ant antfile="jni/build-macosx32.xml"/>
+		<ant antfile="jni/build-macosx64.xml"/>
+  </target>
+  
+  <target name="compile-ios">
+    <ant antfile="jni/build-ios32.xml"/>
+  </target>
+  
+  <target name="compile-android">
+    <ant antfile="jni/build-android32.xml"/>
+  </target>
+  
+  <target name="compile" depends="compile-windows,compile-linux,compile-macosx,compile-ios,compile-android"/>
+	
+	<target name="pack">
+		<jar destfile="libs/luajava-natives.jar">
+			<fileset dir="libs/windows32" includes="luajava.dll"/>
+			<fileset dir="libs/windows64" includes="luajava64.dll"/>
+			<fileset dir="libs/linux32" includes="libluajava.so"/>
+			<fileset dir="libs/linux64" includes="libluajava64.so"/>
+			<fileset dir="libs/macosx32" includes="libluajava.dylib"/>
+			<fileset dir="libs/macosx64" includes="libluajava64.dylib"/>
+		</jar>
+	</target>
+
+	<target name="all" depends="compile,pack"/>
+</project>
