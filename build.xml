@@ -11,7 +11,7 @@
 	</target>
   
 	<target name="clean-library">
-    <delete dir="libs/classes"/>
+    <delete dir="build/classes"/>
 	</target>
   
   <target name="clean" depends="clean-natives,clean-library"/>
@@ -42,7 +42,7 @@
   <target name="compile-natives" depends="compile-windows,compile-linux,compile-macosx,compile-ios,compile-android"/>
   
   <target name="compile-library">
-    <mkdir dir="libs/classes"/>
+    <mkdir dir="build/classes"/>
     <javac srcdir="src" destdir="build/classes"/>
   </target>
   
@@ -58,7 +58,7 @@
 	</target>
   
   <target name="pack-library">
-    <jar destfile="libs/non.luajava.jar" basedir="libs/classes"/>
+    <jar destfile="libs/non.luajava.jar" basedir="build/classes"/>
   </target>
   
 	<target name="natives" depends="compile-natives,pack-natives">
@@ -73,7 +73,7 @@
 	</target>
   
   <target name="library" depends="compile-library,pack-library">
-    <jar destfile="libs/non.luajava.jar" basedir="libs/classes"/>
+    <jar destfile="libs/non.luajava.jar" basedir="build/classes"/>
   </target>
 
 	<target name="all" depends="clean,natives,library"/>

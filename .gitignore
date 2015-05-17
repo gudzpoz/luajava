@@ -4,4 +4,4 @@
 .DS_STORE
 
 target/
-libs/classes/
+build/
