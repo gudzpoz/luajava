@@ -86,7 +86,8 @@ public class SharedLibraryLoader {
 				crc.update(buffer, 0, length);
 			}
 		} catch (Exception ex) {
-			StreamUtils.closeQuietly(input);
+      if (input != null) try { input.close(); }
+      catch (Exception e) { }
 		}
 		return Long.toString(crc.getValue(), 16);
 	}
@@ -114,7 +115,7 @@ public class SharedLibraryLoader {
 			else
 				loadFile(libraryName);
 		} catch (Throwable ex) {
-			throw new GdxRuntimeException("Couldn't load shared library '" + libraryName + "' for target: "
+			throw new RuntimeException("Couldn't load shared library '" + libraryName + "' for target: "
 				+ System.getProperty("os.name") + (is64Bit ? ", 64-bit" : ", 32-bit"), ex);
 		}
 		loadedLibraries.add(libraryName);
@@ -123,7 +124,7 @@ public class SharedLibraryLoader {
 	private InputStream readFile (String path) {
 		if (nativesJar == null) {
 			InputStream input = SharedLibraryLoader.class.getResourceAsStream("/" + path);
-			if (input == null) throw new GdxRuntimeException("Unable to read file for extraction: " + path);
+			if (input == null) throw new RuntimeException("Unable to read file for extraction: " + path);
 			return input;
 		}
 
@@ -131,10 +132,10 @@ public class SharedLibraryLoader {
 		try {
 			ZipFile file = new ZipFile(nativesJar);
 			ZipEntry entry = file.getEntry(path);
-			if (entry == null) throw new GdxRuntimeException("Couldn't find '" + path + "' in JAR: " + nativesJar);
+			if (entry == null) throw new RuntimeException("Couldn't find '" + path + "' in JAR: " + nativesJar);
 			return file.getInputStream(entry);
 		} catch (IOException ex) {
-			throw new GdxRuntimeException("Error reading '" + path + "' in JAR: " + nativesJar, ex);
+			throw new RuntimeException("Error reading '" + path + "' in JAR: " + nativesJar, ex);
 		}
 	}
 
@@ -248,7 +249,7 @@ public class SharedLibraryLoader {
 				input.close();
 				output.close();
 			} catch (IOException ex) {
-				throw new GdxRuntimeException("Error extracting file: " + sourcePath + "\nTo: " + extractedFile.getAbsolutePath(), ex);
+				throw new RuntimeException("Error extracting file: " + sourcePath + "\nTo: " + extractedFile.getAbsolutePath(), ex);
 			}
 		}
 
@@ -290,7 +291,7 @@ public class SharedLibraryLoader {
 			return;
 		}
 
-		throw new GdxRuntimeException(ex);
+		throw new RuntimeException(ex);
 	}
 
 	/** @return null if the file was extracted and loaded. */
