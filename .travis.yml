@@ -34,7 +34,7 @@ after_success:
 - echo $GIT_LOGIN
 - git add libs/
 - git status -s
-- git commit -m "Natives [ci skip]"
+- git commit -m "Travis CI build [ci skip]"
 - git branch tmp
 - git checkout master
 - git merge tmp
