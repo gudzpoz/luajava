@@ -26,7 +26,7 @@ script:
 - ant -f build-windows32.xml
 - ant -f build-windows64.xml
 - ant -f build-android32.xml
-after_script:
+after_success:
 - cd ../
 - git config --global user.email "${GIT_EMAIL}"
 - git config --global user.name "Thomas Slusny"
