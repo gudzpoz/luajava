@@ -1,4 +1,5 @@
 # non.luajava #
+[![Build Status](https://travis-ci.org/non2d/non.luajava.svg?branch=master)](https://travis-ci.org/non2d/non.luajava)
 
 ### Supported platforms ###
 
