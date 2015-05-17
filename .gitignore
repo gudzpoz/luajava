@@ -7,9 +7,7 @@ hs_err_pid*
 target/
 
 ## Android Studio and Intellij and Android in general
-android/libs/armeabi/
-android/libs/armeabi-v7a/
-android/libs/x86/
+template/android/libs
 android/gen/
 .idea/
 *.ipr

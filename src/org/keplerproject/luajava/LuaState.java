@@ -33,8 +33,6 @@ package org.keplerproject.luajava;
  */
 public class LuaState
 {
-  private final static String LUAJAVA_LIB = "luajava-1.1";
-
   final public static Integer LUA_GLOBALSINDEX  = new Integer(-10002);
   final public static Integer LUA_REGISTRYINDEX = new Integer(-10000);
 
@@ -77,14 +75,6 @@ public class LuaState
    * error while running the error handler function.
    */
   final public static Integer LUA_ERRERR    = new Integer(5);
-
-  /**
-   * Opens the library containing the luajava API
-   */
-  static
-  {
-    System.loadLibrary(LUAJAVA_LIB);
-  }
 
   private CPtr luaState;
 

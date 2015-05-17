@@ -14,6 +14,26 @@ android {
 
         instrumentTest.setRoot('tests')
     }
+    
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 21
+    }
+    
+    signingConfigs {
+        releaseSigning {
+            storeFile file("../debug.keystore")
+            storePassword "nononsense"
+            keyAlias "non"
+            keyPassword "nononsense"
+        }
+    }
+    
+    buildTypes {
+        release {
+            signingConfig signingConfigs.releaseSigning
+        }
+    }
 }
 
 
