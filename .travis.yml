@@ -23,7 +23,9 @@ script:
 - ant compile-linux
 - ant compile-windows
 - ant compile-android
-- ant pack
+- ant compile-library
+- ant pack-natives
+- ant pack-library
 after_success:
 - git config --global user.email "${GIT_EMAIL}"
 - git config --global user.name "Thomas Slusny"
