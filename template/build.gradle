@@ -17,7 +17,6 @@ allprojects {
     version = '1.0'
     ext {
         appName = 'my-lua-project'
-        roboVMVersion = '1.2.0'
         libPath = '../../libs'
     }
 
@@ -34,10 +33,10 @@ project(":desktop") {
 
     dependencies {
         compile project(":core")
-        compile files("$libPath/non.luajava.jar")
-        compile files("$libPath/non.luajava-natives-linux.jar")
-        compile files("$libPath/non.luajava-natives-windows.jar")
-        compile files("$libPath/non.luajava-natives-macosx.jar")
+        if (file("$libPath/non.luajava.jar").exists()) compile files("$libPath/non.luajava.jar")
+        if (file("$libPath/non.luajava-natives-linux.jar").exists()) compile files("$libPath/non.luajava-natives-linux.jar")
+        if (file("$libPath/non.luajava-natives-windows.jar").exists()) compile files("$libPath/non.luajava-natives-windows.jar")
+        if (file("$libPath/non.luajava-natives-macosx.jar").exists()) compile files("$libPath/non.luajava-natives-macosx.jar")
     }
 }
 
@@ -49,10 +48,10 @@ project(":android") {
 
     dependencies {
         compile project(":core")
-        compile files("$libPath/non.luajava.jar")
-        natives files("$libPath/non.luajava-natives-armeabi.jar")
-        natives files("$libPath/non.luajava-natives-armeabi-v7a.jar")
-        natives files("$libPath/non.luajava-natives-x86.jar")
+        if (file("$libPath/non.luajava.jar").exists()) compile files("$libPath/non.luajava.jar")
+        if (file("$libPath/non.luajava-natives-armeabi.jar").exists()) natives files("$libPath/non.luajava-natives-armeabi.jar")
+        if (file("$libPath/non.luajava-natives-armeabi-v7a.jar").exists()) natives files("$libPath/non.luajava-natives-armeabi-v7a.jar")
+        if (file("$libPath/non.luajava-natives-x86.jar").exists()) natives files("$libPath/non.luajava-natives-x86.jar")
     }
 }
 
@@ -64,10 +63,10 @@ project(":ios") {
 
     dependencies {
         compile project(":core")
-        compile "org.robovm:robovm-rt:$roboVMVersion"
-        compile "org.robovm:robovm-cocoatouch:$roboVMVersion"
-        compile files("$libPath/non.luajava.jar")
-        natives files("$libPath/non.luajava-natives-ios.jar")
+        compile "org.robovm:robovm-rt:1.2.0"
+        compile "org.robovm:robovm-cocoatouch:1.2.0"
+        if (file("$libPath/non.luajava.jar").exists()) compile files("$libPath/non.luajava.jar")
+        if (file("$libPath/non.luajava-natives-ios.jar").exists()) natives files("$libPath/non.luajava-natives-ios.jar")
     }
 }
 
@@ -75,7 +74,7 @@ project(":core") {
     apply plugin: "java"
 
     dependencies {
-        compile files("$libPath/non.luajava.jar")
+        if (file("$libPath/non.luajava.jar").exists()) compile files("$libPath/non.luajava.jar")
     }
 }
 

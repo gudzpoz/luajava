@@ -86,7 +86,11 @@
   <target name="pack-natives" depends="pack-windows,pack-linux,pack-macosx,pack-ios,pack-android"/>
   
   <target name="pack-library">
-    <jar destfile="libs/non.luajava.jar" basedir="build/classes"/>
+    <jar destfile="libs/non.luajava.jar" basedir="build/classes">
+        <manifest>
+            <attribute name="Main-Class" value="org.keplerproject.luajava.Console"/>
+        </manifest>
+    </jar>
   </target>
   
   <target name="clean" depends="clean-natives,clean-library"/>
