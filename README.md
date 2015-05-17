@@ -1,7 +1,12 @@
 # non.luajava #
 [![Build Status](https://travis-ci.org/non2d/non.luajava.svg?branch=master)](https://travis-ci.org/non2d/non.luajava)
 
-This is fork of https://github.com/jasonsantos/luajava
+  * [Supported platforms](#supported-platforms)
+  * [About LuaJava](#about-luajava)
+  * [Building](#building)
+    * [Building natives](#building-natives)
+    * [Building library](#building-library)
+  * [Credits](#credits)
 
 ## Supported platforms ##
 
@@ -92,3 +97,10 @@ To clean library
 ```shell
 ant clean-library
 ```
+
+## Credits ##
+
+ * [LuaJava](https://github.com/jasonsantos/luajava)
+ * [LibGDX](https://github.com/libgdx/libgdx)
+ 
+This is mostly wrapper for LuaJava for cross-platform compatibility using also LibGDX SharedLibraryLoader for loading natives in cross-platform way.
