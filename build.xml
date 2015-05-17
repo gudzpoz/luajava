@@ -14,8 +14,6 @@
     <delete dir="build/classes"/>
 	</target>
   
-  <target name="clean" depends="clean-natives,clean-library"/>
-  
   <target name="compile-windows">
     <ant antfile="build-windows32.xml" dir="jni"/>
 		<ant antfile="build-windows64.xml" dir="jni"/>
@@ -46,35 +44,56 @@
     <javac srcdir="src" destdir="build/classes"/>
   </target>
   
-  <target name="pack-natives">
-		<jar destfile="libs/non.luajava-natives.jar">
-			<fileset dir="libs/windows32" includes="luajava.dll" erroronmissingdir="false"/>
-			<fileset dir="libs/windows64" includes="luajava64.dll" erroronmissingdir="false"/>
-			<fileset dir="libs/linux32" includes="libluajava.so" erroronmissingdir="false"/>
-			<fileset dir="libs/linux64" includes="libluajava64.so" erroronmissingdir="false"/>
-			<fileset dir="libs/macosx32" includes="libluajava.dylib" erroronmissingdir="false"/>
-			<fileset dir="libs/macosx64" includes="libluajava64.dylib" erroronmissingdir="false"/>
+  <target name="pack-windows">
+    <jar destfile="libs/non.luajava-natives-windows.jar">
+			<fileset dir="libs/windows32" erroronmissingdir="false"/>
+			<fileset dir="libs/windows64" erroronmissingdir="false"/>
 		</jar>
-	</target>
+  </target>
+  
+  <target name="pack-linux">
+    <jar destfile="libs/non.luajava-natives-linux.jar">
+			<fileset dir="libs/linux32" erroronmissingdir="false"/>
+			<fileset dir="libs/linux64" erroronmissingdir="false"/>
+		</jar>
+  </target>
+  
+  <target name="pack-macosx">
+    <jar destfile="libs/non.luajava-natives-macosx.jar">
+			<fileset dir="libs/macosx32" erroronmissingdir="false"/>
+			<fileset dir="libs/macosx64" erroronmissingdir="false"/>
+		</jar>
+  </target>
+  
+  <target name="pack-ios">
+    <jar destfile="libs/non.luajava-natives-ios.jar">
+			<fileset dir="libs/ios" erroronmissingdir="false"/>
+		</jar>
+  </target>
+  
+  <target name="pack-android">
+    <jar destfile="libs/non.luajava-natives-armeabi.jar">
+			<fileset dir="libs/armeabi" erroronmissingdir="false"/>
+		</jar>
+    <jar destfile="libs/non.luajava-natives-armeabi-v7a.jar">
+			<fileset dir="libs/armeabi-v7a" erroronmissingdir="false"/>
+		</jar>
+    <jar destfile="libs/non.luajava-natives-x86.jar">
+			<fileset dir="libs/x86" erroronmissingdir="false"/>
+		</jar>
+  </target>
+  
+  <target name="pack-natives" depends="pack-windows,pack-linux,pack-macosx,pack-ios,pack-android"/>
   
   <target name="pack-library">
     <jar destfile="libs/non.luajava.jar" basedir="build/classes"/>
   </target>
   
-	<target name="natives" depends="compile-natives,pack-natives">
-		<jar destfile="libs/non.luajava-natives.jar">
-			<fileset dir="libs/windows32" includes="luajava.dll" erroronmissingdir="false"/>
-			<fileset dir="libs/windows64" includes="luajava64.dll" erroronmissingdir="false"/>
-			<fileset dir="libs/linux32" includes="libluajava.so" erroronmissingdir="false"/>
-			<fileset dir="libs/linux64" includes="libluajava64.so" erroronmissingdir="false"/>
-			<fileset dir="libs/macosx32" includes="libluajava.dylib" erroronmissingdir="false"/>
-			<fileset dir="libs/macosx64" includes="libluajava64.dylib" erroronmissingdir="false"/>
-		</jar>
-	</target>
+  <target name="clean" depends="clean-natives,clean-library"/>
   
-  <target name="library" depends="compile-library,pack-library">
-    <jar destfile="libs/non.luajava.jar" basedir="build/classes"/>
-  </target>
+	<target name="natives" depends="compile-natives,pack-natives"/>
+  
+  <target name="library" depends="compile-library,pack-library"/>
 
 	<target name="all" depends="clean,natives,library"/>
 </project>

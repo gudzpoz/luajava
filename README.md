@@ -24,11 +24,7 @@ To compile and pack both natives and library, execute:
 ant
 ```
 
-This will create `libs/` directory with
-
-  * folders with natives for each platform
-  * non.luajava-natives.jar
-  * non.luajava.jar
+This will create `libs/` directory with build results.
 
 ### Building natives ###
 
@@ -56,19 +52,20 @@ To clean natives
 ant clean-natives
 ```
 
-To compile natives only for specified platform (for example for Linux), run specified ant target:
+To compile or pack natives only for specified platform (for example for Linux), run specified ant target:
 
 ```shell
 ant compile-linux
+ant pack-linux
 ```
 
 targets can be:
 
-* compile-linux
-* compile-windows
-* compile-mac
-* compile-ios
-* compile-android
+* linux
+* windows
+* mac
+* ios
+* android
 
 ### Building library ###
 

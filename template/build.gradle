@@ -1,0 +1,84 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'org.robovm:robovm-gradle-plugin:1.2.0'
+        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
+    }
+}
+
+allprojects {
+    apply plugin: "eclipse"
+    apply plugin: "idea"
+
+    version = '1.0'
+    ext {
+        appName = 'my-lua-project'
+        roboVMVersion = '1.2.0'
+        libPath = '../../libs'
+    }
+
+    repositories {
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    }
+}
+
+project(":desktop") {
+    apply plugin: "java"
+
+
+    dependencies {
+        compile project(":core")
+        compile files("$libPath/non.luajava.jar")
+        compile files("$libPath/non.luajava-natives-linux.jar")
+        compile files("$libPath/non.luajava-natives-windows.jar")
+        compile files("$libPath/non.luajava-natives-macosx.jar")
+    }
+}
+
+project(":android") {
+    apply plugin: "android-sdk-manager"
+    apply plugin: "android"
+
+    configurations { natives }
+
+    dependencies {
+        compile project(":core")
+        compile files("$libPath/non.luajava.jar")
+        natives files("$libPath/non.luajava-natives-armeabi.jar")
+        natives files("$libPath/non.luajava-natives-armeabi-v7a.jar")
+        natives files("$libPath/non.luajava-natives-x86.jar")
+    }
+}
+
+project(":ios") {
+    apply plugin: "java"
+    apply plugin: "robovm"
+
+    configurations { natives }
+
+    dependencies {
+        compile project(":core")
+        compile "org.robovm:robovm-rt:$roboVMVersion"
+        compile "org.robovm:robovm-cocoatouch:$roboVMVersion"
+        compile files("$libPath/non.luajava.jar")
+        natives files("$libPath/non.luajava-natives-ios.jar")
+    }
+}
+
+project(":core") {
+    apply plugin: "java"
+
+    dependencies {
+        compile files("$libPath/non.luajava.jar")
+    }
+}
+
+tasks.eclipse.doLast {
+    delete ".project"
+}
