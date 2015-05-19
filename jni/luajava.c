@@ -2830,20 +2830,6 @@ JNIEXPORT jstring JNICALL Java_org_keplerproject_luajava_LuaState__1toString
 *      Lua Exported Function
 ************************************************************************/
 
-JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1strlen
-  (JNIEnv * env , jobject jobj , jobject cptr , jint idx)
-{
-   lua_State * L = getStateFromCPtr( env , cptr );
-
-   return ( jint ) lua_strlen( L , idx );
-}
-
-
-/************************************************************************
-*   JNI Called function
-*      Lua Exported Function
-************************************************************************/
-
 JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1rawlen
   (JNIEnv * env , jobject jobj , jobject cptr , jint idx)
 {
@@ -3239,20 +3225,6 @@ JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1gc
    lua_State * L = getStateFromCPtr( env , cptr );
 
    return ( jint ) lua_gc( L , what , data );
-}
-
-
-/************************************************************************
-*   JNI Called function
-*      Lua Exported Function
-************************************************************************/
-
-JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1getGcCount
-  (JNIEnv * env , jobject jobj , jobject cptr)
-{
-   lua_State * L = getStateFromCPtr( env , cptr );
-
-   return ( jint ) lua_getgccount( L );
 }
 
 

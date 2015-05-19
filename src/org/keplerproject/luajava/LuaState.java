@@ -226,7 +226,6 @@ public class LuaState
   // Some macros
   private synchronized native void _pop(CPtr ptr, int n);
   private synchronized native void _newTable(CPtr ptr);
-  private synchronized native int  _strlen(CPtr ptr, int idx);
   private synchronized native int  _isFunction(CPtr ptr, int idx);
   private synchronized native int  _isTable(CPtr ptr, int idx);
   private synchronized native int  _isNil(CPtr ptr, int idx);
@@ -237,9 +236,6 @@ public class LuaState
   
   private synchronized native void _setGlobal(CPtr ptr, String name);
   private synchronized native void _getGlobal(CPtr ptr, String name);
-  
-  private synchronized native int  _getGcCount(CPtr ptr);
-
 
   // LuaLibAux
   private static synchronized native int _LdoFile(CPtr ptr, String fileName);
@@ -405,7 +401,7 @@ public class LuaState
 
   public int compare(int idx1, int idx2, int op)
   {
-    return _equal(luaState, idx1, idx2, op);
+    return _compare(luaState, idx1, idx2, op);
   }
 
   public int rawequal(int idx1, int idx2)
@@ -431,11 +427,6 @@ public class LuaState
   public String toString(int idx)
   {
     return _toString(luaState, idx);
-  }
-  
-  public int strLen(int idx)
-  {
-    return _strlen(luaState, idx);
   }
   
   public int rawLen(int idx)
@@ -581,11 +572,6 @@ public class LuaState
   public int gc(int what, int data)
   {
     return _gc(luaState, what, data);
-  }
-  
-  public int getGcCount()
-  {
-    return _getGcCount(luaState);
   }
   
   public int next(int idx)
