@@ -2246,7 +2246,7 @@ JNIEXPORT jboolean JNICALL Java_org_keplerproject_luajava_LuaState__1isJavaFunct
 JNIEXPORT jobject JNICALL Java_org_keplerproject_luajava_LuaState__1open
   (JNIEnv * env , jobject jobj)
 {
-   lua_State * L = lua_newstate();
+   lua_State * L = luaL_newstate();
 
    jobject obj;
    jclass tempClass;
