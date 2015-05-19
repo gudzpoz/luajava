@@ -729,7 +729,9 @@
 
 
 
-
+#ifdef __ANDROID__
+#define l_getlocaledecpoint()	('.')
+#endif
 
 #endif
 
