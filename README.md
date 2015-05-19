@@ -68,7 +68,7 @@ targets can be:
 
 * linux
 * windows
-* mac
+* macosx
 * ios
 * android
 
