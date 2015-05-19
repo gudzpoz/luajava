@@ -1,4 +1,4 @@
-
+3254
 /******************************************************************************
 * $Id$
 * Copyright (C) 2003-2007 Kepler Project.
@@ -3250,8 +3250,9 @@ JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1resume
   (JNIEnv * env , jobject jobj , jobject cptr , jint nArgs)
 {
    lua_State * L = getStateFromCPtr( env , cptr );
-
-   return ( jint ) lua_resume( L , nArgs );
+   int res = lua_resume( L, NULL, nArgs );
+   res = ( res == LUA_YIELD ) ? 0 : res;
+   return ( jint ) res;
 }
 
 
