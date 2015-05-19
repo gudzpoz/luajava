@@ -2246,7 +2246,7 @@ JNIEXPORT jboolean JNICALL Java_org_keplerproject_luajava_LuaState__1isJavaFunct
 JNIEXPORT jobject JNICALL Java_org_keplerproject_luajava_LuaState__1open
   (JNIEnv * env , jobject jobj)
 {
-   lua_State * L = lua_open();
+   lua_State * L = lua_newstate();
 
    jobject obj;
    jclass tempClass;
@@ -2744,12 +2744,12 @@ JNIEXPORT jstring JNICALL Java_org_keplerproject_luajava_LuaState__1typeName
 *      Lua Exported Function
 ************************************************************************/
 
-JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1equal
-  (JNIEnv * env , jobject jobj , jobject cptr , jint idx1 , jint idx2)
+JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1compare
+  (JNIEnv * env , jobject jobj , jobject cptr , jint idx1 , jint idx2, jint op)
 {
    lua_State * L = getStateFromCPtr( env , cptr );
 
-   return ( jint ) lua_equal( L , idx1 , idx2 );
+   return ( jint ) lua_compare( L , idx1 , idx2, op );
 }
 
 
@@ -2764,20 +2764,6 @@ JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1rawequal
    lua_State * L = getStateFromCPtr( env , cptr );
 
    return ( jint ) lua_rawequal( L , idx1 , idx2 );
-}
-
-  
-/************************************************************************
-*   JNI Called function
-*      Lua Exported Function
-************************************************************************/
-
-JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1lessthan
-  (JNIEnv * env , jobject jobj , jobject cptr , jint idx1 , jint idx2)
-{
-   lua_State * L = getStateFromCPtr( env , cptr );
-
-   return ( jint ) lua_lessthan( L , idx1 ,idx2 );
 }
 
 
@@ -2858,12 +2844,12 @@ JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1strlen
 *      Lua Exported Function
 ************************************************************************/
 
-JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1objlen
+JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1rawlen
   (JNIEnv * env , jobject jobj , jobject cptr , jint idx)
 {
    lua_State * L = getStateFromCPtr( env , cptr );
 
-   return ( jint ) lua_objlen( L , idx );
+   return ( jint ) lua_rawlen( L , idx );
 }
 
 
@@ -3100,20 +3086,6 @@ JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1getMetaTable
 *      Lua Exported Function
 ************************************************************************/
 
-JNIEXPORT void JNICALL Java_org_keplerproject_luajava_LuaState__1getFEnv
-  (JNIEnv * env , jobject jobj , jobject cptr , jint idx)
-{
-   lua_State * L = getStateFromCPtr( env , cptr );
-
-   lua_getfenv( L , ( int ) idx );
-}
-
-
-/************************************************************************
-*   JNI Called function
-*      Lua Exported Function
-************************************************************************/
-
 JNIEXPORT void JNICALL Java_org_keplerproject_luajava_LuaState__1setTable
   (JNIEnv * env , jobject jobj , jobject cptr , jint idx)
 {
@@ -3183,19 +3155,6 @@ JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1setMetaTable
    return lua_setmetatable( L , idx );
 }
 
-
-/************************************************************************
-*   JNI Called function
-*      Lua Exported Function
-************************************************************************/
-
-JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1setFEnv
-  (JNIEnv * env , jobject jobj , jobject cptr , jint idx)
-{
-   lua_State * L = getStateFromCPtr( env , cptr );
-
-   return lua_setfenv( L , idx );
-}
 
 
 /************************************************************************
@@ -3476,26 +3435,6 @@ JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1LcallMeta
 *      Lua Exported Function
 ************************************************************************/
 
-JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1Ltyperror
-  (JNIEnv * env , jobject jobj , jobject cptr , jint nArg , jstring tName)
-{
-   lua_State * L     = getStateFromCPtr( env , cptr );
-   const char * name = ( *env )->GetStringUTFChars( env , tName , NULL );
-   int ret;
-
-   ret = luaL_typerror( L , ( int ) nArg , name );
-
-   ( *env )->ReleaseStringUTFChars( env , tName , name );
-
-   return ( jint ) ret;
-}
-
-
-/************************************************************************
-*   JNI Called function
-*      Lua Exported Function
-************************************************************************/
-
 JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1LargError
   (JNIEnv * env , jobject jobj , jobject cptr , jint numArg , jstring extraMsg)
 {
@@ -3736,34 +3675,6 @@ JNIEXPORT void JNICALL Java_org_keplerproject_luajava_LuaState__1LunRef
 *      Lua Exported Function
 ************************************************************************/
 
-JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1LgetN
-  (JNIEnv * env , jobject jobj , jobject cptr , jint t)
-{
-   lua_State * L = getStateFromCPtr( env , cptr );
-
-   return ( jint ) luaL_getn( L , ( int ) t );
-}
-
-
-/************************************************************************
-*   JNI Called function
-*      Lua Exported Function
-************************************************************************/
-
-JNIEXPORT void JNICALL Java_org_keplerproject_luajava_LuaState__1LsetN
-  (JNIEnv * env , jobject jobj , jobject cptr , jint t , jint n)
-{
-   lua_State * L = getStateFromCPtr( env , cptr );
-
-   luaL_setn( L , ( int ) t , ( int ) n );
-}
-
-
-/************************************************************************
-*   JNI Called function
-*      Lua Exported Function
-************************************************************************/
-
 JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1LloadFile
   (JNIEnv * env , jobject jobj , jobject cptr , jstring fileName)
 {
@@ -3840,25 +3751,6 @@ JNIEXPORT jstring JNICALL Java_org_keplerproject_luajava_LuaState__1Lgsub
    ( *env )->ReleaseStringUTFChars( env , s , utS );
    ( *env )->ReleaseStringUTFChars( env , p , utP );
    ( *env )->ReleaseStringUTFChars( env , r , utR );
-
-   return ( *env )->NewStringUTF( env , sub );
-}
-
-
-/************************************************************************
-*   JNI Called function
-*      Lua Exported Function
-************************************************************************/
-
-JNIEXPORT jstring JNICALL Java_org_keplerproject_luajava_LuaState__1LfindTable
-  (JNIEnv * env , jobject jobj , jobject cptr , jint idx , jstring fname , jint szhint)
-{
-   lua_State * L   = getStateFromCPtr( env , cptr );
-   const char * name = ( *env )->GetStringUTFChars( env , fname , NULL );
-
-   const char * sub = luaL_findtable( L , ( int ) idx , name , ( int ) szhint );
-
-   ( *env )->ReleaseStringUTFChars( env , fname , name );
 
    return ( *env )->NewStringUTF( env , sub );
 }

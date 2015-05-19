@@ -166,15 +166,14 @@ public class LuaState
   private synchronized native int    _type(CPtr ptr, int idx);
   private synchronized native String _typeName(CPtr ptr, int tp);
 
-  private synchronized native int _equal(CPtr ptr, int idx1, int idx2);
+  private synchronized native int _compare(CPtr ptr, int idx1, int idx2, int op);
   private synchronized native int _rawequal(CPtr ptr, int idx1, int idx2);
-  private synchronized native int _lessthan(CPtr ptr, int idx1, int idx2);
 
   private synchronized native double _toNumber(CPtr ptr, int idx);
   private synchronized native int    _toInteger(CPtr ptr, int idx);
   private synchronized native int    _toBoolean(CPtr ptr, int idx);
   private synchronized native String _toString(CPtr ptr, int idx);
-  private synchronized native int    _objlen(CPtr ptr, int idx);
+  private synchronized native int    _rawlen(CPtr ptr, int idx);
   private synchronized native CPtr   _toThread(CPtr ptr, int idx);
 
   // Push functions
@@ -192,7 +191,6 @@ public class LuaState
   private synchronized native void _rawGetI(CPtr ptr, int idx, int n);
   private synchronized native void _createTable(CPtr ptr, int narr, int nrec);
   private synchronized native int  _getMetaTable(CPtr ptr, int idx);
-  private synchronized native void _getFEnv(CPtr ptr, int idx);
 
   // Set functions
   private synchronized native void _setTable(CPtr ptr, int idx);
@@ -200,7 +198,6 @@ public class LuaState
   private synchronized native void _rawSet(CPtr ptr, int idx);
   private synchronized native void _rawSetI(CPtr ptr, int idx, int n);
   private synchronized native int  _setMetaTable(CPtr ptr, int idx);
-  private synchronized native int  _setFEnv(CPtr ptr, int idx);
 
   private synchronized native void _call(CPtr ptr, int nArgs, int nResults);
   private synchronized native int  _pcall(CPtr ptr, int nArgs, int Results, int errFunc);
@@ -251,7 +248,6 @@ public class LuaState
   
   private synchronized native int    _LgetMetaField(CPtr ptr, int obj, String e);
   private synchronized native int    _LcallMeta(CPtr ptr, int obj, String e);
-  private synchronized native int    _Ltyperror(CPtr ptr, int nArg, String tName);
   private synchronized native int    _LargError(CPtr ptr, int numArg, String extraMsg);
   private synchronized native String _LcheckString(CPtr ptr, int numArg);
   private synchronized native String _LoptString(CPtr ptr, int numArg, String def);
@@ -273,16 +269,11 @@ public class LuaState
   private synchronized native int  _Lref(CPtr ptr, int t);
   private synchronized native void _LunRef(CPtr ptr, int t, int ref);
   
-  private synchronized native int  _LgetN(CPtr ptr, int t);
-  private synchronized native void _LsetN(CPtr ptr, int t, int n);
-  
   private synchronized native int _LloadFile(CPtr ptr, String fileName);
   private synchronized native int _LloadBuffer(CPtr ptr, byte[] buff, long sz, String name);
   private synchronized native int _LloadString(CPtr ptr, String s);
 
   private synchronized native String _Lgsub(CPtr ptr, String s, String p, String r);
-  private synchronized native String _LfindTable(CPtr ptr, int idx, String fname, int szhint);
-  
   
   private synchronized native void _openBase(CPtr ptr);
   private synchronized native void _openTable(CPtr ptr);
@@ -412,19 +403,14 @@ public class LuaState
   	return _typeName(luaState, tp);
   }
 
-  public int equal(int idx1, int idx2)
+  public int compare(int idx1, int idx2, int op)
   {
-    return _equal(luaState, idx1, idx2);
+    return _equal(luaState, idx1, idx2, op);
   }
 
   public int rawequal(int idx1, int idx2)
   {
     return _rawequal(luaState, idx1, idx2);
-  }
-
-  public int lessthan(int idx1, int idx2)
-  {
-    return _lessthan(luaState, idx1, idx2);
   }
 
   public double toNumber(int idx)
@@ -452,9 +438,9 @@ public class LuaState
     return _strlen(luaState, idx);
   }
   
-  public int objLen(int idx)
+  public int rawLen(int idx)
   {
-	  return _objlen(luaState, idx);
+	  return _rawlen(luaState, idx);
   }
 
   public LuaState toThread(int idx)
@@ -538,11 +524,6 @@ public class LuaState
     return _getMetaTable(luaState, idx);
   }
 
-  public void getFEnv(int idx)
-  {
-    _getFEnv(luaState, idx);
-  }
-
   // SET FUNCTIONS
   
   public void setTable(int idx)
@@ -569,12 +550,6 @@ public class LuaState
   public int setMetaTable(int idx)
   {
     return _setMetaTable(luaState, idx);
-  }
-
-  // if object is not a function returns 0
-  public int setFEnv(int idx)
-  {
-    return _setFEnv(luaState, idx);
   }
 
   public void call(int nArgs, int nResults)
@@ -652,11 +627,6 @@ public class LuaState
     return _LcallMeta(luaState, obj, e);
   }
   
-  public int Ltyperror(int nArg, String tName)
-  {
-    return _Ltyperror(luaState, nArg, tName);
-  }
-  
   public int LargError(int numArg, String extraMsg)
   {
     return _LargError(luaState, numArg, extraMsg);
@@ -732,16 +702,6 @@ public class LuaState
     _LunRef(luaState, t, ref);
   }
   
-  public int LgetN(int t)
-  {
-    return _LgetN(luaState, t);
-  }
-  
-  public void LsetN(int t, int n)
-  {
-    _LsetN(luaState, t, n);
-  }
-  
   public int LloadFile(String fileName)
   {
     return _LloadFile(luaState, fileName);
@@ -760,11 +720,6 @@ public class LuaState
   public String Lgsub(String s, String p, String r)
   {
 	  return _Lgsub(luaState, s, p, r);
-  }
-  
-  public String LfindTable(int idx, String fname, int szhint)
-  {
-	  return _LfindTable(luaState, idx, fname, szhint);
   }
   
   //IMPLEMENTED C MACROS
