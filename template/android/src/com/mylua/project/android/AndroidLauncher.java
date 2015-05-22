@@ -8,6 +8,6 @@ public class AndroidLauncher extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new MyLuaProject();
+        new MyLuaProject(true);
     }
 }

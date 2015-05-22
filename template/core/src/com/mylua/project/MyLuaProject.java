@@ -1,14 +1,15 @@
 package com.mylua.project;
 
-import org.keplerproject.luajava.LuaState;
-import org.keplerproject.luajava.LuaStateFactory;
+import io.nondev.nonlua.Lua;
 
 public class MyLuaProject {
     public MyLuaProject() {
-        LuaState lua = LuaStateFactory.newLuaState();
-        
-        lua.openLibs();
-        lua.LdoString("print(\"Hello World from Lua!\")");
-        lua.close();
+        this(false);
+    }
+    
+    public MyLuaProject(boolean isAndroid) {
+        Lua.open(isAndroid);
+        Lua.run("print(\"Hello World from Lua!\")");
+        Lua.close();
     }
 }

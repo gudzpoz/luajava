@@ -23,9 +23,6 @@
  */
 
 package org.keplerproject.luajava;
-
-import com.badlogic.gdx.utils.SharedLibraryLoader;
-
 /**
  * LuaState if the main class of LuaJava for the Java developer.
  * LuaState is a mapping of most of Lua's C API functions.
@@ -34,9 +31,7 @@ import com.badlogic.gdx.utils.SharedLibraryLoader;
  * @author Thiago Ponte
  */
 public class LuaState
-{
-  private final static String LUAJAVA_LIB = "luajava";
-  
+{ 
   final public static Integer LUA_GLOBALSINDEX  = new Integer(-10002);
   final public static Integer LUA_REGISTRYINDEX = new Integer(-10000);
 
@@ -79,13 +74,6 @@ public class LuaState
    * error while running the error handler function.
    */
   final public static Integer LUA_ERRERR    = new Integer(5);
-  
-  /**
-   * Opens the library containing the luajava API
-   */
-  static {
-    new SharedLibraryLoader().load(LUAJAVA_LIB);
-  }
 
   private CPtr luaState;
 
@@ -285,8 +273,8 @@ public class LuaState
 
   public LuaState newThread()
   {
-  	LuaState l = new LuaState(_newthread(luaState));
-  	LuaStateFactory.insertLuaState(l);
+    LuaState l = new LuaState(_newthread(luaState));
+    LuaStateFactory.insertLuaState(l);
     return l;
   }
 
@@ -371,22 +359,22 @@ public class LuaState
   
   public boolean isNil(int idx)
   {
-	  return (_isNil(luaState, idx)!=0);
+    return (_isNil(luaState, idx)!=0);
   }
   
   public boolean isThread(int idx)
   {
-	  return (_isThread(luaState, idx)!=0);
+    return (_isThread(luaState, idx)!=0);
   }
   
   public boolean isNone(int idx)
   {
-	  return (_isNone(luaState, idx)!=0);
+    return (_isNone(luaState, idx)!=0);
   }
   
   public boolean isNoneOrNil(int idx)
   {
-	  return (_isNoneOrNil(luaState, idx)!=0);
+    return (_isNoneOrNil(luaState, idx)!=0);
   }
 
   public int type(int idx)
@@ -396,7 +384,7 @@ public class LuaState
 
   public String typeName(int tp)
   {
-  	return _typeName(luaState, tp);
+    return _typeName(luaState, tp);
   }
 
   public int compare(int idx1, int idx2, int op)
@@ -416,7 +404,7 @@ public class LuaState
 
   public int toInteger(int idx)
   {
-	  return _toInteger(luaState, idx);
+    return _toInteger(luaState, idx);
   }
   
   public boolean toBoolean(int idx)
@@ -431,7 +419,7 @@ public class LuaState
   
   public int rawLen(int idx)
   {
-	  return _rawlen(luaState, idx);
+    return _rawlen(luaState, idx);
   }
 
   public LuaState toThread(int idx)
@@ -453,7 +441,7 @@ public class LuaState
   
   public void pushInteger(int integer)
   {
-	  _pushInteger(luaState, integer);
+    _pushInteger(luaState, integer);
   }
 
   public void pushString(String str)
@@ -486,7 +474,7 @@ public class LuaState
   
   public void getField(int idx, String k)
   {
-	  _getField(luaState, idx, k);
+    _getField(luaState, idx, k);
   }
 
   public void rawGet(int idx)
@@ -501,7 +489,7 @@ public class LuaState
   
   public void createTable(int narr, int nrec)
   {
-	  _createTable(luaState, narr, nrec);
+    _createTable(luaState, narr, nrec);
   }
 
   public void newTable()
@@ -524,7 +512,7 @@ public class LuaState
   
   public void setField(int idx, String k)
   {
-	  _setField(luaState, idx, k);
+    _setField(luaState, idx, k);
   }
 
   public void rawSet(int idx)
@@ -556,17 +544,17 @@ public class LuaState
 
   public int yield(int nResults)
   {
-  	return _yield(luaState, nResults);
+    return _yield(luaState, nResults);
   }
 
   public int resume(int nArgs)
   {
-  	return _resume(luaState, nArgs);
+    return _resume(luaState, nArgs);
   }
   
   public int status()
   {
-	  return _status(luaState);
+    return _status(luaState);
   }
   
   public int gc(int what, int data)
@@ -576,17 +564,17 @@ public class LuaState
   
   public int next(int idx)
   {
-  	return _next(luaState, idx);
+    return _next(luaState, idx);
   }
 
   public int error()
   {
-  	return _error(luaState);
+    return _error(luaState);
   }
 
   public void concat(int n)
   {
-  	_concat(luaState, n);
+    _concat(luaState, n);
   }
 
 
@@ -640,12 +628,12 @@ public class LuaState
   
   public int LcheckInteger(int numArg)
   {
-	  return _LcheckInteger(luaState, numArg);
+    return _LcheckInteger(luaState, numArg);
   }
   
   public int LoptInteger(int numArg, int def)
   {
-	  return _LoptInteger(luaState, numArg, def);
+    return _LoptInteger(luaState, numArg, def);
   }
   
   public void LcheckStack(int sz, String msg)
@@ -705,7 +693,7 @@ public class LuaState
   
   public String Lgsub(String s, String p, String r)
   {
-	  return _Lgsub(luaState, s, p, r);
+    return _Lgsub(luaState, s, p, r);
   }
   
   //IMPLEMENTED C MACROS
@@ -713,7 +701,7 @@ public class LuaState
   public void pop(int n)
   {
     //setTop(- (n) - 1);
-	_pop(luaState, n);
+  _pop(luaState, n);
   }
 
   public synchronized void getGlobal(String global)
@@ -728,7 +716,7 @@ public class LuaState
     //pushString(name);
     //insert(-2);
     //setTable(LUA_GLOBALSINDEX.intValue());
-	_setGlobal(luaState, name);
+  _setGlobal(luaState, name);
   }
   
   // Functions to open lua libraries
@@ -746,7 +734,7 @@ public class LuaState
   }
   public void openOs()
   {
-	  _openOs(luaState);
+    _openOs(luaState);
   }
   public void openString()
   {
@@ -762,7 +750,7 @@ public class LuaState
   }
   public void openPackage()
   {
-	  _openPackage(luaState);
+    _openPackage(luaState);
   }
   public void openLibs()
   {
@@ -857,10 +845,10 @@ public class LuaState
   
   public void pushJavaArray(Object obj) throws LuaException
   {
-	  if (!obj.getClass().isArray())
-		  throw new LuaException("Object is not an array.");
-	  
-	  _pushJavaArray(luaState, obj);
+    if (!obj.getClass().isArray())
+      throw new LuaException("Object is not an array.");
+    
+    _pushJavaArray(luaState, obj);
   }
 
   /**
@@ -923,7 +911,7 @@ public class LuaState
     }
     else if (obj.getClass().isArray())
     {
-   	 pushJavaArray(obj);
+     pushJavaArray(obj);
     }
     else
     {
@@ -937,131 +925,131 @@ public class LuaState
    * @param idx Index in the Lua Stack
    * @return Java object equivalent to the Lua one
    */
-	public synchronized Object toJavaObject( int idx ) throws LuaException
-	{
-		Object obj = null;
+  public synchronized Object toJavaObject( int idx ) throws LuaException
+  {
+    Object obj = null;
 
-		if (isBoolean(idx))
-		{
-			obj = new Boolean(toBoolean(idx));
-		}
-		else if (type(idx) == LuaState.LUA_TSTRING.intValue())
-		{
-			obj = toString(idx);
-		}
-		else if (isFunction(idx))
-		{
-			obj = getLuaObject(idx);
-		}
-		else if (isTable(idx))
-		{
-			obj = getLuaObject(idx);
-		}
-		else if (type(idx) == LuaState.LUA_TNUMBER.intValue())
-		{
-				obj = new Double(toNumber(idx));
-		}
-		else if (isUserdata(idx))
-		{
-			if (isObject(idx))
-			{
-				obj = getObjectFromUserdata(idx);
-			}
-			else
-			{
-				obj = getLuaObject(idx);
-			}
-		}
-		else if (isNil(idx))
-		{
-			obj = null;
-		}
+    if (isBoolean(idx))
+    {
+      obj = new Boolean(toBoolean(idx));
+    }
+    else if (type(idx) == LuaState.LUA_TSTRING.intValue())
+    {
+      obj = toString(idx);
+    }
+    else if (isFunction(idx))
+    {
+      obj = getLuaObject(idx);
+    }
+    else if (isTable(idx))
+    {
+      obj = getLuaObject(idx);
+    }
+    else if (type(idx) == LuaState.LUA_TNUMBER.intValue())
+    {
+        obj = new Double(toNumber(idx));
+    }
+    else if (isUserdata(idx))
+    {
+      if (isObject(idx))
+      {
+        obj = getObjectFromUserdata(idx);
+      }
+      else
+      {
+        obj = getLuaObject(idx);
+      }
+    }
+    else if (isNil(idx))
+    {
+      obj = null;
+    }
 
-		return obj;
-	}
+    return obj;
+  }
 
-	/**
-	 * Creates a reference to an object in the variable globalName
-	 * @param globalName
-	 * @return LuaObject
-	 */
-	public LuaObject getLuaObject(String globalName)
-	{
-		return new LuaObject(this, globalName);
-	}
+  /**
+   * Creates a reference to an object in the variable globalName
+   * @param globalName
+   * @return LuaObject
+   */
+  public LuaObject getLuaObject(String globalName)
+  {
+    return new LuaObject(this, globalName);
+  }
 
-	/**
-	 * Creates a reference to an object inside another object
+  /**
+   * Creates a reference to an object inside another object
      * @param parent The Lua Table or Userdata that contains the Field.
      * @param name The name that index the field
-	 * @return LuaObject
-	 * @throws LuaException if parent is not a table or userdata
-	 */
-	public LuaObject getLuaObject(LuaObject parent, String name)
-		throws LuaException
-	{
-		if (parent.L.getCPtrPeer() != luaState.getPeer())
-			throw new LuaException("Object must have the same LuaState as the parent!");
+   * @return LuaObject
+   * @throws LuaException if parent is not a table or userdata
+   */
+  public LuaObject getLuaObject(LuaObject parent, String name)
+    throws LuaException
+  {
+    if (parent.L.getCPtrPeer() != luaState.getPeer())
+      throw new LuaException("Object must have the same LuaState as the parent!");
 
-		return new LuaObject(parent, name);
-	}
+    return new LuaObject(parent, name);
+  }
 
-	/**
-	 * This constructor creates a LuaObject from a table that is indexed by a number.
-	 * @param parent The Lua Table or Userdata that contains the Field.
-	 * @param name The name (number) that index the field
-	 * @return LuaObject
-	 * @throws LuaException When the parent object isn't a Table or Userdata
-	 */
-	public LuaObject getLuaObject(LuaObject parent, Number name)
-		throws LuaException
-	{
-		if (parent.L.getCPtrPeer() != luaState.getPeer())
-			throw new LuaException("Object must have the same LuaState as the parent!");
+  /**
+   * This constructor creates a LuaObject from a table that is indexed by a number.
+   * @param parent The Lua Table or Userdata that contains the Field.
+   * @param name The name (number) that index the field
+   * @return LuaObject
+   * @throws LuaException When the parent object isn't a Table or Userdata
+   */
+  public LuaObject getLuaObject(LuaObject parent, Number name)
+    throws LuaException
+  {
+    if (parent.L.getCPtrPeer() != luaState.getPeer())
+      throw new LuaException("Object must have the same LuaState as the parent!");
 
-		return new LuaObject(parent, name);
-	}
-	
-	/**
-	 * This constructor creates a LuaObject from a table that is indexed by any LuaObject.
-	 * @param parent The Lua Table or Userdata that contains the Field.
-	 * @param name The name (LuaObject) that index the field
-	 * @return LuaObject
-	 * @throws LuaException When the parent object isn't a Table or Userdata
-	 */
-	public LuaObject getLuaObject(LuaObject parent, LuaObject name)
-		throws LuaException
-	{
-	  if (parent.getLuaState().getCPtrPeer() != luaState.getPeer() ||
-	      parent.getLuaState().getCPtrPeer() != name.getLuaState().getCPtrPeer())
-	    throw new LuaException("Object must have the same LuaState as the parent!");
+    return new LuaObject(parent, name);
+  }
+  
+  /**
+   * This constructor creates a LuaObject from a table that is indexed by any LuaObject.
+   * @param parent The Lua Table or Userdata that contains the Field.
+   * @param name The name (LuaObject) that index the field
+   * @return LuaObject
+   * @throws LuaException When the parent object isn't a Table or Userdata
+   */
+  public LuaObject getLuaObject(LuaObject parent, LuaObject name)
+    throws LuaException
+  {
+    if (parent.getLuaState().getCPtrPeer() != luaState.getPeer() ||
+        parent.getLuaState().getCPtrPeer() != name.getLuaState().getCPtrPeer())
+      throw new LuaException("Object must have the same LuaState as the parent!");
 
-	  return new LuaObject(parent, name);
-	}
+    return new LuaObject(parent, name);
+  }
 
-	/**
-	 * Creates a reference to an object in the <code>index</code> position
-	 * of the stack
-	 * @param index position on the stack
-	 * @return LuaObject
-	 */
-	public LuaObject getLuaObject(int index)
-	{
-		return new LuaObject(this, index);
-	}
+  /**
+   * Creates a reference to an object in the <code>index</code> position
+   * of the stack
+   * @param index position on the stack
+   * @return LuaObject
+   */
+  public LuaObject getLuaObject(int index)
+  {
+    return new LuaObject(this, index);
+  }
 
-	/**
-	 * When you call a function in lua, it may return a number, and the
-	 * number will be interpreted as a <code>Double</code>.<br>
-	 * This function converts the number into a type specified by 
-	 * <code>retType</code>
-	 * @param db lua number to be converted
-	 * @param retType type to convert to
-	 * @return The converted number
-	 */
-	public static Number convertLuaNumber(Double db, Class retType)
-	{
-	  // checks if retType is a primitive type
+  /**
+   * When you call a function in lua, it may return a number, and the
+   * number will be interpreted as a <code>Double</code>.<br>
+   * This function converts the number into a type specified by 
+   * <code>retType</code>
+   * @param db lua number to be converted
+   * @param retType type to convert to
+   * @return The converted number
+   */
+  public static Number convertLuaNumber(Double db, Class retType)
+  {
+    // checks if retType is a primitive type
     if (retType.isPrimitive())
     {
       if (retType == Integer.TYPE)
@@ -1119,6 +1107,6 @@ public class LuaState
     }
     
     // if all checks fail, return null
-    return null;	  
-	}
+    return null;    
+  }
 }
