@@ -77,7 +77,7 @@ public class Lua {
             try {
                 loadBuffer(readFile(chunk).getBytes(), chunk);
                 return pcall(0, MULTIPLE_RETURN, 0);
-            catch (IOException e) {
+            } catch (IOException e) {
                 return -1;
             }
         }
@@ -89,7 +89,7 @@ public class Lua {
         if (chunk.endsWith(".lua")) {
             try {
                 return loadBuffer(readFile(chunk).getBytes(), chunk);
-            catch (IOException e) {
+            } catch (IOException e) {
                 return -1;
             }
         }
