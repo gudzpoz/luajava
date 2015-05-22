@@ -3,6 +3,7 @@ package io.nondev.nonlua;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 import org.keplerproject.luajava.*;
 import java.io.*;
+import java.nio.Charset;
 
 public static class Lua {
     private final static String LUAJAVA_LIB = "luajava";
@@ -48,7 +49,7 @@ public static class Lua {
         new SharedLibraryLoader().load(LUAJAVA_LIB);
         state = LuaStateFactory.newLuaState();
         state.openLibs();
-        this.isAndroid = isAndroid;
+        Lua.isAndroid = isAndroid;
     }
     
     public static void close() {
@@ -70,12 +71,12 @@ public static class Lua {
     
     public static int run(String chunk) {
         if (chunk.endsWith(".lua")) {
-            InpuStream file = 
+            InputStream file = 
                 isAndroid ? 
                 Lua.class.getResourceAsStream("/assets/" + chunk) :
                 Lua.class.getResourceAsStream("/" + chunk);
             chunk = readStream(file);
-            loadBuffer(chunk.getBytes(Charset.forName("UTF-8")));
+            loadBuffer(chunk.getBytes(Charset.forName("UTF-8")), chunk);
             return pcall(0, MULTIPLE_RETURN, 0);
         }
         
@@ -84,12 +85,12 @@ public static class Lua {
     
     public static int load(String chunk) {
         if (chunk.endsWith(".lua")) {
-            InpuStream file = 
+            InputStream file = 
                 isAndroid ? 
                 Lua.class.getResourceAsStream("/assets/" + chunk) :
                 Lua.class.getResourceAsStream("/" + chunk);
             chunk = readStream(file);
-            return loadBuffer(chunk.getBytes(Charset.forName("UTF-8")));
+            return loadBuffer(chunk.getBytes(Charset.forName("UTF-8")), chunk);
         }
         
         return loadString(chunk);
@@ -192,7 +193,7 @@ public static class Lua {
     }
 
     public static void pushDouble(double db) {
-        state.pushDouble(db);
+        state.pushNumber(db);
     }
     
     public static void pushInteger(int integer) {
@@ -300,7 +301,7 @@ public static class Lua {
     }
     
     public static String checkString(int numArg) {
-        return state.LcheckString(luaState, numArg);
+        return state.LcheckString(numArg);
     }
     
     public static String optString(int numArg, String def) {
