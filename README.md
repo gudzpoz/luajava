@@ -1,5 +1,5 @@
 # nonlua #
-[![Build Status](https://travis-ci.org/non2d/non.luajava.svg?branch=master)](https://travis-ci.org/nondev/nonlua)
+[![Build Status](https://travis-ci.org/nondev/nonlua.svg?branch=master)](https://travis-ci.org/nondev/nonlua)
 
   * [Supported platforms](#supported-platforms)
   * [About](#about)
