@@ -56,7 +56,7 @@ public class Lua {
         state = null;
     }
     
-    private static String readFile(String filename) {
+    private static String readFile(String filename) throws IOException {
         InputStream in = 
                 isAndroid ? 
                 Lua.class.getResourceAsStream("/assets/" + filename) :
@@ -74,8 +74,12 @@ public class Lua {
     
     public static int run(String chunk) {
         if (chunk.endsWith(".lua")) {
-            loadBuffer(readFile(chunk).getBytes(), chunk);
-            return pcall(0, MULTIPLE_RETURN, 0);
+            try {
+                loadBuffer(readFile(chunk).getBytes(), chunk);
+                return pcall(0, MULTIPLE_RETURN, 0);
+            catch (IOException e) {
+                return -1;
+            }
         }
         
         return doString(chunk);
@@ -83,7 +87,11 @@ public class Lua {
     
     public static int load(String chunk) {
         if (chunk.endsWith(".lua")) {
-            return loadBuffer(readFile(chunk).getBytes(), chunk);
+            try {
+                return loadBuffer(readFile(chunk).getBytes(), chunk);
+            catch (IOException e) {
+                return -1;
+            }
         }
         
         return loadString(chunk);
@@ -242,7 +250,7 @@ public class Lua {
     }
 
     public static int pcall(int nArgs, int nResults, int errFunc) {
-        state.pcall(nArgs, nResults, errFunc);
+        return state.pcall(nArgs, nResults, errFunc);
     }
 
     public static int yield(int nResults) {
@@ -409,23 +417,23 @@ public class Lua {
         return state.toJavaObject(idx);
     }
     
-    public static LuaObject getLuaObject(String globalName) {
+    public static LuaObject getLuaObject(String globalName) throws LuaException {
         return state.getLuaObject(globalName);
     }
     
-    public static LuaObject getLuaObject(LuaObject parent, String name) {
+    public static LuaObject getLuaObject(LuaObject parent, String name) throws LuaException {
         return state.getLuaObject(parent, name);
     }
     
-    public static LuaObject getLuaObject(LuaObject parent, Number name) {
+    public static LuaObject getLuaObject(LuaObject parent, Number name) throws LuaException {
         return state.getLuaObject(parent, name);
     }
     
-    public static LuaObject getLuaObject(LuaObject parent, LuaObject name) {
+    public static LuaObject getLuaObject(LuaObject parent, LuaObject name) throws LuaException {
         return state.getLuaObject(parent, name);
     }
 
-    public static LuaObject getLuaObject(int index) {
+    public static LuaObject getLuaObject(int index) throws LuaException {
         return state.getLuaObject(index);
     }
 
