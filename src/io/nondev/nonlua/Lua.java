@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.SharedLibraryLoader;
 import org.keplerproject.luajava.*;
 import java.io.*;
 
-public static class Lua {
+public class Lua {
     private final static String LUAJAVA_LIB = "luajava";
   
     final public static Integer GLOBALS  = LuaState.LUA_GLOBALSINDEX;
