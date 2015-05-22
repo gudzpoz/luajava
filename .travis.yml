@@ -32,7 +32,6 @@ after_success:
 - git config --global user.name "Thomas Slusny"
 - git config --global push.default matching
 - echo -e "machine github.com\n  login ${GIT_LOGIN}\n  password ${GIT_PASSWORD}" >> ~/.netrc
-- echo $GIT_LOGIN
 - git add libs/
 - git status -s
 - git commit -m "Travis CI build [ci skip]"
