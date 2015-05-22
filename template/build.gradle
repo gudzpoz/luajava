@@ -33,10 +33,10 @@ project(":desktop") {
 
     dependencies {
         compile project(":core")
-        if (file("$libPath/non.luajava.jar").exists()) compile files("$libPath/non.luajava.jar")
-        if (file("$libPath/non.luajava-natives-linux.jar").exists()) compile files("$libPath/non.luajava-natives-linux.jar")
-        if (file("$libPath/non.luajava-natives-windows.jar").exists()) compile files("$libPath/non.luajava-natives-windows.jar")
-        if (file("$libPath/non.luajava-natives-macosx.jar").exists()) compile files("$libPath/non.luajava-natives-macosx.jar")
+        if (file("$libPath/nonlua.jar").exists()) compile files("$libPath/nonlua.jar")
+        if (file("$libPath/nonlua-natives-linux.jar").exists()) compile files("$libPath/nonlua-natives-linux.jar")
+        if (file("$libPath/nonlua-natives-windows.jar").exists()) compile files("$libPath/nonlua-natives-windows.jar")
+        if (file("$libPath/nonlua-natives-macosx.jar").exists()) compile files("$libPath/nonlua-natives-macosx.jar")
     }
 }
 
@@ -48,10 +48,10 @@ project(":android") {
 
     dependencies {
         compile project(":core")
-        if (file("$libPath/non.luajava.jar").exists()) compile files("$libPath/non.luajava.jar")
-        if (file("$libPath/non.luajava-natives-armeabi.jar").exists()) natives files("$libPath/non.luajava-natives-armeabi.jar")
-        if (file("$libPath/non.luajava-natives-armeabi-v7a.jar").exists()) natives files("$libPath/non.luajava-natives-armeabi-v7a.jar")
-        if (file("$libPath/non.luajava-natives-x86.jar").exists()) natives files("$libPath/non.luajava-natives-x86.jar")
+        if (file("$libPath/nonlua.jar").exists()) compile files("$libPath/nonlua.jar")
+        if (file("$libPath/nonlua-natives-armeabi.jar").exists()) natives files("$libPath/nonlua-natives-armeabi.jar")
+        if (file("$libPath/nonlua-natives-armeabi-v7a.jar").exists()) natives files("$libPath/nonlua-natives-armeabi-v7a.jar")
+        if (file("$libPath/nonlua-natives-x86.jar").exists()) natives files("$libPath/nonlua-natives-x86.jar")
     }
 }
 
@@ -65,8 +65,8 @@ project(":ios") {
         compile project(":core")
         compile "org.robovm:robovm-rt:1.2.0"
         compile "org.robovm:robovm-cocoatouch:1.2.0"
-        if (file("$libPath/non.luajava.jar").exists()) compile files("$libPath/non.luajava.jar")
-        if (file("$libPath/non.luajava-natives-ios.jar").exists()) natives files("$libPath/non.luajava-natives-ios.jar")
+        if (file("$libPath/nonlua.jar").exists()) compile files("$libPath/nonlua.jar")
+        if (file("$libPath/nonlua-natives-ios.jar").exists()) natives files("$libPath/nonlua-natives-ios.jar")
     }
 }
 
@@ -74,7 +74,7 @@ project(":core") {
     apply plugin: "java"
 
     dependencies {
-        if (file("$libPath/non.luajava.jar").exists()) compile files("$libPath/non.luajava.jar")
+        if (file("$libPath/nonlua.jar").exists()) compile files("$libPath/nonlua.jar")
     }
 }
 

@@ -53,7 +53,8 @@ build/
 ## JNI
 libs/armeabi/
 libs/armeabi-v7a/
-libs/ios/
+libs/classes/
+libs/ios32/
 libs/linux32/
 libs/linux64/
 libs/macosx32/

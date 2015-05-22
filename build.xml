@@ -1,4 +1,4 @@
-<project name="luajava-natives" basedir="." default="all">
+<project name="nonlua" basedir="." default="all">
   <target name="clean-natives">
 		<ant antfile="build-windows32.xml" dir="jni" target="clean"/>
 		<ant antfile="build-windows64.xml" dir="jni" target="clean"/>
@@ -11,7 +11,7 @@
 	</target>
   
 	<target name="clean-library">
-    <delete dir="build/classes"/>
+    <delete dir="libs/classes"/>
 	</target>
   
   <target name="compile-windows">
@@ -40,45 +40,45 @@
   <target name="compile-natives" depends="compile-windows,compile-linux,compile-macosx,compile-ios,compile-android"/>
   
   <target name="compile-library">
-    <mkdir dir="build/classes"/>
-    <javac srcdir="src" destdir="build/classes"/>
+    <mkdir dir="libs/classes"/>
+    <javac srcdir="src" destdir="libs/classes"/>
   </target>
   
   <target name="pack-windows">
-    <jar destfile="libs/non.luajava-natives-windows.jar">
+    <jar destfile="libs/nonlua-natives-windows.jar">
 			<fileset dir="libs/windows32" erroronmissingdir="false"/>
 			<fileset dir="libs/windows64" erroronmissingdir="false"/>
 		</jar>
   </target>
   
   <target name="pack-linux">
-    <jar destfile="libs/non.luajava-natives-linux.jar">
+    <jar destfile="libs/nonlua-natives-linux.jar">
 			<fileset dir="libs/linux32" erroronmissingdir="false"/>
 			<fileset dir="libs/linux64" erroronmissingdir="false"/>
 		</jar>
   </target>
   
   <target name="pack-macosx">
-    <jar destfile="libs/non.luajava-natives-macosx.jar">
+    <jar destfile="libs/nonlua-natives-macosx.jar">
 			<fileset dir="libs/macosx32" erroronmissingdir="false"/>
 			<fileset dir="libs/macosx64" erroronmissingdir="false"/>
 		</jar>
   </target>
   
   <target name="pack-ios">
-    <jar destfile="libs/non.luajava-natives-ios.jar">
-			<fileset dir="libs/ios" erroronmissingdir="false"/>
+    <jar destfile="libs/nonlua-natives-ios.jar">
+			<fileset dir="libs/ios32" erroronmissingdir="false"/>
 		</jar>
   </target>
   
   <target name="pack-android">
-    <jar destfile="libs/non.luajava-natives-armeabi.jar">
+    <jar destfile="libs/nonlua-natives-armeabi.jar">
 			<fileset dir="libs/armeabi" erroronmissingdir="false"/>
 		</jar>
-    <jar destfile="libs/non.luajava-natives-armeabi-v7a.jar">
+    <jar destfile="libs/nonlua-natives-armeabi-v7a.jar">
 			<fileset dir="libs/armeabi-v7a" erroronmissingdir="false"/>
 		</jar>
-    <jar destfile="libs/non.luajava-natives-x86.jar">
+    <jar destfile="libs/nonlua-natives-x86.jar">
 			<fileset dir="libs/x86" erroronmissingdir="false"/>
 		</jar>
   </target>
@@ -86,7 +86,7 @@
   <target name="pack-natives" depends="pack-windows,pack-linux,pack-macosx,pack-ios,pack-android"/>
   
   <target name="pack-library">
-    <jar destfile="libs/non.luajava.jar" basedir="build/classes"/>
+    <jar destfile="libs/nonlua.jar" basedir="libs/classes"/>
   </target>
   
   <target name="clean" depends="clean-natives,clean-library"/>
