@@ -3,7 +3,6 @@ package io.nondev.nonlua;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 import org.keplerproject.luajava.*;
 import java.io.*;
-import java.nio.Charset;
 
 public static class Lua {
     private final static String LUAJAVA_LIB = "luajava";
@@ -57,7 +56,11 @@ public static class Lua {
         state = null;
     }
     
-    private static String readStream(InputStream in) {
+    private static String readFile(String filename) {
+        InputStream in = 
+                isAndroid ? 
+                Lua.class.getResourceAsStream("/assets/" + filename) :
+                Lua.class.getResourceAsStream("/" + filename);
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         StringBuilder out = new StringBuilder();
         String line;
@@ -71,12 +74,7 @@ public static class Lua {
     
     public static int run(String chunk) {
         if (chunk.endsWith(".lua")) {
-            InputStream file = 
-                isAndroid ? 
-                Lua.class.getResourceAsStream("/assets/" + chunk) :
-                Lua.class.getResourceAsStream("/" + chunk);
-            chunk = readStream(file);
-            loadBuffer(chunk.getBytes(Charset.forName("UTF-8")), chunk);
+            loadBuffer(readFile(chunk).getBytes(), chunk);
             return pcall(0, MULTIPLE_RETURN, 0);
         }
         
@@ -85,12 +83,7 @@ public static class Lua {
     
     public static int load(String chunk) {
         if (chunk.endsWith(".lua")) {
-            InputStream file = 
-                isAndroid ? 
-                Lua.class.getResourceAsStream("/assets/" + chunk) :
-                Lua.class.getResourceAsStream("/" + chunk);
-            chunk = readStream(file);
-            return loadBuffer(chunk.getBytes(Charset.forName("UTF-8")), chunk);
+            return loadBuffer(readFile(chunk).getBytes(), chunk);
         }
         
         return loadString(chunk);
