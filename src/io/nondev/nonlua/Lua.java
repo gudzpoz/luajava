@@ -39,13 +39,16 @@ public class Lua {
     
     private static LuaState state;
     private static boolean isAndroid;
+
+    static {
+        new SharedLibraryLoader().load(LUAJAVA_LIB);
+    }
     
     public static void open() {
         open(false);
     }
     
     public static void open(boolean isAndroid) {
-        new SharedLibraryLoader().load(LUAJAVA_LIB);
         state = LuaStateFactory.newLuaState();
         state.openLibs();
         Lua.isAndroid = isAndroid;
@@ -96,6 +99,8 @@ public class Lua {
         
         return loadString(chunk);
     }
+
+    // TODO: Below is not yet finished API
     
     public static int getTop() {
         return state.getTop();
