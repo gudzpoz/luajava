@@ -59,13 +59,13 @@ public class Lua {
             public String path() {
                 return "";
             }
-        }
+        };
 
         logger = new Logger() {
             public void log(String msg) {
                 System.out.println(msg);
             }
-        }
+        };
     }
 
     public static void setLoader(Loader loader) {
@@ -81,6 +81,10 @@ public class Lua {
     public Lua() {
         state = LuaStateFactory.newLuaState();
         state.openLibs();
+    }
+
+    protected Lua(LuaState state) {
+        this.state = state;
     }
     
     public void dispose() {
