@@ -89,7 +89,6 @@ public class Lua {
     
     public void dispose() {
         state.close();
-        state = null;
     }
     
     private String readFile(String path) throws IOException {
