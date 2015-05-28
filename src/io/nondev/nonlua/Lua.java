@@ -301,7 +301,7 @@ public class Lua {
     public void pushObject(Object obj) {
         try {
             if (obj instanceof Function) pushFunction((Function)obj);
-            else state.pushJObjectValue(obj);
+            else state.pushObjectValue(obj);
         } catch(LuaException e) {}
     }
 
