@@ -76,7 +76,7 @@ public class Lua {
         Lua.logger = logger;
     }
 
-    final private LuaState state;
+    final protected LuaState state;
     
     public Lua() {
         state = LuaStateFactory.newLuaState();
@@ -137,6 +137,10 @@ public class Lua {
         return state.LloadString(chunk);
     }
 
+    public Lua newThread() {
+        return new Lua(state.newThread());
+    }
+
     public int getTop() {
         return state.getTop();
     }
@@ -163,6 +167,10 @@ public class Lua {
     
     public int checkStack(int sz) {
         return state.checkStack(sz);
+    }
+
+    public void xmove(Lua to, int n) {
+        state.xmove(to.state, n);
     }
     
     public boolean isNumber(int idx) {
@@ -231,6 +239,10 @@ public class Lua {
 
     public String toString(int idx) {
         return state.toString(idx);
+    }
+
+    public Lua toThread(int idx) {
+        return new Lua(state.toThread(idx));
     }
 
     public Object toObject(int idx) throws LuaException {
