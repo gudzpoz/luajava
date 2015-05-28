@@ -63,7 +63,7 @@ public class Lua {
 
         logger = new Logger() {
             public void log(String msg) {
-                System.out.println(msg);
+                System.out.print(msg);
             }
         };
     }
@@ -81,6 +81,33 @@ public class Lua {
     public Lua() {
         state = LuaStateFactory.newLuaState();
         state.openLibs();
+        pushFunction(new Function() {
+            public int call() {
+                for (int i = 2; i <= getTop(); i++) {
+                    int type = type(i);
+                    String stype = typeName(type);
+                    String val = null;
+                    if (stype.equals("userdata")) {
+                        Object obj = toObject(i);	
+
+                        if (obj != null)	
+                            val = obj.toString();
+                        } else if (stype.equals("boolean")) {	
+                            val = toBoolean(i) ? "true" : "false";
+                        } else {
+                            val = toString(i);
+                        }
+
+                				 if (val == null) val = stype;
+                        logger.log(val);
+                        logger.log("\t");
+                    }	
+                    logger.log("\n");
+                    return 0;
+                }
+            }
+        });
+        setGlobal("print");
     }
 
     protected Lua(LuaState state) {
@@ -169,7 +196,7 @@ public class Lua {
         return state.checkStack(sz);
     }
 
-    public void xmove(Lua to, int n) {
+    public void move(Lua to, int n) {
         state.xmove(to.state, n);
     }
     
