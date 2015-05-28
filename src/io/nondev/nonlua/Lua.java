@@ -14,7 +14,7 @@ public class Lua {
     }
 
     public interface Function {
-        int call();
+        int call(Lua L);
     }
 
     final private static String LUAJAVA_LIB = "luajava";
@@ -82,18 +82,18 @@ public class Lua {
         state = LuaStateFactory.newLuaState();
         state.openLibs();
         pushFunction(new Function() {
-            public int call() {
-                for (int i = 2; i <= getTop(); i++) {
-                    int type = type(i);
-                    String stype = typeName(type);
+            public int call(Lua L) {
+                for (int i = 2; i <= L.getTop(); i++) {
+                    int type = L.type(i);
+                    String stype = L.typeName(type);
                     String val = null;
                     if (stype.equals("userdata")) {
-                        Object obj = toObject(i);	
+                        Object obj = L.toObject(i);	
                         if (obj != null) val = obj.toString();
                     } else if (stype.equals("boolean")) {	
-                        val = toBoolean(i) ? "true" : "false";
+                        val = L.toBoolean(i) ? "true" : "false";
                     } else {
-                        val = toString(i);
+                        val = L.toString(i);
                     }
 
                     if (val == null) val = stype;
@@ -309,7 +309,7 @@ public class Lua {
     public void pushFunction(final Function func) throws LuaException {
         state.pushJavaFunction(new JavaFunction(state) {
             public int execute() throws LuaException {
-                return func.call();
+                return func.call(Lua.this);
             }
         });
     }
