@@ -89,22 +89,20 @@ public class Lua {
                     String val = null;
                     if (stype.equals("userdata")) {
                         Object obj = toObject(i);	
+                        if (obj != null) val = obj.toString();
+                    } else if (stype.equals("boolean")) {	
+                        val = toBoolean(i) ? "true" : "false";
+                    } else {
+                        val = toString(i);
+                    }
 
-                        if (obj != null)	
-                            val = obj.toString();
-                        } else if (stype.equals("boolean")) {	
-                            val = toBoolean(i) ? "true" : "false";
-                        } else {
-                            val = toString(i);
-                        }
-
-                				 if (val == null) val = stype;
-                        logger.log(val);
-                        logger.log("\t");
-                    }	
-                    logger.log("\n");
-                    return 0;
+                    if (val == null) val = stype;
+                    logger.log(val);
+                    logger.log("\t");
                 }
+
+                logger.log("\n");
+                return 0;
             }
         });
         setGlobal("print");
