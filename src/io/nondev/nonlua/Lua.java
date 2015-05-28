@@ -298,24 +298,21 @@ public class Lua {
         state.pushBoolean(bool);
     }
 
-    public void pushObject(Object obj)  {
-        state.pushJavaObject(obj);
-    }
-    
-    public void pushArray(Object obj) throws LuaException {
-        state.pushJavaArray(obj);
-    }
-
-    public void pushFunction(final Function func) throws LuaException {
-        state.pushJavaFunction(new JavaFunction(state) {
-            public int execute() throws LuaException {
-                return func.call(Lua.this);
-            }
-        });
+    public void pushObject(Object obj) {
+        try {
+            if (obj instanceof Function) pushFunction((Function)obj);
+            else state.pushJObjectValue(obj);
+        } catch(LuaException e) {}
     }
 
-    public void pushObjectValue(Object obj) throws LuaException {
-        state.pushObjectValue(obj);
+    public void pushFunction(final Function func) {
+        try {
+            state.pushJavaFunction(new JavaFunction(state) {
+                public int execute() throws LuaException {
+                    return func.call(Lua.this);
+                }
+            });
+        } catch(LuaException e) {}
     }
 
     public void getTable(int idx) {
