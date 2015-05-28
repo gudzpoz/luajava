@@ -282,7 +282,7 @@ public class Lua {
     }
 
     public void pushFunction(final Function func) throws LuaException {
-        state.pushJavaFunction(new JavaFunction() {
+        state.pushJavaFunction(new JavaFunction(state) {
             public int execute() throws LuaException {
                 return func.call();
             }
