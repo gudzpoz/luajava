@@ -14,7 +14,7 @@ public class Lua {
     }
 
     public interface Function {
-        int run();
+        int call();
     }
 
     final private static String LUAJAVA_LIB = "luajava";
@@ -281,8 +281,12 @@ public class Lua {
         state.pushJavaArray(obj);
     }
 
-    public void pushFunction(JavaFunction func) throws LuaException {
-        state.pushJavaFunction(func);
+    public void pushFunction(final Function func) throws LuaException {
+        state.pushJavaFunction(new JavaFunction() {
+            public int execute() throws LuaException {
+                return func.call();
+            }
+        });
     }
 
     public void pushObjectValue(Object obj) throws LuaException {
