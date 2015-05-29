@@ -2830,12 +2830,12 @@ JNIEXPORT jstring JNICALL Java_org_keplerproject_luajava_LuaState__1toString
 *      Lua Exported Function
 ************************************************************************/
 
-JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1rawlen
+JNIEXPORT jint JNICALL Java_org_keplerproject_luajava_LuaState__1len
   (JNIEnv * env , jobject jobj , jobject cptr , jint idx)
 {
    lua_State * L = getStateFromCPtr( env , cptr );
 
-   return ( jint ) lua_rawlen( L , idx );
+   return ( jint ) lua_len( L , idx );
 }
 
 

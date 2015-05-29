@@ -250,6 +250,10 @@ public class Lua {
         return state.compare(idx1, idx2, op);
     }
 
+    public int len(int idx) {
+        return state.len(idx);
+    }
+
     public double toDouble(int idx) {
         return state.toNumber(idx);
     }
