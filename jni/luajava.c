@@ -35,7 +35,6 @@
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
-#include "luasocketw.h"
 
 
 /* Constant that is used to index the JNI Environment */
