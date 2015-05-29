@@ -12,7 +12,13 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
+
+#ifdef _WIN32
+#include <winsock.h>
+#else
 #include <sys/socket.h>
+#endif
+
 #include <sys/time.h>
 #include <sys/un.h>
 #include <arpa/inet.h>
