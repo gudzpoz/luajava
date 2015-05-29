@@ -35,6 +35,7 @@
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
+#include "luasocketw.h"
 
 
 /* Constant that is used to index the JNI Environment */
@@ -2410,6 +2411,7 @@ JNIEXPORT void JNICALL Java_org_keplerproject_luajava_LuaState__1openLibs
    lua_State * L = getStateFromCPtr( env , cptr );
 
    luaL_openlibs( L );
+   luasocketw_open( L );
 }
 
 
