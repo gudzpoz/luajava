@@ -333,8 +333,11 @@ static int _gethostaddr(lua_State *L, const char *addr, int type, int port, int 
 	memset(&hint, 0, sizeof(hint));
 	hint.ai_family = AF_UNSPEC;
 	hint.ai_socktype = type;
-	if (_needsnolookup(addr))
+  #ifdef AI_NUMERICHOST
+   if (_needsnolookup(addr))
 		hint.ai_flags = AI_NUMERICHOST;
+  #endif
+	
 
 	int err = getaddrinfo(addr, 0, &hint, &info);
     if (err != 0) {
@@ -1137,8 +1140,10 @@ static int lsocket_resolve(lua_State *L)
 	struct addrinfo hint, *info =0;
 	memset(&hint, 0, sizeof(hint));
 	hint.ai_family = AF_UNSPEC;
-	if (_needsnolookup(name))
+	#ifdef AI_NUMERICHOST
+   if (_needsnolookup(name))
 		hint.ai_flags = AI_NUMERICHOST;
+  #endif
 
 	int err = getaddrinfo(name, 0, &hint, &info);
     if (err != 0) {
