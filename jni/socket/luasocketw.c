@@ -1,3 +1,6 @@
+#include "lua.h"
+#include "luasocketw.h"
+
 #define PRELOAD(name, function) \
 	lua_getglobal(L, "package"); \
 	lua_getfield(L, -1, "preload"); \
