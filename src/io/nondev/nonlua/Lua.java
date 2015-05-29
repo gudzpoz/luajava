@@ -221,6 +221,10 @@ public class Lua {
     public boolean isBoolean(int idx) {
         return state.isBoolean(idx);
     }
+
+    public boolean exists(int idx) {
+        return state.isNoneOrNil(idx);
+    }
     
     public boolean isNil(int idx) {
         return state.isNil(idx);
@@ -251,7 +255,7 @@ public class Lua {
     }
 
     public int len(int idx) {
-        return state.len(idx);
+        return state.rawLen(idx);
     }
 
     public double toDouble(int idx) {

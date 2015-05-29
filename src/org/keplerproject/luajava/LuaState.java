@@ -161,7 +161,7 @@ public class LuaState
   private synchronized native int    _toInteger(CPtr ptr, int idx);
   private synchronized native int    _toBoolean(CPtr ptr, int idx);
   private synchronized native String _toString(CPtr ptr, int idx);
-  private synchronized native int    _len(CPtr ptr, int idx);
+  private synchronized native int    _rawLen(CPtr ptr, int idx);
   private synchronized native CPtr   _toThread(CPtr ptr, int idx);
 
   // Push functions
@@ -417,9 +417,9 @@ public class LuaState
     return _toString(luaState, idx);
   }
   
-  public int len(int idx)
+  public int rawLen(int idx)
   {
-    return _len(luaState, idx);
+    return _rawLen(luaState, idx);
   }
 
   public LuaState toThread(int idx)
