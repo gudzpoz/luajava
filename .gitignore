@@ -20,7 +20,6 @@ com_crashlytics_export_strings.xml
 .classpath
 .project
 .metadata
-**/bin/
 tmp/
 *.tmp
 *.bak
@@ -51,14 +50,4 @@ build/
 .DS_Store
 
 ## JNI
-libs/armeabi/
-libs/armeabi-v7a/
-libs/classes/
-libs/ios32/
-libs/linux32/
-libs/linux64/
-libs/macosx32/
-libs/macosx64/
-libs/windows32/
-libs/windows64/
-libs/x86/
+libs/

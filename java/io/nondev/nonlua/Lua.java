@@ -17,7 +17,7 @@ public class Lua {
         int call(Lua L);
     }
 
-    final private static String LUAJAVA_LIB = "luajava";
+    final private static String LUAJAVA_LIB = "nonlua";
   
     final public static Integer GLOBALS  = LuaState.LUA_GLOBALSINDEX;
     final public static Integer REGISTRY = LuaState.LUA_REGISTRYINDEX;

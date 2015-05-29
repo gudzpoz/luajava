@@ -11,7 +11,7 @@
 	</target>
   
 	<target name="clean-library">
-    <delete dir="libs/classes"/>
+    <delete dir="bin/classes"/>
 	</target>
   
   <target name="compile-windows">
@@ -41,44 +41,44 @@
   
   <target name="compile-library">
     <mkdir dir="libs/classes"/>
-    <javac srcdir="src" destdir="libs/classes"/>
+    <javac srcdir="java" destdir="libs/classes"/>
   </target>
   
   <target name="pack-windows">
-    <jar destfile="libs/nonlua-natives-windows.jar">
+    <jar destfile="bin/nonlua-natives-windows.jar">
 			<fileset dir="libs/windows32" erroronmissingdir="false"/>
 			<fileset dir="libs/windows64" erroronmissingdir="false"/>
 		</jar>
   </target>
   
   <target name="pack-linux">
-    <jar destfile="libs/nonlua-natives-linux.jar">
+    <jar destfile="bin/nonlua-natives-linux.jar">
 			<fileset dir="libs/linux32" erroronmissingdir="false"/>
 			<fileset dir="libs/linux64" erroronmissingdir="false"/>
 		</jar>
   </target>
   
   <target name="pack-macosx">
-    <jar destfile="libs/nonlua-natives-macosx.jar">
+    <jar destfile="bin/nonlua-natives-macosx.jar">
 			<fileset dir="libs/macosx32" erroronmissingdir="false"/>
 			<fileset dir="libs/macosx64" erroronmissingdir="false"/>
 		</jar>
   </target>
   
   <target name="pack-ios">
-    <jar destfile="libs/nonlua-natives-ios.jar">
+    <jar destfile="bin/nonlua-natives-ios.jar">
 			<fileset dir="libs/ios32" erroronmissingdir="false"/>
 		</jar>
   </target>
   
   <target name="pack-android">
-    <jar destfile="libs/nonlua-natives-armeabi.jar">
+    <jar destfile="bin/nonlua-natives-armeabi.jar">
 			<fileset dir="libs/armeabi" erroronmissingdir="false"/>
 		</jar>
-    <jar destfile="libs/nonlua-natives-armeabi-v7a.jar">
+    <jar destfile="bin/nonlua-natives-armeabi-v7a.jar">
 			<fileset dir="libs/armeabi-v7a" erroronmissingdir="false"/>
 		</jar>
-    <jar destfile="libs/nonlua-natives-x86.jar">
+    <jar destfile="bin/nonlua-natives-x86.jar">
 			<fileset dir="libs/x86" erroronmissingdir="false"/>
 		</jar>
   </target>
@@ -86,7 +86,10 @@
   <target name="pack-natives" depends="pack-windows,pack-linux,pack-macosx,pack-ios,pack-android"/>
   
   <target name="pack-library">
-    <jar destfile="libs/nonlua.jar" basedir="libs/classes"/>
+    <jar destfile="bin/nonlua.jar">
+      <fileset dir="libs/classes" erroronmissingdir="false"/>
+      <fileset dir="lua" erroronmissingdir="false"/>
+    </jar>
   </target>
   
   <target name="clean" depends="clean-natives,clean-library"/>
