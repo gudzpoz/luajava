@@ -88,7 +88,6 @@
   <target name="pack-library">
     <jar destfile="bin/nonlua.jar">
       <fileset dir="libs/classes" erroronmissingdir="false"/>
-      <fileset dir="lua" erroronmissingdir="false"/>
     </jar>
   </target>
   
