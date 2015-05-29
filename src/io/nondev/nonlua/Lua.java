@@ -270,8 +270,12 @@ public class Lua {
         return new Lua(state.toThread(idx));
     }
 
-    public Object toObject(int idx) throws LuaException {
-        return state.toJavaObject(idx);
+    public Object toObject(int idx) {
+        try {
+            return state.toJavaObject(idx);
+        } catch(LuaException e) {
+            return null;
+        }
     }
 
     public void pushNil() {
