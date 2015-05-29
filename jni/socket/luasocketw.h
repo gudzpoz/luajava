@@ -1,4 +1,3 @@
-#define h_addr h_addr_list[0]
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
