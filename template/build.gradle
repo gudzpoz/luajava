@@ -17,7 +17,7 @@ allprojects {
     version = '1.0'
     ext {
         appName = 'my-lua-project'
-        libPath = '../../libs'
+        libPath = '../../bin'
     }
 
     repositories {
