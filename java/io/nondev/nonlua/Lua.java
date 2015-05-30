@@ -81,6 +81,7 @@ public class Lua {
     public Lua() {
         state = LuaStateFactory.newLuaState();
         state.openLibs();
+
         pushFunction(new Function() {
             public int call(Lua L) {
                 for (int i = 2; i <= L.getTop(); i++) {
@@ -105,7 +106,31 @@ public class Lua {
                 return 0;
             }
         });
+
         setGlobal("print");
+
+        getGlobal("package");
+        getField(-1, "loaders");
+        int nLoaders = len(-1);
+        
+        pushFunction(new Function() {
+            public int call(Lua L) {
+                String name = L.toString(-1);
+
+                if (L.load(name + ".lua") == -1)
+                    L.pushString("Cannot load module " + name);	
+
+                return 1;
+            }
+        });
+
+        state.rawSetI(-2, nLoaders + 1);
+        pop(1);
+        getField(-1, "path");
+        pushString(";" + loader.path() + "/?.lua");
+        concat(2);
+        setField(-2, "path");
+        pop(1);
     }
 
     protected Lua(LuaState state) {
@@ -116,16 +141,17 @@ public class Lua {
         state.close();
     }
     
-    private String readFile(String path) throws IOException {
+    private InputStream getFile(String path) throws IOException {
         File file = new File(loader.path(), path);
-        InputStream in = null;
 
         if (file.exists()) {
-            in = new FileInputStream(file);
-        } else {
-            in = Lua.class.getResourceAsStream("/" + file.getPath().replace('\\', '/'));
+            return new FileInputStream(file);
         }
+        
+        return Lua.class.getResourceAsStream("/" + file.getPath().replace('\\', '/'));
+    }
 
+    private String readFile(InputStream in) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         StringBuilder out = new StringBuilder();
         String line;
@@ -140,7 +166,7 @@ public class Lua {
     public int run(String chunk) {
         if (chunk.endsWith(".lua")) {
             try {
-                state.LloadBuffer(readFile(chunk).getBytes(), chunk);
+                state.LloadBuffer(readFile(getFile(chunk)).getBytes(), chunk);
                 return pcall(0, MULTIPLE_RETURN, 0);
             } catch (IOException e) {
                 return -1;
@@ -153,7 +179,7 @@ public class Lua {
     public int load(String chunk) {
         if (chunk.endsWith(".lua")) {
             try {
-                return state.LloadBuffer(readFile(chunk).getBytes(), chunk);
+                return state.LloadBuffer(readFile(getFile(chunk)).getBytes(), chunk);
             } catch (IOException e) {
                 return -1;
             }
