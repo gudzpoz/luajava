@@ -41,7 +41,7 @@
   
   <target name="compile-library">
     <mkdir dir="libs/classes"/>
-    <javac srcdir="java" destdir="libs/classes"/>
+    <javac srcdir="src" destdir="libs/classes"/>
   </target>
   
   <target name="pack-windows">

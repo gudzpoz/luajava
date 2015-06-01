@@ -1,23 +1,32 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Thomas Slusny.
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
+
 package io.nondev.nonlua;
 
 import com.badlogic.gdx.utils.SharedLibraryLoader;
-import org.keplerproject.luajava.*;
 import java.io.*;
 
 public class Lua {
-    public interface Loader {
-        String path();
-    }
-
-    public interface Logger {
-        void log(String msg);
-    }
-
-    public interface Function {
-        int call(Lua L);
-    }
-
-    final private static String LUAJAVA_LIB = "nonlua";
+    final private static String LIB = "nonlua";
   
     final public static Integer GLOBALS  = LuaState.LUA_GLOBALSINDEX;
     final public static Integer REGISTRY = LuaState.LUA_REGISTRYINDEX;
@@ -49,30 +58,30 @@ public class Lua {
     final public static Integer GC_SETPAUSE   = LuaState.LUA_GCSETPAUSE;
     final public static Integer GC_SETSTEPMUL = LuaState.LUA_GCSETSTEPMUL;
 
-    private static Loader loader;
-    private static Logger logger;
+    private static LuaLoader loader;
+    private static LuaLogger logger;
 
     static {
-        new SharedLibraryLoader().load(LUAJAVA_LIB);
+        new SharedLibraryLoader().load(LIB);
 
-        loader = new Loader() {
+        loader = new LuaLoader() {
             public String path() {
                 return "";
             }
         };
 
-        logger = new Logger() {
+        logger = new LuaLogger() {
             public void log(String msg) {
                 System.out.print(msg);
             }
         };
     }
 
-    public static void setLoader(Loader loader) {
+    public static void setLoader(LuaLoader loader) {
         Lua.loader = loader;
     }
 
-    public static void setLogger(Logger logger) {
+    public static void setLogger(LuaLogger logger) {
         Lua.logger = logger;
     }
 
