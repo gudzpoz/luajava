@@ -130,7 +130,7 @@ public class Lua {
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( str );
@@ -250,7 +250,7 @@ public class Lua {
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( str );
@@ -338,7 +338,7 @@ public class Lua {
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( str );
@@ -427,7 +427,7 @@ public class Lua {
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( str );
@@ -538,7 +538,7 @@ public class Lua {
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           if ( jstr == NULL )
@@ -619,7 +619,7 @@ public class Lua {
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           if ( jstr == NULL )
@@ -713,7 +713,7 @@ public class Lua {
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( javaClassName );
@@ -798,7 +798,7 @@ public class Lua {
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( str );
@@ -900,7 +900,7 @@ public class Lua {
           jobject jstr;
           const char * str;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           if ( jstr == NULL )
@@ -975,7 +975,7 @@ public class Lua {
           jobject jstr;
           const char * str;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( javaClassName );
@@ -1066,7 +1066,7 @@ public class Lua {
           jobject jstr;
           const char * str;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( javaClassName );
@@ -1300,7 +1300,7 @@ public class Lua {
           jobject jstr;
           const char * str;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           if ( jstr == NULL )

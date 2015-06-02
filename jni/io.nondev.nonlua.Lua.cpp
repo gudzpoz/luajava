@@ -104,7 +104,7 @@
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( str );
@@ -224,7 +224,7 @@
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( str );
@@ -312,7 +312,7 @@
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( str );
@@ -401,7 +401,7 @@
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( str );
@@ -512,7 +512,7 @@
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           if ( jstr == NULL )
@@ -593,7 +593,7 @@
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           if ( jstr == NULL )
@@ -687,7 +687,7 @@
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( javaClassName );
@@ -772,7 +772,7 @@
           jobject jstr;
           const char * cStr;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( str );
@@ -874,7 +874,7 @@
           jobject jstr;
           const char * str;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           if ( jstr == NULL )
@@ -949,7 +949,7 @@
           jobject jstr;
           const char * str;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( javaClassName );
@@ -1040,7 +1040,7 @@
           jobject jstr;
           const char * str;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           javaEnv->DeleteLocalRef( javaClassName );
@@ -1274,7 +1274,7 @@
           jobject jstr;
           const char * str;
           
-          javaEnv->ExceptionClear( javaEnv );
+          javaEnv->ExceptionClear();
           jstr = javaEnv->CallObjectMethod( exp , get_message_method );
 
           if ( jstr == NULL )
