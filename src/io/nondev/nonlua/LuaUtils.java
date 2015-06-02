@@ -32,7 +32,7 @@ public final class LuaUtils {
      * @param retType type to convert to
      * @return The converted number
      */
-    public static Number convertLuaNumber(Double db, Class retType) {
+    public static Number convertNumber(Double db, Class retType) {
         if (retType.isPrimitive()) {
             // checks if retType is a primitive type
             if (retType == Integer.TYPE) {

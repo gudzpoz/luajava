@@ -23,9 +23,15 @@
 package io.nondev.nonlua;
 
 /**
- * Interface used for pushing functions to Lua.
+ * Class used for pushing functions to Lua.
  * @author Thomas Slusny
  */
-public interface LuaFunction {
-    int call(Lua L);
+public abstract class LuaFunction {
+    protected Lua L;
+
+    public LuaFunction(Lua L) {
+        this.L = L;
+    }
+
+    public abstract int call();
 }

@@ -65,7 +65,7 @@ public final class LuaFactory {
 			}
 		}
 
-		i = getNextStateIndex();
+		i = getNextIndex();
 		states.set(i, L);
 		return i;
 	}

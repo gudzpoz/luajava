@@ -261,15 +261,6 @@ public class LuaObject {
 		}
 	}
 
-	public boolean isFunction() {
-		synchronized (L) {
-			push();
-			boolean bool = L.isJavaFunction(-1);
-			L.pop(1);
-			return bool;
-		}
-	}
-
 	public boolean isTable() {
 		synchronized (L) {
 			push();
@@ -398,7 +389,7 @@ public class LuaObject {
 				throw new LuaException(str);
 			}
 
-			if (nres == Lua.LUA_MULTRET.intValue())
+			if (nres == Lua.MULTRET)
 				nres = L.getTop() - top;
 			if (L.getTop() - top < nres) {
 				throw new LuaException("Invalid Number of Results .");
@@ -407,7 +398,7 @@ public class LuaObject {
 			Object[] res = new Object[nres];
 
 			for (int i = nres; i > 0; i--) {
-				res[i - 1] = L.toJavaObject(-1);
+				res[i - 1] = L.toObject(-1);
 				L.pop(1);
 			}
 
@@ -429,30 +420,16 @@ public class LuaObject {
 
 	public String toString() {
 		synchronized (L) {
-			try {
-				if (isNil())
-					return "nil";
-				else if (isBoolean())
-					return String.valueOf(getBoolean());
-				else if (isNumber())
-					return String.valueOf(getNumber());
-				else if (isString())
-					return getString();
-				else if (isFunction())
-					return "Lua Function";
-				else if (isJavaObject())
-					return getObject().toString();
-				else if (isUserdata())
-					return "Userdata";
-				else if (isTable())
-					return "Lua Table";
-				else if (isFunction())
-					return "Java Function";
-				else
-					return null;
-			} catch (LuaException e) {
-				return null;
-			}
+			if (isNil()) return "nil";
+			if (isBoolean()) return String.valueOf(getBoolean());
+			if (isNumber()) return String.valueOf(getNumber());
+			if (isString()) return getString();
+			if (isFunction()) return "Function";
+			if (isObject()) return getObject().toString();
+			if (isUserdata()) return "Userdata";
+			if (isTable()) return "Table";
+			return null;
+			
 		}
 	}
 

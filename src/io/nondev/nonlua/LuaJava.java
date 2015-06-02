@@ -475,7 +475,7 @@ public final class LuaJava {
         } else if (L.isNumber(idx)) {
             Double db = new Double(L.toNumber(idx));
           
-            obj = LuaUtils.convertLuaNumber(db, parameter);
+            obj = LuaUtils.convertNumber(db, parameter);
             if (obj == null) {
                 okType = false;
             }
@@ -491,7 +491,7 @@ public final class LuaJava {
                 if (!parameter.isAssignableFrom(LuaObject.class)) {
                     okType = false;
                 } else {
-                    obj = L.getLuaObject(idx);
+                    obj = L.getObject(idx);
                 }
             }
         } else if (L.isNil(idx)) {

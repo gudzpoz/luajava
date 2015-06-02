@@ -1427,18 +1427,18 @@ void pushJNIEnv( JNIEnv * env , lua_State * L )
         Lua.logger = logger;
     }
 
-    private protected CPtr state;
-    private protected final int stateId;
+    protected CPtr state;
+    protected final int stateId;
     
     public Lua() {
         stateId = LuaFactory.insert(this);
         state = jniOpen(stateId);
 
         jniOpenJava(state);
-        jniOpenLibs();
+        //jniOpenLibs();
 
-        pushFunction(new Function() {
-            public int call(Lua L) {
+        pushFunction(new LuaFunction(this) {
+            public int call() {
                 for (int i = 2; i <= L.getTop(); i++) {
                     int type = L.type(i);
                     String stype = L.typeName(type);
@@ -1468,8 +1468,8 @@ void pushJNIEnv( JNIEnv * env , lua_State * L )
         getField(-1, "loaders");
         int nLoaders = len(-1);
         
-        pushFunction(new Function() {
-            public int call(Lua L) {
+        pushFunction(new LuaFunction(this) {
+            public int call() {
                 String name = L.toString(-1);
 
                 if (L.load(name + ".lua") == -1)
@@ -1479,13 +1479,17 @@ void pushJNIEnv( JNIEnv * env , lua_State * L )
             }
         });
 
-        state.rawSetI(-2, nLoaders + 1);
+        setI(-2, nLoaders + 1);
         pop(1);
         getField(-1, "path");
         pushString(";" + loader.path() + "/?.lua");
         concat(2);
         setField(-2, "path");
         pop(1);
+    }
+
+    public long getCPtrPeer() {
+        return (state != null)? state.getPeer() : 0;
     }
 
     private synchronized native CPtr jniOpen(int stateId); /*
@@ -1605,10 +1609,7 @@ void pushJNIEnv( JNIEnv * env , lua_State * L )
     */
 
     private synchronized native void jniOpenJava(CPtr cptr); /*
-        lua_State* L;
-        jclass tempClass;
-
-        L = getStateFromCPtr( env , cptr );
+        lua_State* L = getStateFromCPtr( env , cptr );
         
         lua_newtable( L );
         lua_setglobal( L , "java" );
@@ -1638,7 +1639,6 @@ void pushJNIEnv( JNIEnv * env , lua_State * L )
     */
     
     public void dispose() {
-        state.close();
     }
     
     private InputStream getFile(String path) throws IOException {
@@ -1665,371 +1665,336 @@ void pushJNIEnv( JNIEnv * env , lua_State * L )
     
     public int run(String chunk) {
         if (chunk.endsWith(".lua")) {
-            try {
-                state.LloadBuffer(readFile(getFile(chunk)).getBytes(), chunk);
-                return pcall(0, MULTIPLE_RETURN, 0);
-            } catch (IOException e) {
-                return -1;
-            }
+            //try {
+                //state.LloadBuffer(readFile(getFile(chunk)).getBytes(), chunk);
+                //return pcall(0, MULTIPLE_RETURN, 0);
+                return 0;
+            //} catch (IOException e) {
+                //return -1;
+            //}
         }
         
-        return state.LdoString(chunk);
+        return 0; //state.LdoString(chunk);
     }
     
     public int load(String chunk) {
         if (chunk.endsWith(".lua")) {
-            try {
-                return state.LloadBuffer(readFile(getFile(chunk)).getBytes(), chunk);
-            } catch (IOException e) {
-                return -1;
-            }
+            //try {
+                return 0; //state.LloadBuffer(readFile(getFile(chunk)).getBytes(), chunk);
+            //} catch (IOException e) {
+            //    return -1;
+            //}
         }
         
-        return state.LloadString(chunk);
+        return 0; //state.LloadString(chunk);
     }
 
     public Lua newThread() {
-        return new Lua(state.newThread());
+        return null;
+    }
+
+    public void get(int idx) {
+    }
+
+    public void set(int idx) {
     }
 
     public int getTop() {
-        return state.getTop();
+        return 0;
     }
 
     public void setTop(int idx) {
-        state.setTop(idx);
+    }
+
+    public void getI(int idx, int n) {
+    }
+
+    public void setI(int idx, int n) {
     }
 
     public void pushValue(int idx) {
-        state.pushValue(idx);
     }
     
     public void remove(int idx) {
-        state.remove(idx);
     }
     
     public void insert(int idx) {
-        state.insert(idx);
     }
     
     public void replace(int idx) {
-        state.replace(idx);
     }
     
     public int checkStack(int sz) {
-        return state.checkStack(sz);
+        return 0;
     }
 
     public void move(Lua to, int n) {
-        state.xmove(to.state, n);
     }
     
     public boolean isNumber(int idx) {
-        return state.isNumber(idx);
+        return false;
     }
 
     public boolean isString(int idx) {
-        return state.isString(idx);
+        return false;
     }
 
     public boolean isFunction(int idx) {
-        return state.isFunction(idx) || state.isJavaFunction(idx);
+        return false;
     }
 
     public boolean isUserdata(int idx) {
-        return state.isUserdata(idx);
+        return false;
     }
 
     public boolean isTable(int idx) {
-        return state.isTable(idx);
+        return false;
     }
 
     public boolean isBoolean(int idx) {
-        return state.isBoolean(idx);
+        return false;
     }
 
     public boolean exists(int idx) {
-        return state.isNoneOrNil(idx);
+        return false;
     }
     
     public boolean isNil(int idx) {
-        return state.isNil(idx);
+        return false;
     }
     
     public boolean isThread(int idx) {
-        return state.isThread(idx);
+        return false;
     }
     
     public boolean isNone(int idx) {
-        return state.isNone(idx);
+        return false;
     }
 
     public boolean isObject(int idx) {
-        return state.isObject(idx);
+        return false;
     }
 
     public int type(int idx) {
-        return state.type(idx);
+        return 0;
     }
 
     public String typeName(int tp) {
-        return state.typeName(tp);
+        return "";
     }
 
     public int compare(int idx1, int idx2, int op) {
-        return state.compare(idx1, idx2, op);
+        return 0;
     }
 
     public int len(int idx) {
-        return state.rawLen(idx);
+        return 0;
     }
 
-    public double toDouble(int idx) {
-        return state.toNumber(idx);
+    public double toNumber(int idx) {
+        return 0.0;
     }
 
     public int toInteger(int idx) {
-        return state.toInteger(idx);
+        return 0;
     }
     
     public boolean toBoolean(int idx) {
-        return state.toBoolean(idx);
+        return false;
     }
 
     public String toString(int idx) {
-        return state.toString(idx);
+        return "";
     }
 
     public Lua toThread(int idx) {
-        return new Lua(state.toThread(idx));
+        return null;
     }
 
     public Object toObject(int idx) {
-        try {
-            return state.toJavaObject(idx);
-        } catch(LuaException e) {
-            return null;
-        }
+        return null;
     }
 
     public void pushNil() {
-        state.pushNil();
     }
 
-    public void pushDouble(double db) {
-        state.pushNumber(db);
+    public void pushNumber(double db) {
     }
     
     public void pushInteger(int integer) {
-        state.pushInteger(integer);
     }
 
     public void pushString(String str) {
-        state.pushString(str);
     }
 
     public void pushString(byte[] bytes) {
-        state.pushString(bytes);
     }
     
     public void pushBoolean(boolean bool) {
-        state.pushBoolean(bool);
     }
 
     public void pushObject(Object obj) {
-        try {
-            if (obj instanceof Function) pushFunction((Function)obj);
-            else state.pushObjectValue(obj);
-        } catch(LuaException e) {}
     }
 
-    public void pushFunction(final Function func) {
-        try {
-            state.pushJavaFunction(new JavaFunction(state) {
-                public int execute() throws LuaException {
-                    return func.call(Lua.this);
-                }
-            });
-        } catch(LuaException e) {}
+    public void pushFunction(LuaFunction func) {
     }
 
     public void getTable(int idx) {
-        state.getTable(idx);
     }
 
     public int getMetaTable(int idx) {
-        return state.getMetaTable(idx);
+        return 0;
     }
 
     public void getMetaTable(String tName) {
-        state.LgetMetatable(tName);
     }
     
     public void getField(int idx, String k) {
-        state.getField(idx, k);
     }
 
     public int getMetaField(int obj, String e) {
-        return state.LgetMetaField(obj, e);
+        return 0;
     }
 
-    public LuaObject getObject(String globalName) throws LuaException {
-        return state.getLuaObject(globalName);
+    public LuaObject getObject(String globalName) {
+        return null;
     }
     
-    public LuaObject getObject(LuaObject parent, String name) throws LuaException {
-        return state.getLuaObject(parent, name);
+    public LuaObject getObject(LuaObject parent, String name) {
+        return null;
     }
     
-    public LuaObject getObject(LuaObject parent, Number name) throws LuaException {
-        return state.getLuaObject(parent, name);
+    public LuaObject getObject(LuaObject parent, Number name) {
+        return null;
     }
     
-    public LuaObject getObject(LuaObject parent, LuaObject name) throws LuaException {
-        return state.getLuaObject(parent, name);
+    public LuaObject getObject(LuaObject parent, LuaObject name) {
+        return null;
     }
 
-    public LuaObject getObject(int index) throws LuaException {
-        return state.getLuaObject(index);
+    public LuaObject getObject(int index) {
+        return null;
     }
 
-    public Object getObjectFromUserdata(int idx) throws LuaException {
-        return state.getObjectFromUserdata(idx);
+    public Object getObjectFromUserdata(int idx) {
+        return null;
     }
     
     public void createTable(int narr, int nrec) {
-        state.createTable(narr, nrec);
     }
 
     public void newTable() {
-        state.newTable();
     }
 
     public int newMetaTable(String tName) {
-        return state.LnewMetatable(tName);
+        return 0;
     }
 
     public void setTable(int idx) {
-        state.setTable(idx);
     }
     
     public void setField(int idx, String k) {
-        state.setField(idx, k);
     }
 
     public int setMetaTable(int idx) {
-        return state.setMetaTable(idx);
+        return 0;
     }
 
     public void call(int nArgs, int nResults) {
-        state.call(nArgs, nResults);
     }
 
     public int callMeta(int obj, String e) {
-        return state.LcallMeta(obj, e);
+        return 0;
     }
 
     public int pcall(int nArgs, int nResults, int errFunc) {
-        return state.pcall(nArgs, nResults, errFunc);
+        return 0;
     }
 
     public int yield(int nResults) {
-        return state.yield(nResults);
+        return 0;
     }
 
     public int resume(int nArgs) {
-        return state.resume(nArgs);
+        return 0;
     }
     
     public int status() {
-        return state.status();
+        return 0;
     }
     
     public int gc(int what, int data) {
-        return state.gc(what, data);
+        return 0;
     }
     
     public int next(int idx) {
-        return state.next(idx);
+        return 0;
     }
 
     public int error() {
-        return state.error();
+        return 0;
     }
 
     public void concat(int n) {
-        state.concat(n);
     }
     
     public int argError(int numArg, String extraMsg) {
-        return state.LargError(numArg, extraMsg);
+        return 0;
     }
     
     public String checkString(int numArg) {
-        return state.LcheckString(numArg);
+        return "";
     }
     
     public String optString(int numArg, String def) {
-        return state.LoptString(numArg, def);
+        return "";
     }
     
     public double checkNumber(int numArg) {
-        return state.LcheckNumber(numArg);
+        return 0.0;
     }
     
     public double optNumber(int numArg, double def) {
-        return state.LoptNumber(numArg, def);
+        return 0.0;
     }
     
     public int checkInteger(int numArg) {
-        return state.LcheckInteger(numArg);
+        return 0;
     }
     
     public int optInteger(int numArg, int def) {
-        return state.LoptInteger(numArg, def);
+        return 0;
     }
     
     public void checkStack(int sz, String msg) {
-        state.LcheckStack(sz, msg);
     }
     
     public void checkType(int nArg, int t) {
-        state.LcheckType(nArg, t);
     }
     
     public void checkAny(int nArg) {
-        state.LcheckAny(nArg);
     }
     
     public void where(int lvl) {
-        state.Lwhere(lvl);
     }
     
     public int ref(int t) {
-        return state.Lref(t);
+        return 0;
     }
     
     public void unRef(int t, int ref) {
-        state.LunRef(t, ref);
     }
     
     public String gsub(String s, String p, String r) {
-        return state.Lgsub(s, p, r);
+        return "";
     }
     
     public void pop(int n)  {
-        state.pop(n);
     }
 
-    public synchronized void getGlobal(String global) {
-        state.getGlobal(global);
+    public void getGlobal(String global) {
     }
 
-    public synchronized void setGlobal(String name) {
-        state.setGlobal(name);
-    }
-
-    public Number convertNumber(Double db, Class retType) {
-        return state.convertLuaNumber(db, retType);
+    public void setGlobal(String name) {
     }
 }
