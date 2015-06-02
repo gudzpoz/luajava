@@ -1258,7 +1258,7 @@ public class Lua {
 
        L = ( lua_State * ) peer;
 
-       pushJNIEnv(  L );
+       pushJNIEnv( env , L );
 
        return L;
     }
@@ -1396,7 +1396,7 @@ public class Lua {
                 exit( 1 );
             }
 
-            if ( ( luajava_api_class = env->NewGlobalRef( tempClass ) ) == NULL )
+            if ( ( luajava_api_class = ( jclass ) env->NewGlobalRef( tempClass ) ) == NULL )
             {
                 fprintf( stderr , "Could not bind to LuaJavaAPI class\n" );
                 exit( 1 );
@@ -1413,7 +1413,7 @@ public class Lua {
                 exit( 1 );
             }
 
-            if ( ( java_function_class = env->NewGlobalRef( tempClass ) ) == NULL )
+            if ( ( java_function_class = ( jclass ) env->NewGlobalRef( tempClass ) ) == NULL )
             {
                 fprintf( stderr , "Could not bind to LuaFunction interface\n" );
                 exit( 1 );
@@ -1440,7 +1440,7 @@ public class Lua {
                 exit( 1 );
             }
 
-            throwable_class = env->NewGlobalRef( tempClass );
+            throwable_class = ( jclass ) env->NewGlobalRef( tempClass );
 
             if ( throwable_class == NULL )
             {
@@ -1471,7 +1471,7 @@ public class Lua {
                 exit( 1 );
             }
 
-            java_lang_class = env->NewGlobalRef( tempClass );
+            java_lang_class = ( jclass ) env->NewGlobalRef( tempClass );
 
             if ( java_lang_class == NULL )
             {
@@ -1480,13 +1480,13 @@ public class Lua {
             }
         }
 
-        pushJNIEnv( L );
+        pushJNIEnv( env, L );
         
         return obj;
     */
 
     private static native void jniOpenJava(CPtr cptr); /*
-        lua_State* L = getStateFromCPtr( cptr );
+        lua_State* L = getStateFromCPtr( env, cptr );
         
         lua_newtable( L );
         lua_setglobal( L , "java" );
