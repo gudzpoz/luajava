@@ -49,5 +49,5 @@ build/
 ## OS Specific
 .DS_Store
 
-## JNI
 libs/
+bin/classes

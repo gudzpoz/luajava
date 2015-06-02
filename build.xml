@@ -40,8 +40,10 @@
   <target name="compile-natives" depends="compile-windows,compile-linux,compile-macosx,compile-ios,compile-android"/>
   
   <target name="compile-library">
-    <mkdir dir="libs/classes"/>
-    <javac srcdir="src" destdir="libs/classes"/>
+    <mkdir dir="bin/classes"/>
+    <javac source="1.6" target="1.6" srcdir="src" destdir="bin/classes" includeantruntime="false">
+      <classpath path="gdx-jnigen.jar"/>
+    </javac>
   </target>
   
   <target name="pack-windows">
@@ -87,7 +89,8 @@
   
   <target name="pack-library">
     <jar destfile="bin/nonlua.jar">
-      <fileset dir="libs/classes" erroronmissingdir="false"/>
+      <fileset dir="bin/classes"/>
+      <zipgroupfileset dir ="" includes="gdx-jnigen.jar"/>
     </jar>
   </target>
   
