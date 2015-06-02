@@ -171,6 +171,38 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenTable
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenUtf8
   (JNIEnv *, jclass, jobject);
 
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniLoadBuffer
+ * Signature: (Lio/nondev/nonlua/CPtr;[BJLjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniLoadBuffer
+  (JNIEnv *, jclass, jobject, jbyteArray, jlong, jstring);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniLoadString
+ * Signature: (Lio/nondev/nonlua/CPtr;Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniLoadString
+  (JNIEnv *, jclass, jobject, jstring);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniRunBuffer
+ * Signature: (Lio/nondev/nonlua/CPtr;[BJLjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniRunBuffer
+  (JNIEnv *, jclass, jobject, jbyteArray, jlong, jstring);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniRunString
+ * Signature: (Lio/nondev/nonlua/CPtr;Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniRunString
+  (JNIEnv *, jclass, jobject, jstring);
+
 #ifdef __cplusplus
 }
 #endif

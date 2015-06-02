@@ -1668,3 +1668,114 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenUtf8(JNIEnv* env, jclass
 
 }
 
+static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniLoadBuffer
+(JNIEnv* env, jclass clazz, jobject cptr, jbyteArray obj_buff, jlong bsize, jstring obj_name, char* name, char* buff) {
+
+//@line:1615
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+        
+        jbyte * cBuff = env->GetByteArrayElements( buff, NULL );
+        const char * cName = env->GetStringUTFChars( name , NULL );
+        int ret = luaL_loadbuffer( L , ( const char * ) cBuff, ( int ) bsize, cName );
+        
+        env->ReleaseStringUTFChars( name , cName );
+        env->ReleaseByteArrayElements(buff , cBuff , 0 );
+
+        return ( jint ) ret;
+    
+}
+
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniLoadBuffer(JNIEnv* env, jclass clazz, jobject cptr, jbyteArray obj_buff, jlong bsize, jstring obj_name) {
+	char* name = (char*)env->GetStringUTFChars(obj_name, 0);
+	char* buff = (char*)env->GetPrimitiveArrayCritical(obj_buff, 0);
+
+	jint JNI_returnValue = wrapped_Java_io_nondev_nonlua_Lua_jniLoadBuffer(env, clazz, cptr, obj_buff, bsize, obj_name, name, buff);
+
+	env->ReleasePrimitiveArrayCritical(obj_buff, buff, 0);
+	env->ReleaseStringUTFChars(obj_name, name);
+
+	return JNI_returnValue;
+}
+
+static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniLoadString
+(JNIEnv* env, jclass clazz, jobject cptr, jstring obj_str, char* str) {
+
+//@line:1628
+
+        lua_State * L   = getStateFromCPtr( env , cptr );
+        
+        const char * fn = env->GetStringUTFChars( str , NULL );
+        int ret = luaL_loadstring( L , fn );
+        
+        env->ReleaseStringUTFChars( str , fn );
+
+        return ( jint ) ret;
+    
+}
+
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniLoadString(JNIEnv* env, jclass clazz, jobject cptr, jstring obj_str) {
+	char* str = (char*)env->GetStringUTFChars(obj_str, 0);
+
+	jint JNI_returnValue = wrapped_Java_io_nondev_nonlua_Lua_jniLoadString(env, clazz, cptr, obj_str, str);
+
+	env->ReleaseStringUTFChars(obj_str, str);
+
+	return JNI_returnValue;
+}
+
+static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniRunBuffer
+(JNIEnv* env, jclass clazz, jobject cptr, jbyteArray obj_buff, jlong bsize, jstring obj_name, char* name, char* buff) {
+
+//@line:1640
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+        
+        jbyte * cBuff = env->GetByteArrayElements( buff, NULL );
+        const char * cName = env->GetStringUTFChars( name , NULL );
+        int ret = luaL_loadbuffer( L , ( const char * ) cBuff, ( int ) bsize, cName );
+        int secRet = lua_pcall(L, 0, LUA_MULTRET, 0);
+
+        env->ReleaseStringUTFChars( name , cName );
+        env->ReleaseByteArrayElements(buff , cBuff , 0 );
+
+        return ( jint ) ( ret || secRet );
+    
+}
+
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniRunBuffer(JNIEnv* env, jclass clazz, jobject cptr, jbyteArray obj_buff, jlong bsize, jstring obj_name) {
+	char* name = (char*)env->GetStringUTFChars(obj_name, 0);
+	char* buff = (char*)env->GetPrimitiveArrayCritical(obj_buff, 0);
+
+	jint JNI_returnValue = wrapped_Java_io_nondev_nonlua_Lua_jniRunBuffer(env, clazz, cptr, obj_buff, bsize, obj_name, name, buff);
+
+	env->ReleasePrimitiveArrayCritical(obj_buff, buff, 0);
+	env->ReleaseStringUTFChars(obj_name, name);
+
+	return JNI_returnValue;
+}
+
+static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniRunString
+(JNIEnv* env, jclass clazz, jobject cptr, jstring obj_str, char* str) {
+
+//@line:1654
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        const char * utfStr = env->GetStringUTFChars( str , NULL );
+        int ret = luaL_dostring( L , utfStr );
+
+        return ( jint ) ret;
+    
+}
+
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniRunString(JNIEnv* env, jclass clazz, jobject cptr, jstring obj_str) {
+	char* str = (char*)env->GetStringUTFChars(obj_str, 0);
+
+	jint JNI_returnValue = wrapped_Java_io_nondev_nonlua_Lua_jniRunString(env, clazz, cptr, obj_str, str);
+
+	env->ReleaseStringUTFChars(obj_str, str);
+
+	return JNI_returnValue;
+}
+

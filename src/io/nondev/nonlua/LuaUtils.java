@@ -22,6 +22,13 @@
 
 package io.nondev.nonlua;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
 public final class LuaUtils {
     /**
      * When you call a function in lua, it may return a number, and the
@@ -67,5 +74,27 @@ public final class LuaUtils {
     
         // if all checks fail, return null
         return null;    
+    }
+
+    public static InputStream getStream(LuaLoader loader, String path) throws IOException {
+        File file = new File(loader.path(), path);
+
+        if (file.exists()) {
+            return new FileInputStream(file);
+        }
+        
+        return LuaUtils.class.getResourceAsStream("/" + file.getPath().replace('\\', '/'));
+    }
+
+    public static String readStream(InputStream in) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        StringBuilder out = new StringBuilder();
+        String line;
+        
+        while ((line = reader.readLine()) != null) {
+            out.append(line);
+        }
+        
+        return out.toString();
     }
 }

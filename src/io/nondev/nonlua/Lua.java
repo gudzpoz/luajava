@@ -22,8 +22,8 @@
 
 package io.nondev.nonlua;
 
+import java.io.IOException;
 import com.badlogic.gdx.jnigen.JniGenSharedLibraryLoader;
-import java.io.*;
 
 public class Lua {
     // @off
@@ -1612,6 +1612,54 @@ public class Lua {
         lua_call( L , 1 , 0 );
     */
 
+    private static native int jniLoadBuffer(CPtr cptr, byte[] buff, long bsize, String name); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+        
+        jbyte * cBuff = env->GetByteArrayElements( buff, NULL );
+        const char * cName = env->GetStringUTFChars( name , NULL );
+        int ret = luaL_loadbuffer( L , ( const char * ) cBuff, ( int ) bsize, cName );
+        
+        env->ReleaseStringUTFChars( name , cName );
+        env->ReleaseByteArrayElements(buff , cBuff , 0 );
+
+        return ( jint ) ret;
+    */
+
+    private static native int jniLoadString(CPtr cptr, String str); /*
+        lua_State * L   = getStateFromCPtr( env , cptr );
+        
+        const char * fn = env->GetStringUTFChars( str , NULL );
+        int ret = luaL_loadstring( L , fn );
+        
+        env->ReleaseStringUTFChars( str , fn );
+
+        return ( jint ) ret;
+    */
+
+
+    private static native int jniRunBuffer(CPtr cptr, byte[] buff, long bsize, String name); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+        
+        jbyte * cBuff = env->GetByteArrayElements( buff, NULL );
+        const char * cName = env->GetStringUTFChars( name , NULL );
+        int ret = luaL_loadbuffer( L , ( const char * ) cBuff, ( int ) bsize, cName );
+        int secRet = lua_pcall(L, 0, LUA_MULTRET, 0);
+
+        env->ReleaseStringUTFChars( name , cName );
+        env->ReleaseByteArrayElements(buff , cBuff , 0 );
+
+        return ( jint ) ( ret || secRet );
+    */
+
+    private static native int jniRunString(CPtr cptr, String str); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        const char * utfStr = env->GetStringUTFChars( str , NULL );
+        int ret = luaL_dostring( L , utfStr );
+
+        return ( jint ) ret;
+    */
+
     private static final String LIB = "nonlua";
 
     public static final int GLOBALS       = -10002;
@@ -1753,52 +1801,30 @@ public class Lua {
         state = null;
     }
     
-    private InputStream getFile(String path) throws IOException {
-        File file = new File(loader.path(), path);
-
-        if (file.exists()) {
-            return new FileInputStream(file);
-        }
-        
-        return Lua.class.getResourceAsStream("/" + file.getPath().replace('\\', '/'));
-    }
-
-    private String readFile(InputStream in) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        StringBuilder out = new StringBuilder();
-        String line;
-        
-        while ((line = reader.readLine()) != null) {
-            out.append(line);
-        }
-        
-        return out.toString();
-    }
-    
     public int run(String chunk) {
         if (chunk.endsWith(".lua")) {
-            //try {
-                //state.LloadBuffer(readFile(getFile(chunk)).getBytes(), chunk);
-                //return pcall(0, MULTIPLE_RETURN, 0);
-                return 0;
-            //} catch (IOException e) {
-                //return -1;
-            //}
+            try {
+                byte[] buffer = LuaUtils.readStream(LuaUtils.getStream(loader, chunk)).getBytes();
+                return jniRunBuffer(state, buffer, buffer.length, chunk);
+            } catch (IOException e) {
+                return -1;
+            }
         }
         
-        return 0; //state.LdoString(chunk);
+        return jniRunString(state, chunk);
     }
     
     public int load(String chunk) {
         if (chunk.endsWith(".lua")) {
-            //try {
-                return 0; //state.LloadBuffer(readFile(getFile(chunk)).getBytes(), chunk);
-            //} catch (IOException e) {
-            //    return -1;
-            //}
+            try {
+                byte[] buffer = LuaUtils.readStream(LuaUtils.getStream(loader, chunk)).getBytes();
+                return jniLoadBuffer(state, buffer, buffer.length, chunk);
+            } catch (IOException e) {
+                return -1;
+            }
         }
         
-        return 0; //state.LloadString(chunk);
+        return jniLoadString(state, chunk);
     }
 
     public Lua newThread() {
