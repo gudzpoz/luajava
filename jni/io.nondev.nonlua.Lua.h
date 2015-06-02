@@ -69,10 +69,106 @@ JNIEXPORT jobject JNICALL Java_io_nondev_nonlua_Lua_jniOpen
 
 /*
  * Class:     io_nondev_nonlua_Lua
+ * Method:    jniClose
+ * Signature: (Lio/nondev/nonlua/CPtr;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniClose
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniOpenBase
+ * Signature: (Lio/nondev/nonlua/CPtr;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenBase
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniOpenBit32
+ * Signature: (Lio/nondev/nonlua/CPtr;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenBit32
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniOpenCoroutine
+ * Signature: (Lio/nondev/nonlua/CPtr;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenCoroutine
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniOpenDebug
+ * Signature: (Lio/nondev/nonlua/CPtr;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenDebug
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniOpenIo
+ * Signature: (Lio/nondev/nonlua/CPtr;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenIo
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
  * Method:    jniOpenJava
  * Signature: (Lio/nondev/nonlua/CPtr;)V
  */
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenJava
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniOpenMath
+ * Signature: (Lio/nondev/nonlua/CPtr;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenMath
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniOpenOs
+ * Signature: (Lio/nondev/nonlua/CPtr;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenOs
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniOpenPackage
+ * Signature: (Lio/nondev/nonlua/CPtr;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenPackage
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniOpenString
+ * Signature: (Lio/nondev/nonlua/CPtr;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenString
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniOpenTable
+ * Signature: (Lio/nondev/nonlua/CPtr;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenTable
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniOpenUtf8
+ * Signature: (Lio/nondev/nonlua/CPtr;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenUtf8
   (JNIEnv *, jclass, jobject);
 
 #ifdef __cplusplus

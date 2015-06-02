@@ -1466,10 +1466,92 @@
 
 }
 
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenJava(JNIEnv* env, jclass clazz, jobject cptr) {
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniClose(JNIEnv* env, jclass clazz, jobject cptr) {
 
 
 //@line:1491
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_close( L );
+    
+
+}
+
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenBase(JNIEnv* env, jclass clazz, jobject cptr) {
+
+
+//@line:1497
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_base );
+        lua_pushstring( L , "" );
+        lua_call( L , 1 , 0 );
+    
+
+}
+
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenBit32(JNIEnv* env, jclass clazz, jobject cptr) {
+
+
+//@line:1505
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_bit32 );
+        lua_pushstring( L , LUA_BITLIBNAME );
+        lua_call( L , 1 , 0 );
+    
+
+}
+
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenCoroutine(JNIEnv* env, jclass clazz, jobject cptr) {
+
+
+//@line:1513
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_coroutine );
+        lua_pushstring( L , LUA_COLIBNAME );
+        lua_call( L , 1 , 0 );
+    
+
+}
+
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenDebug(JNIEnv* env, jclass clazz, jobject cptr) {
+
+
+//@line:1521
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_debug );
+        lua_pushstring( L , LUA_DBLIBNAME );
+        lua_call( L , 1 , 0 );
+    
+
+}
+
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenIo(JNIEnv* env, jclass clazz, jobject cptr) {
+
+
+//@line:1529
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_io );
+        lua_pushstring( L , LUA_IOLIBNAME );
+        lua_call( L , 1 , 0 );
+    
+
+}
+
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenJava(JNIEnv* env, jclass clazz, jobject cptr) {
+
+
+//@line:1537
 
         lua_State* L = getStateFromCPtr( env, cptr );
         
@@ -1498,6 +1580,90 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenJava(JNIEnv* env, jclass
         lua_settable( L , -3 );
 
         lua_pop( L , 1 );
+    
+
+}
+
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenMath(JNIEnv* env, jclass clazz, jobject cptr) {
+
+
+//@line:1567
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_math );
+        lua_pushstring( L , LUA_MATHLIBNAME );
+        lua_call( L , 1 , 0 );
+    
+
+}
+
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenOs(JNIEnv* env, jclass clazz, jobject cptr) {
+
+
+//@line:1575
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_os );
+        lua_pushstring( L , LUA_OSLIBNAME );
+        lua_call( L , 1 , 0 );
+    
+
+}
+
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenPackage(JNIEnv* env, jclass clazz, jobject cptr) {
+
+
+//@line:1583
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_package );
+        lua_pushstring( L , LUA_LOADLIBNAME );
+        lua_call( L , 1 , 0 );
+    
+
+}
+
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenString(JNIEnv* env, jclass clazz, jobject cptr) {
+
+
+//@line:1591
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_string );
+        lua_pushstring( L , LUA_STRLIBNAME );
+        lua_call( L , 1 , 0 );
+    
+
+}
+
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenTable(JNIEnv* env, jclass clazz, jobject cptr) {
+
+
+//@line:1599
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_table );
+        lua_pushstring( L , LUA_TABLIBNAME );
+        lua_call( L , 1 , 0 );
+    
+
+}
+
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenUtf8(JNIEnv* env, jclass clazz, jobject cptr) {
+
+
+//@line:1607
+
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_utf8 );
+        lua_pushstring( L , LUA_UTF8LIBNAME );
+        lua_call( L , 1 , 0 );
     
 
 }

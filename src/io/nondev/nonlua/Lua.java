@@ -1488,6 +1488,52 @@ public class Lua {
         return obj;
     */
 
+    private static native void jniClose(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_close( L );
+    */
+
+    private static native void jniOpenBase(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_base );
+        lua_pushstring( L , "" );
+        lua_call( L , 1 , 0 );
+    */
+
+    private static native void jniOpenBit32(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_bit32 );
+        lua_pushstring( L , LUA_BITLIBNAME );
+        lua_call( L , 1 , 0 );
+    */
+
+    private static native void jniOpenCoroutine(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_coroutine );
+        lua_pushstring( L , LUA_COLIBNAME );
+        lua_call( L , 1 , 0 );
+    */
+
+    private static native void jniOpenDebug(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_debug );
+        lua_pushstring( L , LUA_DBLIBNAME );
+        lua_call( L , 1 , 0 );
+    */
+
+    private static native void jniOpenIo(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_io );
+        lua_pushstring( L , LUA_IOLIBNAME );
+        lua_call( L , 1 , 0 );
+    */
+
     private static native void jniOpenJava(CPtr cptr); /*
         lua_State* L = getStateFromCPtr( env, cptr );
         
@@ -1518,37 +1564,82 @@ public class Lua {
         lua_pop( L , 1 );
     */
 
-    final private static String LIB = "nonlua";
-  
-    final public static int GLOBALS  = -10002;
-    final public static int REGISTRY = -10000;
+    private static native void jniOpenMath(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
 
-    final public static int NONE          = -1;
-    final public static int NIL           = 0;
-    final public static int BOOLEAN       = 1;
-    final public static int LIGHTUSERDATA = 2;
-    final public static int NUMBER        = 3;
-    final public static int STRING        = 4;
-    final public static int TABLE         = 5;
-    final public static int FUNCTION      = 6;
-    final public static int USERDATA      = 7;
-    final public static int THREAD        = 8;
-    
-    final public static int MULTRET         = -1;
-    final public static int YIELD           = 1;
-    final public static int RUNTIME_ERROR   = 2;
-    final public static int SYNTAX_ERROR    = 3;
-    final public static int MEMORY_ERROR    = 4;
-    final public static int HANDLER_ERROR   = 5;
-    
-    final public static int GC_STOP       = 0;
-    final public static int GC_RESTART    = 1;
-    final public static int GC_COLLECT    = 2;
-    final public static int GC_COUNT      = 3;
-    final public static int GC_COUNTB     = 4;
-    final public static int GC_STEP       = 5;
-    final public static int GC_SETPAUSE   = 6;
-    final public static int GC_SETSTEPMUL = 7;
+        lua_pushcfunction( L , luaopen_math );
+        lua_pushstring( L , LUA_MATHLIBNAME );
+        lua_call( L , 1 , 0 );
+    */
+
+    private static native void jniOpenOs(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_os );
+        lua_pushstring( L , LUA_OSLIBNAME );
+        lua_call( L , 1 , 0 );
+    */
+
+    private static native void jniOpenPackage(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_package );
+        lua_pushstring( L , LUA_LOADLIBNAME );
+        lua_call( L , 1 , 0 );
+    */
+
+    private static native void jniOpenString(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_string );
+        lua_pushstring( L , LUA_STRLIBNAME );
+        lua_call( L , 1 , 0 );
+    */
+
+    private static native void jniOpenTable(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_table );
+        lua_pushstring( L , LUA_TABLIBNAME );
+        lua_call( L , 1 , 0 );
+    */
+
+    private static native void jniOpenUtf8(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushcfunction( L , luaopen_utf8 );
+        lua_pushstring( L , LUA_UTF8LIBNAME );
+        lua_call( L , 1 , 0 );
+    */
+
+    private static final String LIB = "nonlua";
+
+    public static final int GLOBALS       = -10002;
+    public static final int REGISTRY      = -10000;
+    public static final int NONE          = -1;
+    public static final int NIL           = 0;
+    public static final int BOOLEAN       = 1;
+    public static final int LIGHTUSERDATA = 2;
+    public static final int NUMBER        = 3;
+    public static final int STRING        = 4;
+    public static final int TABLE         = 5;
+    public static final int FUNCTION      = 6;
+    public static final int USERDATA      = 7;
+    public static final int THREAD        = 8;
+    public static final int MULTRET       = -1;
+    public static final int YIELD         = 1;
+    public static final int RUNTIME_ERROR = 2;
+    public static final int SYNTAX_ERROR  = 3;
+    public static final int MEMORY_ERROR  = 4;
+    public static final int HANDLER_ERROR = 5;
+    public static final int GC_STOP       = 0;
+    public static final int GC_RESTART    = 1;
+    public static final int GC_COLLECT    = 2;
+    public static final int GC_COUNT      = 3;
+    public static final int GC_COUNTB     = 4;
+    public static final int GC_STEP       = 5;
+    public static final int GC_SETPAUSE   = 6;
+    public static final int GC_SETSTEPMUL = 7;
 
     private static LuaLoader loader;
     private static LuaLogger logger;
@@ -1579,13 +1670,27 @@ public class Lua {
 
     protected CPtr state;
     protected final int stateId;
-    
+
     public Lua() {
+        this(new LuaConfiguration());
+    }
+    
+    public Lua(LuaConfiguration cfg) {
         stateId = LuaFactory.insert(this);
         state = jniOpen(stateId);
 
-        jniOpenJava(state);
-        //jniOpenLibs();
+        if (cfg.baseLib) jniOpenBase(state);
+        if (cfg.bit32Lib) jniOpenBit32(state);
+        if (cfg.coroutineLib) jniOpenCoroutine(state);
+        if (cfg.debugLib) jniOpenDebug(state);
+        if (cfg.ioLib) jniOpenIo(state);
+        if (cfg.javaLib) jniOpenJava(state);
+        if (cfg.mathLib) jniOpenMath(state);
+        if (cfg.osLib) jniOpenOs(state);
+        if (cfg.packageLib) jniOpenPackage(state);
+        if (cfg.stringLib) jniOpenString(state);
+        if (cfg.tableLib) jniOpenTable(state);
+        if (cfg.utf8Lib) jniOpenUtf8(state);
 
         pushFunction(new LuaFunction(this) {
             public int call() {
@@ -1639,10 +1744,13 @@ public class Lua {
     }
 
     public long getCPtrPeer() {
-        return (state != null)? state.getPeer() : 0;
+        return (state != null) ? state.getPeer() : 0;
     }
     
     public void dispose() {
+        LuaFactory.remove(stateId);
+        jniClose(state);
+        state = null;
     }
     
     private InputStream getFile(String path) throws IOException {
