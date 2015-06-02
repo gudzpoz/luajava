@@ -36,18 +36,8 @@ import java.util.List;
  */
 public final class LuaFactory {
 	private static final List states = new ArrayList();
-	LuaStateFactory() {}
-	
-	/**
-	 * Method that creates a new instance of Lua
-	 * @return LuaState
-	 */
-	public synchronized static Lua new() {
-		int i = getNextIndex();
-		Lua L = new Lua(i);
-		states.add(i, L);
-		return L;
-	}
+
+	LuaFactory() {}
 	
 	/**
 	 * Returns a existing instance of Lua
