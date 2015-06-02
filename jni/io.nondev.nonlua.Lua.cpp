@@ -3,9 +3,12 @@
 //@line:30
 
     #include <cstdlib>
-    #include <lua.h>
-    #include <lualib.h>
-    #include <lauxlib.h>
+
+    extern "C" {
+    #include <lua/lua.h>
+    #include <lua/lualib.h>
+    #include <lua/lauxlib.h>
+    }
 
     #define LUAJAVAJNIENVTAG "__JNIEnv"
     #define LUAJAVAOBJECTIND "__IsJavaObject"
@@ -1344,7 +1347,7 @@
      JNIEXPORT jobject JNICALL Java_io_nondev_nonlua_Lua_jniOpen(JNIEnv* env, jclass clazz, jint stateId) {
 
 
-//@line:1372
+//@line:1375
 
         lua_State * L = luaL_newstate();
         lua_pushstring( L , LUAJAVASTATEINDEX );
@@ -1466,7 +1469,7 @@
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenJava(JNIEnv* env, jclass clazz, jobject cptr) {
 
 
-//@line:1488
+//@line:1491
 
         lua_State* L = getStateFromCPtr( env, cptr );
         
