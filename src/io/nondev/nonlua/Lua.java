@@ -28,6 +28,7 @@ import java.io.*;
 public class Lua {
     // @off
     /*JNI
+    #include <cstdlib>
     #include <lua/lua.h>
     #include <lua/lualib.h>
     #include <lua/lauxlib.h>
@@ -123,7 +124,7 @@ public class Lua {
        checkField = javaEnv->CallStaticIntMethod( luajava_api_class , method ,
                                                        (jint)stateIndex , *obj , str );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -243,7 +244,7 @@ public class Lua {
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method , (jint)stateIndex , 
                                                 *pObject , str );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -331,7 +332,7 @@ public class Lua {
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method, (jint)stateIndex , 
                                                 *obj , str );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -420,7 +421,7 @@ public class Lua {
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method, (jint)stateIndex , 
                                                 *obj , str );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -531,7 +532,7 @@ public class Lua {
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method ,
                                                        (jint)stateIndex , *obj , (jlong)key );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -612,7 +613,7 @@ public class Lua {
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method, (jint)stateIndex , 
                                                 *obj , (jint)key );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -706,7 +707,7 @@ public class Lua {
        classInstance = javaEnv->CallStaticObjectMethod( java_lang_class ,
                                                              method , javaClassName );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -791,7 +792,7 @@ public class Lua {
 
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method, (jint)stateIndex , str );
        
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -893,7 +894,7 @@ public class Lua {
 
        ret = javaEnv->CallStaticIntMethod( clazz , method , (jint)stateIndex , classInstance );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -968,7 +969,7 @@ public class Lua {
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method, (jint)stateIndex , 
                                                 javaClassName );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -1059,7 +1060,7 @@ public class Lua {
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method, (jint)stateIndex , 
                                                 javaClassName , javaMethodName );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -1293,7 +1294,7 @@ public class Lua {
 
        ret = javaEnv->CallIntMethod( *obj , java_function_method );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {

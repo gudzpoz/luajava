@@ -2,6 +2,7 @@
 
 //@line:30
 
+    #include <cstdlib>
     #include <lua/lua.h>
     #include <lua/lualib.h>
     #include <lua/lauxlib.h>
@@ -97,7 +98,7 @@
        checkField = javaEnv->CallStaticIntMethod( luajava_api_class , method ,
                                                        (jint)stateIndex , *obj , str );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -217,7 +218,7 @@
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method , (jint)stateIndex , 
                                                 *pObject , str );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -305,7 +306,7 @@
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method, (jint)stateIndex , 
                                                 *obj , str );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -394,7 +395,7 @@
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method, (jint)stateIndex , 
                                                 *obj , str );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -505,7 +506,7 @@
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method ,
                                                        (jint)stateIndex , *obj , (jlong)key );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -586,7 +587,7 @@
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method, (jint)stateIndex , 
                                                 *obj , (jint)key );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -680,7 +681,7 @@
        classInstance = javaEnv->CallStaticObjectMethod( java_lang_class ,
                                                              method , javaClassName );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -765,7 +766,7 @@
 
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method, (jint)stateIndex , str );
        
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -867,7 +868,7 @@
 
        ret = javaEnv->CallStaticIntMethod( clazz , method , (jint)stateIndex , classInstance );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -942,7 +943,7 @@
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method, (jint)stateIndex , 
                                                 javaClassName );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -1033,7 +1034,7 @@
        ret = javaEnv->CallStaticIntMethod( luajava_api_class , method, (jint)stateIndex , 
                                                 javaClassName , javaMethodName );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -1267,7 +1268,7 @@
 
        ret = javaEnv->CallIntMethod( *obj , java_function_method );
 
-       exp = javaEnv->ExceptionOccurred( javaEnv );
+       exp = javaEnv->ExceptionOccurred();
 
        if ( exp != NULL )
        {
@@ -1343,7 +1344,7 @@
      JNIEXPORT jobject JNICALL Java_io_nondev_nonlua_Lua_jniOpen(JNIEnv* env, jclass clazz, jint stateId) {
 
 
-//@line:1371
+//@line:1372
 
         lua_State * L = luaL_newstate();
         lua_pushstring( L , LUAJAVASTATEINDEX );
@@ -1465,7 +1466,7 @@
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenJava(JNIEnv* env, jclass clazz, jobject cptr) {
 
 
-//@line:1487
+//@line:1488
 
         lua_State* L = getStateFromCPtr( cptr );
         
