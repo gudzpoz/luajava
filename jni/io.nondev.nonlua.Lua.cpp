@@ -1674,15 +1674,8 @@ static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniLoadBuffer
 //@line:1615
 
         lua_State * L = getStateFromCPtr( env , cptr );
-        
-        jbyte * cBuff = env->GetByteArrayElements( buff, NULL );
-        const char * cName = env->GetStringUTFChars( name , NULL );
-        int ret = luaL_loadbuffer( L , ( const char * ) cBuff, ( int ) bsize, cName );
-        
-        env->ReleaseStringUTFChars( name , cName );
-        env->ReleaseByteArrayElements(buff , cBuff , 0 );
 
-        return ( jint ) ret;
+        return ( jint ) luaL_loadbuffer( L , buff , ( int ) bsize, name );
     
 }
 
@@ -1701,16 +1694,11 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniLoadBuffer(JNIEnv* env, jcla
 static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniLoadString
 (JNIEnv* env, jclass clazz, jobject cptr, jstring obj_str, char* str) {
 
-//@line:1628
+//@line:1621
 
         lua_State * L   = getStateFromCPtr( env , cptr );
-        
-        const char * fn = env->GetStringUTFChars( str , NULL );
-        int ret = luaL_loadstring( L , fn );
-        
-        env->ReleaseStringUTFChars( str , fn );
 
-        return ( jint ) ret;
+        return ( jint ) luaL_loadstring( L , str );
     
 }
 
@@ -1727,17 +1715,12 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniLoadString(JNIEnv* env, jcla
 static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniRunBuffer
 (JNIEnv* env, jclass clazz, jobject cptr, jbyteArray obj_buff, jlong bsize, jstring obj_name, char* name, char* buff) {
 
-//@line:1640
+//@line:1628
 
         lua_State * L = getStateFromCPtr( env , cptr );
         
-        jbyte * cBuff = env->GetByteArrayElements( buff, NULL );
-        const char * cName = env->GetStringUTFChars( name , NULL );
-        int ret = luaL_loadbuffer( L , ( const char * ) cBuff, ( int ) bsize, cName );
+        int ret = luaL_loadbuffer( L , buff , ( int ) bsize, name );
         int secRet = lua_pcall(L, 0, LUA_MULTRET, 0);
-
-        env->ReleaseStringUTFChars( name , cName );
-        env->ReleaseByteArrayElements(buff , cBuff , 0 );
 
         return ( jint ) ( ret || secRet );
     
@@ -1758,14 +1741,11 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniRunBuffer(JNIEnv* env, jclas
 static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniRunString
 (JNIEnv* env, jclass clazz, jobject cptr, jstring obj_str, char* str) {
 
-//@line:1654
+//@line:1637
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
-        const char * utfStr = env->GetStringUTFChars( str , NULL );
-        int ret = luaL_dostring( L , utfStr );
-
-        return ( jint ) ret;
+        return ( jint ) luaL_dostring( L , str );
     
 }
 

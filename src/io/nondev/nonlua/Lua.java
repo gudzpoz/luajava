@@ -1614,39 +1614,22 @@ public class Lua {
 
     private static native int jniLoadBuffer(CPtr cptr, byte[] buff, long bsize, String name); /*
         lua_State * L = getStateFromCPtr( env , cptr );
-        
-        jbyte * cBuff = env->GetByteArrayElements( buff, NULL );
-        const char * cName = env->GetStringUTFChars( name , NULL );
-        int ret = luaL_loadbuffer( L , ( const char * ) cBuff, ( int ) bsize, cName );
-        
-        env->ReleaseStringUTFChars( name , cName );
-        env->ReleaseByteArrayElements(buff , cBuff , 0 );
 
-        return ( jint ) ret;
+        return ( jint ) luaL_loadbuffer( L , buff , ( int ) bsize, name );
     */
 
     private static native int jniLoadString(CPtr cptr, String str); /*
         lua_State * L   = getStateFromCPtr( env , cptr );
-        
-        const char * fn = env->GetStringUTFChars( str , NULL );
-        int ret = luaL_loadstring( L , fn );
-        
-        env->ReleaseStringUTFChars( str , fn );
 
-        return ( jint ) ret;
+        return ( jint ) luaL_loadstring( L , str );
     */
 
 
     private static native int jniRunBuffer(CPtr cptr, byte[] buff, long bsize, String name); /*
         lua_State * L = getStateFromCPtr( env , cptr );
         
-        jbyte * cBuff = env->GetByteArrayElements( buff, NULL );
-        const char * cName = env->GetStringUTFChars( name , NULL );
-        int ret = luaL_loadbuffer( L , ( const char * ) cBuff, ( int ) bsize, cName );
+        int ret = luaL_loadbuffer( L , buff , ( int ) bsize, name );
         int secRet = lua_pcall(L, 0, LUA_MULTRET, 0);
-
-        env->ReleaseStringUTFChars( name , cName );
-        env->ReleaseByteArrayElements(buff , cBuff , 0 );
 
         return ( jint ) ( ret || secRet );
     */
@@ -1654,10 +1637,7 @@ public class Lua {
     private static native int jniRunString(CPtr cptr, String str); /*
         lua_State * L = getStateFromCPtr( env , cptr );
 
-        const char * utfStr = env->GetStringUTFChars( str , NULL );
-        int ret = luaL_dostring( L , utfStr );
-
-        return ( jint ) ret;
+        return ( jint ) luaL_dostring( L , str );
     */
 
     private static final String LIB = "nonlua";
