@@ -29,9 +29,9 @@ public class Lua {
     // @off
     /*JNI
     #include <cstdlib>
-    #include <lua/lua.h>
-    #include <lua/lualib.h>
-    #include <lua/lauxlib.h>
+    #include <lua.h>
+    #include <lualib.h>
+    #include <lauxlib.h>
 
     #define LUAJAVAJNIENVTAG "__JNIEnv"
     #define LUAJAVAOBJECTIND "__IsJavaObject"
