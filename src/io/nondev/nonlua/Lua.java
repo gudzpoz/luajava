@@ -1276,7 +1276,7 @@ public class Lua {
           lua_error( L );
        }
 
-       obj = lua_touserdata( L , 1 );
+       obj = ( jobject * ) lua_touserdata( L , 1 );
 
        javaEnv = getEnvFromState( L );
        if ( javaEnv == NULL )
