@@ -49,4 +49,6 @@ build/
 ## OS Specific
 .DS_Store
 
+## Builds
+libs/
 bin/classes

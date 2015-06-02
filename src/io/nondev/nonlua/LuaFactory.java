@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003-2007 Kepler Project.
+ * Copyright (c) 2015 Thomas Slusny.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,40 +25,20 @@ package io.nondev.nonlua;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class is responsible for instantiating new LuaStates.
- * When a new LuaState is instantiated it is put into a List
- * and an index is returned. This index is registred in Lua
- * and it is used to find the right LuaState when lua calls
- * a Java Function.
- * @author Thomas Slusny
- * @author Thiago Ponte
- */
 public final class LuaFactory {
-	private static final List states = new ArrayList();
+	private static final List<Lua> states = new ArrayList<Lua>();
 
 	LuaFactory() {}
 	
-	/**
-	 * Returns a existing instance of Lua
-	 * @param index
-	 * @return LuaState
-	 */
 	public synchronized static Lua getExisting(int index) {
-		return (Lua)states.get(index);
+		return states.get(index);
 	}
 	
-	/**
-	 * Receives a existing Lua and checks if it exists in the states list.
-	 * If it doesn't exist adds it to the list.
-	 * @param L
-	 * @return int
-	 */
 	public synchronized static int insert(Lua L) {
 		int i;
 
-		for (i = 0 ; i < states.size() ; i++) {
-			Lua state = (Lua)states.get(i);
+		for (i = 0 ; i < states.size(); i++) {
+			Lua state = states.get(i);
 			
 			if (state != null && (state.getCPtrPeer() == L.getCPtrPeer())) {
 				return i;
@@ -66,25 +46,29 @@ public final class LuaFactory {
 		}
 
 		i = getNextIndex();
+
+		if (i == -1) {
+			states.add(L);
+			return states.size() - 1;
+		}
+		
 		states.set(i, L);
 		return i;
 	}
 	
-	/**
-	 * removes the Lua from the states list
-	 * @param index
-	 */
 	public synchronized static void remove(int index) {
 		states.set(index, null);
 	}
 	
-	/**
-	 * Get next available index
-	 * @return int
-	 */
 	private synchronized static int getNextIndex() {
-		int i;
-		for (i = 0 ; i < states.size() && states.get(i) != null; i++);
-		return i;
+		if (states.size() == 0) return -1;
+
+		for (int i = 0 ; i < states.size(); i++) {
+			if (states.get(i) == null) {
+				return i;
+			}
+		}
+
+		return -1;
 	}
 }

@@ -24,7 +24,6 @@ package io.nondev.nonlua;
 
 public class LuaConfiguration {
     public boolean baseLib = true;
-    public boolean bit32Lib = true;
     public boolean coroutineLib = true;
     public boolean debugLib = true;
     public boolean ioLib = true;

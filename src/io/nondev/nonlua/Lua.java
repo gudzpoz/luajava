@@ -1502,14 +1502,6 @@ public class Lua {
         lua_call( L , 1 , 0 );
     */
 
-    private static native void jniOpenBit32(CPtr cptr); /*
-        lua_State * L = getStateFromCPtr( env , cptr );
-
-        lua_pushcfunction( L , luaopen_bit32 );
-        lua_pushstring( L , LUA_BITLIBNAME );
-        lua_call( L , 1 , 0 );
-    */
-
     private static native void jniOpenCoroutine(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -1708,7 +1700,6 @@ public class Lua {
         state = jniOpen(stateId);
 
         if (cfg.baseLib) jniOpenBase(state);
-        if (cfg.bit32Lib) jniOpenBit32(state);
         if (cfg.coroutineLib) jniOpenCoroutine(state);
         if (cfg.debugLib) jniOpenDebug(state);
         if (cfg.ioLib) jniOpenIo(state);
