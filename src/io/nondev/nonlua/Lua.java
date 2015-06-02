@@ -42,12 +42,12 @@ public class Lua {
     final public static Integer USERDATA      = LuaState.LUA_TUSERDATA;
     final public static Integer THREAD        = LuaState.LUA_TTHREAD;
     
-    final public static Integer MULTIPLE_RETURN = LuaState.LUA_MULTRET;
+    final public static Integer MULTRET         = LuaState.LUA_MULTRET;
     final public static Integer YIELD           = LuaState.LUA_YIELD;
-    final public static Integer ERROR_RUNTIME   = LuaState.LUA_ERRRUN;
-    final public static Integer ERROR_SYNTAX    = LuaState.LUA_ERRSYNTAX;
-    final public static Integer ERROR_MEMORY    = LuaState.LUA_ERRMEM;
-    final public static Integer ERROR_HANDLER   = LuaState.LUA_ERRERR;
+    final public static Integer RUNTIME_ERROR   = LuaState.LUA_ERRRUN;
+    final public static Integer SYNTAX_ERROR    = LuaState.LUA_ERRSYNTAX;
+    final public static Integer MEMORY_ERROR    = LuaState.LUA_ERRMEM;
+    final public static Integer HANDLER_ERROR   = LuaState.LUA_ERRERR;
     
     final public static Integer GC_STOP       = LuaState.LUA_GCSTOP;
     final public static Integer GC_RESTART    = LuaState.LUA_GCRESTART;

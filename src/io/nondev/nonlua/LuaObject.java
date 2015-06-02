@@ -1,42 +1,40 @@
-/*
- * $Id: LuaObject.java,v 1.7 2007-09-17 19:28:40 thiago Exp $
- * Copyright (C) 2003-2007 Kepler Project.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+/*******************************************************************************
+ * Copyright (c) 2003-2007 Kepler Project.
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
 
-package org.keplerproject.luajava;
+package io.nondev.nonlua;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.StringTokenizer;
 
 /**
- * This class represents a Lua object of any type. A LuaObject is constructed by a {@link LuaState} object using one of
+ * This class represents a Lua object of any type. A LuaObject is constructed by a {@link Lua} object using one of
  * the four methods:
  * <ul>
- * <li>{@link LuaState#getLuaObject(String globalName)}</li>
- * <li>{@link LuaState#getLuaObject(LuaObject parent, String name)}</li>
- * <li>{@link LuaState#getLuaObject(LuaObject parent, Number name)}</li>
- * <li>{@link LuaState#getLuaObject(LuaObject parent, LuaObject name)}</li>
- * <li>{@link LuaState#getLuaObject(int index)}</li>
+ * <li>{@link Lua#getObject(String globalName)}</li>
+ * <li>{@link Lua#getObject(LuaObject parent, String name)}</li>
+ * <li>{@link Lua#getObject(LuaObject parent, Number name)}</li>
+ * <li>{@link Lua#getObject(LuaObject parent, LuaObject name)}</li>
+ * <li>{@link Lua#getObject(int index)}</li>
  * </ul>
  * The LuaObject will represent only the object itself, not a variable or a stack index, so when you change a string,
  * remember that strings are immutable objects in Lua, and the LuaObject you have will represent the old one.
@@ -48,14 +46,13 @@ import java.util.StringTokenizer;
  * LuaObject you can call the <code>createProxy(String implements)</code>. This method receives the string with the
  * name of the interfaces implemented by the object separated by comma.
  * 
+ * @author Thomas Slusny
  * @author Rizzato
  * @author Thiago Ponte
  */
-public class LuaObject
-{
-	protected Integer ref;
-
-	protected LuaState L;
+public class LuaObject {
+	protected int ref;
+	protected Lua L;
 
 	/**
 	 * Creates a reference to an object in the variable globalName
@@ -63,10 +60,8 @@ public class LuaObject
 	 * @param L
 	 * @param globalName
 	 */
-	protected LuaObject(LuaState L, String globalName)
-	{
-		synchronized (L)
-		{
+	protected LuaObject(Lua L, String globalName) {
+		synchronized (L) {
 			this.L = L;
 			L.getGlobal(globalName);
 			registerValue(-1);
@@ -82,14 +77,11 @@ public class LuaObject
 	 * @param name
 	 *            The name that index the field
 	 */
-	protected LuaObject(LuaObject parent, String name) throws LuaException
-	{
-		synchronized (parent.getLuaState())
-		{
-			this.L = parent.getLuaState();
+	protected LuaObject(LuaObject parent, String name) throws LuaException {
+		synchronized (parent.getLua()) {
+			this.L = parent.getLua();
 
-			if (!parent.isTable() && !parent.isUserdata())
-			{
+			if (!parent.isTable() && !parent.isUserdata()) {
 				throw new LuaException("Object parent should be a table or userdata .");
 			}
 
@@ -112,13 +104,13 @@ public class LuaObject
 	 * @throws LuaException
 	 *             When the parent object isn't a Table or Userdata
 	 */
-	protected LuaObject(LuaObject parent, Number name) throws LuaException
-	{
-		synchronized (parent.getLuaState())
-		{
-			this.L = parent.getLuaState();
-			if (!parent.isTable() && !parent.isUserdata())
+	protected LuaObject(LuaObject parent, Number name) throws LuaException {
+		synchronized (parent.getLua()) {
+			this.L = parent.getLua();
+
+			if (!parent.isTable() && !parent.isUserdata()) {
 				throw new LuaException("Object parent should be a table or userdata .");
+			}
 
 			parent.push();
 			L.pushNumber(name.doubleValue());
@@ -139,17 +131,17 @@ public class LuaObject
 	 * @throws LuaException
 	 *             When the parent object isn't a Table or Userdata
 	 */
-	protected LuaObject(LuaObject parent, LuaObject name) throws LuaException
-	{
-		if (parent.getLuaState() != name.getLuaState())
-			throw new LuaException("LuaStates must be the same!");
-		synchronized (parent.getLuaState())
-		{
-			if (!parent.isTable() && !parent.isUserdata())
+	protected LuaObject(LuaObject parent, LuaObject name) throws LuaException {
+		if (parent.getLua() != name.getLua()) {
+			throw new LuaException("Luas must be the same!");
+		}
+
+		synchronized (parent.getLua()) {
+			if (!parent.isTable() && !parent.isUserdata()) {
 				throw new LuaException("Object parent should be a table or userdata .");
+			}
 
-			this.L = parent.getLuaState();
-
+			L = parent.getLua();
 			parent.push();
 			name.push();
 			L.getTable(-2);
@@ -166,12 +158,9 @@ public class LuaObject
 	 * @param index
 	 *            of the object on the lua stack
 	 */
-	protected LuaObject(LuaState L, int index)
-	{
-		synchronized (L)
-		{
+	protected LuaObject(Lua L, int index) {
+		synchronized (L) {
 			this.L = L;
-
 			registerValue(index);
 		}
 	}
@@ -179,8 +168,7 @@ public class LuaObject
 	/**
 	 * Gets the Object's State
 	 */
-	public LuaState getLuaState()
-	{
+	public Lua getLua() {
 		return L;
 	}
 
@@ -190,28 +178,21 @@ public class LuaObject
 	 * @param index
 	 *            of the object on the lua stack
 	 */
-	private void registerValue(int index)
-	{
-		synchronized (L)
-		{
+	private void registerValue(int index) {
+		synchronized (L) {
 			L.pushValue(index);
-			int key = L.Lref(LuaState.LUA_REGISTRYINDEX.intValue());
+			int key = L.ref(Lua.REGISTRY);
 			ref = new Integer(key);
 		}
 	}
 
-	protected void finalize()
-	{
-		try
-		{
-			synchronized (L)
-			{
+	protected void finalize() {
+		try {
+			synchronized (L) {
 				if (L.getCPtrPeer() != 0)
-					L.LunRef(LuaState.LUA_REGISTRYINDEX.intValue(), ref.intValue());
+					L.unRef(Lua.REGISTRY, ref);
 			}
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			System.err.println("Unable to release object " + ref);
 		}
 	}
@@ -219,15 +200,12 @@ public class LuaObject
 	/**
 	 * Pushes the object represented by <code>this<code> into L's stack
 	 */
-	public void push()
-	{
-		L.rawGetI(LuaState.LUA_REGISTRYINDEX.intValue(), ref.intValue());
+	public void push() {
+		L.getI(Lua.REGISTRY, ref);
 	}
 
-	public boolean isNil()
-	{
-		synchronized (L)
-		{
+	public boolean isNil() {
+		synchronized (L) {
 			push();
 			boolean bool = L.isNil(-1);
 			L.pop(1);
@@ -246,10 +224,8 @@ public class LuaObject
 		}
 	}
 
-	public boolean isNumber()
-	{
-		synchronized (L)
-		{
+	public boolean isNumber() {
+		synchronized (L) {
 			push();
 			boolean bool = L.isNumber(-1);
 			L.pop(1);
@@ -257,10 +233,8 @@ public class LuaObject
 		}
 	}
 
-	public boolean isString()
-	{
-		synchronized (L)
-		{
+	public boolean isString() {
+		synchronized (L) {
 			push();
 			boolean bool = L.isString(-1);
 			L.pop(1);
@@ -268,10 +242,8 @@ public class LuaObject
 		}
 	}
 
-	public boolean isFunction()
-	{
-		synchronized (L)
-		{
+	public boolean isFunction() {
+		synchronized (L) {
 			push();
 			boolean bool = L.isFunction(-1);
 			L.pop(1);
@@ -279,8 +251,7 @@ public class LuaObject
 		}
 	}
 
-	public boolean isJavaObject()
-	{
+	public boolean isObject() {
 		synchronized (L)
 		{
 			push();
@@ -290,10 +261,8 @@ public class LuaObject
 		}
 	}
 
-	public boolean isJavaFunction()
-	{
-		synchronized (L)
-		{
+	public boolean isFunction() {
+		synchronized (L) {
 			push();
 			boolean bool = L.isJavaFunction(-1);
 			L.pop(1);
@@ -301,10 +270,8 @@ public class LuaObject
 		}
 	}
 
-	public boolean isTable()
-	{
-		synchronized (L)
-		{
+	public boolean isTable() {
+		synchronized (L) {
 			push();
 			boolean bool = L.isTable(-1);
 			L.pop(1);
@@ -323,10 +290,8 @@ public class LuaObject
 		}
 	}
 
-	public int type()
-	{
-		synchronized (L)
-		{
+	public int type() {
+		synchronized (L) {
 			push();
 			int type = L.type(-1);
 			L.pop(1);
@@ -334,10 +299,8 @@ public class LuaObject
 		}
 	}
 
-	public boolean getBoolean()
-	{
-		synchronized (L)
-		{
+	public boolean getBoolean() {
+		synchronized (L) {
 			push();
 			boolean bool = L.toBoolean(-1);
 			L.pop(1);
@@ -345,10 +308,8 @@ public class LuaObject
 		}
 	}
 
-	public double getNumber()
-	{
-		synchronized (L)
-		{
+	public double getNumber() {
+		synchronized (L) {
 			push();
 			double db = L.toNumber(-1);
 			L.pop(1);
@@ -356,10 +317,8 @@ public class LuaObject
 		}
 	}
 
-	public String getString()
-	{
-		synchronized (L)
-		{
+	public String getString() {
+		synchronized (L) {
 			push();
 			String str = L.toString(-1);
 			L.pop(1);
@@ -367,10 +326,8 @@ public class LuaObject
 		}
 	}
 
-	public Object getObject() throws LuaException
-	{
-		synchronized (L)
-		{
+	public Object getObject() {
+		synchronized (L) {
 			push();
 			Object obj = L.getObjectFromUserdata(-1);
 			L.pop(1);
@@ -382,9 +339,8 @@ public class LuaObject
 	 * If <code>this<code> is a table or userdata tries to get
 	 * a field value.
 	 */
-	public LuaObject getField(String field) throws LuaException
-	{
-		return L.getLuaObject(this, field);
+	public LuaObject getField(String field) {
+		return L.getObject(this, field);
 	}
 
 	/**
@@ -397,75 +353,64 @@ public class LuaObject
 	 * @return Object[] - Returned Objects
 	 * @throws LuaException
 	 */
-	public Object[] call(Object[] args, int nres) throws LuaException
-	{
-		synchronized (L)
-		{
-			if (!isFunction() && !isTable() && !isUserdata())
+	public Object[] call(Object[] args, int nres) throws LuaException {
+		synchronized (L) {
+			if (!isFunction() && !isTable() && !isUserdata()) {
 				throw new LuaException("Invalid object. Not a function, table or userdata .");
+			}
 
 			int top = L.getTop();
 			push();
 			int nargs;
-			if (args != null)
-			{
+			if (args != null) {
 				nargs = args.length;
-				for (int i = 0; i < nargs; i++)
-				{
+				for (int i = 0; i < nargs; i++) {
 					Object obj = args[i];
-					L.pushObjectValue(obj);
+					L.pushObject(obj);
 				}
-			}
-			else
+			} else {
 				nargs = 0;
+			}
 
 			int err = L.pcall(nargs, nres, 0);
 
-			if (err != 0)
-			{
+			if (err != 0) {
 				String str;
-				if (L.isString(-1))
-				{
+				if (L.isString(-1)) {
 					str = L.toString(-1);
 					L.pop(1);
-				}
-				else
+				} else {
 					str = "";
+				}
 
-				if (err == LuaState.LUA_ERRRUN.intValue())
-				{
+				if (err == Lua.RUNTIME_ERROR) {
 					str = "Runtime error. " + str;
 				}
-				else if (err == LuaState.LUA_ERRMEM.intValue())
-				{
+				else if (err == Lua.MEMORY_ERROR) {
 					str = "Memory allocation error. " + str;
 				}
-				else if (err == LuaState.LUA_ERRERR.intValue())
-				{
+				else if (err == Lua.HANDLER_ERROR) {
 					str = "Error while running the error handler function. " + str;
-				}
-				else
-				{
+				} else {
 					str = "Lua Error code " + err + ". " + str;
 				}
 
 				throw new LuaException(str);
 			}
 
-			if (nres == LuaState.LUA_MULTRET.intValue())
+			if (nres == Lua.LUA_MULTRET.intValue())
 				nres = L.getTop() - top;
-			if (L.getTop() - top < nres)
-			{
+			if (L.getTop() - top < nres) {
 				throw new LuaException("Invalid Number of Results .");
 			}
 
 			Object[] res = new Object[nres];
 
-			for (int i = nres; i > 0; i--)
-			{
+			for (int i = nres; i > 0; i--) {
 				res[i - 1] = L.toJavaObject(-1);
 				L.pop(1);
 			}
+
 			return res;
 		}
 	}
@@ -478,17 +423,13 @@ public class LuaObject
 	 * @return Object - Returned Object
 	 * @throws LuaException
 	 */
-	public Object call(Object[] args) throws LuaException
-	{
+	public Object call(Object[] args) throws LuaException {
 		return call(args, 1)[0];
 	}
 
-	public String toString()
-	{
-		synchronized (L)
-		{
-			try
-			{
+	public String toString() {
+		synchronized (L) {
+			try {
 				if (isNil())
 					return "nil";
 				else if (isBoolean())
@@ -505,13 +446,11 @@ public class LuaObject
 					return "Userdata";
 				else if (isTable())
 					return "Lua Table";
-				else if (isJavaFunction())
+				else if (isFunction())
 					return "Java Function";
 				else
 					return null;
-			}
-			catch (LuaException e)
-			{
+			} catch (LuaException e) {
 				return null;
 			}
 		}
@@ -520,23 +459,26 @@ public class LuaObject
 	/**
 	 * Function that creates a java proxy to the object represented by <code>this</code>
 	 * 
-	 * @param implem
-	 *            Interfaces that are implemented, separated by <code>,</code>
+	 * @param implem Interfaces that are implemented, separated by <code>,</code>
 	 */
-	public Object createProxy(String implem) throws ClassNotFoundException, LuaException
-	{
-		synchronized (L)
-		{
-			if (!isTable())
+	public Object createProxy(String implem) throws LuaException {
+		synchronized (L) {
+			if (!isTable()) {
 				throw new LuaException("Invalid Object. Must be Table.");
+			}
 
 			StringTokenizer st = new StringTokenizer(implem, ",");
 			Class[] interfaces = new Class[st.countTokens()];
-			for (int i = 0; st.hasMoreTokens(); i++)
-				interfaces[i] = Class.forName(st.nextToken());
+
+			try {
+				for (int i = 0; st.hasMoreTokens(); i++) {
+					interfaces[i] = Class.forName(st.nextToken());
+				}
+			} catch (ClassNotFoundException e) {
+				throw new LuaException(e);
+			}
 
 			InvocationHandler handler = new LuaInvocationHandler(this);
-
 			return Proxy.newProxyInstance(this.getClass().getClassLoader(), interfaces, handler);
 		}
 	}
