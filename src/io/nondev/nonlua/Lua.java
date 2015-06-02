@@ -144,11 +144,11 @@ public class Lua {
              jstr = javaEnv->CallObjectMethod( exp , methodId );
           }
 
-          cStr = javaEnv->GetStringUTFChars( jstr , NULL );
+          cStr = javaEnv->GetStringUTFChars( ( jstring ) jstr , NULL );
 
           lua_pushstring( L , cStr );
 
-          javaEnv->ReleaseStringUTFChars( jstr, cStr );
+          javaEnv->ReleaseStringUTFChars( ( jstring ) jstr, cStr );
 
           lua_error( L );
        }
@@ -264,11 +264,11 @@ public class Lua {
              jstr = javaEnv->CallObjectMethod( exp , methodId );
           }
 
-          cStr = javaEnv->GetStringUTFChars( jstr , NULL );
+          cStr = javaEnv->GetStringUTFChars( ( jstring ) jstr , NULL );
 
           lua_pushstring( L , cStr );
 
-          javaEnv->ReleaseStringUTFChars( jstr, cStr );
+          javaEnv->ReleaseStringUTFChars( ( jstring ) jstr, cStr );
 
           lua_error( L );
        }
@@ -352,11 +352,11 @@ public class Lua {
              jstr = javaEnv->CallObjectMethod( exp , methodId );
           }
 
-          cStr = javaEnv->GetStringUTFChars( jstr , NULL );
+          cStr = javaEnv->GetStringUTFChars( ( jstring ) jstr , NULL );
 
           lua_pushstring( L , cStr );
 
-          javaEnv->ReleaseStringUTFChars( jstr, cStr );
+          javaEnv->ReleaseStringUTFChars( ( jstring ) jstr, cStr );
 
           lua_error( L );
        }
@@ -441,11 +441,11 @@ public class Lua {
              jstr = javaEnv->CallObjectMethod( exp , methodId );
           }
 
-          cStr = javaEnv->GetStringUTFChars( jstr , NULL );
+          cStr = javaEnv->GetStringUTFChars( ( jstring ) jstr , NULL );
 
           lua_pushstring( L , cStr );
 
-          javaEnv->ReleaseStringUTFChars( jstr, cStr );
+          javaEnv->ReleaseStringUTFChars( ( jstring ) jstr, cStr );
 
           lua_error( L );
        }
@@ -550,11 +550,11 @@ public class Lua {
              jstr = javaEnv->CallObjectMethod( exp , methodId );
           }
 
-          cStr = javaEnv->GetStringUTFChars( jstr , NULL );
+          cStr = javaEnv->GetStringUTFChars( ( jstring ) jstr , NULL );
 
           lua_pushstring( L , cStr );
 
-          javaEnv->ReleaseStringUTFChars( jstr, cStr );
+          javaEnv->ReleaseStringUTFChars( ( jstring ) jstr, cStr );
 
           lua_error( L );
        }
@@ -631,11 +631,11 @@ public class Lua {
              jstr = javaEnv->CallObjectMethod( exp , methodId );
           }
 
-          cStr = javaEnv->GetStringUTFChars( jstr , NULL );
+          cStr = javaEnv->GetStringUTFChars( ( jstring ) jstr , NULL );
 
           lua_pushstring( L , cStr );
 
-          javaEnv->ReleaseStringUTFChars( jstr, cStr );
+          javaEnv->ReleaseStringUTFChars( ( jstring ) jstr, cStr );
 
           lua_error( L );
        }
@@ -727,11 +727,11 @@ public class Lua {
              jstr = javaEnv->CallObjectMethod( exp , methodId );
           }
 
-          cStr = javaEnv->GetStringUTFChars( jstr , NULL );
+          cStr = javaEnv->GetStringUTFChars( ( jstring ) jstr , NULL );
 
           lua_pushstring( L , cStr );
 
-          javaEnv->ReleaseStringUTFChars( jstr, cStr );
+          javaEnv->ReleaseStringUTFChars( ( jstring ) jstr, cStr );
 
           lua_error( L );
        }
@@ -812,11 +812,11 @@ public class Lua {
              jstr = javaEnv->CallObjectMethod( exp , methodId );
           }
 
-          cStr = javaEnv->GetStringUTFChars( jstr , NULL );
+          cStr = javaEnv->GetStringUTFChars( ( jstring ) jstr , NULL );
 
           lua_pushstring( L , cStr );
 
-          javaEnv->ReleaseStringUTFChars( jstr, cStr );
+          javaEnv->ReleaseStringUTFChars( ( jstring ) jstr, cStr );
 
           lua_error( L );
        }
@@ -912,11 +912,11 @@ public class Lua {
              jstr = javaEnv->CallObjectMethod( exp , methodId );
           }
 
-          str = javaEnv->GetStringUTFChars( jstr , NULL );
+          str = javaEnv->GetStringUTFChars( ( jstring ) jstr , NULL );
 
           lua_pushstring( L , str );
 
-          javaEnv->ReleaseStringUTFChars( jstr, str );
+          javaEnv->ReleaseStringUTFChars( ( jstring ) jstr, str );
 
           lua_error( L );
        }
@@ -989,11 +989,11 @@ public class Lua {
              jstr = javaEnv->CallObjectMethod( exp , methodId );
           }
 
-          str = javaEnv->GetStringUTFChars( jstr , NULL );
+          str = javaEnv->GetStringUTFChars( ( jstring ) jstr , NULL );
 
           lua_pushstring( L , str );
 
-          javaEnv->ReleaseStringUTFChars( jstr, str );
+          javaEnv->ReleaseStringUTFChars( ( jstring ) jstr, str );
 
           lua_error( L );
        }
@@ -1081,11 +1081,11 @@ public class Lua {
              jstr = javaEnv->CallObjectMethod( exp , methodId );
           }
 
-          str = javaEnv->GetStringUTFChars( jstr , NULL );
+          str = javaEnv->GetStringUTFChars( ( jstring ) jstr , NULL );
 
           lua_pushstring( L , str );
 
-          javaEnv->ReleaseStringUTFChars( jstr, str );
+          javaEnv->ReleaseStringUTFChars( ( jstring ) jstr, str );
 
           lua_error( L );
        }
@@ -1312,11 +1312,11 @@ public class Lua {
              jstr = javaEnv->CallObjectMethod( exp , methodId );
           }
 
-          str = javaEnv->GetStringUTFChars( jstr , NULL );
+          str = javaEnv->GetStringUTFChars( ( jstring ) jstr , NULL );
 
           lua_pushstring( L , str );
 
-          javaEnv->ReleaseStringUTFChars( jstr, str );
+          javaEnv->ReleaseStringUTFChars( ( jstring ) jstr, str );
 
           lua_error( L );
        }
