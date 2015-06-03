@@ -9,6 +9,8 @@ public class MyLuaProject {
         L = new Lua();
         L.push("Hello World from Lua!");
         L.set("message");
+        L.run("test.lua");
+        L.run("require(\"test2\")");
         L.run("print(message)");
         L.dispose();
     }

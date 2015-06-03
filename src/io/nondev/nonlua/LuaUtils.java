@@ -65,7 +65,13 @@ public final class LuaUtils {
     }
 
     public static InputStream getStream(LuaLoader loader, String path) throws IOException {
-        File file = new File(loader.path(), path);
+        File file = null;
+
+        if (loader.path().equals("")) {
+            file = new File(path);
+        } else {
+            file = new File(loader.path(), path);
+        }
 
         if (file.exists()) {
             return new FileInputStream(file);

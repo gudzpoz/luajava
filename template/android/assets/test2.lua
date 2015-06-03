@@ -1,0 +1,1 @@
+print("Hello World from test2.lua")
