@@ -291,6 +291,257 @@ public class Lua {
         return ( jint ) luaL_dostring( L , str );
     */
 
+    private static native CPtr jniNewThread(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+        lua_State * newThread = lua_newthread( L );
+        
+        jclass tempClass = env->FindClass( "io/nondev/nonlua/CPtr" );
+        jobject obj = env->AllocObject( tempClass );
+
+        if ( obj )
+        {
+            env->SetLongField( obj , env->GetFieldID( tempClass , "peer" , "J" ), ( jlong ) newThread );
+        }
+
+        return obj;
+    */
+
+    private static native void jniPushNil(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushnil( L );
+    */
+
+    private static native void jniPushNumber(CPtr cptr, double db); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushnumber( L , ( lua_Number ) db );
+    */
+
+    private static native void jniPushInteger(CPtr cptr, int integer); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushinteger( L, ( lua_Integer ) integer );
+    */
+
+    private static native void jniPushString(CPtr cptr, String str); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushstring( L , str );
+    */
+
+    private static native void jniPushBoolean(CPtr cptr, int val); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushboolean( L , ( int ) val );
+    */
+
+    private static native void jniPushFunction(CPtr cptr, LuaFunction func); /*
+        lua_State* L = getStateFromCPtr( env , cptr );
+
+        jobject * userData , globalRef;
+
+        globalRef = env->NewGlobalRef( func );
+
+        userData = ( jobject * ) lua_newuserdata( L , sizeof( jobject ) );
+        *userData = globalRef;
+
+        lua_newtable( L );
+
+        lua_pushstring( L , LUACALLMETAMETHODTAG );
+        lua_pushcfunction( L , &luaJavaFunctionCall );
+        lua_rawset( L , -3 );
+
+        lua_pushstring( L , LUAGCMETAMETHODTAG );
+        lua_pushcfunction( L , &gc );
+        lua_rawset( L , -3 );
+
+        lua_pushstring( L , LUAJAVAOBJECTIND );
+        lua_pushboolean( L , 1 );
+        lua_rawset( L , -3 );
+        lua_setmetatable( L , -2 );
+    */
+
+    private static native void jniPushObject(CPtr cptr, Object obj); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        pushJavaObject( L , obj );
+    */
+
+    private static native void jniPushArray(CPtr cptr, Object obj); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        pushJavaArray( L , obj );
+    */
+
+    private static native int jniIsNumber(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_isnumber( L , ( int ) index );
+    */
+
+    private static native int jniIsInteger(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_isinteger( L , ( int ) index );
+    */
+
+    private static native int jniIsBoolean(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_isboolean( L , ( int ) index );
+    */
+
+    private static native int jniIsString(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_isstring( L , ( int ) index );
+    */
+
+    private static native int jniIsFunction(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        int isJavaFunction = 0;
+
+        if ( isJavaObject( L , index ) )
+        {
+            jobject * obj = ( jobject * ) lua_touserdata( L , ( int ) index );
+            isJavaFunction = env->IsInstanceOf( *obj , java_function_class );
+        }
+
+        return ( jint ) ( 
+            lua_isfunction( L , ( int ) index ) || 
+            lua_iscfunction( L , ( int ) index ) || 
+            isJavaFunction
+        );
+    */
+
+    private static native int jniIsObject(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+        
+        return ( jint ) isJavaObject( L , index );
+    */
+
+    private static native int jniIsTable(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_istable( L , ( int ) index );
+    */
+
+    private static native int jniIsUserdata(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_isuserdata( L , ( int ) index );
+    */
+
+    private static native int jniIsNil(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_isnil( L , ( int ) index );
+    */
+
+    private static native int jniIsNone(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_isnone( L , ( int ) index );
+    */
+
+    private static native double jniToNumber(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jdouble ) lua_tonumber( L , index );
+    */
+
+    private static native int jniToInteger(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_tointeger( L , index );
+    */
+
+    private static native int jniToBoolean(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_toboolean( L , index );
+    */
+
+    private static native String jniToString(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return env->NewStringUTF( lua_tostring( L , index ) );
+    */
+
+    private static native Object jniToObject(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        if ( !isJavaObject( L , index ) )
+        {
+            return NULL;
+        }
+        
+        jobject * obj = ( jobject * ) lua_touserdata( L , ( int ) index );
+        return *obj;
+    */
+
+    private static native void jniGetGlobal(CPtr cptr, String key); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_getglobal( L , key );
+    */
+
+    private static native void jniSetGlobal(CPtr cptr, String key); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_setglobal( L , key );
+    */
+
+    private static native void jniGet(CPtr cptr, int index, String key); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_getfield( L , ( int ) index , key );
+    */
+
+    private static native void jniSet(CPtr cptr, int index, String key); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_setfield( L , ( int ) index , key );
+    */
+
+    private static native void jniGetI(CPtr cptr, int index, int key); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_geti( L , ( int ) index , ( int ) key );
+    */
+
+    private static native void jniSetI(CPtr cptr, int index, int key); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_seti( L , ( int ) index , ( int ) key );
+    */
+
+    private static native int jniGetTop(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_gettop( L );
+    */
+
+    private static native void jniSetTop(CPtr cptr, int top); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_settop( L , ( int ) top );
+    */
+
+    private static native void jniPop(CPtr cptr, int num); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pop( L , ( int ) num );
+    */
+
+    private static native void jniCopy(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_pushvalue( L , ( int ) index );
+    */
+
     private static final String LIB = "nonlua";
 
     public static final int GLOBALS       = -10002;
@@ -348,15 +599,25 @@ public class Lua {
     }
 
     protected CPtr state;
-    protected final int stateId;
+    protected int stateId;
 
     public Lua() {
         this(new LuaConfiguration());
     }
-    
+
     public Lua(LuaConfiguration cfg) {
-        stateId = LuaFactory.insert(this);
-        state = jniOpen(stateId);
+        int stateId = LuaFactory.insert(this);
+        open(cfg, jniOpen(stateId), stateId);
+    }
+
+    protected Lua(CPtr state) {
+        int stateId = LuaFactory.insert(this);
+        open(new LuaConfiguration(), state, stateId);
+    }
+
+    private void open(LuaConfiguration cfg, CPtr state, int stateId) {
+        this.state = state;
+        this.stateId = stateId;
 
         if (cfg.baseLib) jniOpenBase(state);
         if (cfg.coroutineLib) jniOpenCoroutine(state);
@@ -370,22 +631,22 @@ public class Lua {
         if (cfg.tableLib) jniOpenTable(state);
         if (cfg.utf8Lib) jniOpenUtf8(state);
 
-        pushFunction(new LuaFunction(this) {
+        push(new LuaFunction(this) {
             public int call() {
-                for (int i = 2; i <= L.getTop(); i++) {
-                    int type = L.type(i);
-                    String stype = L.typeName(type);
+                for (int i = 2; i <= L.reset(); i++) {
+                    String type = L.typeName(L.type(i));
                     String val = null;
-                    if (stype.equals("userdata")) {
+
+                    if (type.equals("userdata")) {
                         Object obj = L.toObject(i); 
                         if (obj != null) val = obj.toString();
-                    } else if (stype.equals("boolean")) {   
+                    } else if (type.equals("boolean")) {  
                         val = L.toBoolean(i) ? "true" : "false";
                     } else {
                         val = L.toString(i);
                     }
 
-                    if (val == null) val = stype;
+                    if (val == null) val = type;
                     logger.log(val);
                     logger.log("\t");
                 }
@@ -395,33 +656,33 @@ public class Lua {
             }
         });
 
-        setGlobal("print");
+        set("print");
 
-        getGlobal("package");
-        getField(-1, "loaders");
+        get("package");
+        get(-1, "loaders");
         int nLoaders = len(-1);
         
-        pushFunction(new LuaFunction(this) {
+        push(new LuaFunction(this) {
             public int call() {
                 String name = L.toString(-1);
 
                 if (L.load(name + ".lua") == -1)
-                    L.pushString("Cannot load module " + name); 
+                    L.push("Cannot load module " + name); 
 
                 return 1;
             }
         });
 
-        setI(-2, nLoaders + 1);
+        set(-2, nLoaders + 1);
         pop(1);
-        getField(-1, "path");
-        pushString(";" + loader.path() + "/?.lua");
+        get(-1, "path");
+        push(";" + loader.path() + "/?.lua");
         concat(2);
-        setField(-2, "path");
+        set(-2, "path");
         pop(1);
     }
 
-    public long getCPtrPeer() {
+    protected long getCPtrPeer() {
         return (state != null) ? state.getPeer() : 0;
     }
     
@@ -458,38 +719,191 @@ public class Lua {
     }
 
     public Lua newThread() {
-        return null;
+        return new Lua(jniNewThread(state));
     }
 
-    public void get(int idx) {
+    public void pushNil() {
+        jniPushNil(state);
     }
 
-    public void set(int idx) {
-    }
-
-    public int getTop() {
-        return 0;
-    }
-
-    public void setTop(int idx) {
-    }
-
-    public void getI(int idx, int n) {
-    }
-
-    public void setI(int idx, int n) {
-    }
-
-    public void pushValue(int idx) {
+    public void push(double db) {
+        jniPushNumber(state, db);
     }
     
-    public void remove(int idx) {
+    public void push(int integer) {
+        jniPushInteger(state, integer);
+    }
+
+    public void push(String str) {
+        jniPushString(state, str);
     }
     
-    public void insert(int idx) {
+    public void push(boolean bool) {
+        jniPushBoolean(state, bool ? 1 : 0);
+    }
+
+    public void push(LuaFunction func) {
+        jniPushFunction(state, func);
+    }
+
+    public void push(LuaObject obj) {
+        obj.push();
+    }
+
+    public void push(Object obj) {
+        if (obj == null) {
+            pushNil();
+        } else if (obj.getClass().isArray()) {
+            jniPushArray(state, obj);
+        } else {
+            jniPushObject(state, obj);
+        }
+    }
+
+    public LuaObject pull(String globalName) {
+        return new LuaObject(this, globalName);
     }
     
-    public void replace(int idx) {
+    public LuaObject pull(LuaObject parent, String name) {
+        if (parent.getLua().getCPtrPeer() != state.getPeer()) return null;
+        if (!parent.isTable() && !parent.isUserdata()) return null;
+        return new LuaObject(parent, name);
+    }
+    
+    public LuaObject pull(LuaObject parent, Number name) {
+        if (parent.getLua().getCPtrPeer() != state.getPeer()) return null;
+        if (!parent.isTable() && !parent.isUserdata()) return null;
+        return new LuaObject(parent, name);
+    }
+    
+    public LuaObject pull(LuaObject parent, LuaObject name) {
+        if (parent.getLua().getCPtrPeer() != state.getPeer() ||
+            parent.getLua().getCPtrPeer() != name.getLua().getCPtrPeer())
+            return null;
+
+        if (parent.getLua() != name.getLua()) return null;
+        if (!parent.isTable() && !parent.isUserdata()) return null;
+
+        return new LuaObject(parent, name);
+    }
+
+    public LuaObject pull(int index) {
+        return new LuaObject(this, index);
+    }
+
+    public boolean isNumber(int index) {
+        return jniIsNumber(state, index) != 0;
+    }
+
+    public boolean isInteger(int index) {
+        return jniIsInteger(state, index) != 0;
+    }
+
+    public boolean isBoolean(int index) {
+        return jniIsBoolean(state, index) != 0;
+    }
+
+    public boolean isString(int index) {
+        return jniIsString(state, index) != 0;
+    }
+
+    public boolean isFunction(int index) {
+        return jniIsFunction(state, index) != 0;
+    }
+
+    public boolean isTable(int index) {
+        return jniIsTable(state, index) != 0;
+    }
+
+    public boolean isUserdata(int index) {
+        return jniIsUserdata(state, index) != 0;
+    }
+
+    public boolean isObject(int index) {
+        return jniIsObject(state, index) != 0;
+    }
+    
+    public boolean isNil(int index) {
+        return jniIsNil(state, index) != 0;
+    }
+
+    public boolean isNone(int index) {
+        return jniIsNone(state, index) != 0;
+    }
+
+    public double toNumber(int index) {
+        return jniToNumber(state, index);
+    }
+
+    public int toInteger(int index) {
+        return jniToInteger(state, index);
+    }
+    
+    public boolean toBoolean(int index) {
+        return jniToBoolean(state, index) != 0;
+    }
+
+    public String toString(int index) {
+        return jniToString(state, index);
+    }
+
+    public Object toObject(int index) {
+        return jniToObject(state, index);
+    }
+
+    public void get(String key) {
+        jniGetGlobal(state, key);
+    }
+
+    public void set(String key) {
+        jniSetGlobal(state, key);
+    }
+
+    public void get(int index, String key) {
+        jniGet(state, index, key);
+    }
+
+    public void set(int index, String key) {
+        jniSet(state, index, key);
+    }
+
+    public void get(int index, int key) {
+        jniGetI(state, index, key);
+    }
+
+    public void set(int index, int key) {
+        jniSetI(state, index, key);
+    }
+
+    // TODO: Rename to getTop probably
+    public int reset() {
+        return jniGetTop(state);
+    }
+
+    // TODO: Rename to setTop probably
+    public void top(int top) {
+        jniSetTop(state, top);
+    }
+
+    public void pop(int num)  {
+        jniPop(state, num);
+    }
+
+    public void copy(int index)  {
+        jniCopy(state, index);
+    }
+
+    // ************************************************************************************************
+    // TODO: Unfinished API is below
+    // ************************************************************************************************
+    
+    public void remove(int index) {
+    }
+    
+    public void insert(int index) {
+    }
+    
+    public void replace(int index) {
     }
     
     public int checkStack(int sz) {
@@ -498,52 +912,8 @@ public class Lua {
 
     public void move(Lua to, int n) {
     }
-    
-    public boolean isNumber(int idx) {
-        return false;
-    }
 
-    public boolean isString(int idx) {
-        return false;
-    }
-
-    public boolean isFunction(int idx) {
-        return false;
-    }
-
-    public boolean isUserdata(int idx) {
-        return false;
-    }
-
-    public boolean isTable(int idx) {
-        return false;
-    }
-
-    public boolean isBoolean(int idx) {
-        return false;
-    }
-
-    public boolean exists(int idx) {
-        return false;
-    }
-    
-    public boolean isNil(int idx) {
-        return false;
-    }
-    
-    public boolean isThread(int idx) {
-        return false;
-    }
-    
-    public boolean isNone(int idx) {
-        return false;
-    }
-
-    public boolean isObject(int idx) {
-        return false;
-    }
-
-    public int type(int idx) {
+    public int type(int index) {
         return 0;
     }
 
@@ -551,101 +921,26 @@ public class Lua {
         return "";
     }
 
-    public int compare(int idx1, int idx2, int op) {
+    public int compare(int index1, int index2, int op) {
         return 0;
     }
 
-    public int len(int idx) {
+    public int len(int index) {
         return 0;
     }
 
-    public double toNumber(int idx) {
-        return 0.0;
+    public void getTable(int index) {
     }
 
-    public int toInteger(int idx) {
-        return 0;
-    }
-    
-    public boolean toBoolean(int idx) {
-        return false;
-    }
-
-    public String toString(int idx) {
-        return "";
-    }
-
-    public Lua toThread(int idx) {
-        return null;
-    }
-
-    public Object toObject(int idx) {
-        return null;
-    }
-
-    public void pushNil() {
-    }
-
-    public void pushNumber(double db) {
-    }
-    
-    public void pushInteger(int integer) {
-    }
-
-    public void pushString(String str) {
-    }
-
-    public void pushString(byte[] bytes) {
-    }
-    
-    public void pushBoolean(boolean bool) {
-    }
-
-    public void pushObject(Object obj) {
-    }
-
-    public void pushFunction(LuaFunction func) {
-    }
-
-    public void getTable(int idx) {
-    }
-
-    public int getMetaTable(int idx) {
+    public int getMetaTable(int index) {
         return 0;
     }
 
     public void getMetaTable(String tName) {
     }
-    
-    public void getField(int idx, String k) {
-    }
 
     public int getMetaField(int obj, String e) {
         return 0;
-    }
-
-    public LuaObject getObject(String globalName) {
-        return null;
-    }
-    
-    public LuaObject getObject(LuaObject parent, String name) {
-        return null;
-    }
-    
-    public LuaObject getObject(LuaObject parent, Number name) {
-        return null;
-    }
-    
-    public LuaObject getObject(LuaObject parent, LuaObject name) {
-        return null;
-    }
-
-    public LuaObject getObject(int index) {
-        return null;
-    }
-
-    public Object getObjectFromUserdata(int idx) {
-        return null;
     }
     
     public void createTable(int narr, int nrec) {
@@ -658,13 +953,10 @@ public class Lua {
         return 0;
     }
 
-    public void setTable(int idx) {
-    }
-    
-    public void setField(int idx, String k) {
+    public void setTable(int index) {
     }
 
-    public int setMetaTable(int idx) {
+    public int setMetaTable(int index) {
         return 0;
     }
 
@@ -695,7 +987,7 @@ public class Lua {
         return 0;
     }
     
-    public int next(int idx) {
+    public int next(int index) {
         return 0;
     }
 
@@ -757,8 +1049,7 @@ public class Lua {
         return "";
     }
     
-    public void pop(int n)  {
-    }
+    
 
     public void getGlobal(String global) {
     }

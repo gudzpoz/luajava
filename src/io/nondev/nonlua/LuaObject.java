@@ -77,16 +77,12 @@ public class LuaObject {
 	 * @param name
 	 *            The name that index the field
 	 */
-	protected LuaObject(LuaObject parent, String name) throws LuaException {
+	protected LuaObject(LuaObject parent, String name) {
 		synchronized (parent.getLua()) {
 			this.L = parent.getLua();
 
-			if (!parent.isTable() && !parent.isUserdata()) {
-				throw new LuaException("Object parent should be a table or userdata .");
-			}
-
 			parent.push();
-			L.pushString(name);
+			L.push(name);
 			L.getTable(-2);
 			L.remove(-2);
 			registerValue(-1);
@@ -104,16 +100,12 @@ public class LuaObject {
 	 * @throws LuaException
 	 *             When the parent object isn't a Table or Userdata
 	 */
-	protected LuaObject(LuaObject parent, Number name) throws LuaException {
+	protected LuaObject(LuaObject parent, Number name) {
 		synchronized (parent.getLua()) {
 			this.L = parent.getLua();
 
-			if (!parent.isTable() && !parent.isUserdata()) {
-				throw new LuaException("Object parent should be a table or userdata .");
-			}
-
 			parent.push();
-			L.pushNumber(name.doubleValue());
+			L.push(name.doubleValue());
 			L.getTable(-2);
 			L.remove(-2);
 			registerValue(-1);
@@ -131,15 +123,8 @@ public class LuaObject {
 	 * @throws LuaException
 	 *             When the parent object isn't a Table or Userdata
 	 */
-	protected LuaObject(LuaObject parent, LuaObject name) throws LuaException {
-		if (parent.getLua() != name.getLua()) {
-			throw new LuaException("Luas must be the same!");
-		}
-
+	protected LuaObject(LuaObject parent, LuaObject name) {
 		synchronized (parent.getLua()) {
-			if (!parent.isTable() && !parent.isUserdata()) {
-				throw new LuaException("Object parent should be a table or userdata .");
-			}
 
 			L = parent.getLua();
 			parent.push();
@@ -180,7 +165,7 @@ public class LuaObject {
 	 */
 	private void registerValue(int index) {
 		synchronized (L) {
-			L.pushValue(index);
+			L.copy(index);
 			int key = L.ref(Lua.REGISTRY);
 			ref = new Integer(key);
 		}
@@ -201,7 +186,7 @@ public class LuaObject {
 	 * Pushes the object represented by <code>this<code> into L's stack
 	 */
 	public void push() {
-		L.getI(Lua.REGISTRY, ref);
+		L.get(Lua.REGISTRY, ref);
 	}
 
 	public boolean isNil() {
@@ -290,7 +275,7 @@ public class LuaObject {
 		}
 	}
 
-	public boolean getBoolean() {
+	public boolean toBoolean() {
 		synchronized (L) {
 			push();
 			boolean bool = L.toBoolean(-1);
@@ -299,7 +284,7 @@ public class LuaObject {
 		}
 	}
 
-	public double getNumber() {
+	public double toNumber() {
 		synchronized (L) {
 			push();
 			double db = L.toNumber(-1);
@@ -308,7 +293,7 @@ public class LuaObject {
 		}
 	}
 
-	public String getString() {
+	public String toString() {
 		synchronized (L) {
 			push();
 			String str = L.toString(-1);
@@ -317,10 +302,10 @@ public class LuaObject {
 		}
 	}
 
-	public Object getObject() {
+	public Object toObject() {
 		synchronized (L) {
 			push();
-			Object obj = L.getObjectFromUserdata(-1);
+			Object obj = L.toObject(-1);
 			L.pop(1);
 			return obj;
 		}
@@ -331,7 +316,7 @@ public class LuaObject {
 	 * a field value.
 	 */
 	public LuaObject getField(String field) {
-		return L.getObject(this, field);
+		return L.pull(this, field);
 	}
 
 	/**
@@ -350,14 +335,14 @@ public class LuaObject {
 				throw new LuaException("Invalid object. Not a function, table or userdata .");
 			}
 
-			int top = L.getTop();
+			int top = L.reset();
 			push();
 			int nargs;
 			if (args != null) {
 				nargs = args.length;
 				for (int i = 0; i < nargs; i++) {
 					Object obj = args[i];
-					L.pushObject(obj);
+					L.push(obj);
 				}
 			} else {
 				nargs = 0;
@@ -390,8 +375,8 @@ public class LuaObject {
 			}
 
 			if (nres == Lua.MULTRET)
-				nres = L.getTop() - top;
-			if (L.getTop() - top < nres) {
+				nres = L.reset() - top;
+			if (L.reset() - top < nres) {
 				throw new LuaException("Invalid Number of Results .");
 			}
 
@@ -418,14 +403,14 @@ public class LuaObject {
 		return call(args, 1)[0];
 	}
 
-	public String toString() {
+	public String typeString() {
 		synchronized (L) {
 			if (isNil()) return "nil";
-			if (isBoolean()) return String.valueOf(getBoolean());
-			if (isNumber()) return String.valueOf(getNumber());
-			if (isString()) return getString();
+			if (isBoolean()) return String.valueOf(toBoolean());
+			if (isNumber()) return String.valueOf(toNumber());
+			if (isString()) return toString();
 			if (isFunction()) return "Function";
-			if (isObject()) return getObject().toString();
+			if (isObject()) return toObject().toString();
 			if (isUserdata()) return "Userdata";
 			if (isTable()) return "Table";
 			return null;
