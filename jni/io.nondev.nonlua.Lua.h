@@ -85,14 +85,6 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenBase
 
 /*
  * Class:     io_nondev_nonlua_Lua
- * Method:    jniOpenBit32
- * Signature: (Lio/nondev/nonlua/CPtr;)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenBit32
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     io_nondev_nonlua_Lua
  * Method:    jniOpenCoroutine
  * Signature: (Lio/nondev/nonlua/CPtr;)V
  */
