@@ -86,7 +86,7 @@ public final class LuaJava {
 
             if (ret == null) return 0;
 
-            L.pushObject(ret);
+            L.push(ret);
             return 1;
         }
     }
@@ -111,7 +111,7 @@ public final class LuaJava {
                 throw new LuaException("Index out of bounds.");
             }
       
-            L.pushObject(Array.get(obj, index - 1));
+            L.push(Array.get(obj, index - 1));
             return 1;
         }
     }
@@ -233,7 +233,7 @@ public final class LuaJava {
             }
             
             Object ret = getObjInstance(L, clazz);
-            L.pushObject(ret);
+            L.push(ret);
             return 1;
         }
     }
@@ -251,7 +251,7 @@ public final class LuaJava {
 
         synchronized (L) {
             Object ret = getObjInstance(L, clazz);
-            L.pushObject(ret);
+            L.push(ret);
             return 1;
         }
     }
@@ -377,7 +377,7 @@ public final class LuaJava {
                 return 0;
             }
 
-            L.pushObject(ret);
+            L.push(ret);
             return 1;
         }
     }
@@ -431,9 +431,9 @@ public final class LuaJava {
                     throw new LuaException("Parameter is not a table. Can't create proxy.");
                 }
 
-                LuaObject luaObj = L.getObject(2);
+                LuaObject luaObj = L.pull(2);
                 Object proxy = luaObj.createProxy(implem);
-                L.pushObject(proxy);
+                L.push(proxy);
             } catch (Exception e) {
                 throw new LuaException(e);
             }
@@ -464,13 +464,13 @@ public final class LuaJava {
             if (!parameter.isAssignableFrom(LuaObject.class)) {
                 okType = false;
             } else {
-                obj = L.getObject(idx);
+                obj = L.pull(idx);
             }
         } else if (L.isTable(idx)) {
             if (!parameter.isAssignableFrom(LuaObject.class)) {
                 okType = false;
             } else {
-                obj = L.getObject(idx);
+                obj = L.pull(idx);
             }
         } else if (L.isNumber(idx)) {
             Double db = new Double(L.toNumber(idx));
@@ -481,7 +481,7 @@ public final class LuaJava {
             }
         } else if (L.isUserdata(idx)) {
             if (L.isObject(idx)) {
-                Object userObj = L.getObjectFromUserdata(idx);
+                Object userObj = L.toObject(idx);
                 if (!parameter.isAssignableFrom(userObj.getClass())) {
                     okType = false;
                 } else {
@@ -491,7 +491,7 @@ public final class LuaJava {
                 if (!parameter.isAssignableFrom(LuaObject.class)) {
                     okType = false;
                 } else {
-                    obj = L.getObject(idx);
+                    obj = L.pull(idx);
                 }
             }
         } else if (L.isNil(idx)) {

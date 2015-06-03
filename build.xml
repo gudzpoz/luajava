@@ -1,4 +1,6 @@
 <project name="nonlua" basedir="." default="all">
+  <property name="has-compiler" value="true"/>
+  
   <target name="clean-natives">
 		<ant antfile="build-windows32.xml" dir="jni" target="clean"/>
 		<ant antfile="build-windows64.xml" dir="jni" target="clean"/>

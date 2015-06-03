@@ -518,6 +518,12 @@ public class Lua {
         lua_seti( L , ( int ) index , ( int ) key );
     */
 
+    private static native void jniGetTable(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_gettable( L , ( int ) index );
+    */
+
     private static native int jniGetTop(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -540,6 +546,72 @@ public class Lua {
         lua_State * L = getStateFromCPtr( env , cptr );
 
         lua_pushvalue( L , ( int ) index );
+    */
+
+    private static native void jniRemove(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_remove( L , ( int ) index );
+    */
+
+    private static native void jniInsert(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_insert( L , ( int ) index );
+    */
+
+    private static native void jniReplace(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_replace( L , ( int ) index );
+    */
+
+    private static native void jniConcat(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_concat( L , ( int ) index );
+    */
+
+    private static native int jniLen(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return (jint) luaL_len( L , ( int ) index );
+    */
+
+    private static native int jniType(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return (jint) lua_type( L , ( int ) index );
+    */
+
+    private static native String jniTypeName(CPtr cptr, int type); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+        
+        return env->NewStringUTF( lua_typename( L , ( int ) type ) );
+    */
+
+    private static native int jniRef(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) luaL_ref( L , ( int ) index );
+    */
+
+    private static native void jniUnRef(CPtr cptr, int index, int ref); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        luaL_unref( L , ( int ) index , ( int ) ref );
+    */
+
+    private static native void jniCall(CPtr cptr, int nArgs, int nResults); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_call( L , ( int ) nArgs , ( int ) nResults );
+    */
+
+    private static native int jniPcall(CPtr cptr, int nArgs, int nResults, int errFunc); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_pcall( L , ( int ) nArgs , ( int ) nResults, ( int ) errFunc );
     */
 
     private static final String LIB = "nonlua";
@@ -633,7 +705,7 @@ public class Lua {
 
         push(new LuaFunction(this) {
             public int call() {
-                for (int i = 2; i <= L.reset(); i++) {
+                for (int i = 2; i <= L.getTop(); i++) {
                     String type = L.typeName(L.type(i));
                     String val = null;
 
@@ -875,13 +947,15 @@ public class Lua {
         jniSetI(state, index, key);
     }
 
-    // TODO: Rename to getTop probably
-    public int reset() {
+    public void getTable(int index) {
+        jniGetTable(state, index);
+    }
+
+    public int getTop() {
         return jniGetTop(state);
     }
 
-    // TODO: Rename to setTop probably
-    public void top(int top) {
+    public void setTop(int top) {
         jniSetTop(state, top);
     }
 
@@ -893,18 +967,60 @@ public class Lua {
         jniCopy(state, index);
     }
 
+    public void remove(int index) {
+        jniRemove(state, index);
+    }
+    
+    public void insert(int index) {
+        jniInsert(state, index);
+    }
+    
+    public void replace(int index) {
+        jniReplace(state, index);
+    }
+
+    public void concat(int index) {
+        jniConcat(state, index);
+    }
+
+    public int len(int index) {
+        return jniLen(state, index);
+    }
+
+    public int type(int index) {
+        return jniType(state, index);
+    }
+
+    public String typeName(int type) {
+        return jniTypeName(state, type);
+    }
+
+    public int ref(int index) {
+        return jniRef(state, index);
+    }
+    
+    public void unRef(int index, int ref) {
+        jniUnRef(state, index, ref);
+    }
+
+    public void call(int nArgs, int nResults) {
+        jniCall(state, nArgs, nResults);
+    }
+
+    public int pcall(int nArgs, int nResults) {
+        return pcall(nArgs, nResults, 0);
+    }
+
+    public int pcall(int nArgs, int nResults, int errFunc) {
+        return jniPcall(state, nArgs, nResults, errFunc);
+    }
+
     // ************************************************************************************************
     // TODO: Unfinished API is below
     // ************************************************************************************************
     
-    public void remove(int index) {
-    }
+    /*
     
-    public void insert(int index) {
-    }
-    
-    public void replace(int index) {
-    }
     
     public int checkStack(int sz) {
         return 0;
@@ -913,9 +1029,7 @@ public class Lua {
     public void move(Lua to, int n) {
     }
 
-    public int type(int index) {
-        return 0;
-    }
+    
 
     public String typeName(int tp) {
         return "";
@@ -925,12 +1039,9 @@ public class Lua {
         return 0;
     }
 
-    public int len(int index) {
-        return 0;
-    }
+    
 
-    public void getTable(int index) {
-    }
+    
 
     public int getMetaTable(int index) {
         return 0;
@@ -960,16 +1071,13 @@ public class Lua {
         return 0;
     }
 
-    public void call(int nArgs, int nResults) {
-    }
+
 
     public int callMeta(int obj, String e) {
         return 0;
     }
 
-    public int pcall(int nArgs, int nResults, int errFunc) {
-        return 0;
-    }
+    
 
     public int yield(int nResults) {
         return 0;
@@ -993,9 +1101,6 @@ public class Lua {
 
     public int error() {
         return 0;
-    }
-
-    public void concat(int n) {
     }
     
     public int argError(int numArg, String extraMsg) {
@@ -1038,22 +1143,9 @@ public class Lua {
     public void where(int lvl) {
     }
     
-    public int ref(int t) {
-        return 0;
-    }
-    
-    public void unRef(int t, int ref) {
-    }
-    
     public String gsub(String s, String p, String r) {
         return "";
     }
-    
-    
 
-    public void getGlobal(String global) {
-    }
-
-    public void setGlobal(String name) {
-    }
+    */
 }
