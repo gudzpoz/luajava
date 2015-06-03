@@ -30,18 +30,8 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 
 public final class LuaUtils {
-    /**
-     * When you call a function in lua, it may return a number, and the
-     * number will be interpreted as a <code>Double</code>.<br>
-     * This function converts the number into a type specified by 
-     * <code>retType</code>
-     * @param db lua number to be converted
-     * @param retType type to convert to
-     * @return The converted number
-     */
     public static Number convertNumber(Double db, Class retType) {
         if (retType.isPrimitive()) {
-            // checks if retType is a primitive type
             if (retType == Integer.TYPE) {
                 return new Integer(db.intValue());
             } else if (retType == Float.TYPE) {
@@ -56,7 +46,6 @@ public final class LuaUtils {
                 return new Short(db.shortValue());
             }
         } else if (retType.isAssignableFrom(Number.class)) {
-            // Checks all possibilities of number types
             if (retType.isAssignableFrom(Integer.class)) {
                 return new Integer(db.intValue());
             } else if (retType.isAssignableFrom(Float.class)) {
@@ -72,7 +61,6 @@ public final class LuaUtils {
             }
         }
     
-        // if all checks fail, return null
         return null;    
     }
 

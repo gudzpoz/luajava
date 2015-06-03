@@ -156,33 +156,29 @@ public class Lua {
     private static native void jniOpenBase(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
 
-        lua_pushcfunction( L , luaopen_base );
-        lua_pushstring( L , "" );
-        lua_call( L , 1 , 0 );
+        luaL_requiref( L , "_G" , luaopen_base , 1 );
+        lua_pop( L , 1 );
     */
 
     private static native void jniOpenCoroutine(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
-
-        lua_pushcfunction( L , luaopen_coroutine );
-        lua_pushstring( L , LUA_COLIBNAME );
-        lua_call( L , 1 , 0 );
+        
+        luaL_requiref( L , LUA_COLIBNAME , luaopen_coroutine , 1 );
+        lua_pop( L , 1 );
     */
 
     private static native void jniOpenDebug(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
-
-        lua_pushcfunction( L , luaopen_debug );
-        lua_pushstring( L , LUA_DBLIBNAME );
-        lua_call( L , 1 , 0 );
+        
+        luaL_requiref( L , LUA_DBLIBNAME , luaopen_debug , 1 );
+        lua_pop( L , 1 );
     */
 
     private static native void jniOpenIo(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
-
-        lua_pushcfunction( L , luaopen_io );
-        lua_pushstring( L , LUA_IOLIBNAME );
-        lua_call( L , 1 , 0 );
+        
+        luaL_requiref( L , LUA_IOLIBNAME , luaopen_io , 1 );
+        lua_pop( L , 1 );
     */
 
     private static native void jniOpenJava(CPtr cptr); /*
@@ -217,50 +213,44 @@ public class Lua {
 
     private static native void jniOpenMath(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
-
-        lua_pushcfunction( L , luaopen_math );
-        lua_pushstring( L , LUA_MATHLIBNAME );
-        lua_call( L , 1 , 0 );
+        
+        luaL_requiref( L , LUA_MATHLIBNAME , luaopen_math , 1 );
+        lua_pop( L , 1 );
     */
 
     private static native void jniOpenOs(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
-
-        lua_pushcfunction( L , luaopen_os );
-        lua_pushstring( L , LUA_OSLIBNAME );
-        lua_call( L , 1 , 0 );
+        
+        luaL_requiref( L , LUA_OSLIBNAME , luaopen_os , 1 );
+        lua_pop( L , 1 );
     */
 
     private static native void jniOpenPackage(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
-
-        lua_pushcfunction( L , luaopen_package );
-        lua_pushstring( L , LUA_LOADLIBNAME );
-        lua_call( L , 1 , 0 );
+        
+        luaL_requiref( L , LUA_LOADLIBNAME , luaopen_package , 1 );
+        lua_pop( L , 1 );
     */
 
     private static native void jniOpenString(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
-
-        lua_pushcfunction( L , luaopen_string );
-        lua_pushstring( L , LUA_STRLIBNAME );
-        lua_call( L , 1 , 0 );
+        
+        luaL_requiref( L , LUA_STRLIBNAME , luaopen_string , 1 );
+        lua_pop( L , 1 );
     */
 
     private static native void jniOpenTable(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
-
-        lua_pushcfunction( L , luaopen_table );
-        lua_pushstring( L , LUA_TABLIBNAME );
-        lua_call( L , 1 , 0 );
+        
+        luaL_requiref( L , LUA_TABLIBNAME , luaopen_table , 1 );
+        lua_pop( L , 1 );
     */
 
     private static native void jniOpenUtf8(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
-
-        lua_pushcfunction( L , luaopen_utf8 );
-        lua_pushstring( L , LUA_UTF8LIBNAME );
-        lua_call( L , 1 , 0 );
+        
+        luaL_requiref( L , LUA_UTF8LIBNAME , luaopen_utf8 , 1 );
+        lua_pop( L , 1 );
     */
 
     private static native int jniLoadBuffer(CPtr cptr, byte[] buff, long bsize, String name); /*
@@ -731,8 +721,8 @@ public class Lua {
         set("print");
 
         get("package");
-        get(-1, "loaders");
-        int nLoaders = len(-1);
+        get(-1, "searchers");
+        int count = len(-1);
         
         push(new LuaFunction(this) {
             public int call() {
@@ -745,7 +735,7 @@ public class Lua {
             }
         });
 
-        set(-2, nLoaders + 1);
+        set(-2, count + 1);
         pop(1);
         get(-1, "path");
         push(";" + loader.path() + "/?.lua");
@@ -1027,12 +1017,6 @@ public class Lua {
     }
 
     public void move(Lua to, int n) {
-    }
-
-    
-
-    public String typeName(int tp) {
-        return "";
     }
 
     public int compare(int index1, int index2, int op) {

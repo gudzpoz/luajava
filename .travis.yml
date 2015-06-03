@@ -19,9 +19,9 @@ install:
 - "./ndk.bin -y | grep -v Extracting"
 - export NDK_HOME=`pwd`/android-ndk-r10d
 script:
-- ant compile-linux -Dhas-compiler=true
-- ant compile-windows -Dhas-compiler=true
-- ant compile-android -Dhas-compiler=true
+- ant compile-linux
+- ant compile-windows
+- ant compile-android
 - ant compile-library
 - ant pack-linux
 - ant pack-windows

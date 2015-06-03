@@ -7,7 +7,9 @@ public class MyLuaProject {
     
     public MyLuaProject() {
         L = new Lua();
-        L.run("print(\"Hello World from Lua!\")");
+        L.push("Hello World from Lua!");
+        L.set("message");
+        L.run("print(message)");
         L.dispose();
     }
 }
