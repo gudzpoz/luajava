@@ -878,7 +878,7 @@ public class Lua {
         } else if (obj instanceof LuaFunction) {
             push((LuaFunction)func);
         } else if (obj instanceof LuaObject) {
-            push((LuaObject)obj
+            push((LuaObject)obj);
         // else if (obj instanceof byte[]) { pushString((byte[]) obj); }
         } else if (obj.getClass().isArray()) {
             jniPushArray(state, obj);
