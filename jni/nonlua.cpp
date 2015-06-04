@@ -735,7 +735,7 @@ int javaProxy( lua_State * L )
 
    if ( lua_gettop( L ) != 2 )
    {
-!    lua_pushstring( L , "Error. Function proxy expects 2 arguments." );
+     lua_pushstring( L , "Error. Function proxy expects 2 arguments." );
      lua_error( L );
    }
 
