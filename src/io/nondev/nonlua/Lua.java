@@ -869,6 +869,17 @@ public class Lua {
     public void push(Object obj) {
         if (obj == null) {
             pushNil();
+        } else if (obj instanceof Boolean) {
+            push(((Boolean)obj).booleanValue());
+        } else if (obj instanceof Number) {
+            push(((Number)obj).doubleValue());
+        } else if (obj instanceof String) {
+            push((String) obj);
+        } else if (obj instanceof LuaFunction) {
+            push((LuaFunction)func);
+        } else if (obj instanceof LuaObject) {
+            push((LuaObject)obj
+        // else if (obj instanceof byte[]) { pushString((byte[]) obj); }
         } else if (obj.getClass().isArray()) {
             jniPushArray(state, obj);
         } else {

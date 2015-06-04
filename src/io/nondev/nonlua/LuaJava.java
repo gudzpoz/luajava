@@ -51,6 +51,7 @@ public final class LuaJava {
             int top = L.getTop();
 
             Object[] objs = new Object[top - 1];
+
             Method method = null;
             Class clazz;
 
@@ -85,6 +86,16 @@ public final class LuaJava {
             }
 
             if (ret == null) return 0;
+
+            if (ret instanceof Object[]) {
+                Object[] lret = (Object[])ret;
+
+                for (Object retfield : lret) {
+                    L.push(retfield);
+                }
+
+                return lret.length;
+            }
 
             L.push(ret);
             return 1;

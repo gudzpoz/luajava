@@ -19,14 +19,9 @@ install:
 - "./ndk.bin -y | grep -v Extracting"
 - export NDK_HOME=`pwd`/android-ndk-r10d
 script:
-- ant compile-linux
-- ant compile-windows
-- ant compile-android
-- ant compile-library
-- ant pack-linux
-- ant pack-windows
-- ant pack-android
-- ant pack-library
+- ant library
+- java -cp bin/nonlua.jar io.nondev.nonlua.LuaBuild
+- ant windows linux android
 after_success:
 - git config --global user.email "${GIT_EMAIL}"
 - git config --global user.name "Thomas Slusny"
