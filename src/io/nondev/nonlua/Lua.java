@@ -876,7 +876,7 @@ public class Lua {
         } else if (obj instanceof String) {
             push((String) obj);
         } else if (obj instanceof LuaFunction) {
-            push((LuaFunction)func);
+            push((LuaFunction)obj);
         } else if (obj instanceof LuaObject) {
             push((LuaObject)obj);
         // else if (obj instanceof byte[]) { pushString((byte[]) obj); }
