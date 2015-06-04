@@ -605,7 +605,7 @@ int gc( lua_State * L )
    return 0;
 }
 
-int javaBindClass( lua_State * L )
+int javaRequire( lua_State * L )
 {
    int top;
    jmethodID method;
@@ -678,24 +678,68 @@ int javaBindClass( lua_State * L )
    return pushJavaClass( L , classInstance );
 }
 
-
-int createProxy( lua_State * L )
+int javaInstanceOf( lua_State * L )
 {
-  jint ret;
-  lua_Number stateIndex;
-  const char * impl;
-  jmethodID method;
-  jthrowable exp;
-  jstring str;
-  JNIEnv * javaEnv;
+   jobject classInstance;
+   jobject classInstance2;
+   jobject * userData;
+   object * userData2;
+   JNIEnv * javaEnv;
 
-  if ( lua_gettop( L ) != 2 )
-  {
-    lua_pushstring( L , "Error. Function createProxy expects 2 arguments." );
-    lua_error( L );
-  }
+   if ( lua_gettop( L ) < 2 )
+   {
+      lua_pushstring( L , "Error. Invalid number of parameters." );
+      lua_error( L );
+   }
 
-  lua_pushstring( L , LUAJAVASTATEINDEX );
+   if ( !isJavaObject( L , 1 ) )
+   {
+      lua_pushstring( L , "Argument not a valid Java Class." );
+      lua_error( L );
+   }
+
+   javaEnv = getEnvFromState( L );
+   if ( javaEnv == NULL )
+   {
+      lua_pushstring( L , "Invalid JNI Environment." );
+      lua_error( L );
+   }
+
+   userData = ( jobject * ) lua_touserdata( L , 1 );
+
+   classInstance = ( jobject ) *userData;
+
+   if ( lua_isstring( L , 2 ) )
+   {
+      classInstance2 = javaEnv->FindClass( lua_tostring( L , 2 ) );
+   }
+   else if ( isJavaObject ( L , 2 ) )
+   {
+      userData2 = ( jobject * ) lua_touserdata( L , 2 );
+      classInstance2 = ( jobject ) *userData2;
+   }
+
+   lua_pushboolean ( L , ( int ) javaEnv->IsInstanceOf( classInstance , classInstance2 ) );
+   return 1;
+}
+
+int javaProxy( lua_State * L )
+{
+   jint ret;
+   lua_Number stateIndex;
+   const char * impl;
+   jmethodID method;
+   jthrowable exp;
+   jstring str;
+   JNIEnv * javaEnv;
+
+   if ( lua_gettop( L ) != 2 )
+   {
+!    lua_pushstring( L , "Error. Function proxy expects 2 arguments." );
+     lua_error( L );
+   }
+
+   lua_pushstring( L , LUAJAVASTATEINDEX );
    lua_rawget( L , LUA_REGISTRYINDEX );
 
    if ( !lua_isnumber( L , -1 ) )
@@ -857,7 +901,7 @@ int javaNew( lua_State * L )
 
       lua_error( L );
    }
-  return ret;
+   return ret;
 }
 
 

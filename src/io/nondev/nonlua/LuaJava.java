@@ -221,33 +221,6 @@ public final class LuaJava {
             return 0;
         }
     }
-  
-  
-    /**
-     * Pushes a new instance of a java Object of the type className
-     * 
-     * @param stateIndex int that represents the state to be used
-     * @param className name of the class
-     * @return number of returned objects
-     * @throws LuaException
-     */
-    public static int javaNewInstance(int stateIndex, String className) throws LuaException {
-        Lua L = LuaFactory.getExisting(stateIndex);
-
-        synchronized (L) {
-            Class clazz;
-            
-            try {
-                clazz = Class.forName(className);
-            } catch (ClassNotFoundException e) {
-                throw new LuaException(e);
-            }
-            
-            Object ret = getObjInstance(L, clazz);
-            L.push(ret);
-            return 1;
-        }
-    }
 
     /**
      * javaNew returns a new instance of a given clazz
