@@ -315,7 +315,7 @@ public class LuaObject {
      * If <code>this<code> is a table or userdata tries to get
      * a field value.
      */
-    public LuaObject getField(String field) {
+    public LuaObject get(String field) {
         return L.pull(this, field);
     }
 

@@ -437,14 +437,6 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniSetI
 
 /*
  * Class:     io_nondev_nonlua_Lua
- * Method:    jniGetTable
- * Signature: (Lio/nondev/nonlua/CPtr;I)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniGetTable
-  (JNIEnv *, jclass, jobject, jint);
-
-/*
- * Class:     io_nondev_nonlua_Lua
  * Method:    jniGetTop
  * Signature: (Lio/nondev/nonlua/CPtr;)I
  */
@@ -469,11 +461,19 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPop
 
 /*
  * Class:     io_nondev_nonlua_Lua
- * Method:    jniCopy
+ * Method:    jniPushValue
  * Signature: (Lio/nondev/nonlua/CPtr;I)V
  */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniCopy
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushValue
   (JNIEnv *, jclass, jobject, jint);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniCopy
+ * Signature: (Lio/nondev/nonlua/CPtr;II)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniCopy
+  (JNIEnv *, jclass, jobject, jint, jint);
 
 /*
  * Class:     io_nondev_nonlua_Lua
@@ -562,6 +562,78 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniCall
  */
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniPcall
   (JNIEnv *, jclass, jobject, jint, jint, jint);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniNewTable
+ * Signature: (Lio/nondev/nonlua/CPtr;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniNewTable
+  (JNIEnv *, jclass, jobject);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniGetTable
+ * Signature: (Lio/nondev/nonlua/CPtr;I)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniGetTable
+  (JNIEnv *, jclass, jobject, jint);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniSetTable
+ * Signature: (Lio/nondev/nonlua/CPtr;I)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniSetTable
+  (JNIEnv *, jclass, jobject, jint);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniNewMetatable
+ * Signature: (Lio/nondev/nonlua/CPtr;Ljava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniNewMetatable
+  (JNIEnv *, jclass, jobject, jstring);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniGetMetatable
+ * Signature: (Lio/nondev/nonlua/CPtr;I)I
+ */
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniGetMetatable
+  (JNIEnv *, jclass, jobject, jint);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniGetMetatableStr
+ * Signature: (Lio/nondev/nonlua/CPtr;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniGetMetatableStr
+  (JNIEnv *, jclass, jobject, jstring);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniSetMetatable
+ * Signature: (Lio/nondev/nonlua/CPtr;I)I
+ */
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniSetMetatable
+  (JNIEnv *, jclass, jobject, jint);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniCallmeta
+ * Signature: (Lio/nondev/nonlua/CPtr;ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniCallmeta
+  (JNIEnv *, jclass, jobject, jint, jstring);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniGetmeta
+ * Signature: (Lio/nondev/nonlua/CPtr;ILjava/lang/String;)I
+ */
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniGetmeta
+  (JNIEnv *, jclass, jobject, jint, jstring);
 
 #ifdef __cplusplus
 }

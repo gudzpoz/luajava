@@ -508,12 +508,6 @@ public class Lua {
         lua_seti( L , ( int ) index , ( int ) key );
     */
 
-    private static native void jniGetTable(CPtr cptr, int index); /*
-        lua_State * L = getStateFromCPtr( env , cptr );
-
-        lua_gettable( L , ( int ) index );
-    */
-
     private static native int jniGetTop(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -532,10 +526,16 @@ public class Lua {
         lua_pop( L , ( int ) num );
     */
 
-    private static native void jniCopy(CPtr cptr, int index); /*
+    private static native void jniPushValue(CPtr cptr, int index); /*
         lua_State * L = getStateFromCPtr( env , cptr );
 
         lua_pushvalue( L , ( int ) index );
+    */
+
+    private static native void jniCopy(CPtr cptr, int fromindex, int toindex); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_copy( L , ( int ) fromindex, ( int ) toindex );
     */
 
     private static native void jniRemove(CPtr cptr, int index); /*
@@ -602,6 +602,60 @@ public class Lua {
         lua_State * L = getStateFromCPtr( env , cptr );
 
         return ( jint ) lua_pcall( L , ( int ) nArgs , ( int ) nResults, ( int ) errFunc );
+    */
+
+    private static native void jniNewTable(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_newtable( L );
+    */
+
+    private static native void jniGetTable(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_gettable( L , ( int ) index );
+    */
+
+    private static native void jniSetTable(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        lua_settable( L , ( int ) index );
+    */
+
+    private static native int jniNewMetatable(CPtr cptr, String name); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) luaL_newmetatable( L , name );
+    */
+
+    private static native int jniGetMetatable(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+        
+        return ( jint ) lua_getmetatable( L , ( int ) index );
+    */
+
+    private static native void jniGetMetatableStr(CPtr cptr, String name); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+        
+        luaL_getmetatable( L , name );
+    */
+
+    private static native int jniSetMetatable(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_setmetatable( L , ( int ) index );
+    */
+
+    private static native int jniCallmeta(CPtr cptr, int index, String field); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) luaL_callmeta( L , ( int ) index , field );
+    */
+
+    private static native int jniGetmeta(CPtr cptr, int index, String field); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) luaL_getmetafield( L , ( int ) index , field );
     */
 
     private static final String LIB = "nonlua";
@@ -937,10 +991,6 @@ public class Lua {
         jniSetI(state, index, key);
     }
 
-    public void getTable(int index) {
-        jniGetTable(state, index);
-    }
-
     public int getTop() {
         return jniGetTop(state);
     }
@@ -954,7 +1004,11 @@ public class Lua {
     }
 
     public void copy(int index)  {
-        jniCopy(state, index);
+        jniPushValue(state, index);
+    }
+
+    public void copy(int fromindex, int toindex)  {
+        jniCopy(state, fromindex, toindex);
     }
 
     public void remove(int index) {
@@ -1005,12 +1059,47 @@ public class Lua {
         return jniPcall(state, nArgs, nResults, errFunc);
     }
 
+    public void newTable() {
+        jniNewTable(state);
+    }
+
+    public void getTable(int index) {
+        jniGetTable(state, index);
+    }
+
+    public void setTable(int index) {
+        jniSetTable(state, index);
+    }
+
+    public int newMetatable(String name) {
+        return jniNewMetatable(state, name);
+    }
+
+    public int getMetatable(int index) {
+        return jniGetMetatable(state, index);
+    }
+
+    public void getMetatable(String name) {
+        jniGetMetatableStr(state, name);
+    }
+
+    public int setMetatable(int index) {
+        return jniSetMetatable(state, index);
+    }
+
+    public int callmeta(int index, String field) {
+        return jniCallmeta(state, index, field);
+    }
+
+    public int getmeta(int index, String field) {
+        return jniGetmeta(state, index, field);
+    }
+
     // ************************************************************************************************
     // TODO: Unfinished API is below
     // ************************************************************************************************
     
     /*
-    
     
     public int checkStack(int sz) {
         return 0;
@@ -1022,46 +1111,6 @@ public class Lua {
     public int compare(int index1, int index2, int op) {
         return 0;
     }
-
-    
-
-    
-
-    public int getMetaTable(int index) {
-        return 0;
-    }
-
-    public void getMetaTable(String tName) {
-    }
-
-    public int getMetaField(int obj, String e) {
-        return 0;
-    }
-    
-    public void createTable(int narr, int nrec) {
-    }
-
-    public void newTable() {
-    }
-
-    public int newMetaTable(String tName) {
-        return 0;
-    }
-
-    public void setTable(int index) {
-    }
-
-    public int setMetaTable(int index) {
-        return 0;
-    }
-
-
-
-    public int callMeta(int obj, String e) {
-        return 0;
-    }
-
-    
 
     public int yield(int nResults) {
         return 0;
