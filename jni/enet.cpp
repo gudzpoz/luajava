@@ -21,18 +21,7 @@
  * THE SOFTWARE.
  */
 
-#include <stdlib.h>
-#include <string.h>
-
-#define LUA_COMPAT_ALL
-#define LUA_COMPAT_MODULE
-#define HAS_SOCKLEN_T
-extern "C" {
-#include <lua/lua.h>
-#include <lua/lualib.h>
-#include <lua/lauxlib.h>
-#include <enet/enet.h>
-}
+#include <enet.h>
 
 #define check_host(l, idx)\
 	*(ENetHost**)luaL_checkudata(l, idx, "enet_host")
@@ -772,7 +761,7 @@ static const struct luaL_Reg enet_peer_funcs [] = {
 	{NULL, NULL}
 };
 
-static int luaopen_enet(lua_State *l) {
+int luaopen_enet(lua_State *l) {
 	enet_initialize();
 	atexit(enet_deinitialize);
 
