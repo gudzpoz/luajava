@@ -786,7 +786,7 @@ int luaopen_enet(lua_State *l) {
 
 	luaL_newmetatable(l, "enet_peer");
 	lua_newtable(l);
-  luaL_setfuncs(l, enet_peef_funcs, 0);
+  luaL_setfuncs(l, enet_peer_funcs, 0);
 	lua_setfield(l, -2, "__index");
 	lua_pushcfunction(l, peer_tostring);
 	lua_setfield(l, -2, "__tostring");
