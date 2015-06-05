@@ -32,6 +32,7 @@ public class LuaConfiguration {
     public boolean mathLib = true;
     public boolean osLib = true;
     public boolean packageLib = true;
+    public boolean socketLib = true;
     public boolean stringLib = true;
     public boolean tableLib = true;
     public boolean utf8Lib = true;

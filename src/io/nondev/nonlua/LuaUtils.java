@@ -77,7 +77,10 @@ public final class LuaUtils {
             return new FileInputStream(file);
         }
         
-        return LuaUtils.class.getResourceAsStream("/" + file.getPath().replace('\\', '/'));
+        InputStream ret = LuaUtils.class.getResourceAsStream("/" + file.getPath().replace('\\', '/'));
+        if (ret == null) ret = LuaUtils.class.getResourceAsStream("/" + path);
+
+        return ret;
     }
 
     public static String readStream(InputStream in) throws IOException {

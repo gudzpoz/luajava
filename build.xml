@@ -92,6 +92,7 @@
   <target name="pack-library">
     <jar destfile="bin/nonlua.jar">
       <fileset dir="bin/classes"/>
+      <fileset dir="lua"/>
       <zipgroupfileset dir ="" includes="gdx-jnigen.jar"/>
     </jar>
   </target>

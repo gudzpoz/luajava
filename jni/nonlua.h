@@ -8,6 +8,9 @@ extern "C" {
 #include <lua/lua.h>
 #include <lua/lualib.h>
 #include <lua/lauxlib.h>
+#include <luasocket/luasocket.h>
+#include <luasocket/mime.h>
+
 #ifdef __cplusplus
 }
 #endif
