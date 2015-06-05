@@ -21,6 +21,7 @@
  * THE SOFTWARE.
  */
 
+#define HAS_SOCKLEN_T
 #include <enet.h>
 
 #define check_host(l, idx)\

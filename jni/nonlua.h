@@ -1,7 +1,3 @@
-#define LUA_COMPAT_ALL
-#define LUA_COMPAT_MODULE
-#define HAS_SOCKLEN_T
-
 #include <jni.h>
 #include <cstdlib>
 #include <enet.h>
