@@ -21,13 +21,13 @@ install:
 script:
 - ant library
 - java -cp bin/nonlua.jar io.nondev.nonlua.LuaBuild
-- ant windows linux android
+# - ant windows linux android
 after_success:
 - git config --global user.email "${GIT_EMAIL}"
 - git config --global user.name "Thomas Slusny"
 - git config --global push.default matching
 - echo -e "machine github.com\n  login ${GIT_LOGIN}\n  password ${GIT_PASSWORD}" >> ~/.netrc
-- git add bin/
+- git add bin/ jni/
 - git status -s
 - git commit -m "Travis CI build [ci skip]"
 - git branch tmp
