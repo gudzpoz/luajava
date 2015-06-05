@@ -242,7 +242,7 @@ public class Lua {
     private static native void jniOpenSocket(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
         
-        lua_getfield(L, LUA_GLOBALSINDEX, "package");
+        lua_getglobal(L, "package");
         lua_getfield(L, -1, "preload");
 
         lua_pushcfunction( L , luaopen_socket_core );
