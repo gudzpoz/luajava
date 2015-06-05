@@ -719,7 +719,7 @@ int javaInstanceOf( lua_State * L )
       classInstance2 = ( jobject ) *userData2;
    }
 
-   lua_pushboolean ( L , ( int ) javaEnv->IsInstanceOf( classInstance , classInstance2 ) );
+   lua_pushboolean ( L , ( int ) javaEnv->IsInstanceOf( classInstance , ( jclass ) classInstance2 ) );
    return 1;
 }
 
