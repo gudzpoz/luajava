@@ -1,3 +1,4 @@
+#ifndef _WIN32
 /*=========================================================================*\
 * Unix domain socket 
 * LuaSocket toolkit
@@ -344,3 +345,4 @@ static int global_create(lua_State *L) {
         return 2;
     }
 }
+#endif

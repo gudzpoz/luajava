@@ -1,3 +1,4 @@
+#ifdef _WIN32
 #ifndef WSOCKET_H
 #define WSOCKET_H
 /*=========================================================================*\
@@ -31,3 +32,4 @@ typedef t_socket *p_socket;
 #endif
 
 #endif /* WSOCKET_H */
+#endif
