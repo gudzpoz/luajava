@@ -772,7 +772,7 @@ static const struct luaL_Reg enet_peer_funcs [] = {
 	{NULL, NULL}
 };
 
-int luaopen_enet(lua_State *l) {
+static int luaopen_enet(lua_State *l) {
 	enet_initialize();
 	atexit(enet_deinitialize);
 
