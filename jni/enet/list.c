@@ -3,7 +3,7 @@
  @brief ENet linked list functions
 */
 #define ENET_BUILDING_LIB 1
-#include "enet/enet.h"
+#include "enet.h"
 
 /** 
     @defgroup list ENet linked list utility functions

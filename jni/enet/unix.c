@@ -17,7 +17,7 @@
 #include <time.h>
 
 #define ENET_BUILDING_LIB 1
-#include "enet/enet.h"
+#include "enet.h"
 
 #ifdef __APPLE__
 #ifdef HAS_POLL
