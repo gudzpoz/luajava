@@ -25,7 +25,7 @@
 #include <string.h>
 
 extern "C" {
-#define LUA_COMPAT_ALL
+#define LUA_COMPAT_MODULE
 #include <lua/lua.h>
 #include <lua/lualib.h>
 #include <lua/lauxlib.h>
