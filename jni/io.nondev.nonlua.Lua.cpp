@@ -200,24 +200,24 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenJava(JNIEnv* env, jclass
         lua_setglobal( L , "java" );
         lua_getglobal( L , "java" );
         
-        lua_pushstring( L , "bindClass" );
-        lua_pushcfunction( L , &javaBindClass );
+        lua_pushstring( L , "require" );
+        lua_pushcfunction( L , &javaRequire );
         lua_settable( L , -3 );
 
         lua_pushstring( L , "new" );
         lua_pushcfunction( L , &javaNew );
         lua_settable( L , -3 );
 
-        lua_pushstring( L , "newInstance" );
-        lua_pushcfunction( L , &javaNewInstance );
-        lua_settable( L , -3 );
-
-        lua_pushstring( L , "loadLib" );
+        lua_pushstring( L , "loadlib" );
         lua_pushcfunction( L , &javaLoadLib );
         lua_settable( L , -3 );
 
-        lua_pushstring( L , "createProxy" );
-        lua_pushcfunction( L , &createProxy );
+        lua_pushstring( L , "proxy" );
+        lua_pushcfunction( L , &javaProxy );
+        lua_settable( L , -3 );
+
+        lua_pushstring( L , "instanceof" );
+        lua_pushcfunction( L , &javaInstanceOf );
         lua_settable( L , -3 );
 
         lua_pop( L , 1 );
