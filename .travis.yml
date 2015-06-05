@@ -21,7 +21,9 @@ install:
 script:
 - ant library
 - java -cp bin/nonlua.jar io.nondev.nonlua.LuaBuild
-# - ant windows linux android
+- ant windows
+- ant linux
+- ant android
 after_success:
 - git config --global user.email "${GIT_EMAIL}"
 - git config --global user.name "Thomas Slusny"
