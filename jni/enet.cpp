@@ -26,7 +26,7 @@
 
 #define LUA_COMPAT_ALL
 #define LUA_COMPAT_MODULE
-#define HAVE_SOCKLEN_T
+#define HAS_SOCKLEN_T
 extern "C" {
 #include <lua/lua.h>
 #include <lua/lualib.h>
@@ -779,14 +779,14 @@ int luaopen_enet(lua_State *l) {
 	// create metatables
 	luaL_newmetatable(l, "enet_host");
 	lua_newtable(l); // index
-	luaL_register(l, NULL, enet_host_funcs);
+	luaL_setfuncs(l, enet_host_funcs, 0);
 	lua_setfield(l, -2, "__index");
 	lua_pushcfunction(l, host_gc);
 	lua_setfield(l, -2, "__gc");
 
 	luaL_newmetatable(l, "enet_peer");
 	lua_newtable(l);
-	luaL_register(l, NULL, enet_peer_funcs);
+  luaL_setfuncs(l, enet_peef_funcs, 0);
 	lua_setfield(l, -2, "__index");
 	lua_pushcfunction(l, peer_tostring);
 	lua_setfield(l, -2, "__tostring");
@@ -801,7 +801,8 @@ int luaopen_enet(lua_State *l) {
 
 	lua_setfield(l, LUA_REGISTRYINDEX, "enet_peers");
 
-	luaL_register(l, "enet", enet_funcs);
+  lua_newtable(L);
+	luaL_setfuncs(l, enet_funcs, 0);
 
 	// return the enet table created with luaL_register
 	return 1;
