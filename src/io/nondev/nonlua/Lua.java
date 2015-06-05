@@ -181,6 +181,13 @@ public class Lua {
         lua_pop( L , 1 );
     */
 
+    private static native void jniOpenNet(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+        
+        luaL_requiref( L , "net" , luaopen_enet , 1 );
+        lua_pop( L , 1 );
+    */
+
     private static native void jniOpenJava(CPtr cptr); /*
         lua_State* L = getStateFromCPtr( env, cptr );
         
@@ -739,6 +746,7 @@ public class Lua {
         if (cfg.coroutineLib) jniOpenCoroutine(state);
         if (cfg.debugLib) jniOpenDebug(state);
         if (cfg.ioLib) jniOpenIo(state);
+        if (cfg.netLib) jniOpenNet(state);
         if (cfg.javaLib) jniOpenJava(state);
         if (cfg.mathLib) jniOpenMath(state);
         if (cfg.osLib) jniOpenOs(state);

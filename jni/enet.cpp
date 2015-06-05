@@ -801,7 +801,7 @@ int luaopen_enet(lua_State *l) {
 
 	lua_setfield(l, LUA_REGISTRYINDEX, "enet_peers");
 
-  lua_newtable(L);
+  lua_newtable(l);
 	luaL_setfuncs(l, enet_funcs, 0);
 
 	// return the enet table created with luaL_register
