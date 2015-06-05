@@ -683,7 +683,7 @@ int javaInstanceOf( lua_State * L )
    jobject classInstance;
    jobject classInstance2;
    jobject * userData;
-   object * userData2;
+   jobject * userData2;
    JNIEnv * javaEnv;
 
    if ( lua_gettop( L ) < 2 )
