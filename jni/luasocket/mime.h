@@ -8,7 +8,7 @@
 * and formatting conforming to RFC 2045. It is used by mime.lua, which
 * provide a higher level interface to this functionality. 
 \*=========================================================================*/
-#include "lua.h"
+#include <lua/lua.h>
 
 /*-------------------------------------------------------------------------*\
 * Current MIME library version

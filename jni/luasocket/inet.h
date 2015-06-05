@@ -14,7 +14,7 @@
 *
 * The Lua functions toip and tohostname are also implemented here.
 \*=========================================================================*/
-#include "lua.h"
+#include <lua/lua.h>
 #include "socket.h"
 #include "timeout.h"
 
