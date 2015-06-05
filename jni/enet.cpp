@@ -26,6 +26,7 @@
 
 #define LUA_COMPAT_ALL
 #define LUA_COMPAT_MODULE
+#define HAVE_SOCKLEN_T
 extern "C" {
 #include <lua/lua.h>
 #include <lua/lualib.h>
