@@ -283,17 +283,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenSocket(JNIEnv* env, jcla
 //@line:242
 
         lua_State * L = getStateFromCPtr( env , cptr );
-        
-        lua_getglobal(L, "package");
-        lua_getfield(L, -1, "preload");
-
-        lua_pushcfunction( L , luaopen_socket_core );
-        lua_setfield( L , -2 , "socket.core" );
-        lua_pop( L , 1 );
-
-        lua_pushcfunction( L , luaopen_mime_core );
-        lua_setfield(L, -2, "mime.core");
-        lua_pop( L , 3 );
+        open_luasocket( L );
     
 
 }
@@ -301,7 +291,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenSocket(JNIEnv* env, jcla
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenString(JNIEnv* env, jclass clazz, jobject cptr) {
 
 
-//@line:257
+//@line:247
 
         lua_State * L = getStateFromCPtr( env , cptr );
         
@@ -314,7 +304,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenString(JNIEnv* env, jcla
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenTable(JNIEnv* env, jclass clazz, jobject cptr) {
 
 
-//@line:264
+//@line:254
 
         lua_State * L = getStateFromCPtr( env , cptr );
         
@@ -327,7 +317,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenTable(JNIEnv* env, jclas
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenUtf8(JNIEnv* env, jclass clazz, jobject cptr) {
 
 
-//@line:271
+//@line:261
 
         lua_State * L = getStateFromCPtr( env , cptr );
         
@@ -340,7 +330,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenUtf8(JNIEnv* env, jclass
 static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniLoadBuffer
 (JNIEnv* env, jclass clazz, jobject cptr, jbyteArray obj_buff, jlong bsize, jstring obj_name, char* name, char* buff) {
 
-//@line:278
+//@line:268
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -363,7 +353,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniLoadBuffer(JNIEnv* env, jcla
 static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniLoadString
 (JNIEnv* env, jclass clazz, jobject cptr, jstring obj_str, char* str) {
 
-//@line:284
+//@line:274
 
         lua_State * L   = getStateFromCPtr( env , cptr );
 
@@ -384,7 +374,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniLoadString(JNIEnv* env, jcla
 static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniRunBuffer
 (JNIEnv* env, jclass clazz, jobject cptr, jbyteArray obj_buff, jlong bsize, jstring obj_name, char* name, char* buff) {
 
-//@line:291
+//@line:281
 
         lua_State * L = getStateFromCPtr( env , cptr );
         
@@ -410,7 +400,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniRunBuffer(JNIEnv* env, jclas
 static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniRunString
 (JNIEnv* env, jclass clazz, jobject cptr, jstring obj_str, char* str) {
 
-//@line:300
+//@line:290
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -431,7 +421,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniRunString(JNIEnv* env, jclas
 JNIEXPORT jobject JNICALL Java_io_nondev_nonlua_Lua_jniNewThread(JNIEnv* env, jclass clazz, jobject cptr) {
 
 
-//@line:306
+//@line:296
 
         lua_State * L = getStateFromCPtr( env , cptr );
         lua_State * newThread = lua_newthread( L );
@@ -452,7 +442,7 @@ JNIEXPORT jobject JNICALL Java_io_nondev_nonlua_Lua_jniNewThread(JNIEnv* env, jc
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushNil(JNIEnv* env, jclass clazz, jobject cptr) {
 
 
-//@line:321
+//@line:311
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -464,7 +454,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushNil(JNIEnv* env, jclass 
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushNumber(JNIEnv* env, jclass clazz, jobject cptr, jdouble db) {
 
 
-//@line:327
+//@line:317
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -476,7 +466,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushNumber(JNIEnv* env, jcla
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushInteger(JNIEnv* env, jclass clazz, jobject cptr, jint integer) {
 
 
-//@line:333
+//@line:323
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -489,7 +479,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushString(JNIEnv* env, jcla
 	char* str = (char*)env->GetStringUTFChars(obj_str, 0);
 
 
-//@line:339
+//@line:329
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -502,7 +492,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushString(JNIEnv* env, jcla
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushBoolean(JNIEnv* env, jclass clazz, jobject cptr, jint val) {
 
 
-//@line:345
+//@line:335
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -514,7 +504,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushBoolean(JNIEnv* env, jcl
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushFunction(JNIEnv* env, jclass clazz, jobject cptr, jobject func) {
 
 
-//@line:351
+//@line:341
 
         lua_State* L = getStateFromCPtr( env , cptr );
 
@@ -546,7 +536,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushFunction(JNIEnv* env, jc
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushObject(JNIEnv* env, jclass clazz, jobject cptr, jobject obj) {
 
 
-//@line:377
+//@line:367
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -558,7 +548,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushObject(JNIEnv* env, jcla
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushArray(JNIEnv* env, jclass clazz, jobject cptr, jobject obj) {
 
 
-//@line:383
+//@line:373
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -570,7 +560,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushArray(JNIEnv* env, jclas
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsNumber(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:389
+//@line:379
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -582,7 +572,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsNumber(JNIEnv* env, jclass
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsInteger(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:395
+//@line:385
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -594,7 +584,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsInteger(JNIEnv* env, jclas
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsBoolean(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:401
+//@line:391
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -606,7 +596,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsBoolean(JNIEnv* env, jclas
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsString(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:407
+//@line:397
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -618,7 +608,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsString(JNIEnv* env, jclass
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsFunction(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:413
+//@line:403
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -642,7 +632,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsFunction(JNIEnv* env, jcla
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsObject(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:431
+//@line:421
 
         lua_State * L = getStateFromCPtr( env , cptr );
         
@@ -654,7 +644,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsObject(JNIEnv* env, jclass
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsTable(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:437
+//@line:427
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -666,7 +656,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsTable(JNIEnv* env, jclass 
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsUserdata(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:443
+//@line:433
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -678,7 +668,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsUserdata(JNIEnv* env, jcla
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsNil(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:449
+//@line:439
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -690,7 +680,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsNil(JNIEnv* env, jclass cl
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsNone(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:455
+//@line:445
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -702,7 +692,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsNone(JNIEnv* env, jclass c
 JNIEXPORT jdouble JNICALL Java_io_nondev_nonlua_Lua_jniToNumber(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:461
+//@line:451
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -714,7 +704,7 @@ JNIEXPORT jdouble JNICALL Java_io_nondev_nonlua_Lua_jniToNumber(JNIEnv* env, jcl
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniToInteger(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:467
+//@line:457
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -726,7 +716,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniToInteger(JNIEnv* env, jclas
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniToBoolean(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:473
+//@line:463
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -738,7 +728,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniToBoolean(JNIEnv* env, jclas
 JNIEXPORT jstring JNICALL Java_io_nondev_nonlua_Lua_jniToString(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:479
+//@line:469
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -750,7 +740,7 @@ JNIEXPORT jstring JNICALL Java_io_nondev_nonlua_Lua_jniToString(JNIEnv* env, jcl
 JNIEXPORT jobject JNICALL Java_io_nondev_nonlua_Lua_jniToObject(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:485
+//@line:475
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -769,7 +759,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniGetGlobal(JNIEnv* env, jclas
 	char* key = (char*)env->GetStringUTFChars(obj_key, 0);
 
 
-//@line:497
+//@line:487
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -783,7 +773,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniSetGlobal(JNIEnv* env, jclas
 	char* key = (char*)env->GetStringUTFChars(obj_key, 0);
 
 
-//@line:503
+//@line:493
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -797,7 +787,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniGet(JNIEnv* env, jclass claz
 	char* key = (char*)env->GetStringUTFChars(obj_key, 0);
 
 
-//@line:509
+//@line:499
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -811,7 +801,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniSet(JNIEnv* env, jclass claz
 	char* key = (char*)env->GetStringUTFChars(obj_key, 0);
 
 
-//@line:515
+//@line:505
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -824,7 +814,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniSet(JNIEnv* env, jclass claz
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniGetI(JNIEnv* env, jclass clazz, jobject cptr, jint index, jint key) {
 
 
-//@line:521
+//@line:511
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -836,7 +826,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniGetI(JNIEnv* env, jclass cla
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniSetI(JNIEnv* env, jclass clazz, jobject cptr, jint index, jint key) {
 
 
-//@line:527
+//@line:517
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -848,7 +838,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniSetI(JNIEnv* env, jclass cla
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniGetTop(JNIEnv* env, jclass clazz, jobject cptr) {
 
 
-//@line:533
+//@line:523
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -860,7 +850,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniGetTop(JNIEnv* env, jclass c
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniSetTop(JNIEnv* env, jclass clazz, jobject cptr, jint top) {
 
 
-//@line:539
+//@line:529
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -872,7 +862,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniSetTop(JNIEnv* env, jclass c
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPop(JNIEnv* env, jclass clazz, jobject cptr, jint num) {
 
 
-//@line:545
+//@line:535
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -884,7 +874,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPop(JNIEnv* env, jclass claz
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushValue(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:551
+//@line:541
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -896,7 +886,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushValue(JNIEnv* env, jclas
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniCopy(JNIEnv* env, jclass clazz, jobject cptr, jint fromindex, jint toindex) {
 
 
-//@line:557
+//@line:547
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -908,7 +898,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniCopy(JNIEnv* env, jclass cla
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniRemove(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:563
+//@line:553
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -920,7 +910,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniRemove(JNIEnv* env, jclass c
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniInsert(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:569
+//@line:559
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -932,7 +922,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniInsert(JNIEnv* env, jclass c
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniReplace(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:575
+//@line:565
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -944,7 +934,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniReplace(JNIEnv* env, jclass 
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniConcat(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:581
+//@line:571
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -956,7 +946,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniConcat(JNIEnv* env, jclass c
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniLen(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:587
+//@line:577
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -968,7 +958,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniLen(JNIEnv* env, jclass claz
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniType(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:593
+//@line:583
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -980,7 +970,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniType(JNIEnv* env, jclass cla
 JNIEXPORT jstring JNICALL Java_io_nondev_nonlua_Lua_jniTypeName(JNIEnv* env, jclass clazz, jobject cptr, jint type) {
 
 
-//@line:599
+//@line:589
 
         lua_State * L = getStateFromCPtr( env , cptr );
         
@@ -992,7 +982,7 @@ JNIEXPORT jstring JNICALL Java_io_nondev_nonlua_Lua_jniTypeName(JNIEnv* env, jcl
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniRef(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:605
+//@line:595
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -1004,7 +994,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniRef(JNIEnv* env, jclass claz
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniUnRef(JNIEnv* env, jclass clazz, jobject cptr, jint index, jint ref) {
 
 
-//@line:611
+//@line:601
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -1016,7 +1006,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniUnRef(JNIEnv* env, jclass cl
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniCall(JNIEnv* env, jclass clazz, jobject cptr, jint nArgs, jint nResults) {
 
 
-//@line:617
+//@line:607
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -1028,7 +1018,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniCall(JNIEnv* env, jclass cla
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniPcall(JNIEnv* env, jclass clazz, jobject cptr, jint nArgs, jint nResults, jint errFunc) {
 
 
-//@line:623
+//@line:613
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -1040,7 +1030,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniPcall(JNIEnv* env, jclass cl
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniNewTable(JNIEnv* env, jclass clazz, jobject cptr) {
 
 
-//@line:629
+//@line:619
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -1052,7 +1042,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniNewTable(JNIEnv* env, jclass
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniGetTable(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:635
+//@line:625
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -1064,7 +1054,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniGetTable(JNIEnv* env, jclass
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniSetTable(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:641
+//@line:631
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -1076,7 +1066,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniSetTable(JNIEnv* env, jclass
 static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniNewMetatable
 (JNIEnv* env, jclass clazz, jobject cptr, jstring obj_name, char* name) {
 
-//@line:647
+//@line:637
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -1097,7 +1087,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniNewMetatable(JNIEnv* env, jc
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniGetMetatable(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:653
+//@line:643
 
         lua_State * L = getStateFromCPtr( env , cptr );
         
@@ -1110,7 +1100,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniGetMetatableStr(JNIEnv* env,
 	char* name = (char*)env->GetStringUTFChars(obj_name, 0);
 
 
-//@line:659
+//@line:649
 
         lua_State * L = getStateFromCPtr( env , cptr );
         
@@ -1123,7 +1113,7 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniGetMetatableStr(JNIEnv* env,
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniSetMetatable(JNIEnv* env, jclass clazz, jobject cptr, jint index) {
 
 
-//@line:665
+//@line:655
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -1135,7 +1125,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniSetMetatable(JNIEnv* env, jc
 static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniCallmeta
 (JNIEnv* env, jclass clazz, jobject cptr, jint index, jstring obj_field, char* field) {
 
-//@line:671
+//@line:661
 
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -1156,7 +1146,7 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniCallmeta(JNIEnv* env, jclass
 static inline jint wrapped_Java_io_nondev_nonlua_Lua_jniGetmeta
 (JNIEnv* env, jclass clazz, jobject cptr, jint index, jstring obj_field, char* field) {
 
-//@line:677
+//@line:667
 
         lua_State * L = getStateFromCPtr( env , cptr );
 

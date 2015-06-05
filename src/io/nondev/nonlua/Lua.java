@@ -241,17 +241,7 @@ public class Lua {
 
     private static native void jniOpenSocket(CPtr cptr); /*
         lua_State * L = getStateFromCPtr( env , cptr );
-        
-        lua_getglobal(L, "package");
-        lua_getfield(L, -1, "preload");
-
-        lua_pushcfunction( L , luaopen_socket_core );
-        lua_setfield( L , -2 , "socket.core" );
-        lua_pop( L , 1 );
-
-        lua_pushcfunction( L , luaopen_mime_core );
-        lua_setfield(L, -2, "mime.core");
-        lua_pop( L , 3 );
+        open_luasocket( L );
     */
 
     private static native void jniOpenString(CPtr cptr); /*
@@ -774,6 +764,11 @@ public class Lua {
         push(new LuaFunction(this) {
             public int call() {
                 for (int i = 2; i <= L.getTop(); i++) {
+                    if (L.isNil(i) || L.isNone(i)) {
+                        logger.log("nil");
+                        logger.log("\t");
+                    }
+                    
                     String type = L.typeName(L.type(i));
                     String val = null;
 

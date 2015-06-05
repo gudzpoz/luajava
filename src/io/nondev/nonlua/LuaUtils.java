@@ -65,6 +65,7 @@ public final class LuaUtils {
     }
 
     public static InputStream getStream(LuaLoader loader, String path) throws IOException {
+        System.out.println(path);
         File file = null;
 
         if (loader.path().equals("")) {
@@ -77,10 +78,7 @@ public final class LuaUtils {
             return new FileInputStream(file);
         }
         
-        InputStream ret = LuaUtils.class.getResourceAsStream("/" + file.getPath().replace('\\', '/'));
-        if (ret == null) ret = LuaUtils.class.getResourceAsStream("/" + path);
-
-        return ret;
+        return LuaUtils.class.getResourceAsStream("/" + file.getPath().replace('\\', '/'));
     }
 
     public static String readStream(InputStream in) throws IOException {
