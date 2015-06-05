@@ -1,3 +1,4 @@
+#ifndef _WIN32
 /*=========================================================================*\
 * Socket compatibilization module for Unix
 * LuaSocket toolkit
@@ -442,3 +443,4 @@ const char *socket_gaistrerror(int err) {
     }
 }
 
+#endif
