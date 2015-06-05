@@ -22,6 +22,8 @@
 #define LUASOCKET_INET_ATON
 #endif
 
+#define LUASOCKET_INET_PTON
+
 int inet_open(lua_State *L);
 
 const char *inet_trycreate(p_socket ps, int family, int type);
