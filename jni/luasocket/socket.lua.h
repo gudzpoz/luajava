@@ -149,5 +149,6 @@ static const char* F =
 "_M.source = _M.choose(sourcet)                                                  \n"
 "                                                                                \n"
 "return _M";
-if (luaL_loadstring(L, F)==0) lua_call(L, 0, 0);
+if (luaL_dostring(L, F)!=0) cout << "Error: socket.lua";
+else cout << "Fine: socket.lua";
 }

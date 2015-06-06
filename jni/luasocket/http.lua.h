@@ -355,5 +355,6 @@ static const char* F =
 "end)                                                                             \n"
 "                                                                                 \n"
 "return _M";
-if (luaL_loadstring(L, F)==0) lua_call(L, 0, 0);
+if (luaL_dostring(L, F)!=0) cout << "Error: http.lua";
+else cout << "Fine: http.lua";
 }
