@@ -35,14 +35,12 @@ int open_luasocket(lua_State * L)
 int open_luasocket_socket(lua_State * L)
 {
 	#include <luasocket/socket.lua.h>
-	lua_getglobal(L, "socket");
 	return 1;
 }
 
 int open_luasocket_headers(lua_State * L)
 {
 	#include <luasocket/headers.lua.h>
-	lua_getglobal(L, "socket.headers");
 	return 1;
 }
 
