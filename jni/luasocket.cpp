@@ -1,5 +1,4 @@
 #include <luasocket.h>
-#include <iostream>
 
 // LuaSocket
 extern "C" {
