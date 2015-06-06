@@ -751,15 +751,16 @@ public class Lua {
         if (cfg.coroutineLib) jniOpenCoroutine(state);
         if (cfg.debugLib) jniOpenDebug(state);
         if (cfg.ioLib) jniOpenIo(state);
-        if (cfg.netLib) jniOpenNet(state);
         if (cfg.javaLib) jniOpenJava(state);
         if (cfg.mathLib) jniOpenMath(state);
         if (cfg.osLib) jniOpenOs(state);
         if (cfg.packageLib) jniOpenPackage(state);
-        if (cfg.socketLib) jniOpenSocket(state);
         if (cfg.stringLib) jniOpenString(state);
         if (cfg.tableLib) jniOpenTable(state);
         if (cfg.utf8Lib) jniOpenUtf8(state);
+        
+        if (cfg.netLib) jniOpenNet(state);
+        if (cfg.socketLib) jniOpenSocket(state);
 
         push(new LuaFunction(this) {
             public int call() {
