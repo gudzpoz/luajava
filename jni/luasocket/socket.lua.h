@@ -149,5 +149,6 @@ static const char* F =
 "_M.source = _M.choose(sourcet)                                                  \n"
 "                                                                                \n"
 "return _M";
-luaL_dostring(L, F);
+luaL_loadstring(L, F);
+lua_call(L, 0, 1);
 }
