@@ -322,12 +322,6 @@ public class Lua {
         lua_pushnumber( L , ( lua_Number ) db );
     */
 
-    private static native void jniPushInteger(CPtr cptr, int integer); /*
-        lua_State * L = getStateFromCPtr( env , cptr );
-
-        lua_pushinteger( L, ( lua_Integer ) integer );
-    */
-
     private static native void jniPushString(CPtr cptr, String str); /*
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -382,12 +376,6 @@ public class Lua {
         lua_State * L = getStateFromCPtr( env , cptr );
 
         return ( jint ) lua_isnumber( L , ( int ) index );
-    */
-
-    private static native int jniIsInteger(CPtr cptr, int index); /*
-        lua_State * L = getStateFromCPtr( env , cptr );
-
-        return ( jint ) lua_isinteger( L , ( int ) index );
     */
 
     private static native int jniIsBoolean(CPtr cptr, int index); /*
@@ -454,12 +442,6 @@ public class Lua {
         lua_State * L = getStateFromCPtr( env , cptr );
 
         return ( jdouble ) lua_tonumber( L , index );
-    */
-
-    private static native int jniToInteger(CPtr cptr, int index); /*
-        lua_State * L = getStateFromCPtr( env , cptr );
-
-        return ( jint ) lua_tointeger( L , index );
     */
 
     private static native int jniToBoolean(CPtr cptr, int index); /*
@@ -844,12 +826,8 @@ public class Lua {
         jniPushNil(state);
     }
 
-    public void push(double db) {
-        jniPushNumber(state, db);
-    }
-    
-    public void push(int integer) {
-        jniPushInteger(state, integer);
+    public void push(Number num) {
+        jniPushNumber(state, num);
     }
 
     public void push(String str) {
@@ -893,9 +871,9 @@ public class Lua {
         if (obj == null) {
             pushNil();
         } else if (obj instanceof Boolean) {
-            push(((Boolean)obj).booleanValue());
+            push(((Boolean)obj));
         } else if (obj instanceof Number) {
-            push(((Number)obj).doubleValue());
+            push(((Number)obj));
         } else if (obj instanceof String) {
             push((String) obj);
         } else if (obj instanceof LuaFunction) {
@@ -948,10 +926,6 @@ public class Lua {
         return jniIsNumber(state, index) != 0;
     }
 
-    public boolean isInteger(int index) {
-        return jniIsInteger(state, index) != 0;
-    }
-
     public boolean isBoolean(int index) {
         return jniIsBoolean(state, index) != 0;
     }
@@ -984,12 +958,8 @@ public class Lua {
         return jniIsNone(state, index) != 0;
     }
 
-    public double toNumber(int index) {
+    public Number toNumber(int index) {
         return jniToNumber(state, index);
-    }
-
-    public int toInteger(int index) {
-        return jniToInteger(state, index);
     }
     
     public boolean toBoolean(int index) {
