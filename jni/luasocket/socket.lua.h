@@ -1,154 +1,153 @@
 {
-static const char* F = R"===(
------------------------------------------------------------------------------
--- LuaSocket helper module
--- Author: Diego Nehab
------------------------------------------------------------------------------
-
------------------------------------------------------------------------------
--- Declare module and import dependencies
------------------------------------------------------------------------------
-local base = _G
-local string = require("string")
-local math = require("math")
-local socket = require("socket.core")
-
-local _M = socket
-
------------------------------------------------------------------------------
--- Exported auxiliar functions
------------------------------------------------------------------------------
-function _M.connect4(address, port, laddress, lport)
-    return socket.connect(address, port, laddress, lport, "inet")
-end
-
-function _M.connect6(address, port, laddress, lport)
-    return socket.connect(address, port, laddress, lport, "inet6")
-end
-
-function _M.bind(host, port, backlog)
-    if host == "*" then host = "0.0.0.0" end
-    local addrinfo, err = socket.dns.getaddrinfo(host);
-    if not addrinfo then return nil, err end
-    local sock, res
-    err = "no info on address"
-    for i, alt in base.ipairs(addrinfo) do
-        if alt.family == "inet" then
-            sock, err = socket.tcp()
-        else
-            sock, err = socket.tcp6()
-        end
-        if not sock then return nil, err end
-        sock:setoption("reuseaddr", true)
-        res, err = sock:bind(alt.addr, port)
-        if not res then 
-            sock:close()
-        else 
-            res, err = sock:listen(backlog)
-            if not res then 
-                sock:close()
-            else
-                return sock
-            end
-        end 
-    end
-    return nil, err
-end
-
-_M.try = _M.newtry()
-
-function _M.choose(table)
-    return function(name, opt1, opt2)
-        if base.type(name) ~= "string" then
-            name, opt1, opt2 = "default", name, opt1
-        end
-        local f = table[name or "nil"]
-        if not f then base.error("unknown key (".. base.tostring(name) ..")", 3)
-        else return f(opt1, opt2) end
-    end
-end
-
------------------------------------------------------------------------------
--- Socket sources and sinks, conforming to LTN12
------------------------------------------------------------------------------
--- create namespaces inside LuaSocket namespace
-local sourcet, sinkt = {}, {}
-_M.sourcet = sourcet
-_M.sinkt = sinkt
-
-_M.BLOCKSIZE = 2048
-
-sinkt["close-when-done"] = function(sock)
-    return base.setmetatable({
-        getfd = function() return sock:getfd() end,
-        dirty = function() return sock:dirty() end
-    }, {
-        __call = function(self, chunk, err)
-            if not chunk then
-                sock:close()
-                return 1
-            else return sock:send(chunk) end
-        end
-    })
-end
-
-sinkt["keep-open"] = function(sock)
-    return base.setmetatable({
-        getfd = function() return sock:getfd() end,
-        dirty = function() return sock:dirty() end
-    }, {
-        __call = function(self, chunk, err)
-            if chunk then return sock:send(chunk)
-            else return 1 end
-        end
-    })
-end
-
-sinkt["default"] = sinkt["keep-open"]
-
-_M.sink = _M.choose(sinkt)
-
-sourcet["by-length"] = function(sock, length)
-    return base.setmetatable({
-        getfd = function() return sock:getfd() end,
-        dirty = function() return sock:dirty() end
-    }, {
-        __call = function()
-            if length <= 0 then return nil end
-            local size = math.min(socket.BLOCKSIZE, length)
-            local chunk, err = sock:receive(size)
-            if err then return nil, err end
-            length = length - string.len(chunk)
-            return chunk
-        end
-    })
-end
-
-sourcet["until-closed"] = function(sock)
-    local done
-    return base.setmetatable({
-        getfd = function() return sock:getfd() end,
-        dirty = function() return sock:dirty() end
-    }, {
-        __call = function()
-            if done then return nil end
-            local chunk, err, partial = sock:receive(socket.BLOCKSIZE)
-            if not err then return chunk
-            elseif err == "closed" then
-                sock:close()
-                done = 1
-                return partial
-            else return nil, err end
-        end
-    })
-end
-
-
-sourcet["default"] = sourcet["until-closed"]
-
-_M.source = _M.choose(sourcet)
-
-return _M
-)===";
+static const char* F =
+"-----------------------------------------------------------------------------   \n"
+"-- LuaSocket helper module                                                      \n"
+"-- Author: Diego Nehab                                                          \n"
+"-----------------------------------------------------------------------------   \n"
+"                                                                                \n"
+"-----------------------------------------------------------------------------   \n"
+"-- Declare module and import dependencies                                       \n"
+"-----------------------------------------------------------------------------   \n"
+"local base = _G                                                                 \n"
+"local string = require('string')                                                \n"
+"local math = require('math')                                                    \n"
+"local socket = require('socket.core')                                           \n"
+"                                                                                \n"
+"local _M = socket                                                               \n"
+"                                                                                \n"
+"-----------------------------------------------------------------------------   \n"
+"-- Exported auxiliar functions                                                  \n"
+"-----------------------------------------------------------------------------   \n"
+"function _M.connect4(address, port, laddress, lport)                            \n"
+"    return socket.connect(address, port, laddress, lport, 'inet')               \n"
+"end                                                                             \n"
+"                                                                                \n"
+"function _M.connect6(address, port, laddress, lport)                            \n"
+"    return socket.connect(address, port, laddress, lport, 'inet6')              \n"
+"end                                                                             \n"
+"                                                                                \n"
+"function _M.bind(host, port, backlog)                                           \n"
+"    if host == '*' then host = '0.0.0.0' end                                    \n"
+"    local addrinfo, err = socket.dns.getaddrinfo(host);                         \n"
+"    if not addrinfo then return nil, err end                                    \n"
+"    local sock, res                                                             \n"
+"    err = 'no info on address'                                                  \n"
+"    for i, alt in base.ipairs(addrinfo) do                                      \n"
+"        if alt.family == 'inet' then                                            \n"
+"            sock, err = socket.tcp()                                            \n"
+"        else                                                                    \n"
+"            sock, err = socket.tcp6()                                           \n"
+"        end                                                                     \n"
+"        if not sock then return nil, err end                                    \n"
+"        sock:setoption('reuseaddr', true)                                       \n"
+"        res, err = sock:bind(alt.addr, port)                                    \n"
+"        if not res then                                                         \n"
+"            sock:close()                                                        \n"
+"        else                                                                    \n"
+"            res, err = sock:listen(backlog)                                     \n"
+"            if not res then                                                     \n"
+"                sock:close()                                                    \n"
+"            else                                                                \n"
+"                return sock                                                     \n"
+"            end                                                                 \n"
+"        end                                                                     \n"
+"    end                                                                         \n"
+"    return nil, err                                                             \n"
+"end                                                                             \n"
+"                                                                                \n"
+"_M.try = _M.newtry()                                                            \n"
+"                                                                                \n"
+"function _M.choose(table)                                                       \n"
+"    return function(name, opt1, opt2)                                           \n"
+"        if base.type(name) ~= 'string' then                                     \n"
+"            name, opt1, opt2 = 'default', name, opt1                            \n"
+"        end                                                                     \n"
+"        local f = table[name or 'nil']                                          \n"
+"        if not f then base.error('unknown key ('.. base.tostring(name) ..')', 3)\n"
+"        else return f(opt1, opt2) end                                           \n"
+"    end                                                                         \n"
+"end                                                                             \n"
+"                                                                                \n"
+"-----------------------------------------------------------------------------   \n"
+"-- Socket sources and sinks, conforming to LTN12                                \n"
+"-----------------------------------------------------------------------------   \n"
+"-- create namespaces inside LuaSocket namespace                                 \n"
+"local sourcet, sinkt = {}, {}                                                   \n"
+"_M.sourcet = sourcet                                                            \n"
+"_M.sinkt = sinkt                                                                \n"
+"                                                                                \n"
+"_M.BLOCKSIZE = 2048                                                             \n"
+"                                                                                \n"
+"sinkt['close-when-done'] = function(sock)                                       \n"
+"    return base.setmetatable({                                                  \n"
+"        getfd = function() return sock:getfd() end,                             \n"
+"        dirty = function() return sock:dirty() end                              \n"
+"    }, {                                                                        \n"
+"        __call = function(self, chunk, err)                                     \n"
+"            if not chunk then                                                   \n"
+"                sock:close()                                                    \n"
+"                return 1                                                        \n"
+"            else return sock:send(chunk) end                                    \n"
+"        end                                                                     \n"
+"    })                                                                          \n"
+"end                                                                             \n"
+"                                                                                \n"
+"sinkt['keep-open'] = function(sock)                                             \n"
+"    return base.setmetatable({                                                  \n"
+"        getfd = function() return sock:getfd() end,                             \n"
+"        dirty = function() return sock:dirty() end                              \n"
+"    }, {                                                                        \n"
+"        __call = function(self, chunk, err)                                     \n"
+"            if chunk then return sock:send(chunk)                               \n"
+"            else return 1 end                                                   \n"
+"        end                                                                     \n"
+"    })                                                                          \n"
+"end                                                                             \n"
+"                                                                                \n"
+"sinkt['default'] = sinkt['keep-open']                                           \n"
+"                                                                                \n"
+"_M.sink = _M.choose(sinkt)                                                      \n"
+"                                                                                \n"
+"sourcet['by-length'] = function(sock, length)                                   \n"
+"    return base.setmetatable({                                                  \n"
+"        getfd = function() return sock:getfd() end,                             \n"
+"        dirty = function() return sock:dirty() end                              \n"
+"    }, {                                                                        \n"
+"        __call = function()                                                     \n"
+"            if length <= 0 then return nil end                                  \n"
+"            local size = math.min(socket.BLOCKSIZE, length)                     \n"
+"            local chunk, err = sock:receive(size)                               \n"
+"            if err then return nil, err end                                     \n"
+"            length = length - string.len(chunk)                                 \n"
+"            return chunk                                                        \n"
+"        end                                                                     \n"
+"    })                                                                          \n"
+"end                                                                             \n"
+"                                                                                \n"
+"sourcet['until-closed'] = function(sock)                                        \n"
+"    local done                                                                  \n"
+"    return base.setmetatable({                                                  \n"
+"        getfd = function() return sock:getfd() end,                             \n"
+"        dirty = function() return sock:dirty() end                              \n"
+"    }, {                                                                        \n"
+"        __call = function()                                                     \n"
+"            if done then return nil end                                         \n"
+"            local chunk, err, partial = sock:receive(socket.BLOCKSIZE)          \n"
+"            if not err then return chunk                                        \n"
+"            elseif err == 'closed' then                                         \n"
+"                sock:close()                                                    \n"
+"                done = 1                                                        \n"
+"                return partial                                                  \n"
+"            else return nil, err end                                            \n"
+"        end                                                                     \n"
+"    })                                                                          \n"
+"end                                                                             \n"
+"                                                                                \n"
+"                                                                                \n"
+"sourcet['default'] = sourcet['until-closed']                                    \n"
+"                                                                                \n"
+"_M.source = _M.choose(sourcet)                                                  \n"
+"                                                                                \n"
+"return _M";
 if (luaL_loadstring(L, F)==0) lua_call(L, 0, 0);
 }

@@ -1,95 +1,94 @@
 {
-static const char* F = R"===(
------------------------------------------------------------------------------
--- MIME support for the Lua language.
--- Author: Diego Nehab
--- Conforming to RFCs 2045-2049
------------------------------------------------------------------------------
-
------------------------------------------------------------------------------
--- Declare module and import dependencies
------------------------------------------------------------------------------
-local base = _G
-local ltn12 = require("ltn12")
-local mime = require("mime.core")
-local io = require("io")
-local string = require("string")
-local _M = mime
-
--- encode, decode and wrap algorithm tables
-local encodet, decodet, wrapt = {},{},{}
-
-_M.encodet = encodet
-_M.decodet = decodet
-_M.wrapt   = wrapt  
-
--- creates a function that chooses a filter by name from a given table
-local function choose(table)
-    return function(name, opt1, opt2)
-        if base.type(name) ~= "string" then
-            name, opt1, opt2 = "default", name, opt1
-        end
-        local f = table[name or "nil"]
-        if not f then 
-            base.error("unknown key (" .. base.tostring(name) .. ")", 3)
-        else return f(opt1, opt2) end
-    end
-end
-
--- define the encoding filters
-encodet['base64'] = function()
-    return ltn12.filter.cycle(_M.b64, "")
-end
-
-encodet['quoted-printable'] = function(mode)
-    return ltn12.filter.cycle(_M.qp, "",
-        (mode == "binary") and "=0D=0A" or "\r\n")
-end
-
--- define the decoding filters
-decodet['base64'] = function()
-    return ltn12.filter.cycle(_M.unb64, "")
-end
-
-decodet['quoted-printable'] = function()
-    return ltn12.filter.cycle(_M.unqp, "")
-end
-
-local function format(chunk)
-    if chunk then
-        if chunk == "" then return "''"
-        else return string.len(chunk) end
-    else return "nil" end
-end
-
--- define the line-wrap filters
-wrapt['text'] = function(length)
-    length = length or 76
-    return ltn12.filter.cycle(_M.wrp, length, length)
-end
-wrapt['base64'] = wrapt['text']
-wrapt['default'] = wrapt['text']
-
-wrapt['quoted-printable'] = function()
-    return ltn12.filter.cycle(_M.qpwrp, 76, 76)
-end
-
--- function that choose the encoding, decoding or wrap algorithm
-_M.encode = choose(encodet)
-_M.decode = choose(decodet)
-_M.wrap = choose(wrapt)
-
--- define the end-of-line normalization filter
-function _M.normalize(marker)
-    return ltn12.filter.cycle(_M.eol, 0, marker)
-end
-
--- high level stuffing filter
-function _M.stuff()
-    return ltn12.filter.cycle(_M.dot, 2)
-end
-
-return _M
-)===";
+static const char* F =
+"-----------------------------------------------------------------------------\n"
+"-- MIME support for the Lua language.                                        \n"
+"-- Author: Diego Nehab                                                       \n"
+"-- Conforming to RFCs 2045-2049                                              \n"
+"-----------------------------------------------------------------------------\n"
+"                                                                             \n"
+"-----------------------------------------------------------------------------\n"
+"-- Declare module and import dependencies                                    \n"
+"-----------------------------------------------------------------------------\n"
+"local base = _G                                                              \n"
+"local ltn12 = require('ltn12')                                               \n"
+"local mime = require('mime.core')                                            \n"
+"local io = require('io')                                                     \n"
+"local string = require('string')                                             \n"
+"local _M = mime                                                              \n"
+"                                                                             \n"
+"-- encode, decode and wrap algorithm tables                                  \n"
+"local encodet, decodet, wrapt = {},{},{}                                     \n"
+"                                                                             \n"
+"_M.encodet = encodet                                                         \n"
+"_M.decodet = decodet                                                         \n"
+"_M.wrapt   = wrapt                                                           \n"
+"                                                                             \n"
+"-- creates a function that chooses a filter by name from a given table       \n"
+"local function choose(table)                                                 \n"
+"    return function(name, opt1, opt2)                                        \n"
+"        if base.type(name) ~= 'string' then                                  \n"
+"            name, opt1, opt2 = 'default', name, opt1                         \n"
+"        end                                                                  \n"
+"        local f = table[name or 'nil']                                       \n"
+"        if not f then                                                        \n"
+"            base.error('unknown key (' .. base.tostring(name) .. ')', 3)     \n"
+"        else return f(opt1, opt2) end                                        \n"
+"    end                                                                      \n"
+"end                                                                          \n"
+"                                                                             \n"
+"-- define the encoding filters                                               \n"
+"encodet['base64'] = function()                                               \n"
+"    return ltn12.filter.cycle(_M.b64, '')                                    \n"
+"end                                                                          \n"
+"                                                                             \n"
+"encodet['quoted-printable'] = function(mode)                                 \n"
+"    return ltn12.filter.cycle(_M.qp, '',                                     \n"
+"        (mode == 'binary') and '=0D=0A' or '\r\n')                           \n"
+"end                                                                          \n"
+"                                                                             \n"
+"-- define the decoding filters                                               \n"
+"decodet['base64'] = function()                                               \n"
+"    return ltn12.filter.cycle(_M.unb64, '')                                  \n"
+"end                                                                          \n"
+"                                                                             \n"
+"decodet['quoted-printable'] = function()                                     \n"
+"    return ltn12.filter.cycle(_M.unqp, '')                                   \n"
+"end                                                                          \n"
+"                                                                             \n"
+"local function format(chunk)                                                 \n"
+"    if chunk then                                                            \n"
+"        if chunk == '' then return ''''                                      \n"
+"        else return string.len(chunk) end                                    \n"
+"    else return 'nil' end                                                    \n"
+"end                                                                          \n"
+"                                                                             \n"
+"-- define the line-wrap filters                                              \n"
+"wrapt['text'] = function(length)                                             \n"
+"    length = length or 76                                                    \n"
+"    return ltn12.filter.cycle(_M.wrp, length, length)                        \n"
+"end                                                                          \n"
+"wrapt['base64'] = wrapt['text']                                              \n"
+"wrapt['default'] = wrapt['text']                                             \n"
+"                                                                             \n"
+"wrapt['quoted-printable'] = function()                                       \n"
+"    return ltn12.filter.cycle(_M.qpwrp, 76, 76)                              \n"
+"end                                                                          \n"
+"                                                                             \n"
+"-- function that choose the encoding, decoding or wrap algorithm             \n"
+"_M.encode = choose(encodet)                                                  \n"
+"_M.decode = choose(decodet)                                                  \n"
+"_M.wrap = choose(wrapt)                                                      \n"
+"                                                                             \n"
+"-- define the end-of-line normalization filter                               \n"
+"function _M.normalize(marker)                                                \n"
+"    return ltn12.filter.cycle(_M.eol, 0, marker)                             \n"
+"end                                                                          \n"
+"                                                                             \n"
+"-- high level stuffing filter                                                \n"
+"function _M.stuff()                                                          \n"
+"    return ltn12.filter.cycle(_M.dot, 2)                                     \n"
+"end                                                                          \n"
+"                                                                             \n"
+"return _M";
 if (luaL_loadstring(L, F)==0) lua_call(L, 0, 0);
 }
