@@ -869,7 +869,8 @@ public class Lua {
 
     public void push(Map table) {
         newTable();
-        for (Map.Entry field : table.entrySet()) {
+        for (Object entry : table.entrySet()) {
+            Map.Entry field = (Map.Entry)entry;
             push(field.getValue());
             set(-2, field.getKey().toString());
             pop(1);
