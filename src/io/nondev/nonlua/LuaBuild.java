@@ -32,15 +32,28 @@ import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
 public class LuaBuild {
     public static void main (String[] args) throws Exception {
         BuildTarget win32 = BuildTarget.newDefaultTarget(TargetOs.Windows, false);
+        win32.cFlags += " -DLUASOCKET_INET_PTON";
+        win32.cppFlags += " -DLUASOCKET_INET_PTON";
         win32.libraries = "-lws2_32 -lwinmm";
+        
         BuildTarget win64 = BuildTarget.newDefaultTarget(TargetOs.Windows, true);
+        win64.cFlags += " -DLUASOCKET_INET_PTON";
+        win64.cppFlags += " -DLUASOCKET_INET_PTON";
         win64.libraries = "-lws2_32 -lwinmm";
+        
         BuildTarget lin32 = BuildTarget.newDefaultTarget(TargetOs.Linux, false);
+        lin32.cFlags += " -DLUASOCKET_INET_PTON";
+        lin32.cppFlags += " -DLUASOCKET_INET_PTON";
+        
         BuildTarget lin64 = BuildTarget.newDefaultTarget(TargetOs.Linux, true);
+        lin64.cFlags += " -DLUASOCKET_INET_PTON";
+        lin64.cppFlags += " -DLUASOCKET_INET_PTON";
+        
         BuildTarget android = BuildTarget.newDefaultTarget(TargetOs.Android, false);
         BuildTarget mac32 = BuildTarget.newDefaultTarget(TargetOs.MacOsX, false);
         BuildTarget mac64 = BuildTarget.newDefaultTarget(TargetOs.MacOsX, true);
         BuildTarget ios = BuildTarget.newDefaultTarget(TargetOs.IOS, false);
+        
         new NativeCodeGenerator().generate("src", "bin/classes", "jni");
         new AntScriptGenerator().generate(new BuildConfig("nonlua"), win32, win64, lin32, lin64, mac32, mac64, android, ios);
     }

@@ -23,6 +23,8 @@
 package io.nondev.nonlua;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import com.badlogic.gdx.jnigen.JniGenSharedLibraryLoader;
 
 public class Lua {
@@ -237,6 +239,11 @@ public class Lua {
         
         luaL_requiref( L , LUA_LOADLIBNAME , luaopen_package , 1 );
         lua_pop( L , 1 );
+    */
+
+    private static native void jniOpenSocket(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+        open_luasocket( L );
     */
 
     private static native void jniOpenString(CPtr cptr); /*
@@ -694,31 +701,10 @@ public class Lua {
     public static final int GC_SETPAUSE   = 6;
     public static final int GC_SETSTEPMUL = 7;
 
-    private static LuaLoader loader;
-    private static LuaLogger logger;
+    private LuaConfiguration cfg;
 
     static {
         new JniGenSharedLibraryLoader().load(LIB);
-
-        loader = new LuaLoader() {
-            public String path() {
-                return "";
-            }
-        };
-
-        logger = new LuaLogger() {
-            public void log(String msg) {
-                System.out.print(msg);
-            }
-        };
-    }
-
-    public static void setLoader(LuaLoader loader) {
-        Lua.loader = loader;
-    }
-
-    public static void setLogger(LuaLogger logger) {
-        Lua.logger = logger;
     }
 
     protected CPtr state;
@@ -739,6 +725,7 @@ public class Lua {
     }
 
     private void open(LuaConfiguration cfg, CPtr state, int stateId) {
+        this.cfg = cfg;
         this.state = state;
         this.stateId = stateId;
 
@@ -746,7 +733,6 @@ public class Lua {
         if (cfg.coroutineLib) jniOpenCoroutine(state);
         if (cfg.debugLib) jniOpenDebug(state);
         if (cfg.ioLib) jniOpenIo(state);
-        if (cfg.netLib) jniOpenNet(state);
         if (cfg.javaLib) jniOpenJava(state);
         if (cfg.mathLib) jniOpenMath(state);
         if (cfg.osLib) jniOpenOs(state);
@@ -754,10 +740,18 @@ public class Lua {
         if (cfg.stringLib) jniOpenString(state);
         if (cfg.tableLib) jniOpenTable(state);
         if (cfg.utf8Lib) jniOpenUtf8(state);
+        
+        if (cfg.netLib) jniOpenNet(state);
+        if (cfg.socketLib) jniOpenSocket(state);
 
         push(new LuaFunction(this) {
             public int call() {
                 for (int i = 2; i <= L.getTop(); i++) {
+                    if (L.isNil(i) || L.isNone(i)) {
+                        Lua.this.cfg.logger.log("nil");
+                        Lua.this.cfg.logger.log("\t");
+                    }
+                    
                     String type = L.typeName(L.type(i));
                     String val = null;
 
@@ -771,11 +765,11 @@ public class Lua {
                     }
 
                     if (val == null) val = type;
-                    logger.log(val);
-                    logger.log("\t");
+                    Lua.this.cfg.logger.log(val);
+                    Lua.this.cfg.logger.log("\t");
                 }
 
-                logger.log("\n");
+                Lua.this.cfg.logger.log("\n");
                 return 0;
             }
         });
@@ -800,7 +794,7 @@ public class Lua {
         set(-2, count + 1);
         pop(1);
         get(-1, "path");
-        push(";" + loader.path() + "/?.lua");
+        push(";" + cfg.loader.path() + "/?.lua");
         concat(2);
         set(-2, "path");
         pop(1);
@@ -819,7 +813,7 @@ public class Lua {
     public int run(String chunk) {
         if (chunk.endsWith(".lua")) {
             try {
-                byte[] buffer = LuaUtils.readStream(LuaUtils.getStream(loader, chunk)).getBytes();
+                byte[] buffer = LuaUtils.readStream(LuaUtils.getStream(cfg.loader, chunk)).getBytes();
                 return jniRunBuffer(state, buffer, buffer.length, chunk);
             } catch (IOException e) {
                 return -1;
@@ -832,7 +826,7 @@ public class Lua {
     public int load(String chunk) {
         if (chunk.endsWith(".lua")) {
             try {
-                byte[] buffer = LuaUtils.readStream(LuaUtils.getStream(loader, chunk)).getBytes();
+                byte[] buffer = LuaUtils.readStream(LuaUtils.getStream(cfg.loader, chunk)).getBytes();
                 return jniLoadBuffer(state, buffer, buffer.length, chunk);
             } catch (IOException e) {
                 return -1;
@@ -874,6 +868,27 @@ public class Lua {
         obj.push();
     }
 
+    public void push(List table) {
+        newTable();
+        int i = 1;
+        for (Object field : table) {
+            push(field);
+            set(-2, i);
+            pop(1);
+            i++;
+        }
+    }
+
+    public void push(Map table) {
+        newTable();
+        for (Object entry : table.entrySet()) {
+            Map.Entry field = (Map.Entry)entry;
+            push(field.getValue());
+            set(-2, field.getKey().toString());
+            pop(1);
+        }
+    }
+
     public void push(Object obj) {
         if (obj == null) {
             pushNil();
@@ -887,7 +902,10 @@ public class Lua {
             push((LuaFunction)obj);
         } else if (obj instanceof LuaObject) {
             push((LuaObject)obj);
-        // else if (obj instanceof byte[]) { pushString((byte[]) obj); }
+        } else if (obj instanceof List) {
+            push((List)obj);
+        } else if (obj instanceof Map) {
+            push((Map)obj);
         } else if (obj.getClass().isArray()) {
             jniPushArray(state, obj);
         } else {
