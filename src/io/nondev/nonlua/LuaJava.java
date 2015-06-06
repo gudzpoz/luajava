@@ -457,7 +457,7 @@ public final class LuaJava {
                 obj = L.pull(idx);
             }
         } else if (L.isNumber(idx)) {
-            Double db = new Double(L.toNumber(idx));
+            double db = L.toNumber(idx).doubleValue();
           
             obj = LuaUtils.convertNumber(db, parameter);
             if (obj == null) {

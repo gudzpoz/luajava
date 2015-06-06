@@ -284,12 +284,12 @@ public class LuaObject {
         }
     }
 
-    public double toNumber() {
+    public Number toNumber() {
         synchronized (L) {
             push();
-            double db = L.toNumber(-1);
+            Number num = L.toNumber(-1);
             L.pop(1);
-            return db;
+            return num;
         }
     }
 

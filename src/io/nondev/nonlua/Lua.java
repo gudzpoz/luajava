@@ -827,7 +827,7 @@ public class Lua {
     }
 
     public void push(Number num) {
-        jniPushNumber(state, num);
+        jniPushNumber(state, num.doubleValue());
     }
 
     public void push(String str) {
