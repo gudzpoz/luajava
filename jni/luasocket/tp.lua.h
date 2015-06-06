@@ -126,6 +126,5 @@ static const char* F =
 "end                                                                               \n"
 "                                                                                  \n"
 "return _M";
-if (luaL_dostring(L, F)!=0) cout << "Error: tp.lua";
-else cout << "Fine: tp.lua";
+luaL_dostring(L, F);
 }

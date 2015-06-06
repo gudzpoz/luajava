@@ -90,6 +90,5 @@ static const char* F =
 "end                                                                          \n"
 "                                                                             \n"
 "return _M";
-if (luaL_dostring(L, F)!=0) cout << "Error: mime.lua";
-else cout << "Fine: mime.lua";
+luaL_dostring(L, F);
 }

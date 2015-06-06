@@ -246,7 +246,7 @@ static const char* F =
 "---------------------------------------------------------------------------       \n"
 "-- High level SMTP API                                                            \n"
 "-----------------------------------------------------------------------------     \n"
-"_M.send = socket.protect(function(mailt)                                          \n"
+"_M.send = socket.protect(function(mailt)         luaL_dostring(L, F);                                 \n"
 "    local s = _M.open(mailt.server, mailt.port, mailt.create)                     \n"
 "    local ext = s:greet(mailt.domain)                                             \n"
 "    s:auth(mailt.user, mailt.password, ext)                                       \n"
@@ -256,6 +256,5 @@ static const char* F =
 "end)                                                                              \n"
 "                                                                                  \n"
 "return _M";
-if (luaL_dostring(L, F)!=0) cout << "Error: smtp.lua";
-else cout << "Fine: smtp.lua";
+luaL_dostring(L, F);
 }

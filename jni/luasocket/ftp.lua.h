@@ -285,6 +285,5 @@ static const char* F =
 "end)                                                                               \n"
 "                                                                                   \n"
 "return _M";
-if (luaL_dostring(L, F)!=0) cout << "Error: ftp.lua";
-else cout << "Fine: ftp.lua";
+luaL_dostring(L, F);
 }

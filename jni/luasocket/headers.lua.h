@@ -104,6 +104,5 @@ static const char* F =
 "}                                                                            \n"
 "                                                                             \n"
 "return _M";
-if (luaL_dostring(L, F)!=0) cout << "Error: headers.lua";
-else cout << "Fine: headers.lua";
+luaL_dostring(L, F);
 }
