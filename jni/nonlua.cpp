@@ -680,22 +680,21 @@ int javaRequire( lua_State * L )
 
 int javaInstanceOf( lua_State * L )
 {
-   jobject classInstance;
    jobject classInstance2;
-   jobject * userData;
-   jobject * userData2;
    JNIEnv * javaEnv;
 
    if ( lua_gettop( L ) < 2 )
    {
       lua_pushstring( L , "Error. Invalid number of parameters." );
       lua_error( L );
+      return 0;
    }
 
    if ( !isJavaObject( L , 1 ) )
    {
       lua_pushstring( L , "Argument not a valid Java Class." );
       lua_error( L );
+      return 0;
    }
 
    javaEnv = getEnvFromState( L );
@@ -703,11 +702,12 @@ int javaInstanceOf( lua_State * L )
    {
       lua_pushstring( L , "Invalid JNI Environment." );
       lua_error( L );
+      return 0;
    }
 
-   userData = ( jobject * ) lua_touserdata( L , 1 );
+   jobject * userData = ( jobject * ) lua_touserdata( L , 1 );
 
-   classInstance = ( jobject ) *userData;
+   jobject classInstance = ( jobject ) *userData;
 
    if ( lua_isstring( L , 2 ) )
    {
@@ -715,8 +715,14 @@ int javaInstanceOf( lua_State * L )
    }
    else if ( isJavaObject ( L , 2 ) )
    {
-      userData2 = ( jobject * ) lua_touserdata( L , 2 );
+      jobject * userData2 = ( jobject * ) lua_touserdata( L , 2 );
       classInstance2 = ( jobject ) *userData2;
+   }
+   else
+   {
+      lua_pushstring( L , "Argument not a valid Java Class or String." );
+      lua_error( L );
+      return 0;
    }
 
    lua_pushboolean ( L , ( int ) javaEnv->IsInstanceOf( classInstance , ( jclass ) classInstance2 ) );
