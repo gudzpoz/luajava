@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <cstdlib>
 #include <enet.h>
+#include <luasocket.h>
 
 #ifdef __cplusplus
 extern "C" {

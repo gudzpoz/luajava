@@ -7,19 +7,23 @@ import org.robovm.apple.foundation.NSString;
 import org.robovm.apple.uikit.UIApplication;  
 import org.robovm.apple.uikit.UIApplicationDelegateAdapter;
 import io.nondev.nonlua.Lua;
+import io.nondev.nonlua.LuaConfiguration;
 import io.nondev.nonlua.LuaLoader;
 import com.mylua.project.MyLuaProject;
 
 public class IOSLauncher extends UIApplicationDelegateAdapter {
     @Override
     public boolean didFinishLaunching(UIApplication application, NSDictionary<NSString, ?> launchOptions) {
-        Lua.setLoader(new LuaLoader() {
+        LuaConfiguration cfg = new LuaConfiguration();
+
+        cfg.loader = new LuaLoader() {
             public String path() {
                 return NSBundle.getMainBundle().getBundlePath();
             }
-        });
+        };
         
-        new MyLuaProject();
+        new MyLuaProject(cfg);
+
         return true;
     }
 
