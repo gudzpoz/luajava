@@ -23,6 +23,7 @@
 package io.nondev.nonlua;
 
 import java.io.IOException;
+import java.util.Map;
 import com.badlogic.gdx.jnigen.JniGenSharedLibraryLoader;
 
 public class Lua {
@@ -866,6 +867,15 @@ public class Lua {
         obj.push();
     }
 
+    public void push(Map table) {
+        newTable();
+        for (Map.Entry field : table.entrySet()) {
+            push(field.getValue());
+            set(-2, field.getKey().toString());
+            pop(1);
+        }
+    }
+
     public void push(Object obj) {
         if (obj == null) {
             pushNil();
@@ -879,7 +889,8 @@ public class Lua {
             push((LuaFunction)obj);
         } else if (obj instanceof LuaObject) {
             push((LuaObject)obj);
-        // else if (obj instanceof byte[]) { pushString((byte[]) obj); }
+        } else if (obj instanceof Map) {
+            push((Map)obj);
         } else if (obj.getClass().isArray()) {
             jniPushArray(state, obj);
         } else {
