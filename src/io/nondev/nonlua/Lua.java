@@ -699,31 +699,10 @@ public class Lua {
     public static final int GC_SETPAUSE   = 6;
     public static final int GC_SETSTEPMUL = 7;
 
-    private static LuaLoader loader;
-    private static LuaLogger logger;
+    private LuaConfiguration cfg;
 
     static {
         new JniGenSharedLibraryLoader().load(LIB);
-
-        loader = new LuaLoader() {
-            public String path() {
-                return "";
-            }
-        };
-
-        logger = new LuaLogger() {
-            public void log(String msg) {
-                System.out.print(msg);
-            }
-        };
-    }
-
-    public static void setLoader(LuaLoader loader) {
-        Lua.loader = loader;
-    }
-
-    public static void setLogger(LuaLogger logger) {
-        Lua.logger = logger;
     }
 
     protected CPtr state;
@@ -744,6 +723,7 @@ public class Lua {
     }
 
     private void open(LuaConfiguration cfg, CPtr state, int stateId) {
+        this.cfg = cfg;
         this.state = state;
         this.stateId = stateId;
 
@@ -766,8 +746,8 @@ public class Lua {
             public int call() {
                 for (int i = 2; i <= L.getTop(); i++) {
                     if (L.isNil(i) || L.isNone(i)) {
-                        logger.log("nil");
-                        logger.log("\t");
+                        cfg.logger.log("nil");
+                        cfg.logger.log("\t");
                     }
                     
                     String type = L.typeName(L.type(i));
@@ -783,11 +763,11 @@ public class Lua {
                     }
 
                     if (val == null) val = type;
-                    logger.log(val);
-                    logger.log("\t");
+                    cfg.logger.log(val);
+                    cfg.logger.log("\t");
                 }
 
-                logger.log("\n");
+                cfg.logger.log("\n");
                 return 0;
             }
         });
@@ -812,7 +792,7 @@ public class Lua {
         set(-2, count + 1);
         pop(1);
         get(-1, "path");
-        push(";" + loader.path() + "/?.lua");
+        push(";" + cfg.loader.path() + "/?.lua");
         concat(2);
         set(-2, "path");
         pop(1);
@@ -831,7 +811,7 @@ public class Lua {
     public int run(String chunk) {
         if (chunk.endsWith(".lua")) {
             try {
-                byte[] buffer = LuaUtils.readStream(LuaUtils.getStream(loader, chunk)).getBytes();
+                byte[] buffer = LuaUtils.readStream(LuaUtils.getStream(cfg.loader, chunk)).getBytes();
                 return jniRunBuffer(state, buffer, buffer.length, chunk);
             } catch (IOException e) {
                 return -1;
@@ -844,7 +824,7 @@ public class Lua {
     public int load(String chunk) {
         if (chunk.endsWith(".lua")) {
             try {
-                byte[] buffer = LuaUtils.readStream(LuaUtils.getStream(loader, chunk)).getBytes();
+                byte[] buffer = LuaUtils.readStream(LuaUtils.getStream(cfg.loader, chunk)).getBytes();
                 return jniLoadBuffer(state, buffer, buffer.length, chunk);
             } catch (IOException e) {
                 return -1;

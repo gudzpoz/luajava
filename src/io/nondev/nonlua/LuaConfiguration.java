@@ -23,6 +23,18 @@
 package io.nondev.nonlua;
 
 public class LuaConfiguration {
+    public LuaLoader loader = new LuaLoader() {
+        public String path() {
+            return "";
+        }
+    };
+
+    public LuaLogger logger = new LuaLogger() {
+        public void log(String msg) {
+            System.out.print(msg);
+        }
+    };
+
     public boolean baseLib = true;
     public boolean coroutineLib = true;
     public boolean debugLib = true;
