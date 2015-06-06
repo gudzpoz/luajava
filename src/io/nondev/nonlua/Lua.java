@@ -746,8 +746,8 @@ public class Lua {
             public int call() {
                 for (int i = 2; i <= L.getTop(); i++) {
                     if (L.isNil(i) || L.isNone(i)) {
-                        cfg.logger.log("nil");
-                        cfg.logger.log("\t");
+                        Lua.this.cfg.logger.log("nil");
+                        Lua.this.cfg.logger.log("\t");
                     }
                     
                     String type = L.typeName(L.type(i));
@@ -763,11 +763,11 @@ public class Lua {
                     }
 
                     if (val == null) val = type;
-                    cfg.logger.log(val);
-                    cfg.logger.log("\t");
+                    Lua.this.cfg.logger.log(val);
+                    Lua.this.cfg.logger.log("\t");
                 }
 
-                cfg.logger.log("\n");
+                Lua.this.cfg.logger.log("\n");
                 return 0;
             }
         });
