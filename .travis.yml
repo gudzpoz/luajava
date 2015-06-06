@@ -13,16 +13,12 @@ addons:
   - gcc-mingw-w64-x86-64
   - g++-mingw-w64-x86-64
   - lib32z1
-  - luac
 install:
 - if [ `uname -m` = x86_64 ]; then wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86_64.bin -O ndk.bin; else wget http://dl.google.com/android/ndk/android-ndk-r10d-linux-x86.bin -O ndk.bin; fi
 - chmod a+x ndk.bin
 - "./ndk.bin -y | grep -v Extracting"
 - export NDK_HOME=`pwd`/android-ndk-r10d
 script:
-- cd jni/luasocket
-- sh compilelua.sh
-- cd ../../
 - ant library
 - java -cp bin/nonlua.jar io.nondev.nonlua.LuaBuild
 - ant windows
