@@ -33,10 +33,10 @@ after_success:
 - git status -s
 - git commit -m "Travis CI build [ci skip]"
 - git branch tmp
-- git checkout experimental
+- git checkout master
 - git merge tmp
 - git branch -d tmp
-- git push https://github.com/nondev/nonlua.git experimental
+- git push https://github.com/nondev/nonlua.git master
 env:
   global:
     secure: BqUInZSR0eojCkAq9D8ABOBSS3wm6f78UVdN3F7WKlMX2ngv3XAedoJubWjsZ7/CIF7NdQalEmwn7OG5SaTuHb91V/w/sWVlp/7BEYDrPZFWZgDsd4gwQL0ZRawoZIZ7Lej890ZmgfiD1/3kLSHaqkc8hcBlRA5N1MCIAY4NWoL0imwyE8eS0hFgnClKeMBwEAgbQOxxCo5kBKgmGbX++NHa0RPIIMbZLlAoSsvVIubt25GUb2IgVE4J9MFeAnNiYVF+c67lXBTOvgpvJXHN2HQMFCMaFtxpad4PRnqL8mDigHNCDbJ/+NVUtyikAS4NWqV/v64ADF/c0ySkOSaOgETOpZImMvCZk79p1x+p6x/R6PF+vMPakj5pi4wz34Lx88/WClMgpMuZpKPUe2vuriU+9c0BYNyTr/XG8FXTPOe7pQl32JojZ8oy7A9wzaSWEhyzeJtAALoefFkSsJC6WnmjqmxuzcPtJmYUj4hJe8dTePUCbEh/bcA4jP5QzvoPYeY31y3krT1xtT63m6jZuA+LKWH/Sj/4RBAE+Tszj05rbSCixoyRT09xqo/T3cD19+EDOPAvVL44kk1S2PcyCZi+Dsrmk7sLZTHpR/GYpheqqsMeMvCyiZ+jdlANSqezqEzw8Fc7r6TDoPkXSr4195xt0Z2oGGAA5WY1xOiv0zI=
