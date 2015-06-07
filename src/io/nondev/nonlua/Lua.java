@@ -555,7 +555,7 @@ public class Lua {
         lua_State * L = getStateFromCPtr( env , cptr );
 
         const char * sub = luaL_gsub( L , s , p , r );
-        return ( *env )->NewStringUTF( env , sub );
+        return env->NewStringUTF( sub );
     */
 
     private static native int jniLen(CPtr cptr, int index); /*
@@ -691,10 +691,11 @@ public class Lua {
         return ( jint ) lua_yield( L , ( int ) nResults );
     */
 
-    private static native int jniResume(CPtr cptr, int nArgs); /*
+    private static native int jniResume(CPtr cptr, CPtr from, int nArgs); /*
         lua_State * L = getStateFromCPtr( env , cptr );
+        lua_State * fr = getStateFromCPtr( env , from );
 
-        return ( jint ) lua_resume( L , ( int ) nArgs );
+        return ( jint ) lua_resume( L , fr , ( int ) nArgs );
     */
 
     private static native int jniStatus(CPtr cptr); /*
@@ -1176,8 +1177,8 @@ public class Lua {
         return jniYield(state, nResults);
     }
 
-    public int resume(int nArgs) {
-        return jniResume(state, nArgs);
+    public int resume(Lua from, int nArgs) {
+        return jniResume(state, from.state, nArgs);
     }
     
     public int status() {
