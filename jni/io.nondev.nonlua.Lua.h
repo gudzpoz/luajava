@@ -99,14 +99,6 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenIo
 
 /*
  * Class:     io_nondev_nonlua_Lua
- * Method:    jniOpenNet
- * Signature: (Lio/nondev/nonlua/CPtr;)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenNet
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     io_nondev_nonlua_Lua
  * Method:    jniOpenJava
  * Signature: (Lio/nondev/nonlua/CPtr;)V
  */
