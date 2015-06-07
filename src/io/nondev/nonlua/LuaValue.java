@@ -30,39 +30,39 @@ public class LuaValue {
     protected int ref;
     protected Lua L;
 
-    protected LuaValue(Lua L, String globalName) {
+    protected LuaValue(Lua L, String key) {
         this.L = L;
-        L.get(globalName);
+        L.get(key);
         registerValue(-1);
         L.pop(1);
     }
 
-    protected LuaValue(LuaValue parent, String name) {
+    protected LuaValue(LuaValue parent, String key) {
         this.L = parent.getLua();
 
         parent.push();
-        L.push(name);
+        L.push(key);
         L.getTable(-2);
         L.remove(-2);
         registerValue(-1);
         L.pop(1);
     }
 
-    protected LuaValue(LuaValue parent, int index) {
+    protected LuaValue(LuaValue parent, int key) {
         this.L = parent.getLua();
 
         parent.push();
-        L.push(index);
+        L.push(key);
         L.getTable(-2);
         L.remove(-2);
         registerValue(-1);
         L.pop(1);
     }
 
-    protected LuaValue(LuaValue parent, LuaValue name) {
+    protected LuaValue(LuaValue parent, LuaValue key) {
         L = parent.getLua();
         parent.push();
-        name.push();
+        key.push();
         L.getTable(-2);
         L.remove(-2);
         registerValue(-1);
@@ -131,7 +131,6 @@ public class LuaValue {
         boolean bool = L.isObject(-1);
         L.pop(1);
         return bool;
-        }
     }
 
     public boolean isTable() {
