@@ -35,30 +35,20 @@ extern "C" {
 #define io_nondev_nonlua_Lua_MULTRET -1L
 #undef io_nondev_nonlua_Lua_YIELD
 #define io_nondev_nonlua_Lua_YIELD 1L
-#undef io_nondev_nonlua_Lua_RUNTIME_ERROR
-#define io_nondev_nonlua_Lua_RUNTIME_ERROR 2L
-#undef io_nondev_nonlua_Lua_SYNTAX_ERROR
-#define io_nondev_nonlua_Lua_SYNTAX_ERROR 3L
-#undef io_nondev_nonlua_Lua_MEMORY_ERROR
-#define io_nondev_nonlua_Lua_MEMORY_ERROR 4L
-#undef io_nondev_nonlua_Lua_HANDLER_ERROR
-#define io_nondev_nonlua_Lua_HANDLER_ERROR 5L
-#undef io_nondev_nonlua_Lua_GC_STOP
-#define io_nondev_nonlua_Lua_GC_STOP 0L
-#undef io_nondev_nonlua_Lua_GC_RESTART
-#define io_nondev_nonlua_Lua_GC_RESTART 1L
-#undef io_nondev_nonlua_Lua_GC_COLLECT
-#define io_nondev_nonlua_Lua_GC_COLLECT 2L
-#undef io_nondev_nonlua_Lua_GC_COUNT
-#define io_nondev_nonlua_Lua_GC_COUNT 3L
-#undef io_nondev_nonlua_Lua_GC_COUNTB
-#define io_nondev_nonlua_Lua_GC_COUNTB 4L
-#undef io_nondev_nonlua_Lua_GC_STEP
-#define io_nondev_nonlua_Lua_GC_STEP 5L
-#undef io_nondev_nonlua_Lua_GC_SETPAUSE
-#define io_nondev_nonlua_Lua_GC_SETPAUSE 6L
-#undef io_nondev_nonlua_Lua_GC_SETSTEPMUL
-#define io_nondev_nonlua_Lua_GC_SETSTEPMUL 7L
+#undef io_nondev_nonlua_Lua_ERR_RUNTIME
+#define io_nondev_nonlua_Lua_ERR_RUNTIME 2L
+#undef io_nondev_nonlua_Lua_ERR_SYNTAX
+#define io_nondev_nonlua_Lua_ERR_SYNTAX 3L
+#undef io_nondev_nonlua_Lua_ERR_MEMORY
+#define io_nondev_nonlua_Lua_ERR_MEMORY 4L
+#undef io_nondev_nonlua_Lua_ERR_HANDLER
+#define io_nondev_nonlua_Lua_ERR_HANDLER 5L
+#undef io_nondev_nonlua_Lua_OP_EQUAL
+#define io_nondev_nonlua_Lua_OP_EQUAL 1L
+#undef io_nondev_nonlua_Lua_OP_LOWER
+#define io_nondev_nonlua_Lua_OP_LOWER 2L
+#undef io_nondev_nonlua_Lua_OP_LOWEREQUAL
+#define io_nondev_nonlua_Lua_OP_LOWEREQUAL 3L
 /*
  * Class:     io_nondev_nonlua_Lua
  * Method:    jniOpen
@@ -237,14 +227,6 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushNumber
 
 /*
  * Class:     io_nondev_nonlua_Lua
- * Method:    jniPushInteger
- * Signature: (Lio/nondev/nonlua/CPtr;I)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushInteger
-  (JNIEnv *, jclass, jobject, jint);
-
-/*
- * Class:     io_nondev_nonlua_Lua
  * Method:    jniPushString
  * Signature: (Lio/nondev/nonlua/CPtr;Ljava/lang/String;)V
  */
@@ -289,14 +271,6 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushArray
  * Signature: (Lio/nondev/nonlua/CPtr;I)I
  */
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsNumber
-  (JNIEnv *, jclass, jobject, jint);
-
-/*
- * Class:     io_nondev_nonlua_Lua
- * Method:    jniIsInteger
- * Signature: (Lio/nondev/nonlua/CPtr;I)I
- */
-JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsInteger
   (JNIEnv *, jclass, jobject, jint);
 
 /*
@@ -369,14 +343,6 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniIsNone
  * Signature: (Lio/nondev/nonlua/CPtr;I)D
  */
 JNIEXPORT jdouble JNICALL Java_io_nondev_nonlua_Lua_jniToNumber
-  (JNIEnv *, jclass, jobject, jint);
-
-/*
- * Class:     io_nondev_nonlua_Lua
- * Method:    jniToInteger
- * Signature: (Lio/nondev/nonlua/CPtr;I)I
- */
-JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniToInteger
   (JNIEnv *, jclass, jobject, jint);
 
 /*
@@ -530,6 +496,14 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniConcat
  */
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniLen
   (JNIEnv *, jclass, jobject, jint);
+
+/*
+ * Class:     io_nondev_nonlua_Lua
+ * Method:    jniCompare
+ * Signature: (Lio/nondev/nonlua/CPtr;III)I
+ */
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniCompare
+  (JNIEnv *, jclass, jobject, jint, jint, jint);
 
 /*
  * Class:     io_nondev_nonlua_Lua
