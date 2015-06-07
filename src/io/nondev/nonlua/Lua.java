@@ -1177,7 +1177,7 @@ public class Lua {
     }
 
     public int resume(int nArgs) {
-        return jniResume(state, nResults);
+        return jniResume(state, nArgs);
     }
     
     public int status() {
