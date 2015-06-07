@@ -551,6 +551,13 @@ public class Lua {
         lua_concat( L , ( int ) index );
     */
 
+    private static native String jniGsub(CPtr cptr, String s, String p, String r); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        const char * sub = luaL_gsub( L , s , p , r );
+        return ( *env )->NewStringUTF( env , sub );
+    */
+
     private static native int jniLen(CPtr cptr, int index); /*
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -561,6 +568,24 @@ public class Lua {
         lua_State * L = getStateFromCPtr( env , cptr );
 
         return (jint) lua_compare( L , ( int ) index1 , ( int ) index2 , ( int ) op );
+    */
+
+    private static native int jniNext(CPtr cptr, int index); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return (jint) lua_next( L , ( int ) index );
+    */
+
+    private static native int jniError(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return (jint) lua_error( L );
+    */
+
+    private static native void jniWhere(CPtr cptr, int lvl); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        luaL_where( L , ( int ) lvl );
     */
 
     private static native int jniType(CPtr cptr, int index); /*
@@ -651,6 +676,31 @@ public class Lua {
         lua_State * L = getStateFromCPtr( env , cptr );
 
         return ( jint ) luaL_getmetafield( L , ( int ) index , field );
+    */
+
+    private static native void jniMove(CPtr cptr, CPtr to, int index); /*
+        lua_State * fr = getStateFromCPtr( env , cptr );
+        lua_State * t  = getStateFromCPtr( env , to );
+
+        lua_xmove( fr , t , ( int ) index );
+    */
+
+    private static native int jniYield(CPtr cptr, int nResults); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_yield( L , ( int ) nResults );
+    */
+
+    private static native int jniResume(CPtr cptr, int nArgs); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_resume( L , ( int ) nArgs );
+    */
+
+    private static native int jniStatus(CPtr cptr); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return ( jint ) lua_status( L );
     */
 
     private static final String LIB = "nonlua";
@@ -1030,12 +1080,28 @@ public class Lua {
         jniConcat(state, index);
     }
 
+    public String gsub(String s, String p, String r) {
+        return jniGsub(state, s, p, r);
+    }
+
     public int len(int index) {
         return jniLen(state, index);
     }
 
     public boolean compare(int index1, int index2, int op) {
         return jniCompare(state, index1, index2, op) != 0;
+    }
+
+    public int next(int index) {
+        return jniNext(state, index);
+    }
+
+    public int error() {
+        return jniError(state);
+    }
+
+    public void where(int lvl) {
+        jniWhere(state, lvl);
     }
 
     public int type(int index) {
@@ -1102,86 +1168,19 @@ public class Lua {
         return jniGetmeta(state, index, field);
     }
 
-    // ************************************************************************************************
-    // TODO: Unfinished API is below
-    // ************************************************************************************************
-    
-    /*
-    
-    public int checkStack(int sz) {
-        return 0;
-    }
-
-    public void move(Lua to, int n) {
+    public void move(Lua to, int index) {
+        jniMove(state, to, index);
     }
 
     public int yield(int nResults) {
-        return 0;
+        return jniYield(state, nResults);
     }
 
     public int resume(int nArgs) {
-        return 0;
+        return jniResume(state, nResults);
     }
     
     public int status() {
-        return 0;
+        return jniStatus(state);
     }
-    
-    public int gc(int what, int data) {
-        return 0;
-    }
-    
-    public int next(int index) {
-        return 0;
-    }
-
-    public int error() {
-        return 0;
-    }
-    
-    public int argError(int numArg, String extraMsg) {
-        return 0;
-    }
-    
-    public String checkString(int numArg) {
-        return "";
-    }
-    
-    public String optString(int numArg, String def) {
-        return "";
-    }
-    
-    public double checkNumber(int numArg) {
-        return 0.0;
-    }
-    
-    public double optNumber(int numArg, double def) {
-        return 0.0;
-    }
-    
-    public int checkInteger(int numArg) {
-        return 0;
-    }
-    
-    public int optInteger(int numArg, int def) {
-        return 0;
-    }
-    
-    public void checkStack(int sz, String msg) {
-    }
-    
-    public void checkType(int nArg, int t) {
-    }
-    
-    public void checkAny(int nArg) {
-    }
-    
-    public void where(int lvl) {
-    }
-    
-    public String gsub(String s, String p, String r) {
-        return "";
-    }
-
-    */
 }
