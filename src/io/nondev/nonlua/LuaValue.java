@@ -221,7 +221,7 @@ public class LuaValue {
         int err = L.pcall(nargs, nres, 0);
 
         if (err != 0) {
-            String str;
+            String str = "";
 
             if (L.isString(-1)) {
                 str = L.toString(-1);
