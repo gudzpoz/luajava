@@ -1,3 +1,4 @@
-print("Hello World from test.lua")
+require("test2")
+print(message)
 socket = require("socket")
-print(socket)
+print("LuaSocket version", socket._VERSION)

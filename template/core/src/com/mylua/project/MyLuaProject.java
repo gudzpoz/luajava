@@ -8,11 +8,9 @@ public class MyLuaProject {
     
     public MyLuaProject(LuaConfiguration cfg) {
         L = new Lua(cfg);
-        L.push("Hello World from Lua!");
+        L.push("Hello World from Java!");
         L.set("message");
         L.run("test.lua");
-        L.run("require(\"test2\")");
-        L.run("print(message)");
         L.dispose();
     }
 }

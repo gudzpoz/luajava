@@ -39,7 +39,6 @@ public class LuaConfiguration {
     public boolean coroutineLib = true;
     public boolean debugLib = true;
     public boolean ioLib = true;
-    public boolean netLib = true;
     public boolean javaLib = true;
     public boolean mathLib = true;
     public boolean osLib = true;
