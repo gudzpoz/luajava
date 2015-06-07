@@ -564,6 +564,12 @@ public class Lua {
         return (jint) luaL_len( L , ( int ) index );
     */
 
+    private static native int jniCompare(CPtr cptr, int index1, int index2, int op); /*
+        lua_State * L = getStateFromCPtr( env , cptr );
+
+        return (jint) lua_compare( L , ( int ) index1 , ( int ) index2 , ( int ) op );
+    */
+
     private static native int jniType(CPtr cptr, int index); /*
         lua_State * L = getStateFromCPtr( env , cptr );
 
@@ -658,6 +664,7 @@ public class Lua {
 
     public static final int GLOBALS       = -10002;
     public static final int REGISTRY      = -10000;
+
     public static final int NONE          = -1;
     public static final int NIL           = 0;
     public static final int BOOLEAN       = 1;
@@ -668,20 +675,18 @@ public class Lua {
     public static final int FUNCTION      = 6;
     public static final int USERDATA      = 7;
     public static final int THREAD        = 8;
+
     public static final int MULTRET       = -1;
     public static final int YIELD         = 1;
-    public static final int RUNTIME_ERROR = 2;
-    public static final int SYNTAX_ERROR  = 3;
-    public static final int MEMORY_ERROR  = 4;
-    public static final int HANDLER_ERROR = 5;
-    public static final int GC_STOP       = 0;
-    public static final int GC_RESTART    = 1;
-    public static final int GC_COLLECT    = 2;
-    public static final int GC_COUNT      = 3;
-    public static final int GC_COUNTB     = 4;
-    public static final int GC_STEP       = 5;
-    public static final int GC_SETPAUSE   = 6;
-    public static final int GC_SETSTEPMUL = 7;
+
+    public static final int ERR_RUNTIME   = 2;
+    public static final int ERR_SYNTAX    = 3;
+    public static final int ERR_MEMORY    = 4;
+    public static final int ERR_HANDLER   = 5;
+
+    public static final int OP_EQUAL      = 1;
+    public static final int OP_LOWER      = 2;
+    public static final int OP_LOWEREQUAL = 3;
 
     private LuaConfiguration cfg;
 
@@ -842,7 +847,7 @@ public class Lua {
         jniPushFunction(state, func);
     }
 
-    public void push(LuaObject obj) {
+    public void push(LuaValue obj) {
         obj.push();
     }
 
@@ -878,8 +883,8 @@ public class Lua {
             push((String) obj);
         } else if (obj instanceof LuaFunction) {
             push((LuaFunction)obj);
-        } else if (obj instanceof LuaObject) {
-            push((LuaObject)obj);
+        } else if (obj instanceof LuaValue) {
+            push((LuaValue)obj);
         } else if (obj instanceof List) {
             push((List)obj);
         } else if (obj instanceof Map) {
@@ -891,23 +896,23 @@ public class Lua {
         }
     }
 
-    public LuaObject pull(String globalName) {
-        return new LuaObject(this, globalName);
+    public LuaValue pull(String globalName) {
+        return new LuaValue(this, globalName);
     }
     
-    public LuaObject pull(LuaObject parent, String name) {
+    public LuaValue pull(LuaValue parent, String name) {
         if (parent.getLua().getCPtrPeer() != state.getPeer()) return null;
         if (!parent.isTable() && !parent.isUserdata()) return null;
-        return new LuaObject(parent, name);
+        return new LuaValue(parent, name);
     }
     
-    public LuaObject pull(LuaObject parent, Number name) {
+    public LuaValue pull(LuaValue parent, Number name) {
         if (parent.getLua().getCPtrPeer() != state.getPeer()) return null;
         if (!parent.isTable() && !parent.isUserdata()) return null;
-        return new LuaObject(parent, name);
+        return new LuaValue(parent, name);
     }
     
-    public LuaObject pull(LuaObject parent, LuaObject name) {
+    public LuaValue pull(LuaValue parent, LuaValue name) {
         if (parent.getLua().getCPtrPeer() != state.getPeer() ||
             parent.getLua().getCPtrPeer() != name.getLua().getCPtrPeer())
             return null;
@@ -915,11 +920,11 @@ public class Lua {
         if (parent.getLua() != name.getLua()) return null;
         if (!parent.isTable() && !parent.isUserdata()) return null;
 
-        return new LuaObject(parent, name);
+        return new LuaValue(parent, name);
     }
 
-    public LuaObject pull(int index) {
-        return new LuaObject(this, index);
+    public LuaValue pull(int index) {
+        return new LuaValue(this, index);
     }
 
     public boolean isNumber(int index) {
@@ -1038,6 +1043,10 @@ public class Lua {
         return jniLen(state, index);
     }
 
+    public boolean compare(int index1, int index2, int op) {
+        return jniCompare(state, index1, index2, op) != 0;
+    }
+
     public int type(int index) {
         return jniType(state, index);
     }
@@ -1113,10 +1122,6 @@ public class Lua {
     }
 
     public void move(Lua to, int n) {
-    }
-
-    public int compare(int index1, int index2, int op) {
-        return 0;
     }
 
     public int yield(int nResults) {

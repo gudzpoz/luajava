@@ -415,7 +415,7 @@ public final class LuaJava {
                     throw new LuaException("Parameter is not a table. Can't create proxy.");
                 }
 
-                LuaObject luaObj = L.pull(2);
+                LuaValue luaObj = L.pull(2);
                 Object proxy = luaObj.createProxy(implem);
                 L.push(proxy);
             } catch (Exception e) {
@@ -445,13 +445,13 @@ public final class LuaJava {
                 obj = L.toString(idx);
             }
         } else if (L.isFunction(idx)) {
-            if (!parameter.isAssignableFrom(LuaObject.class)) {
+            if (!parameter.isAssignableFrom(LuaValue.class)) {
                 okType = false;
             } else {
                 obj = L.pull(idx);
             }
         } else if (L.isTable(idx)) {
-            if (!parameter.isAssignableFrom(LuaObject.class)) {
+            if (!parameter.isAssignableFrom(LuaValue.class)) {
                 okType = false;
             } else {
                 obj = L.pull(idx);
@@ -472,7 +472,7 @@ public final class LuaJava {
                     obj = userObj;
                 }
             } else {
-                if (!parameter.isAssignableFrom(LuaObject.class)) {
+                if (!parameter.isAssignableFrom(LuaValue.class)) {
                     okType = false;
                 } else {
                     obj = L.pull(idx);
