@@ -896,31 +896,31 @@ public class Lua {
         }
     }
 
-    public LuaValue pull(String globalName) {
-        return new LuaValue(this, globalName);
+    public LuaValue pull(String key) {
+        return new LuaValue(this, key);
     }
     
-    public LuaValue pull(LuaValue parent, String name) {
+    public LuaValue pull(LuaValue parent, String key) {
         if (parent.getLua().getCPtrPeer() != state.getPeer()) return null;
         if (!parent.isTable() && !parent.isUserdata()) return null;
-        return new LuaValue(parent, name);
+        return new LuaValue(parent, key);
     }
     
-    public LuaValue pull(LuaValue parent, Number name) {
+    public LuaValue pull(LuaValue parent, int key) {
         if (parent.getLua().getCPtrPeer() != state.getPeer()) return null;
         if (!parent.isTable() && !parent.isUserdata()) return null;
-        return new LuaValue(parent, name);
+        return new LuaValue(parent, key);
     }
     
-    public LuaValue pull(LuaValue parent, LuaValue name) {
+    public LuaValue pull(LuaValue parent, LuaValue key) {
         if (parent.getLua().getCPtrPeer() != state.getPeer() ||
-            parent.getLua().getCPtrPeer() != name.getLua().getCPtrPeer())
+            parent.getLua().getCPtrPeer() != key.getLua().getCPtrPeer())
             return null;
 
-        if (parent.getLua() != name.getLua()) return null;
+        if (parent.getLua() != key.getLua()) return null;
         if (!parent.isTable() && !parent.isUserdata()) return null;
 
-        return new LuaValue(parent, name);
+        return new LuaValue(parent, key);
     }
 
     public LuaValue pull(int index) {
