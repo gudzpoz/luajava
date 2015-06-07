@@ -1169,7 +1169,7 @@ public class Lua {
     }
 
     public void move(Lua to, int index) {
-        jniMove(state, to, index);
+        jniMove(state, to.state, index);
     }
 
     public int yield(int nResults) {
