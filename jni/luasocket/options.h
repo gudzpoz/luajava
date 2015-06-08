@@ -8,7 +8,7 @@
 * modules UDP and TCP. 
 \*=========================================================================*/
 
-#include <lua/lua.h>
+#include "lua.h"
 #include "socket.h"
 
 /* option registry */

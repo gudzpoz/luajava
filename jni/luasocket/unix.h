@@ -7,7 +7,7 @@
 * This module is just an example of how to extend LuaSocket with a new 
 * domain.
 \*=========================================================================*/
-#include <lua/lua.h>
+#include "lua.h"
 
 #include "buffer.h"
 #include "timeout.h"

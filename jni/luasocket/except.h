@@ -26,7 +26,7 @@
 * exceptions on error, but that don't interrupt the user script. 
 \*=========================================================================*/
 
-#include <lua/lua.h>
+#include "lua.h"
 
 int except_open(lua_State *L);
 

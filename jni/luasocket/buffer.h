@@ -15,7 +15,7 @@
 * The module is built on top of the I/O abstraction defined in io.h and the
 * timeout management is done with the timeout.h interface.
 \*=========================================================================*/
-#include <lua/lua.h>
+#include "lua.h"
 
 #include "io.h"
 #include "timeout.h"

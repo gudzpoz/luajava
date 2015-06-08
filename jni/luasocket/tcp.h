@@ -14,7 +14,7 @@
 * tcp objects either connected to some address or returned by the accept
 * method of a server object.
 \*=========================================================================*/
-#include <lua/lua.h>
+#include "lua.h"
 
 #include "buffer.h"
 #include "timeout.h"

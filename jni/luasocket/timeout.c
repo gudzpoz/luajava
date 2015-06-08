@@ -6,8 +6,8 @@
 #include <limits.h>
 #include <float.h>
 
-#include <lua/lua.h>
-#include <lua/lauxlib.h>
+#include "lua.h"
+#include "lauxlib.h"
 
 #include "auxiliar.h"
 #include "timeout.h"

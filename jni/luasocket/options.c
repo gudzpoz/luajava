@@ -4,7 +4,7 @@
 \*=========================================================================*/
 #include <string.h> 
 
-#include <lua/lauxlib.h>
+#include "lauxlib.h"
 
 #include "auxiliar.h"
 #include "options.h"

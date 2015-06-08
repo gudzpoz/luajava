@@ -12,7 +12,7 @@
 * with a call to the setpeername function. The same function can be used to
 * break the connection.
 \*=========================================================================*/
-#include <lua/lua.h>
+#include "lua.h"
 
 #include "timeout.h"
 #include "socket.h"

@@ -4,7 +4,7 @@
 * Timeout management functions
 * LuaSocket toolkit
 \*=========================================================================*/
-#include <lua/lua.h>
+#include "lua.h"
 
 /* timeout control structure */
 typedef struct t_timeout_ {

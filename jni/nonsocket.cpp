@@ -1,9 +1,9 @@
-#include <luasocket.h>
+#include "nonsocket.h"
 
 // LuaSocket
 extern "C" {
-#include <luasocket/luasocket.h>
-#include <luasocket/mime.h>
+#include "luasocket.h"
+#include "mime.h"
 }
 
 // Quick macro for adding functions to 

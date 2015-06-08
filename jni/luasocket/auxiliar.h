@@ -29,8 +29,8 @@
 * reverse mapping are done using lauxlib. 
 \*=========================================================================*/
 
-#include <lua/lua.h>
-#include <lua/lauxlib.h>
+#include "lua.h"
+#include "lauxlib.h"
 
 int auxiliar_open(lua_State *L);
 void auxiliar_newclass(lua_State *L, const char *classname, luaL_Reg *func);
