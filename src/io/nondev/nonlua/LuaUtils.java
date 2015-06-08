@@ -86,7 +86,7 @@ public final class LuaUtils {
         String line;
         
         while ((line = reader.readLine()) != null) {
-            out.append(line);
+            out.append(line).append("\n");
         }
         
         return out.toString();
