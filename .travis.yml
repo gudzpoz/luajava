@@ -24,5 +24,6 @@ script:
 - ant windows
 - ant linux
 - ant android
+- mvn package
 - cd template && ./gradlew desktop:dist
 - java -jar desktop/build/libs/desktop-1.0.jar
