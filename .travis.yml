@@ -25,4 +25,4 @@ script:
 - ant linux
 - ant android
 - cd template && ./gradlew desktop:dist
-- java -jar template/desktop/build/libs/desktop-1.0.jar
+- java -jar desktop/build/libs/desktop-1.0.jar
