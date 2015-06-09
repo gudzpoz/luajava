@@ -4,9 +4,6 @@
   * [Supported platforms](#supported-platforms)
   * [About](#about)
   * [Project template](#project-template)
-  * [Building](#building)
-    * [Building natives](#building-natives)
-    * [Building library](#building-library)
   * [Credits](#credits)
 
 ## Supported platforms ##
@@ -30,83 +27,6 @@ Just navigate into `template` directory and from there you can:
   
   1. Run it - `gradlew desktop:run`, `gradlew android:installDebug android:run`, `gradlew ios:launchIPhoneSimulator`
   2. Build it - `gradlew desktop:dist`, `gradlew android:assembleRelease`, `gradlew ios:createIPA`
-
-## Building ##
-
-To compile and pack both natives and library, execute:
-
-```shell
-ant
-```
-
-This will create `libs/` directory with build results.
-
-### Building natives ###
-
-To compile and pack natives for all platforms:
-
-```shell
-ant natives
-```
-
-To only compile natives:
-
-```shell
-ant compile-natives
-```
-
-To only pack natives:
-
-```shell
-ant pack-natives
-```
-
-To clean natives
-
-```shell
-ant clean-natives
-```
-
-To compile or pack natives only for specified platform (for example for Linux), run specified ant target:
-
-```shell
-ant compile-linux
-ant pack-linux
-```
-
-targets can be:
-
-* linux
-* windows
-* macosx
-* ios
-* android
-
-### Building library ###
-
-To compile and pack java library:
-
-```shell
-ant library
-```
-
-To only compile java library:
-
-```shell
-ant compile-library
-```
-
-To only pack java library:
-
-```shell
-ant pack-library
-```
-
-To clean library
-
-```shell
-ant clean-library
-```
 
 ## Credits ##
 
