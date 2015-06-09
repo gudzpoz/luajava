@@ -20,7 +20,7 @@ install:
 - export NDK_HOME=`pwd`/android-ndk-r10d
 script:
 - mvn package
-- java -cp target/nonlua-0.1.0-SNAPSHOT-shaded.jar io.nondev.nonlua.LuaBuild
+- java -cp target/nonlua-0.2.0-SNAPSHOT-shaded.jar io.nondev.nonlua.LuaBuild
 - ant windows
 - ant linux
 - ant android
