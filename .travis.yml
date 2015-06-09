@@ -19,8 +19,8 @@ install:
 - "./ndk.bin -y | grep -v Extracting"
 - export NDK_HOME=`pwd`/android-ndk-r10d
 script:
-- ant library
-- java -cp bin/nonlua.jar io.nondev.nonlua.LuaBuild
+- mvn package
+- java -cp target/nonlua-0.1.0-SNAPSHOT.jar io.nondev.nonlua.LuaBuild
 - ant windows
 - ant linux
 - ant android

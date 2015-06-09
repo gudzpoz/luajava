@@ -1,0 +1,5 @@
+<config>	
+	<libs>
+		<lib>libs/libnonlua.a</lib>		
+	</libs>
+</config>

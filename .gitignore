@@ -15,6 +15,7 @@ android/gen/
 *.iml
 out/
 com_crashlytics_export_strings.xml
+obj/
 
 ## Eclipse
 .classpath
@@ -48,7 +49,3 @@ build/
 
 ## OS Specific
 .DS_Store
-
-## Builds
-libs/
-bin/classes

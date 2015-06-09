@@ -1,116 +1,39 @@
 <project name="nonlua" basedir="." default="all">
   <property name="has-compiler" value="true"/>
   
-  <target name="clean-natives">
+  <target name="clean">
     <ant antfile="build-windows32.xml" dir="jni" target="clean"/>
     <ant antfile="build-windows64.xml" dir="jni" target="clean"/>
     <ant antfile="build-linux32.xml" dir="jni" target="clean"/>
     <ant antfile="build-linux64.xml" dir="jni" target="clean"/>
+    <ant antfile="build-android32.xml" dir="jni" target="clean"/>
     <ant antfile="build-macosx32.xml" dir="jni" target="clean"/>
     <ant antfile="build-macosx64.xml" dir="jni" target="clean"/>
     <ant antfile="build-ios32.xml" dir="jni" target="clean"/>
-    <ant antfile="build-android32.xml" dir="jni" target="clean"/>
 	</target>
   
-  <target name="clean-library">
-    <delete dir="bin/classes"/>
-  </target>
-  
-  <target name="compile-windows">
+  <target name="windows">
     <ant antfile="build-windows32.xml" dir="jni"/>
     <ant antfile="build-windows64.xml" dir="jni"/>
   </target>
   
-  <target name="compile-linux">
+  <target name="linux">
     <ant antfile="build-linux32.xml" dir="jni"/>
     <ant antfile="build-linux64.xml" dir="jni"/>
   </target>
+
+  <target name="android">
+    <ant antfile="build-android32.xml" dir="jni"/>
+  </target>
   
-  <target name="compile-macosx">
+  <target name="macosx">
     <ant antfile="build-macosx32.xml" dir="jni"/>
     <ant antfile="build-macosx64.xml" dir="jni"/>
   </target>
   
-  <target name="compile-ios">
+  <target name="ios">
     <ant antfile="build-ios32.xml" dir="jni"/>
   </target>
-  
-  <target name="compile-android">
-    <ant antfile="build-android32.xml" dir="jni"/>
-  </target>
-  
-  <target name="compile-natives" depends="compile-windows,compile-linux,compile-macosx,compile-ios,compile-android"/>
-  
-  <target name="compile-library">
-    <mkdir dir="bin/classes"/>
-    <javac source="1.6" target="1.6" srcdir="src" destdir="bin/classes" includeantruntime="false">
-      <classpath path="gdx-jnigen.jar"/>
-    </javac>
-  </target>
-  
-  <target name="pack-windows">
-    <jar destfile="bin/nonlua-natives-windows.jar">
-      <fileset dir="libs/windows32" erroronmissingdir="false"/>
-      <fileset dir="libs/windows64" erroronmissingdir="false"/>
-    </jar>
-  </target>
-  
-  <target name="pack-linux">
-    <jar destfile="bin/nonlua-natives-linux.jar">
-      <fileset dir="libs/linux32" erroronmissingdir="false"/>
-      <fileset dir="libs/linux64" erroronmissingdir="false"/>
-    </jar>
-  </target>
-  
-  <target name="pack-macosx">
-    <jar destfile="bin/nonlua-natives-macosx.jar">
-      <fileset dir="libs/macosx32" erroronmissingdir="false"/>
-      <fileset dir="libs/macosx64" erroronmissingdir="false"/>
-    </jar>
-  </target>
-  
-  <target name="pack-ios">
-    <jar destfile="bin/nonlua-natives-ios.jar">
-      <fileset dir="libs/ios32" erroronmissingdir="false"/>
-    </jar>
-  </target>
-  
-  <target name="pack-android">
-    <jar destfile="bin/nonlua-natives-armeabi.jar">
-			<fileset dir="libs/armeabi" erroronmissingdir="false"/>
-		</jar>
-    <jar destfile="bin/nonlua-natives-armeabi-v7a.jar">
-      <fileset dir="libs/armeabi-v7a" erroronmissingdir="false"/>
-    </jar>
-    <jar destfile="bin/nonlua-natives-x86.jar">
-      <fileset dir="libs/x86" erroronmissingdir="false"/>
-    </jar>
-  </target>
-  
-  <target name="pack-natives" depends="pack-windows,pack-linux,pack-macosx,pack-ios,pack-android"/>
-  
-  <target name="pack-library">
-    <jar destfile="bin/nonlua.jar">
-      <fileset dir="bin/classes"/>
-      <zipgroupfileset dir ="" includes="gdx-jnigen.jar"/>
-    </jar>
-  </target>
-  
-  <target name="clean" depends="clean-natives,clean-library"/>
-  
-  <target name="natives" depends="compile-natives,pack-natives"/>
-  
-  <target name="library" depends="compile-library,pack-library"/>
-  
-  <target name="windows" depends="compile-windows,pack-windows"/>
-  
-  <target name="linux" depends="compile-linux,pack-linux"/>
-  
-  <target name="macosx" depends="compile-macosx,pack-macosx"/>
-  
-  <target name="ios" depends="compile-ios,pack-ios"/>
-  
-  <target name="android" depends="compile-android,pack-android"/>
 
-  <target name="all" depends="clean,natives,library"/>
+  <target name="all" depends="clean,windows,linux,android,macosx,ios"/>
 </project>
