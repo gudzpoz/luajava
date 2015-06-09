@@ -1,5 +1,5 @@
 # nonlua #
-[![Build Status](https://img.shields.io/travis/nondev/nonlua/master.svg)](https://travis-ci.org/nondev/nonlua)[![License](https://img.shields.io/github/license/nondev/nonlua.svg)](http://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/github/license/nondev/nonlua.svg)](http://opensource.org/licenses/MIT)  [![Build Status](https://img.shields.io/travis/nondev/nonlua/master.svg)](https://travis-ci.org/nondev/nonlua)
 
   * [Supported platforms](#supported-platforms)
   * [About](#about)
