@@ -67,7 +67,7 @@ public class LuaBuild {
         BuildTarget ios = BuildTarget.newDefaultTarget(TargetOs.IOS, false);
         ios.headerDirs = headers;
 
-        new NativeCodeGenerator().generate("src", "bin/classes", "jni");
+        new NativeCodeGenerator().generate("src", "target/classes", "jni");
         new AntScriptGenerator().generate(new BuildConfig("nonlua"), win32, win64, lin32, lin64, mac32, mac64, android, ios);
     }
 }
