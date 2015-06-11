@@ -172,7 +172,7 @@ static int java_loadlib(lua_State * L) {
 }
 
 static int java_instanceof(lua_State * L) {
-  jclass classInstance2;
+  jclass classInstance2 = NULL;
 
   if (lua_gettop(L) != 2) {
     luaL_error(L, "Error. Invalid number of parameters.");
