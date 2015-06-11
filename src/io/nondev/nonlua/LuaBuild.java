@@ -31,7 +31,7 @@ import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
 
 public class LuaBuild {
     public static void main (String[] args) throws Exception {
-        String[] headers = {"lua", "luasocket"};
+        String[] headers = {"nonlua", "lua", "luasocket"};
 
         BuildTarget win32 = BuildTarget.newDefaultTarget(TargetOs.Windows, false);
         win32.headerDirs = headers;

@@ -516,10 +516,10 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniNext
 /*
  * Class:     io_nondev_nonlua_Lua
  * Method:    jniError
- * Signature: (Lio/nondev/nonlua/CPtr;)I
+ * Signature: (Lio/nondev/nonlua/CPtr;Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniError
-  (JNIEnv *, jclass, jobject);
+  (JNIEnv *, jclass, jobject, jstring);
 
 /*
  * Class:     io_nondev_nonlua_Lua
