@@ -114,12 +114,12 @@
                 <version>2.4</version>
                 <configuration>
                     <descriptors>
-                        <descriptor>desktop.xml</descriptor>
-                        <descriptor>x86.xml</descriptor>                        
-                        <descriptor>armeabi.xml</descriptor>
-                        <descriptor>armeabi-v7a.xml</descriptor>
+                        <descriptor>jni/natives-desktop.xml</descriptor>
+                        <descriptor>jni/natives-x86.xml</descriptor>
+                        <descriptor>jni/natives-armeabi.xml</descriptor>
+                        <descriptor>jni/natives-armeabi-v7a.xml</descriptor>
                         <!-- TODO: Compile iOS natives -->
-                        <!-- <descriptor>ios.xml</descriptor> -->
+                        <!-- <descriptor>jni/natives-ios.xml</descriptor> -->
                     </descriptors>
                 </configuration>
                 <executions>
