@@ -27,8 +27,6 @@
 
 #define LUA_JAVALIBNAME	"java"
 NONLUA_API int (luaopen_java) (lua_State *L);
-
-#define LUA_SOCKLIBNAME	"socket"
 NONLUA_API int (luaopen_luasocket) (lua_State *L);
 
 #endif

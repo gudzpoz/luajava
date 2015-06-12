@@ -20,8 +20,6 @@
  * SOFTWARE.
  ******************************************************************************/
 
-package io.nondev.nonlua;
-
 import java.io.File;
 import com.badlogic.gdx.jnigen.AntScriptGenerator;
 import com.badlogic.gdx.jnigen.BuildConfig;
@@ -29,7 +27,7 @@ import com.badlogic.gdx.jnigen.BuildTarget;
 import com.badlogic.gdx.jnigen.NativeCodeGenerator;
 import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
 
-public class LuaBuild {
+public class build {
     public static void main (String[] args) throws Exception {
         String[] headers = {"nonlua", "lua", "luasocket"};
 

@@ -28,69 +28,111 @@ extern "C" {
 #include "mime.h"
 }
 
-#define PRELOAD(name, function) \
+#define PRELOAD(name) \
   lua_getglobal(L, "package"); \
-  lua_getfield(L, -1, "preload"); \
-  lua_pushcfunction(L, function); \
+  lua_getfield(L, -1, "loaded"); \
+  lua_pushvalue(L, -3); \
   lua_setfield(L, -2, name); \
-  lua_pop(L, 2);  
+  lua_pushvalue(L, -3); \
+  lua_setglobal(L, name); \
+  lua_pop(L, 2);
 
 static int socket_socket (lua_State * L) {
   #include "socket.lua.h"
+  luaL_loadbuffer(L, (const char*)socket_lua, socket_lua_len, "socket.lua");
+  lua_call(L, 0, 1);
   return 1;
 }
 
 static int socket_headers(lua_State * L) {
   #include "headers.lua.h"
+  luaL_loadbuffer(L, (const char*)headers_lua, headers_lua_len, "headers.lua");
+  lua_call(L, 0, 1);
   return 1;
 }
 
 static int socket_ftp(lua_State * L) {
   #include "ftp.lua.h"
+  luaL_loadbuffer(L, (const char*)ftp_lua, ftp_lua_len, "ftp.lua");
+  lua_call(L, 0, 1);
   return 1;
 }
 
 static int socket_http(lua_State * L) {
   #include "http.lua.h"
+  luaL_loadbuffer(L, (const char*)http_lua, http_lua_len, "http.lua");
+  lua_call(L, 0, 1);
   return 1;
 }
 
 static int socket_ltn12(lua_State * L) {
   #include "ltn12.lua.h"
+  luaL_loadbuffer(L, (const char*)ltn12_lua, ltn12_lua_len, "ltn12.lua");
+  lua_call(L, 0, 1);
   return 1;
 }
 
 static int socket_mime(lua_State * L) {
   #include "mime.lua.h"
+  luaL_loadbuffer(L, (const char*)mime_lua, mime_lua_len, "mime.lua");
+  lua_call(L, 0, 1);
   return 1;
 }
 
 static int socket_smtp(lua_State * L) {
   #include "smtp.lua.h"
+  luaL_loadbuffer(L, (const char*)smtp_lua, smtp_lua_len, "smtp.lua");
+  lua_call(L, 0, 1);
   return 1;
 }
 
 static int socket_tp(lua_State * L) {
   #include "tp.lua.h"
+  luaL_loadbuffer(L, (const char*)tp_lua, tp_lua_len, "tp.lua");
+  lua_call(L, 0, 1);
   return 1;
 }
 
 static int socket_url(lua_State * L) {
   #include "url.lua.h"
+  luaL_loadbuffer(L, (const char*)url_lua, url_lua_len, "url.lua");
+  lua_call(L, 0, 1);
   return 1;
 }
 
 NONLUA_API int luaopen_luasocket(lua_State * L) {
-  PRELOAD("socket.core",    luaopen_socket_core);
-  PRELOAD("mime.core",      luaopen_mime_core);
-  PRELOAD("socket",         socket_socket);
-  PRELOAD("socket.headers", socket_headers);
-  PRELOAD("socket.ftp",     socket_ftp)
-  PRELOAD("socket.http",    socket_http);
-  PRELOAD("ltn12",          socket_ltn12);
-  PRELOAD("mime",           socket_mime)
-  PRELOAD("socket.smtp",    socket_smtp);
-  PRELOAD("socket.tp",      socket_tp)
-  PRELOAD("socket.url",     socket_url)
+  luaopen_socket_core(L);
+  PRELOAD("socket.core");
+
+  luaopen_mime_core(L);
+  PRELOAD("mime.core");
+
+  socket_socket(L);
+  PRELOAD("socket");
+
+  socket_headers(L);
+  PRELOAD("socket.headers");
+
+  socket_url(L);
+  PRELOAD("socket.url");
+
+  socket_ltn12(L);
+  PRELOAD("ltn12");
+
+  socket_tp(L);
+  PRELOAD("socket.tp");
+
+  socket_ftp(L);
+  PRELOAD("socket.ftp");
+
+  socket_mime(L);
+  PRELOAD("mime");
+
+  socket_http(L);
+  PRELOAD("socket.http");
+
+  socket_smtp(L);
+  PRELOAD("socket.smtp");
+  
   return 0;
 }
