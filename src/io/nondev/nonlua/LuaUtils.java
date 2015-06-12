@@ -33,31 +33,31 @@ public final class LuaUtils {
     public static Number convertNumber(Double db, Class retType) {
         if (retType.isPrimitive()) {
             if (retType == Integer.TYPE) {
-                return new Integer(db.intValue());
+                return Integer.valueOf(db.intValue());
             } else if (retType == Float.TYPE) {
-                return new Float(db.floatValue());
+                return Float.valueOf(db.floatValue());
             } else if (retType == Double.TYPE) {
                 return db;
             } else if (retType == Byte.TYPE) {
-                return new Byte(db.byteValue());
+                return Byte.valueOf(db.byteValue());
             } else if (retType == Long.TYPE) {
-                return new Long(db.longValue());
+                return Long.valueOf(db.longValue());
             } else if (retType == Short.TYPE) {
-                return new Short(db.shortValue());
+                return Short.valueOf(db.shortValue());
             }
-        } else if (retType.isAssignableFrom(Number.class)) {
+        } else {
             if (retType.isAssignableFrom(Integer.class)) {
-                return new Integer(db.intValue());
+                return Integer.valueOf(db.intValue());
             } else if (retType.isAssignableFrom(Float.class)) {
-                return new Float(db.floatValue());
+                return Float.valueOf(db.floatValue());
             } else if (retType.isAssignableFrom(Double.class)) {
                 return db;
             } else if (retType.isAssignableFrom(Byte.class)) {
-                return new Byte(db.byteValue());
+                return Byte.valueOf(db.byteValue());
             } else if (retType.isAssignableFrom(Long.class)) {
-                return new Long(db.longValue());
+                return Long.valueOf(db.longValue());
             } else if (retType.isAssignableFrom(Short.class)) {
-                return new Short(db.shortValue());
+                return Short.valueOf(db.shortValue());
             }
         }
     

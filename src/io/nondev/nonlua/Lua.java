@@ -616,8 +616,10 @@ public class Lua {
 
         push(new LuaFunction(this) {
             public int call() {
-                for (int i = 2; i <= L.getTop(); i++) {
-                    if (L.isNil(i) || L.isNone(i)) {
+                int top = L.getTop();
+
+                for (int i = 2; i <= top; i++) {
+                    if (L.isNil(i)) {
                         Lua.this.cfg.logger.log("nil");
                         Lua.this.cfg.logger.log("\t");
                     }

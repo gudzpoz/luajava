@@ -583,6 +583,22 @@ static int llex (LexState *ls, SemInfo *seminfo) {
 }
 
 
+#define LAST_RESERVED TK_WHILE
+
+static int nexttoken(LexState *ls, SemInfo *seminfo) {
+  static int last = TK_EOS;
+  int t = llex(ls, seminfo);
+  if ((last=='.' || last==':') && t >= FIRST_RESERVED && t <= LAST_RESERVED) {
+    seminfo->ts = luaS_new(ls->L, luaX_tokens[t-FIRST_RESERVED]);
+    return TK_NAME;
+  }
+  last = t;
+  return t;
+}
+
+#define llex nexttoken
+
+
 void luaX_next (LexState *ls) {
   ls->lastline = ls->linenumber;
   if (ls->lookahead.token != TK_EOS) {  /* is there a look-ahead token? */

@@ -438,7 +438,7 @@ public final class LuaJava {
             }
 
             obj = new Boolean(L.toBoolean(idx));
-        } else if (L.isString(idx)) {
+        } else if (L.type(idx) == Lua.STRING) {
             if (!parameter.isAssignableFrom(String.class)) {
                 okType = false;
             } else {
@@ -456,9 +456,9 @@ public final class LuaJava {
             } else {
                 obj = L.pull(idx);
             }
-        } else if (L.isNumber(idx)) {
+        } else if (L.type(idx) == Lua.NUMBER) {
             double db = L.toNumber(idx).doubleValue();
-          
+            
             obj = LuaUtils.convertNumber(db, parameter);
             if (obj == null) {
                 okType = false;
