@@ -22,6 +22,8 @@ To include Nonlua into your project, you can use Maven or Gradle. Artifacts:
 * Android natives: `io.nondev:nonlua:0.3.0-SNAPSHOT:natives-android`
 * iOS natives: `io.nondev:nonlua:0.3.0-SNAPSHOT:natives-ios`
 
+You must also include `https://oss.sonatype.org/content/repositories/snapshots/` to repositories.
+
 And here is simple example on how to correctly initialize new Lua instance.
 This example will push `message` variable to Lua with value `Hello World from Lua`, then prints it using Lua built-in `print` function and then tries to evaluate `main.lua` script.
 
