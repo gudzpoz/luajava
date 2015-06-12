@@ -64,12 +64,6 @@ static int objectIndexReturn(lua_State * L) {
   lua_pop(L, 2);
   jobject * pObject = (jobject*) lua_touserdata(L, 1);
   JNIEnv * env = nonlua_getenv(L);
-
-  if (env == NULL) {
-    luaL_error(L, "Invalid JNI Environment.");
-  }
-
-
   jmethodID method = env->GetStaticMethodID(luajava_api_class, "objectIndex" , "(ILjava/lang/Object;Ljava/lang/String;)I");
   jstring str = env->NewStringUTF(methodName);
   jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, *pObject, str);
@@ -101,11 +95,6 @@ static int objectIndex(lua_State * L) {
   }
 
   JNIEnv * env = nonlua_getenv(L);
-
-  if (env == NULL) {
-    luaL_error(L, "Invalid JNI Environment.");
-  }
-
   jobject * obj = (jobject *) lua_touserdata(L, 1);
   jmethodID method = env->GetStaticMethodID(luajava_api_class, "checkField", "(ILjava/lang/Object;Ljava/lang/String;)I");
   jstring str = env->NewStringUTF(key);
@@ -154,11 +143,6 @@ static int objectNewIndex(lua_State * L ) {
   const char * fieldName = lua_tostring(L, 2);
   jobject * obj = (jobject*)lua_touserdata(L, 1);
   JNIEnv * env = nonlua_getenv(L);
-  
-  if (env == NULL) {
-    luaL_error(L, "Invalid JNI Environment.");
-  }
-
   jmethodID method = env->GetStaticMethodID(luajava_api_class, "objectNewIndex" , "(ILjava/lang/Object;Ljava/lang/String;)I");
   jstring str = env->NewStringUTF(fieldName);
   jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, *obj, str);
@@ -190,11 +174,6 @@ static int classIndex(lua_State * L) {
   const char * fieldName = lua_tostring(L, 2);
   jobject * obj = (jobject*) lua_touserdata(L, 1);
   JNIEnv * env = nonlua_getenv(L);
-
-  if (env == NULL) {
-    luaL_error(L, "Invalid JNI Environment.");
-  }
-
   jmethodID method = env->GetStaticMethodID(luajava_api_class, "classIndex" , "(ILjava/lang/Class;Ljava/lang/String;)I");
   jstring str = env->NewStringUTF(fieldName);
   jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, *obj, str);
@@ -245,11 +224,6 @@ static int arrayIndex(lua_State * L) {
   }
 
   JNIEnv * env = nonlua_getenv(L);
-
-  if (env == NULL) {
-    luaL_error(L, "Invalid JNI Environment.");
-  }
-
   jobject * obj = (jobject *) lua_touserdata(L, 1);
   jmethodID method = env->GetStaticMethodID(luajava_api_class, "arrayIndex", "(ILjava/lang/Object;I)I");
   jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, *obj, (jlong)key);
@@ -280,11 +254,6 @@ static int arrayNewIndex(lua_State * L) {
   lua_Integer key = lua_tointeger(L, 2);
   jobject * obj = (jobject*) lua_touserdata(L, 1);
   JNIEnv * env = nonlua_getenv(L);
-
-  if (env == NULL) {
-    luaL_error(L, "Invalid JNI Environment.");
-  }
-
   jmethodID method = env->GetStaticMethodID(luajava_api_class, "arrayNewIndex", "(ILjava/lang/Object;I)I");
   jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, *obj, (jint)key);
   nonlua_throw(env, L);
@@ -300,11 +269,6 @@ static int gc(lua_State * L) {
   jobject *pObj = (jobject *)lua_touserdata(L, 1);
 
   JNIEnv * env = nonlua_getenv(L);
-
-  if (env == NULL) {
-    luaL_error(L, "Invalid JNI Environment.");
-  }
-
   env->DeleteGlobalRef(*pObj);
 
   return 0;
@@ -317,10 +281,6 @@ static int luaJavaFunctionCall(lua_State * L) {
 
   jobject * obj = (jobject *)lua_touserdata(L, 1);
   JNIEnv * env = nonlua_getenv(L);
-
-  if (env == NULL) {
-    luaL_error(L, "Invalid JNI Environment.");
-  }
 
   if (env->IsInstanceOf(*obj, java_function_class) == JNI_FALSE) {
     luaL_error(L, "Called Java object is not a JavaFunction");
@@ -345,104 +305,103 @@ NONLUA_API jobject nonlua_open(JNIEnv * env, jint stateid) {
   
   obj = env->AllocObject(tempClass);
   if (obj) {
-   env->SetLongField(obj, env->GetFieldID(tempClass, "peer", "J"), (jlong) L);
+    env->SetLongField(obj, env->GetFieldID(tempClass, "peer", "J"), (jlong) L);
   }
 
   if (luajava_api_class == NULL) {
-   tempClass = env->FindClass(NONLUA_LUAJAVACLASS);
+    tempClass = env->FindClass(NONLUA_LUAJAVACLASS);
 
-   if (tempClass == NULL) {
-    fprintf(stderr, "Could not find LuaJava class\n");
-    exit(1);
-   }
+    if (tempClass == NULL) {
+      fprintf(stderr, "Could not find LuaJava class\n");
+      exit(1);
+    }
 
-   if ((luajava_api_class = (jclass)env->NewGlobalRef(tempClass)) == NULL) {
-    fprintf(stderr, "Could not bind to LuaJavaAPI class\n");
-    exit(1);
-   }
+    if ((luajava_api_class = (jclass)env->NewGlobalRef(tempClass)) == NULL) {
+      fprintf(stderr, "Could not bind to LuaJavaAPI class\n");
+      exit(1);
+    }
   }
 
   if (java_function_class == NULL) {
-   tempClass = env->FindClass(NONLUA_FUNCTIONCLASS);
+    tempClass = env->FindClass(NONLUA_FUNCTIONCLASS);
  
-   if (tempClass == NULL) {
-    fprintf(stderr, "Could not find LuaFunction interface\n");
-    exit(1);
-   }
+    if (tempClass == NULL) {
+      fprintf(stderr, "Could not find LuaFunction interface\n");
+      exit(1);
+    }
 
-   if ((java_function_class = (jclass) env->NewGlobalRef(tempClass)) == NULL) {
-    fprintf(stderr, "Could not bind to LuaFunction interface\n");
-    exit(1);
-   }
+    if ((java_function_class = (jclass) env->NewGlobalRef(tempClass)) == NULL) {
+      fprintf(stderr, "Could not bind to LuaFunction interface\n");
+      exit(1);
+    }
   }
  
   if (java_function_method == NULL) {
-   java_function_method = env->GetMethodID(java_function_class, "call", "()I");
-   if (!java_function_method) {
-    fprintf(stderr, "Could not find <call> method in LuaFunction\n");
-    exit(1);
-   }
+    java_function_method = env->GetMethodID(java_function_class, "call", "()I");
+    
+    if (!java_function_method) {
+      fprintf(stderr, "Could not find <call> method in LuaFunction\n");
+      exit(1);
+    }
   }
 
   if (throwable_class == NULL) {
-   tempClass = env->FindClass("java/lang/Throwable");
+    tempClass = env->FindClass("java/lang/Throwable");
  
-   if (tempClass == NULL) {
-    fprintf(stderr, "Error. Couldn't bind java class java.lang.Throwable\n");
-    exit(1);
-   }
+    if (tempClass == NULL) {
+      fprintf(stderr, "Error. Couldn't bind java class java.lang.Throwable\n");
+      exit(1);
+    }
 
-   throwable_class = (jclass) env->NewGlobalRef(tempClass);
+    throwable_class = (jclass) env->NewGlobalRef(tempClass);
 
-   if (throwable_class == NULL) {
-    fprintf(stderr, "Error. Couldn't bind java class java.lang.Throwable\n");
-    exit(1);
-   }
+    if (throwable_class == NULL) {
+      fprintf(stderr, "Error. Couldn't bind java class java.lang.Throwable\n");
+      exit(1);
+    }
   }
 
   if (throwable_get_message_method == NULL) {
-   throwable_get_message_method = env->GetMethodID(throwable_class, "getMessage" ,
-                "()Ljava/lang/String;");
+    throwable_get_message_method = env->GetMethodID(throwable_class, "getMessage", "()Ljava/lang/String;");
 
-   if (throwable_get_message_method == NULL) {
-    fprintf(stderr, "Could not find <getMessage> method in java.lang.Throwable\n");
-    exit(1);
-   }
+    if (throwable_get_message_method == NULL) {
+      fprintf(stderr, "Could not find <getMessage> method in java.lang.Throwable\n");
+      exit(1);
+    }
   }
 
   if (throwable_to_string_method == NULL) {
-   throwable_to_string_method = env->GetMethodID(throwable_class, "toString" ,
-                "()Ljava/lang/String;");
+    throwable_to_string_method = env->GetMethodID(throwable_class, "toString", "()Ljava/lang/String;");
 
-   if (throwable_to_string_method == NULL) {
-    fprintf(stderr, "Could not find <toString> method in java.lang.Throwable\n");
-    exit(1);
-   }
+    if (throwable_to_string_method == NULL) {
+      fprintf(stderr, "Could not find <toString> method in java.lang.Throwable\n");
+      exit(1);
+    }
   }
 
   if (java_lang_class == NULL) {
-   tempClass = env->FindClass("java/lang/Class");
+    tempClass = env->FindClass("java/lang/Class");
 
-   if (tempClass == NULL) {
-    fprintf(stderr, "Error. Coundn't bind java class java.lang.Class\n");
-    exit(1);
-   }
+    if (tempClass == NULL) {
+      fprintf(stderr, "Error. Coundn't bind java class java.lang.Class\n");
+      exit(1);
+    }
  
-   java_lang_class = (jclass) env->NewGlobalRef(tempClass);
+    java_lang_class = (jclass) env->NewGlobalRef(tempClass);
  
-   if (java_lang_class == NULL) {
-    fprintf(stderr, "Error. Couldn't bind java class java.lang.Throwable\n");
-    exit(1);
-   }
+    if (java_lang_class == NULL) {
+      fprintf(stderr, "Error. Couldn't bind java class java.lang.Throwable\n");
+      exit(1);
+    }
   }
 
   if (for_name_method == NULL) {
-   for_name_method = env->GetStaticMethodID(java_lang_class, "forName", 
-              "(Ljava/lang/String;)Ljava/lang/Class;");
-   if (for_name_method == NULL) {
-    fprintf(stderr, "Could not find <forName> method in java.lang.Class\n");
-    exit(1);
-   }
+    for_name_method = env->GetStaticMethodID(java_lang_class, "forName", "(Ljava/lang/String;)Ljava/lang/Class;");
+    
+    if (for_name_method == NULL) {
+      fprintf(stderr, "Could not find <forName> method in java.lang.Class\n");
+      exit(1);
+    }
   }
 
   nonlua_pushenv(env, L);
@@ -454,19 +413,19 @@ NONLUA_API int nonlua_throw(JNIEnv * env, lua_State * L) {
   jthrowable exp = env->ExceptionOccurred();
 
   if (exp != NULL) {
-  env->ExceptionClear();
+    env->ExceptionClear();
 
-  jstring jstr = (jstring)env->CallObjectMethod(exp, throwable_get_message_method);
+    jstring jstr = (jstring)env->CallObjectMethod(exp, throwable_get_message_method);
 
-  if (jstr == NULL) {
-   jstr = (jstring)env->CallObjectMethod(exp, throwable_to_string_method);
-  }
+    if (jstr == NULL) {
+      jstr = (jstring)env->CallObjectMethod(exp, throwable_to_string_method);
+    }
 
-  const char * str = env->GetStringUTFChars(jstr, NULL);
+    const char * str = env->GetStringUTFChars(jstr, NULL);
 
-  lua_pushstring(L, str);
-  env->ReleaseStringUTFChars(jstr, str);
-  lua_error(L);
+    lua_pushstring(L, str);
+    env->ReleaseStringUTFChars(jstr, str);
+    lua_error(L);
   }
 
   return 1;
@@ -476,11 +435,6 @@ NONLUA_API int nonlua_pushobject(lua_State * L, jobject javaobject) {
   jobject * userData, globalRef;
 
   JNIEnv * env = nonlua_getenv(L);
-
-  if (env == NULL) {
-  luaL_error(L, "Invalid JNI Environment.");
-  }
-
   globalRef = env->NewGlobalRef(javaobject);
 
   userData = (jobject *)lua_newuserdata(L, sizeof(jobject));
@@ -505,8 +459,8 @@ NONLUA_API int nonlua_pushobject(lua_State * L, jobject javaobject) {
   lua_rawset(L, -3);
 
   if (lua_setmetatable(L, -2) == 0) {
-  env->DeleteGlobalRef(globalRef);
-  luaL_error(L, "Cannot create proxy to java object.");
+    env->DeleteGlobalRef(globalRef);
+    luaL_error(L, "Cannot create proxy to java object.");
   }
 
   return 1;
@@ -516,11 +470,6 @@ NONLUA_API int nonlua_pusharray(lua_State * L, jobject javaarray) {
   jobject * userData, globalRef;
 
   JNIEnv * env = nonlua_getenv(L);
-  
-  if (env == NULL) {
-  luaL_error(L, "Invalid JNI Environment.");
-  }
-
   globalRef = env->NewGlobalRef(javaarray);
   userData = (jobject *)lua_newuserdata(L, sizeof(jobject));
   *userData = globalRef;
@@ -544,8 +493,8 @@ NONLUA_API int nonlua_pusharray(lua_State * L, jobject javaarray) {
   lua_rawset(L, -3);
 
   if (lua_setmetatable(L, -2) == 0) {
-  env->DeleteGlobalRef(globalRef);
-  luaL_error(L, "Cannot create proxy to java object.");
+    env->DeleteGlobalRef(globalRef);
+    luaL_error(L, "Cannot create proxy to java object.");
   }
 
   return 1;
@@ -555,14 +504,7 @@ NONLUA_API int nonlua_pushclass(lua_State * L, jobject javaObject) {
   jobject * userData, globalRef;
 
   JNIEnv * env = nonlua_getenv(L);
-  if (env == NULL)
-  {
-  lua_pushstring(L, "Invalid JNI Environment.");
-  lua_error(L);
-  }
-
   globalRef = env->NewGlobalRef(javaObject);
-
   userData = (jobject *) lua_newuserdata(L, sizeof(jobject));
   *userData = globalRef;
 
@@ -584,11 +526,9 @@ NONLUA_API int nonlua_pushclass(lua_State * L, jobject javaObject) {
   lua_pushboolean(L, 1);
   lua_rawset(L, -3);
 
-  if (lua_setmetatable(L, -2) == 0)
-  {
-   env->DeleteGlobalRef(globalRef);
-  lua_pushstring(L, "Cannot create proxy to java class.");
-  lua_error(L);
+  if (lua_setmetatable(L, -2) == 0) {
+    env->DeleteGlobalRef(globalRef);
+    luaL_error(L, "Cannot create proxy to java class.");
   }
 
   return 1;
@@ -598,11 +538,6 @@ NONLUA_API int nonlua_pushfunction(lua_State * L, jobject javafunction) {
   jobject * userData, globalRef;
 
   JNIEnv * env = nonlua_getenv(L);
-  
-  if (env == NULL) {
-  luaL_error(L, "Invalid JNI Environment.");
-  }
-
   globalRef = env->NewGlobalRef(javafunction);
   userData = (jobject *)lua_newuserdata(L, sizeof(jobject));
   *userData = globalRef;
@@ -633,8 +568,8 @@ NONLUA_API int nonlua_isobject(lua_State * L, int index) {
   lua_rawget(L, -2);
 
   if (lua_isnil(L, -1)) {
-  lua_pop(L, 2);
-  return 0;
+    lua_pop(L, 2);
+    return 0;
   }
 
   lua_pop(L, 2);
@@ -642,18 +577,11 @@ NONLUA_API int nonlua_isobject(lua_State * L, int index) {
 }
 
 NONLUA_API int nonlua_isfunction(lua_State * L, int index) {
-  if (nonlua_isobject(L, index)) {
-  JNIEnv * env = nonlua_getenv(L);
-  
-  if (env == NULL) {
-   luaL_error(L, "Invalid JNI Environment.");
-  }
+  if (!nonlua_isobject(L, index)) return 0;
 
+  JNIEnv * env = nonlua_getenv(L);
   jobject * obj = (jobject *)lua_touserdata(L, index);
   return env->IsInstanceOf(*obj, java_function_class);
-  }
-
-  return 0;
 }
 
 NONLUA_API jclass nonlua_findclass(JNIEnv * env, lua_State * L, const char * className) {
@@ -682,15 +610,21 @@ NONLUA_API JNIEnv * nonlua_getenv(lua_State * L) {
   lua_rawget(L, LUA_REGISTRYINDEX);
 
   if (!lua_isuserdata(L, -1)) {
-  lua_pop(L, 1);
-  return NULL;
+    lua_pop(L, 1);
+    luaL_error(L, "Invalid JNI Environment.");
   }
 
   udEnv = (JNIEnv **)lua_touserdata(L, -1);
 
   lua_pop(L, 1);
 
-  return * udEnv;
+  JNIEnv * env = *udEnv;
+
+  if (env == NULL) {
+    luaL_error(L, "Invalid JNI Environment.");
+  }
+
+  return env;
 }
 
 NONLUA_API void nonlua_pushenv(JNIEnv * env, lua_State * L) {
@@ -700,16 +634,15 @@ NONLUA_API void nonlua_pushenv(JNIEnv * env, lua_State * L) {
   lua_rawget(L, LUA_REGISTRYINDEX);
 
   if (!lua_isnil(L, -1)) {
-  udEnv = (JNIEnv **)lua_touserdata(L, -1);
-  *udEnv = env;
-  lua_pop(L, 1);
+    udEnv = (JNIEnv **)lua_touserdata(L, -1);
+    *udEnv = env;
+    lua_pop(L, 1);
   } else {
-  lua_pop(L, 1);
-  udEnv = (JNIEnv **)lua_newuserdata(L, sizeof(JNIEnv *));
-  *udEnv = env;
-
-  lua_pushstring(L, NONLUA_JNIENVTAG);
-  lua_insert(L, -2);
-  lua_rawset(L, LUA_REGISTRYINDEX);
+    lua_pop(L, 1);
+    udEnv = (JNIEnv **)lua_newuserdata(L, sizeof(JNIEnv *));
+    *udEnv = env;
+    lua_pushstring(L, NONLUA_JNIENVTAG);
+    lua_insert(L, -2);
+    lua_rawset(L, LUA_REGISTRYINDEX);
   }
 }

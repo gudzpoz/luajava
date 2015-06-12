@@ -32,10 +32,6 @@ static int java_require (lua_State * L) {
 
   JNIEnv * env = nonlua_getenv(L);
 
-  if (env == NULL) {
-    luaL_error(L, "Invalid JNI Environment.");
-  }
-
   if (!lua_isstring(L, 1)) {
     luaL_error(L, "Invalid parameter type. String expected.");
   }
@@ -69,11 +65,6 @@ static int java_new(lua_State * L) {
   }
 
   JNIEnv * env = nonlua_getenv(L);
- 
-  if (env == NULL) {
-    luaL_error(L, "Invalid JNI Environment.");
-  }
-
   jclass clazz = env->FindClass("java/lang/Class");
   jobject * userData = (jobject *) lua_touserdata(L, 1);
   jobject classInstance = (jobject) *userData;
@@ -114,11 +105,6 @@ static int java_proxy(lua_State * L) {
   }
 
   JNIEnv * env = nonlua_getenv(L);
-
-  if (env == NULL) {
-    luaL_error(L, "Invalid JNI Environment.");
-  }
-
   jmethodID method = env->GetStaticMethodID(luajava_api_class, "createProxyObject" , "(ILjava/lang/String;)I");
   const char *impl = lua_tostring(L, 1);
 
@@ -155,11 +141,6 @@ static int java_loadlib(lua_State * L) {
   const char * methodName = lua_tostring(L, 2);
 
   JNIEnv * env = nonlua_getenv(L);
-  
-  if (env == NULL) {
-    luaL_error(L, "Invalid JNI Environment.");
-  }
-
   jmethodID method = env->GetStaticMethodID(luajava_api_class, "javaLoadLib" , "(ILjava/lang/String;Ljava/lang/String;)I");
   jstring javaClassName  = env->NewStringUTF(className);
   jstring javaMethodName = env->NewStringUTF(methodName);
@@ -183,11 +164,6 @@ static int java_instanceof(lua_State * L) {
   }
 
   JNIEnv * env = nonlua_getenv(L);
-
-  if (env == NULL) {
-    luaL_error(L, "Invalid JNI Environment.");
-  }
-
   jobject * userData = (jobject *) lua_touserdata(L, 1);
   jobject classInstance = (jobject) *userData;
 
