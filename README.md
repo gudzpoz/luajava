@@ -67,7 +67,8 @@ end
 To allow you to step into Lua development in Java, we build easy to use project template.
 Just navigate into `template` directory and from there you can choose
  
- * [Bare template](https://github.com/nondev/nonlua/tree/master/template/bare) * [LibGDX template](https://github.com/nondev/nonlua/tree/master/template/libgdx)
+ * [Bare template](https://github.com/nondev/nonlua/tree/master/template/bare)
+ * [LibGDX template](https://github.com/nondev/nonlua/tree/master/template/libgdx)
 
 Here are few commands to run each template front-end
 
