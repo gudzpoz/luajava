@@ -47,59 +47,51 @@ public final class LuaJava {
     public static int objectIndex(int stateIndex, Object obj, String methodName) throws LuaException {
         Lua L = LuaFactory.getExisting(stateIndex);
         
-        synchronized (L) {
-            int top = L.getTop();
+        int top = L.getTop();
 
-            Object[] objs = new Object[top - 1];
+        Object[] objs = new Object[top - 1];
 
-            Method method = null;
-            Class clazz;
+        Method method = null;
+        Class clazz;
 
-            if (obj instanceof Class) {
-                clazz = (Class) obj;
-                method = getMethod(L, clazz, methodName, objs, top);
-                if (method == null) clazz = Class.class;
-                method = getMethod(L, clazz, methodName, objs, top);
-            } else {
-                clazz = obj.getClass();
-                method = getMethod(L, clazz, methodName, objs, top);
-            }
-
-            if (method == null) {
-                throw new LuaException("Invalid method call. No such method.");
-            }
-
-            Object ret;
-            
-            try {
-                if(Modifier.isPublic(method.getModifiers())) {
-                    method.setAccessible(true);
-                }
-        
-                if (Modifier.isStatic(method.getModifiers())) {
-                    ret = method.invoke(null, objs);
-                } else {
-                    ret = method.invoke(obj, objs);
-                }
-            } catch (Exception e) {
-                throw new LuaException(e);
-            }
-
-            if (ret == null) return 0;
-
-            if (ret instanceof Object[]) {
-                Object[] lret = (Object[])ret;
-
-                for (Object retfield : lret) {
-                    L.push(retfield);
-                }
-
-                return lret.length;
-            }
-
-            L.push(ret);
-            return 1;
+        if (obj instanceof Class) {
+            clazz = (Class) obj;
+            method = getMethod(L, clazz, methodName, objs, top);
+            if (method == null) clazz = Class.class;
+            method = getMethod(L, clazz, methodName, objs, top);
+        } else {
+            clazz = obj.getClass();
+            method = getMethod(L, clazz, methodName, objs, top);
         }
+
+        if (method == null) {
+            throw new LuaException("Invalid method call. No such method.");
+        }
+
+        Object ret;
+        
+        try {
+            if(Modifier.isPublic(method.getModifiers())) {
+                method.setAccessible(true);
+            }
+    
+            if (Modifier.isStatic(method.getModifiers())) {
+                ret = method.invoke(null, objs);
+            } else {
+                ret = method.invoke(obj, objs);
+            }
+        } catch (Exception e) {
+            throw new LuaException(e);
+        }
+
+        if (ret == null) return 0;
+
+        if (ret instanceof LuaReturn) {
+            return ((LuaReturn)ret).push(L);
+        }
+
+        L.push(ret);
+        return 1;
     }
   
     /**
@@ -113,18 +105,16 @@ public final class LuaJava {
     public static int arrayIndex(int stateIndex, Object obj, int index) throws LuaException {
         Lua L = LuaFactory.getExisting(stateIndex);
 
-        synchronized (L) {
-            if (!obj.getClass().isArray()) {
-                throw new LuaException("Object indexed is not an array.");
-            }
-      
-            if (Array.getLength(obj) < index) {
-                throw new LuaException("Index out of bounds.");
-            }
-      
-            L.push(Array.get(obj, index - 1));
-            return 1;
+        if (!obj.getClass().isArray()) {
+            throw new LuaException("Object indexed is not an array.");
         }
+  
+        if (Array.getLength(obj) < index) {
+            throw new LuaException("Index out of bounds.");
+        }
+  
+        L.push(Array.get(obj, index - 1));
+        return 1;
     }
 
     /**
@@ -139,11 +129,9 @@ public final class LuaJava {
      * @throws LuaException
      */
     public static int classIndex(int stateIndex, Class clazz, String searchName) throws LuaException {
-        synchronized (LuaFactory.getExisting(stateIndex)) {
-            if (checkField(stateIndex, clazz, searchName) != 0) return 1;
-            if (checkMethod(stateIndex, clazz, searchName) != 0) return 2;
-            return 0;
-        }
+        if (checkField(stateIndex, clazz, searchName) != 0) return 1;
+        if (checkMethod(stateIndex, clazz, searchName) != 0) return 2;
+        return 0;
     }
 
   
@@ -159,37 +147,35 @@ public final class LuaJava {
     public static int objectNewIndex(int stateIndex, Object obj, String fieldName) throws LuaException {
         Lua L = LuaFactory.getExisting(stateIndex);
 
-        synchronized (L) {
-            Field field = null;
-            Class objClass;
+        Field field = null;
+        Class objClass;
 
-            if (obj instanceof Class) {
-                objClass = (Class) obj;
-            } else {
-                objClass = obj.getClass();
-            }
-
-            try {
-                field = objClass.getField(fieldName);
-            } catch (Exception e) {
-                throw new LuaException("Error accessing field.", e);
-            }
-      
-            Class type = field.getType();
-            Object setObj = compareTypes(L, type, 3);
-      
-            if (field.isAccessible()) field.setAccessible(true);
-      
-            try {
-                field.set(obj, setObj);
-            } catch (IllegalArgumentException e) {
-                throw new LuaException("Ilegal argument to set field.", e);
-            } catch (IllegalAccessException e) {
-                throw new LuaException("Field not accessible.", e);
-            }
-
-            return 0;
+        if (obj instanceof Class) {
+            objClass = (Class) obj;
+        } else {
+            objClass = obj.getClass();
         }
+
+        try {
+            field = objClass.getField(fieldName);
+        } catch (Exception e) {
+            throw new LuaException("Error accessing field.", e);
+        }
+  
+        Class type = field.getType();
+        Object setObj = compareTypes(L, type, 3);
+  
+        if (field.isAccessible()) field.setAccessible(true);
+  
+        try {
+            field.set(obj, setObj);
+        } catch (IllegalArgumentException e) {
+            throw new LuaException("Ilegal argument to set field.", e);
+        } catch (IllegalAccessException e) {
+            throw new LuaException("Field not accessible.", e);
+        }
+
+        return 0;
     }
   
   
@@ -206,20 +192,18 @@ public final class LuaJava {
     public static int arrayNewIndex(int stateIndex, Object obj, int index) throws LuaException {
         Lua L = LuaFactory.getExisting(stateIndex);
 
-        synchronized (L) {
-            if (!obj.getClass().isArray()) {
-                throw new LuaException("Object indexed is not an array.");
-            }
-      
-            if (Array.getLength(obj) < index) {
-                throw new LuaException("Index out of bounds.");
-            }
-
-            Class type = obj.getClass().getComponentType();
-            Object setObj = compareTypes(L, type, 3);
-            Array.set(obj, index - 1, setObj);
-            return 0;
+        if (!obj.getClass().isArray()) {
+            throw new LuaException("Object indexed is not an array.");
         }
+  
+        if (Array.getLength(obj) < index) {
+            throw new LuaException("Index out of bounds.");
+        }
+
+        Class type = obj.getClass().getComponentType();
+        Object setObj = compareTypes(L, type, 3);
+        Array.set(obj, index - 1, setObj);
+        return 0;
     }
 
     /**
@@ -233,11 +217,9 @@ public final class LuaJava {
     public static int javaNew(int stateIndex, Class clazz) throws LuaException {
         Lua L = LuaFactory.getExisting(stateIndex);
 
-        synchronized (L) {
-            Object ret = getObjInstance(L, clazz);
-            L.push(ret);
-            return 1;
-        }
+        Object ret = getObjInstance(L, clazz);
+        L.push(ret);
+        return 1;
     }
 
     /**
@@ -252,74 +234,70 @@ public final class LuaJava {
     public static int javaLoadLib(int stateIndex, String className, String methodName) throws LuaException {
         Lua L = LuaFactory.getExisting(stateIndex);
     
-        synchronized (L) {
-            Class clazz;
+        Class clazz;
             
-            try {
-                clazz = Class.forName(className);
-            } catch (ClassNotFoundException e) {
-                throw new LuaException(e);
-            }
-
-            try {
-                Method mt = clazz.getMethod(methodName, new Class[] {Lua.class});
-                Object obj = mt.invoke(null, new Object[] {L});
-                if (obj != null && obj instanceof Integer) return ((Integer) obj).intValue();
-            } catch (Exception e) {
-                throw new LuaException("Error on calling method. Library could not be loaded. " + e.getMessage());
-            }
-
-            return 0;
+        try {
+            clazz = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new LuaException(e);
         }
+
+        try {
+            Method mt = clazz.getMethod(methodName, new Class[] {Lua.class});
+            Object obj = mt.invoke(null, new Object[] {L});
+            if (obj != null && obj instanceof Integer) return ((Integer) obj).intValue();
+        } catch (Exception e) {
+            throw new LuaException("Error on calling method. Library could not be loaded. " + e.getMessage());
+        }
+
+        return 0;
     }
 
     private static Object getObjInstance(Lua L, Class clazz) throws LuaException {
-        synchronized (L) {
-            int top = L.getTop();
-            Object[] objs = new Object[top - 1];
-    
-            Constructor[] constructors = clazz.getConstructors();
-            Constructor constructor = null;
-    
-            for (int i = 0; i < constructors.length; i++) {
-                Class[] parameters = constructors[i].getParameterTypes();
-                if (parameters.length != top - 1) continue;
-    
-                boolean okConstruc = true;
-    
-                for (int j = 0; j < parameters.length; j++) {
-                    try {
-                        objs[j] = compareTypes(L, parameters[j], j + 2);
-                    } catch (Exception e) {
-                        okConstruc = false;
-                        break;
-                    }
-                }
-    
-                if (okConstruc) {
-                    constructor = constructors[i];
+        int top = L.getTop();
+        Object[] objs = new Object[top - 1];
+
+        Constructor[] constructors = clazz.getConstructors();
+        Constructor constructor = null;
+
+        for (int i = 0; i < constructors.length; i++) {
+            Class[] parameters = constructors[i].getParameterTypes();
+            if (parameters.length != top - 1) continue;
+
+            boolean okConstruc = true;
+
+            for (int j = 0; j < parameters.length; j++) {
+                try {
+                    objs[j] = compareTypes(L, parameters[j], j + 2);
+                } catch (Exception e) {
+                    okConstruc = false;
                     break;
                 }
             }
-    
-            if (constructor == null) {
-                throw new LuaException("Invalid method call. No such method.");
+
+            if (okConstruc) {
+                constructor = constructors[i];
+                break;
             }
-    
-            Object ret;
-            
-            try {
-                ret = constructor.newInstance(objs);
-            } catch (Exception e) {
-                throw new LuaException(e);
-            }
-    
-            if (ret == null) {
-                throw new LuaException("Couldn't instantiate java Object");
-            }
-    
-            return ret;
         }
+
+        if (constructor == null) {
+            throw new LuaException("Invalid method call. No such method.");
+        }
+
+        Object ret;
+        
+        try {
+            ret = constructor.newInstance(objs);
+        } catch (Exception e) {
+            throw new LuaException(e);
+        }
+
+        if (ret == null) {
+            throw new LuaException("Couldn't instantiate java Object");
+        }
+
+        return ret;
     }
 
     /**
@@ -333,37 +311,35 @@ public final class LuaJava {
     public static int checkField(int stateIndex, Object obj, String fieldName) throws LuaException {
         Lua L = LuaFactory.getExisting(stateIndex);
 
-        synchronized (L) {
-            Class objClass;
+        Class objClass;
 
-            if (obj instanceof Class) {
-                objClass = (Class)obj;
-            } else {
-                objClass = obj.getClass();
-            }
-
-            Field field = null;
-
-            try {
-                field = objClass.getField(fieldName);
-                if (field == null) return 0;
-            } catch (Exception e) {
-                return 0;
-            }
-
-            
-            Object ret = null;
-
-            try {
-                ret = field.get(obj);
-                if (ret == null) return 0;
-            } catch (Exception e1) {
-                return 0;
-            }
-
-            L.push(ret);
-            return 1;
+        if (obj instanceof Class) {
+            objClass = (Class)obj;
+        } else {
+            objClass = obj.getClass();
         }
+
+        Field field = null;
+
+        try {
+            field = objClass.getField(fieldName);
+            if (field == null) return 0;
+        } catch (Exception e) {
+            return 0;
+        }
+
+        
+        Object ret = null;
+
+        try {
+            ret = field.get(obj);
+            if (ret == null) return 0;
+        } catch (Exception e1) {
+            return 0;
+        }
+
+        L.push(ret);
+        return 1;
     }
 
     /**
@@ -377,23 +353,21 @@ public final class LuaJava {
     private static int checkMethod(int stateIndex, Object obj, String methodName) {
         Lua L = LuaFactory.getExisting(stateIndex);
 
-        synchronized (L) {
-            Class clazz;
+        Class clazz;
 
-            if (obj instanceof Class) {
-                clazz = (Class) obj;
-            } else {
-                clazz = obj.getClass();
-            }
-
-            Method[] methods = clazz.getMethods();
-
-            for (int i = 0; i < methods.length; i++) {
-                if (methods[i].getName().equals(methodName)) return 1;
-            }
-
-            return 0;
+        if (obj instanceof Class) {
+            clazz = (Class) obj;
+        } else {
+            clazz = obj.getClass();
         }
+
+        Method[] methods = clazz.getMethods();
+
+        for (int i = 0; i < methods.length; i++) {
+            if (methods[i].getName().equals(methodName)) return 1;
+        }
+
+        return 0;
     }
 
     /**
@@ -409,21 +383,19 @@ public final class LuaJava {
       {
         Lua L = LuaFactory.getExisting(stateIndex);
 
-        synchronized (L) {
-            try {
-                if (!(L.isTable(2))) {
-                    throw new LuaException("Parameter is not a table. Can't create proxy.");
-                }
-
-                LuaValue luaObj = L.pull(2);
-                Object proxy = luaObj.createProxy(implem);
-                L.push(proxy);
-            } catch (Exception e) {
-                throw new LuaException(e);
+        try {
+            if (!(L.isTable(2))) {
+                throw new LuaException("Parameter is not a table. Can't create proxy.");
             }
 
-            return 1;
+            LuaValue luaObj = L.pull(2);
+            Object proxy = luaObj.createProxy(implem);
+            L.push(proxy);
+        } catch (Exception e) {
+            throw new LuaException(e);
         }
+
+        return 1;
     }
 
     private static Object compareTypes(Lua L, Class parameter, int idx) throws LuaException {
