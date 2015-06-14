@@ -21,6 +21,6 @@ install:
 script:
 - mvn package
 - java -cp target/nonlua-0.3.0-SNAPSHOT-shaded.jar build
-- ant windows
-- ant linux
+- ant windows32
+- ant linux32
 - ant android
