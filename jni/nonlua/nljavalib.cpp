@@ -190,6 +190,6 @@ static const luaL_Reg javalib[] = {
 };
 
 NONLUA_API int luaopen_java (lua_State *L) {
-  luaL_newlib(L, javalib);
+  luaL_register(L, LUA_JAVALIBNAME, javalib);
   return 1;
 }

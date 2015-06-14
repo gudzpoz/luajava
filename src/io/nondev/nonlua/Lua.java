@@ -43,87 +43,18 @@ public class Lua {
         lua_close(L);
     */
 
-    private static native void jniOpenBase(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
-
-        luaL_requiref(L, "_G", luaopen_base, 1);
-        lua_pop(L, 1);
-    */
-
-    private static native void jniOpenCoroutine(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
-        
-        luaL_requiref(L, LUA_COLIBNAME, luaopen_coroutine, 1);
-        lua_pop(L, 1);
-    */
-
-    private static native void jniOpenDebug(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
-        
-        luaL_requiref(L, LUA_DBLIBNAME, luaopen_debug, 1);
-        lua_pop(L, 1);
-    */
-
-    private static native void jniOpenIo(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
-        
-        luaL_requiref(L, LUA_IOLIBNAME, luaopen_io, 1);
-        lua_pop(L, 1);
-    */
-
     private static native void jniOpenJava(CPtr cptr); /*
         lua_State* L = nonlua_getstate(env, cptr);
-        
-        luaL_requiref(L, LUA_JAVALIBNAME, luaopen_java, 1);
-        lua_pop(L, 1);
-    */
 
-    private static native void jniOpenMath(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
-        
-        luaL_requiref(L, LUA_MATHLIBNAME, luaopen_math, 1);
-        lua_pop(L, 1);
-    */
-
-    private static native void jniOpenOs(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
-        
-        luaL_requiref(L, LUA_OSLIBNAME, luaopen_os, 1);
-        lua_pop(L, 1);
-    */
-
-    private static native void jniOpenPackage(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
-        
-        luaL_requiref(L, LUA_LOADLIBNAME, luaopen_package, 1);
-        lua_pop(L, 1);
+        lua_pushcfunction(L, luaopen_java);
+        lua_pushstring(L, LUA_JAVALIBNAME);
+        lua_call(L, 1, 0);
     */
 
     private static native void jniOpenSocket(CPtr cptr); /*
         lua_State * L = nonlua_getstate(env, cptr);
 
-        luaopen_luasocket(L);
-    */
-
-    private static native void jniOpenString(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
-        
-        luaL_requiref(L, LUA_STRLIBNAME, luaopen_string, 1);
-        lua_pop(L, 1);
-    */
-
-    private static native void jniOpenTable(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
-        
-        luaL_requiref(L, LUA_TABLIBNAME, luaopen_table, 1);
-        lua_pop(L, 1);
-    */
-
-    private static native void jniOpenUtf8(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
-        
-        luaL_requiref(L, LUA_UTF8LIBNAME, luaopen_utf8, 1);
-        lua_pop(L, 1);
+        nonluaopen_socket(L);
     */
 
     private static native int jniLoadBuffer(CPtr cptr, byte[] buff, long bsize, String name); /*
@@ -329,13 +260,13 @@ public class Lua {
     private static native void jniGetI(CPtr cptr, int index, int key); /*
         lua_State * L = nonlua_getstate(env, cptr);
 
-        lua_geti(L, (int) index, (int) key);
+        lua_rawgeti(L, (int) index, (int) key);
     */
 
     private static native void jniSetI(CPtr cptr, int index, int key); /*
         lua_State * L = nonlua_getstate(env, cptr);
 
-        lua_seti(L, (int) index, (int) key);
+        lua_rawseti(L, (int) index, (int) key);
     */
 
     private static native int jniGetTop(CPtr cptr); /*
@@ -360,12 +291,6 @@ public class Lua {
         lua_State * L = nonlua_getstate(env, cptr);
 
         lua_pushvalue(L, (int) index);
-    */
-
-    private static native void jniCopy(CPtr cptr, int fromindex, int toindex); /*
-        lua_State * L = nonlua_getstate(env, cptr);
-
-        lua_copy(L, (int) fromindex, (int) toindex);
     */
 
     private static native void jniRemove(CPtr cptr, int index); /*
@@ -402,13 +327,13 @@ public class Lua {
     private static native int jniLen(CPtr cptr, int index); /*
         lua_State * L = nonlua_getstate(env, cptr);
 
-        return (jint) luaL_len(L, (int) index);
+        return (jint) lua_objlen(L, (int) index);
     */
 
-    private static native int jniCompare(CPtr cptr, int index1, int index2, int op); /*
+    private static native int jniEqual(CPtr cptr, int index1, int index2); /*
         lua_State * L = nonlua_getstate(env, cptr);
 
-        return (jint) lua_compare(L, (int) index1, (int) index2, (int) op);
+        return (jint) lua_equal(L, (int) index1, (int) index2);
     */
 
     private static native int jniNext(CPtr cptr, int index); /*
@@ -532,11 +457,10 @@ public class Lua {
         return (jint) lua_yield(L, (int) nResults);
     */
 
-    private static native int jniResume(CPtr cptr, CPtr from, int nArgs); /*
+    private static native int jniResume(CPtr cptr, int nArgs); /*
         lua_State * L = nonlua_getstate(env, cptr);
-        lua_State * fr = nonlua_getstate(env, from);
 
-        return (jint) lua_resume(L, fr, (int) nArgs);
+        return (jint) lua_resume(L, (int) nArgs);
     */
 
     private static native int jniStatus(CPtr cptr); /*
@@ -545,7 +469,7 @@ public class Lua {
         return (jint) lua_status(L);
     */
 
-    private static final String LIB = "nonlua";
+    private static final String NONLUA_LIB = "nonlua";
 
     public static final int GLOBALS       = -10002;
     public static final int REGISTRY      = -10000;
@@ -569,14 +493,10 @@ public class Lua {
     public static final int ERR_MEMORY    = 4;
     public static final int ERR_HANDLER   = 5;
 
-    public static final int OP_EQUAL      = 1;
-    public static final int OP_LOWER      = 2;
-    public static final int OP_LOWEREQUAL = 3;
-
     private LuaConfiguration cfg;
 
     static {
-        new JniGenSharedLibraryLoader().load(LIB);
+        new JniGenSharedLibraryLoader().load(NONLUA_LIB);
     }
 
     protected CPtr state;
@@ -601,17 +521,7 @@ public class Lua {
         this.state = state;
         this.stateId = stateId;
 
-        if (cfg.baseLib) jniOpenBase(state);
-        if (cfg.coroutineLib) jniOpenCoroutine(state);
-        if (cfg.debugLib) jniOpenDebug(state);
-        if (cfg.ioLib) jniOpenIo(state);
-        if (cfg.javaLib) jniOpenJava(state);
-        if (cfg.mathLib) jniOpenMath(state);
-        if (cfg.osLib) jniOpenOs(state);
-        if (cfg.packageLib) jniOpenPackage(state);
-        if (cfg.stringLib) jniOpenString(state);
-        if (cfg.tableLib) jniOpenTable(state);
-        if (cfg.utf8Lib) jniOpenUtf8(state);
+        //if (cfg.javaLib) jniOpenJava(state);
         if (cfg.socketLib) jniOpenSocket(state);
 
         push(new LuaFunction(this) {
@@ -649,7 +559,7 @@ public class Lua {
         set("print");
 
         get("package");
-        get(-1, "searchers");
+        get(-1, "loaders");
         int count = len(-1);
         
         push(new LuaFunction(this) {
@@ -904,10 +814,6 @@ public class Lua {
         jniPushValue(state, index);
     }
 
-    public void copy(int fromindex, int toindex)  {
-        jniCopy(state, fromindex, toindex);
-    }
-
     public void remove(int index) {
         jniRemove(state, index);
     }
@@ -932,8 +838,8 @@ public class Lua {
         return jniLen(state, index);
     }
 
-    public boolean compare(int index1, int index2, int op) {
-        return jniCompare(state, index1, index2, op) != 0;
+    public boolean equal(int index1, int index2) {
+        return jniEqual(state, index1, index2) == 0;
     }
 
     public int next(int index) {
@@ -1020,8 +926,8 @@ public class Lua {
         return jniYield(state, nResults);
     }
 
-    public int resume(Lua from, int nArgs) {
-        return jniResume(state, from.state, nArgs);
+    public int resume(int nArgs) {
+        return jniResume(state, nArgs);
     }
     
     public int status() {

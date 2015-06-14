@@ -49,3 +49,17 @@ build/
 
 ## OS Specific
 .DS_Store
+
+## LuaJIT
+
+luajit/*.[oa]
+luajit/*.so
+luajit/*.obj
+luajit/*.lib
+luajit/*.exp
+luajit/*.dll
+luajit/*.exe
+luajit/*.manifest
+luajit/*.dmp
+luajit/*.swp
+luajit/.tags

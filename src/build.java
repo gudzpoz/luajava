@@ -35,35 +35,42 @@ public class build {
         win32.headerDirs = headers;
         win32.cFlags += " -DLUASOCKET_INET_PTON";
         win32.cppFlags += " -DLUASOCKET_INET_PTON";
-        win32.libraries = "-lws2_32 -lwinmm";
+        win32.libraries = "-lws2_32 -lwinmm -L./../../../ext/windows32 -lluajit";
+        win32.linkerFlags = win32.linkerFlags.replace(" -static ", " ");
         
         BuildTarget win64 = BuildTarget.newDefaultTarget(TargetOs.Windows, true);
         win64.headerDirs = headers;
         win64.cFlags += " -DLUASOCKET_INET_PTON";
         win64.cppFlags += " -DLUASOCKET_INET_PTON";
-        win64.libraries = "-lws2_32 -lwinmm";
+        win64.libraries = "-lws2_32 -lwinmm -L./../../../ext/windows64 -lluajit64";
+        win64.linkerFlags = win64.linkerFlags.replace(" -static ", " ");
         
         BuildTarget lin32 = BuildTarget.newDefaultTarget(TargetOs.Linux, false);
         lin32.headerDirs = headers;
         lin32.cFlags += " -DLUASOCKET_INET_PTON";
         lin32.cppFlags += " -DLUASOCKET_INET_PTON";
+        lin32.libraries = "-L./../../../ext/linux32 -lluajit";
         
         BuildTarget lin64 = BuildTarget.newDefaultTarget(TargetOs.Linux, true);
         lin64.headerDirs = headers;
         lin64.cFlags += " -DLUASOCKET_INET_PTON";
         lin64.cppFlags += " -DLUASOCKET_INET_PTON";
+        lin64.libraries = "-L./../../../ext/linux64 -lluajit64";
+
+        BuildTarget mac32 = BuildTarget.newDefaultTarget(TargetOs.MacOsX, false);
+        mac32.headerDirs = headers;
+        mac32.libraries = "-lluajit";
+
+        BuildTarget mac64 = BuildTarget.newDefaultTarget(TargetOs.MacOsX, true);
+        mac64.headerDirs = headers;
+        mac64.libraries = "-lluajit64";
         
         BuildTarget android = BuildTarget.newDefaultTarget(TargetOs.Android, false);
         android.headerDirs = headers;
 
-        BuildTarget mac32 = BuildTarget.newDefaultTarget(TargetOs.MacOsX, false);
-        mac32.headerDirs = headers;
-
-        BuildTarget mac64 = BuildTarget.newDefaultTarget(TargetOs.MacOsX, true);
-        mac64.headerDirs = headers;
-
         BuildTarget ios = BuildTarget.newDefaultTarget(TargetOs.IOS, false);
         ios.headerDirs = headers;
+        ios.libraries = "-lluajit";
 
         new NativeCodeGenerator().generate("src", "target/classes", "jni");
         new AntScriptGenerator().generate(new BuildConfig("nonlua"), win32, win64, lin32, lin64, mac32, mac64, android, ios);

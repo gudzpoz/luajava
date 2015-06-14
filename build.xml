@@ -12,28 +12,37 @@
     <ant antfile="build-ios32.xml" dir="jni" target="clean"/>
 	</target>
   
-  <target name="windows">
+  <target name="windows32">
     <ant antfile="build-windows32.xml" dir="jni"/>
+  </target>
+
+  <target name="windows64">
     <ant antfile="build-windows64.xml" dir="jni"/>
   </target>
   
-  <target name="linux">
+  <target name="linux32">
     <ant antfile="build-linux32.xml" dir="jni"/>
+  </target>
+
+  <target name="linux64">
     <ant antfile="build-linux64.xml" dir="jni"/>
+  </target>
+  
+  <target name="macosx32">
+    <ant antfile="build-macosx32.xml" dir="jni"/>
+  </target>
+
+  <target name="macosx64">
+    <ant antfile="build-macosx64.xml" dir="jni"/>
   </target>
 
   <target name="android">
     <ant antfile="build-android32.xml" dir="jni"/>
   </target>
   
-  <target name="macosx">
-    <ant antfile="build-macosx32.xml" dir="jni"/>
-    <ant antfile="build-macosx64.xml" dir="jni"/>
-  </target>
-  
   <target name="ios">
     <ant antfile="build-ios32.xml" dir="jni"/>
   </target>
 
-  <target name="all" depends="clean,windows,linux,android,macosx,ios"/>
+  <target name="all" depends="clean,windows32,windows64,linux32,linux64,android,macosx32,macosx64,ios"/>
 </project>

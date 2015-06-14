@@ -294,6 +294,7 @@ static int luaJavaFunctionCall(lua_State * L) {
 
 NONLUA_API jobject nonlua_open(JNIEnv * env, jint stateid) {
   lua_State * L = luaL_newstate();
+  luaL_openlibs(L);
   lua_pushstring(L, NONLUA_STATEINDEX);
   lua_pushnumber(L, (lua_Number)stateid);
   lua_settable(L, LUA_REGISTRYINDEX);

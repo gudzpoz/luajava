@@ -43,12 +43,6 @@ extern "C" {
 #define io_nondev_nonlua_Lua_ERR_MEMORY 4L
 #undef io_nondev_nonlua_Lua_ERR_HANDLER
 #define io_nondev_nonlua_Lua_ERR_HANDLER 5L
-#undef io_nondev_nonlua_Lua_OP_EQUAL
-#define io_nondev_nonlua_Lua_OP_EQUAL 1L
-#undef io_nondev_nonlua_Lua_OP_LOWER
-#define io_nondev_nonlua_Lua_OP_LOWER 2L
-#undef io_nondev_nonlua_Lua_OP_LOWEREQUAL
-#define io_nondev_nonlua_Lua_OP_LOWEREQUAL 3L
 /*
  * Class:     io_nondev_nonlua_Lua
  * Method:    jniOpen
@@ -67,38 +61,6 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniClose
 
 /*
  * Class:     io_nondev_nonlua_Lua
- * Method:    jniOpenBase
- * Signature: (Lio/nondev/nonlua/CPtr;)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenBase
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     io_nondev_nonlua_Lua
- * Method:    jniOpenCoroutine
- * Signature: (Lio/nondev/nonlua/CPtr;)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenCoroutine
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     io_nondev_nonlua_Lua
- * Method:    jniOpenDebug
- * Signature: (Lio/nondev/nonlua/CPtr;)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenDebug
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     io_nondev_nonlua_Lua
- * Method:    jniOpenIo
- * Signature: (Lio/nondev/nonlua/CPtr;)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenIo
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     io_nondev_nonlua_Lua
  * Method:    jniOpenJava
  * Signature: (Lio/nondev/nonlua/CPtr;)V
  */
@@ -107,58 +69,10 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenJava
 
 /*
  * Class:     io_nondev_nonlua_Lua
- * Method:    jniOpenMath
- * Signature: (Lio/nondev/nonlua/CPtr;)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenMath
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     io_nondev_nonlua_Lua
- * Method:    jniOpenOs
- * Signature: (Lio/nondev/nonlua/CPtr;)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenOs
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     io_nondev_nonlua_Lua
- * Method:    jniOpenPackage
- * Signature: (Lio/nondev/nonlua/CPtr;)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenPackage
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     io_nondev_nonlua_Lua
  * Method:    jniOpenSocket
  * Signature: (Lio/nondev/nonlua/CPtr;)V
  */
 JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenSocket
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     io_nondev_nonlua_Lua
- * Method:    jniOpenString
- * Signature: (Lio/nondev/nonlua/CPtr;)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenString
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     io_nondev_nonlua_Lua
- * Method:    jniOpenTable
- * Signature: (Lio/nondev/nonlua/CPtr;)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenTable
-  (JNIEnv *, jclass, jobject);
-
-/*
- * Class:     io_nondev_nonlua_Lua
- * Method:    jniOpenUtf8
- * Signature: (Lio/nondev/nonlua/CPtr;)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniOpenUtf8
   (JNIEnv *, jclass, jobject);
 
 /*
@@ -443,14 +357,6 @@ JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniPushValue
 
 /*
  * Class:     io_nondev_nonlua_Lua
- * Method:    jniCopy
- * Signature: (Lio/nondev/nonlua/CPtr;II)V
- */
-JNIEXPORT void JNICALL Java_io_nondev_nonlua_Lua_jniCopy
-  (JNIEnv *, jclass, jobject, jint, jint);
-
-/*
- * Class:     io_nondev_nonlua_Lua
  * Method:    jniRemove
  * Signature: (Lio/nondev/nonlua/CPtr;I)V
  */
@@ -499,11 +405,11 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniLen
 
 /*
  * Class:     io_nondev_nonlua_Lua
- * Method:    jniCompare
- * Signature: (Lio/nondev/nonlua/CPtr;III)I
+ * Method:    jniEqual
+ * Signature: (Lio/nondev/nonlua/CPtr;II)I
  */
-JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniCompare
-  (JNIEnv *, jclass, jobject, jint, jint, jint);
+JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniEqual
+  (JNIEnv *, jclass, jobject, jint, jint);
 
 /*
  * Class:     io_nondev_nonlua_Lua
@@ -668,10 +574,10 @@ JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniYield
 /*
  * Class:     io_nondev_nonlua_Lua
  * Method:    jniResume
- * Signature: (Lio/nondev/nonlua/CPtr;Lio/nondev/nonlua/CPtr;I)I
+ * Signature: (Lio/nondev/nonlua/CPtr;I)I
  */
 JNIEXPORT jint JNICALL Java_io_nondev_nonlua_Lua_jniResume
-  (JNIEnv *, jclass, jobject, jobject, jint);
+  (JNIEnv *, jclass, jobject, jint);
 
 /*
  * Class:     io_nondev_nonlua_Lua

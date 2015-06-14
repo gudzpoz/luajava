@@ -35,16 +35,6 @@ public class LuaConfiguration {
         }
     };
 
-    public boolean baseLib = true;
-    public boolean coroutineLib = true;
-    public boolean debugLib = true;
-    public boolean ioLib = true;
     public boolean javaLib = true;
-    public boolean mathLib = true;
-    public boolean osLib = true;
-    public boolean packageLib = true;
     public boolean socketLib = true;
-    public boolean stringLib = true;
-    public boolean tableLib = true;
-    public boolean utf8Lib = true;
 }
