@@ -529,10 +529,7 @@ public class Lua {
                 int top = L.getTop();
 
                 for (int i = 2; i <= top; i++) {
-                    if (L.isNil(i)) {
-                        Lua.this.cfg.logger.log("nil");
-                        Lua.this.cfg.logger.log("\t");
-                    }
+                    if (L.isNil(i)) continue;
                     
                     String type = L.typeName(L.type(i));
                     String val = null;
