@@ -12,7 +12,7 @@
     <artifactId>nonlua</artifactId>
     <version>0.3.0-SNAPSHOT</version>
     <name>nonlua</name>
-    <description>Lua 5.3 for Java on Windows, Mac OS X, Linux, Android and iOS.</description>
+    <description>LuaJIT for Java on Windows, Mac OS X, Linux, Android and iOS.</description>
 
     <issueManagement>
         <url>https://github.com/nondev/nonlua/issues</url>
@@ -125,12 +125,11 @@
                 <version>2.4</version>
                 <configuration>
                     <descriptors>
-                        <descriptor>jni/natives-desktop.xml</descriptor>
-                        <descriptor>jni/natives-x86.xml</descriptor>
-                        <descriptor>jni/natives-armeabi.xml</descriptor>
-                        <descriptor>jni/natives-armeabi-v7a.xml</descriptor>
-                        <!-- TODO: Compile iOS natives -->
-                        <!-- <descriptor>jni/natives-ios.xml</descriptor> -->
+                        <descriptor>libs/desktop.xml</descriptor>
+                        <descriptor>libs/x86.xml</descriptor>
+                        <descriptor>libs/armeabi.xml</descriptor>
+                        <descriptor>libs/armeabi-v7a.xml</descriptor>
+                        <descriptor>libs/ios.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>

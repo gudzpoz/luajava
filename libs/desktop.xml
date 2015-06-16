@@ -35,9 +35,7 @@
         <include>**</include>
       </includes>
     </fileSet>
-
-    <!-- TODO: Compile Mac OS X natives -->
-    <!-- <fileSet>
+    <fileSet>
       <directory>${project.basedir}/libs/macosx32</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
@@ -50,6 +48,6 @@
       <includes>
         <include>**</include>
       </includes>
-    </fileSet> -->
+    </fileSet>
   </fileSets>
 </assembly>
