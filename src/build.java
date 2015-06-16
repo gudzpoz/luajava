@@ -29,7 +29,7 @@ import com.badlogic.gdx.jnigen.BuildTarget.TargetOs;
 
 public class build {
     public static void main (String[] args) throws Exception {
-        String[] headers = {"nonlua", "luajit", "sdl", "luasocket"};
+        String[] headers = {"nonlua", "luajit", "luasocket"};
 
         BuildTarget win32 = BuildTarget.newDefaultTarget(TargetOs.Windows, false);
         win32.headerDirs = headers;
@@ -70,7 +70,7 @@ public class build {
 
         BuildTarget ios = BuildTarget.newDefaultTarget(TargetOs.IOS, false);
         ios.headerDirs = headers;
-        ios.libraries = "-L./../../../libs/ios32 -lluajit -lSDL2";
+        ios.libraries = "-L./../../../libs/ios32 -lluajit";
 
         new NativeCodeGenerator().generate("src", "target/classes", "jni");
         new AntScriptGenerator().generate(new BuildConfig("nonlua"), win32, win64, lin32, lin64, mac32, mac64, android, ios);
