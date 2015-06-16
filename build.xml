@@ -2,14 +2,8 @@
   <property name="has-compiler" value="true"/>
   
   <target name="clean">
-    <ant antfile="build-windows32.xml" dir="jni" target="clean"/>
-    <ant antfile="build-windows64.xml" dir="jni" target="clean"/>
-    <ant antfile="build-linux32.xml" dir="jni" target="clean"/>
-    <ant antfile="build-linux64.xml" dir="jni" target="clean"/>
-    <ant antfile="build-android32.xml" dir="jni" target="clean"/>
-    <ant antfile="build-macosx32.xml" dir="jni" target="clean"/>
-    <ant antfile="build-macosx64.xml" dir="jni" target="clean"/>
-    <ant antfile="build-ios32.xml" dir="jni" target="clean"/>
+    <delete dir="jni/target"/>
+    <delete dir="obj"/>
 	</target>
   
   <target name="windows32">

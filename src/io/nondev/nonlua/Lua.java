@@ -30,7 +30,9 @@ import com.badlogic.gdx.jnigen.JniGenSharedLibraryLoader;
 public class Lua {
     // @off
     /*JNI
+    #include <nonluaconf.h>
     #include <nonlua.h>
+    #include <nonlualib.h>
      */
 
     private static native CPtr jniOpen(int stateId); /*
@@ -46,9 +48,7 @@ public class Lua {
     private static native void jniOpenJava(CPtr cptr); /*
         lua_State* L = nonlua_getstate(env, cptr);
 
-        lua_pushcfunction(L, luaopen_java);
-        lua_pushstring(L, LUA_JAVALIBNAME);
-        lua_call(L, 1, 0);
+        PRELOAD(LUA_JAVALIBNAME, luaopen_java);
     */
 
     private static native void jniOpenSocket(CPtr cptr); /*
@@ -496,7 +496,9 @@ public class Lua {
     private LuaConfiguration cfg;
 
     static {
-        new JniGenSharedLibraryLoader().load(NONLUA_LIB);
+        JniGenSharedLibraryLoader loader = new JniGenSharedLibraryLoader();
+        loader.load("luajit");
+        loader.load(NONLUA_LIB);
     }
 
     protected CPtr state;
@@ -521,7 +523,7 @@ public class Lua {
         this.state = state;
         this.stateId = stateId;
 
-        //if (cfg.javaLib) jniOpenJava(state);
+        if (cfg.javaLib) jniOpenJava(state);
         if (cfg.socketLib) jniOpenSocket(state);
 
         push(new LuaFunction(this) {

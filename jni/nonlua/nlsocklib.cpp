@@ -28,71 +28,65 @@ extern "C" {
 #include "mime.h"
 }
 
-#define PRELOAD(name, function) \
-  lua_getglobal(L, "package"); \
-  lua_getfield(L, -1, "preload"); \
-  lua_pushcfunction(L, function); \
-  lua_setfield(L, -2, name); \
-  lua_pop(L, 2);
+#include "socket.lua.h"
+#include "headers.lua.h"
+#include "ftp.lua.h"
+#include "http.lua.h"
+#include "ltn12.lua.h"
+#include "mime.lua.h"
+#include "smtp.lua.h"
+#include "tp.lua.h"
+#include "url.lua.h"
 
 NONLUA_API int luaopen_socket (lua_State * L) {
-  #include "socket.lua.h"
   luaL_loadbuffer(L, (const char*)luaJIT_BC_socket, luaJIT_BC_socket_SIZE, "socket.lua");
   lua_call(L, 0, 1);
   return 1;
 }
 
 NONLUA_API int luaopen_socket_headers(lua_State * L) {
-  #include "headers.lua.h"
   luaL_loadbuffer(L, (const char*)luaJIT_BC_headers, luaJIT_BC_headers_SIZE, "headers.lua");
   lua_call(L, 0, 1);
   return 1;
 }
 
 NONLUA_API int luaopen_socket_ftp(lua_State * L) {
-  #include "ftp.lua.h"
   luaL_loadbuffer(L, (const char*)luaJIT_BC_ftp, luaJIT_BC_ftp_SIZE, "ftp.lua");
   lua_call(L, 0, 1);
   return 1;
 }
 
 NONLUA_API int luaopen_socket_http(lua_State * L) {
-  #include "http.lua.h"
   luaL_loadbuffer(L, (const char*)luaJIT_BC_http, luaJIT_BC_http_SIZE, "http.lua");
   lua_call(L, 0, 1);
   return 1;
 }
 
 NONLUA_API int luaopen_ltn12(lua_State * L) {
-  #include "ltn12.lua.h"
   luaL_loadbuffer(L, (const char*)luaJIT_BC_ltn12, luaJIT_BC_ltn12_SIZE, "ltn12.lua");
   lua_call(L, 0, 1);
   return 1;
 }
 
 NONLUA_API int luaopen_mime(lua_State * L) {
-  #include "mime.lua.h"
   luaL_loadbuffer(L, (const char*)luaJIT_BC_mime, luaJIT_BC_mime_SIZE, "mime.lua");
   lua_call(L, 0, 1);
   return 1;
 }
 
 NONLUA_API int luaopen_socket_smtp(lua_State * L) {
-  #include "smtp.lua.h"
   luaL_loadbuffer(L, (const char*)luaJIT_BC_smtp, luaJIT_BC_smtp_SIZE, "smtp.lua");
   lua_call(L, 0, 1);
   return 1;
 }
 
 NONLUA_API int luaopen_socket_tp(lua_State * L) {
-  #include "tp.lua.h"
   luaL_loadbuffer(L, (const char*)luaJIT_BC_tp, luaJIT_BC_tp_SIZE, "tp.lua");
   lua_call(L, 0, 1);
   return 1;
 }
 
 NONLUA_API int luaopen_socket_url(lua_State * L) {
-  #include "url.lua.h"
   luaL_loadbuffer(L, (const char*)luaJIT_BC_url, luaJIT_BC_url_SIZE, "url.lua");
   lua_call(L, 0, 1);
   return 1;
