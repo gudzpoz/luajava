@@ -526,36 +526,37 @@ public class Lua {
         if (cfg.javaLib) jniOpenJava(state);
         if (cfg.socketLib) jniOpenSocket(state);
 
-        push(new LuaFunction(this) {
-            public int call() {
-                int top = L.getTop();
+        //TODO: Re-enable this later
+        //push(new LuaFunction(this) {
+        //    public int call() {
+        //        int top = L.getTop();
 
-                for (int i = 2; i <= top; i++) {
-                    if (L.isNil(i)) continue;
-                    
-                    String type = L.typeName(L.type(i));
-                    String val = null;
+        //        for (int i = 2; i <= top; i++) {
+        //            if (L.isNil(i)) continue;
+        //            
+        //            String type = L.typeName(L.type(i));
+        //            String val = null;
 
-                    if (type.equals("userdata")) {
-                        Object obj = L.toObject(i); 
-                        if (obj != null) val = obj.toString();
-                    } else if (type.equals("boolean")) {  
-                        val = L.toBoolean(i) ? "true" : "false";
-                    } else {
-                        val = L.toString(i);
-                    }
+        //            if (type.equals("userdata")) {
+        //                Object obj = L.toObject(i); 
+        //                if (obj != null) val = obj.toString();
+        //            } else if (type.equals("boolean")) {  
+        //                val = L.toBoolean(i) ? "true" : "false";
+        //            } else {
+        //                val = L.toString(i);
+        //            }
 
-                    if (val == null) val = type;
-                    Lua.this.cfg.logger.log(val);
-                    Lua.this.cfg.logger.log("\t");
-                }
+        //            if (val == null) val = type;
+        //            Lua.this.cfg.logger.log(val);
+        //            Lua.this.cfg.logger.log("\t");
+        //        }
 
-                Lua.this.cfg.logger.log("\n");
-                return 0;
-            }
-        });
+        //        Lua.this.cfg.logger.log("\n");
+        //        return 0;
+        //    }
+        //});
 
-        set("print");
+        //set("print");
 
         get("package");
         get(-1, "loaders");
@@ -563,7 +564,7 @@ public class Lua {
         
         push(new LuaFunction(this) {
             public int call() {
-                String name = L.toString(-1);
+                String name = L.toString(-1).replace(".", "/");
 
                 if (L.load(name + ".lua") == -1)
                     L.push("Cannot load module " + name); 

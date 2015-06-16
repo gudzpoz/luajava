@@ -76,8 +76,11 @@ public final class LuaUtils {
         if (file.exists()) {
             return new FileInputStream(file);
         }
+
+        String fixedpath = "/" + file.getPath();
+        fixedpath = fixedpath.replace("\\", "/").replace("///", "/").replace("//", "/");
         
-        return LuaUtils.class.getResourceAsStream("/" + file.getPath().replace('\\', '/'));
+        return LuaUtils.class.getResourceAsStream(fixedpath);
     }
 
     public static String readStream(InputStream in) throws IOException {
