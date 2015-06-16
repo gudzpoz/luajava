@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import com.badlogic.gdx.jnigen.JniGenSharedLibraryLoader;
+import com.badlogic.gdx.utils.ResourcePathFinder;
 
 public class Lua {
     // @off
@@ -493,6 +494,7 @@ public class Lua {
     public static final int ERR_MEMORY    = 4;
     public static final int ERR_HANDLER   = 5;
 
+    private ResourcePathFinder finder;
     private LuaConfiguration cfg;
 
     static {
@@ -509,6 +511,7 @@ public class Lua {
     }
 
     public Lua(LuaConfiguration cfg) {
+        finder = new ResourcePathFinder();
         int stateId = LuaFactory.insert(this);
         open(cfg, jniOpen(stateId), stateId);
     }
@@ -526,37 +529,76 @@ public class Lua {
         if (cfg.javaLib) jniOpenJava(state);
         if (cfg.socketLib) jniOpenSocket(state);
 
-        //TODO: Re-enable this later
-        //push(new LuaFunction(this) {
-        //    public int call() {
-        //        int top = L.getTop();
+        push(new LuaFunction(this) {
+            public int call() {
+                int top = L.getTop();
 
-        //        for (int i = 2; i <= top; i++) {
-        //            if (L.isNil(i)) continue;
-        //            
-        //            String type = L.typeName(L.type(i));
-        //            String val = null;
+                for (int i = 1; i < top; i++) {
+                    String val = null;
 
-        //            if (type.equals("userdata")) {
-        //                Object obj = L.toObject(i); 
-        //                if (obj != null) val = obj.toString();
-        //            } else if (type.equals("boolean")) {  
-        //                val = L.toBoolean(i) ? "true" : "false";
-        //            } else {
-        //                val = L.toString(i);
-        //            }
+                    if (L.isObject(i)) {
+                        Object obj = L.toObject(i); 
+                        if (obj != null) val = obj.toString();
+                    } else if (L.isBoolean(i)) {
+                        val = L.toBoolean(i) ? "true" : "false";
+                    } else if (L.isNil(i)) {
+                        val = "nil";
+                    } else {
+                        val = L.toString(i);
+                    }
 
-        //            if (val == null) val = type;
-        //            Lua.this.cfg.logger.log(val);
-        //            Lua.this.cfg.logger.log("\t");
-        //        }
+                    if (val == null) val = L.typeName(L.type(i));
+                    Lua.this.cfg.logger.log(val + "\t");
+                }
 
-        //        Lua.this.cfg.logger.log("\n");
-        //        return 0;
-        //    }
-        //});
+                Lua.this.cfg.logger.log("\n");
+                return 0;
+            }
+        });
 
-        //set("print");
+        set("print");
+
+        push(new LuaFunction(this) {
+            public int call() {
+                if (!L.isString(1)) {
+                    L.error("Wrong argument type, must be string.");
+                }
+
+                String path = L.toString(1);
+                String fixedPath = finder.findResource(path);
+
+                if (fixedPath != null) {
+                    L.push(fixedPath);
+                } else {
+                    L.push(path);
+                }
+
+                return 1;
+            }
+        });
+
+        set("topath");
+
+        push(new LuaFunction(this) {
+            public int call() {
+                if (!L.isString(1)) {
+                    L.error("Wrong argument type, must be string.");
+                }
+
+                String path = L.toString(1);
+                String fixedPath = finder.findLibrary(path);
+
+                if (fixedPath != null) {
+                    L.push(fixedPath);
+                } else {
+                    L.push(path);
+                }
+
+                return 1;
+            }
+        });
+
+        set("tolibpath");
 
         get("package");
         get(-1, "loaders");
