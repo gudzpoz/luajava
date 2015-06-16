@@ -533,7 +533,7 @@ public class Lua {
             public int call() {
                 int top = L.getTop();
 
-                for (int i = 1; i < top; i++) {
+                for (int i = 2; i <= top; i++) {
                     String val = null;
 
                     if (L.isObject(i)) {
@@ -560,11 +560,11 @@ public class Lua {
 
         push(new LuaFunction(this) {
             public int call() {
-                if (!L.isString(1)) {
+                if (!L.isString(2)) {
                     L.error("Wrong argument type, must be string.");
                 }
 
-                String path = L.toString(1);
+                String path = L.toString(2);
                 String fixedPath = finder.findResource(path);
 
                 if (fixedPath != null) {
@@ -581,11 +581,11 @@ public class Lua {
 
         push(new LuaFunction(this) {
             public int call() {
-                if (!L.isString(1)) {
+                if (!L.isString(2)) {
                     L.error("Wrong argument type, must be string.");
                 }
 
-                String path = L.toString(1);
+                String path = L.toString(2);
                 String fixedPath = finder.findLibrary(path);
 
                 if (fixedPath != null) {
