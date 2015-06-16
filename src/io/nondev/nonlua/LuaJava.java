@@ -139,7 +139,7 @@ public final class LuaJava {
      * Java function to be called when a java object metamethod __newindex is called.
      * 
      * @param stateIndex int that represents the state to be used
-     * @param object to be used
+     * @param obj object to be used
      * @param fieldName name of the field to be set
      * @return number of returned objects
      * @throws LuaException
@@ -183,7 +183,7 @@ public final class LuaJava {
      * Java function to be called when a java array metamethod __newindex is called.
      * 
      * @param stateIndex int that represents the state to be used
-     * @param object to be used
+     * @param obj object to be used
      * @param index index number of array. Since Lua index starts from 1,
      * the number used will be (index - 1)
      * @return number of returned objects
