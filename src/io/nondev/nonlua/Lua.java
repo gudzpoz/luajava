@@ -25,8 +25,8 @@ package io.nondev.nonlua;
 import java.util.List;
 import java.util.Map;
 import com.badlogic.gdx.jnigen.JniGenSharedLibraryLoader;
-import com.badlogic.gdx.utils.ResourcePathFinder;
-import com.badlogic.gdx.Files;
+import io.nondev.nonlua.thirdparty.ResourcePathFinder;
+import io.nondev.nonlua.thirdparty.Files;
 
 public class Lua {
     // @off

@@ -25,11 +25,12 @@ import java.io.InputStreamReader;
 
 import io.nondev.nonlua.Lua;
 import io.nondev.nonlua.LuaException;
+import io.nondev.nonlua.thirdparty.DesktopFiles;
 
 public class lua {
    public static void main(String[] args) {
       try {
-         Lua.files = new com.badlogic.gdx.backends.lwjgl.LwjglFiles();
+         Lua.files = new DesktopFiles();
          Lua L = new Lua();
 
          if (args.length > 0) {
