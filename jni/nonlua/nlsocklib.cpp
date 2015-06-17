@@ -28,82 +28,9 @@ extern "C" {
 #include "mime.h"
 }
 
-#include "socket.lua.h"
-#include "headers.lua.h"
-#include "ftp.lua.h"
-#include "http.lua.h"
-#include "ltn12.lua.h"
-#include "mime.lua.h"
-#include "smtp.lua.h"
-#include "tp.lua.h"
-#include "url.lua.h"
-
-NONLUA_API int luaopen_socket (lua_State * L) {
-  luaL_loadbuffer(L, (const char*)luaJIT_BC_socket, luaJIT_BC_socket_SIZE, "socket.lua");
-  lua_call(L, 0, 1);
-  return 1;
-}
-
-NONLUA_API int luaopen_socket_headers(lua_State * L) {
-  luaL_loadbuffer(L, (const char*)luaJIT_BC_headers, luaJIT_BC_headers_SIZE, "headers.lua");
-  lua_call(L, 0, 1);
-  return 1;
-}
-
-NONLUA_API int luaopen_socket_ftp(lua_State * L) {
-  luaL_loadbuffer(L, (const char*)luaJIT_BC_ftp, luaJIT_BC_ftp_SIZE, "ftp.lua");
-  lua_call(L, 0, 1);
-  return 1;
-}
-
-NONLUA_API int luaopen_socket_http(lua_State * L) {
-  luaL_loadbuffer(L, (const char*)luaJIT_BC_http, luaJIT_BC_http_SIZE, "http.lua");
-  lua_call(L, 0, 1);
-  return 1;
-}
-
-NONLUA_API int luaopen_ltn12(lua_State * L) {
-  luaL_loadbuffer(L, (const char*)luaJIT_BC_ltn12, luaJIT_BC_ltn12_SIZE, "ltn12.lua");
-  lua_call(L, 0, 1);
-  return 1;
-}
-
-NONLUA_API int luaopen_mime(lua_State * L) {
-  luaL_loadbuffer(L, (const char*)luaJIT_BC_mime, luaJIT_BC_mime_SIZE, "mime.lua");
-  lua_call(L, 0, 1);
-  return 1;
-}
-
-NONLUA_API int luaopen_socket_smtp(lua_State * L) {
-  luaL_loadbuffer(L, (const char*)luaJIT_BC_smtp, luaJIT_BC_smtp_SIZE, "smtp.lua");
-  lua_call(L, 0, 1);
-  return 1;
-}
-
-NONLUA_API int luaopen_socket_tp(lua_State * L) {
-  luaL_loadbuffer(L, (const char*)luaJIT_BC_tp, luaJIT_BC_tp_SIZE, "tp.lua");
-  lua_call(L, 0, 1);
-  return 1;
-}
-
-NONLUA_API int luaopen_socket_url(lua_State * L) {
-  luaL_loadbuffer(L, (const char*)luaJIT_BC_url, luaJIT_BC_url_SIZE, "url.lua");
-  lua_call(L, 0, 1);
-  return 1;
-}
-
 NONLUA_API int nonluaopen_socket(lua_State * L) {
   PRELOAD("socket.core", luaopen_socket_core);
   PRELOAD("mime.core", luaopen_mime_core);
-  PRELOAD("socket", luaopen_socket);
-  PRELOAD("socket.headers", luaopen_socket_headers);
-  PRELOAD("socket.url", luaopen_socket_url);
-  PRELOAD("ltn12", luaopen_ltn12);
-  PRELOAD("socket.tp", luaopen_socket_tp);
-  PRELOAD("socket.ftp", luaopen_socket_ftp);
-  PRELOAD("mime", luaopen_mime);
-  PRELOAD("socket.http", luaopen_socket_http);
-  PRELOAD("socket.smtp", luaopen_socket_smtp);
   
   return 0;
 }
