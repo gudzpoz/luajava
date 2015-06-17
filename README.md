@@ -28,8 +28,8 @@ And here is simple example on how to correctly initialize new Lua instance.
 This example will push `message` variable to Lua with value `Hello World from Lua`, then prints it using Lua built-in `print` function and then tries to evaluate `main.lua` script.
 
 ```java
-LuaConfiguration cfg = new LuaConfiguration();
-Lua L = new Lua(cfg);
+Lua.files = new DesktopFiles();
+Lua L = new Lua();
 
 L.push("Hello World from Lua");
 L.set("message");
@@ -74,10 +74,7 @@ end
 ## Project template ##
 
 To allow you to step into Lua development in Java, we build easy to use project template.
-Just navigate into `template` directory and from there you can choose
- 
- * [Bare template](https://github.com/nondev/nonlua/tree/master/template/bare)
- * [LibGDX template](https://github.com/nondev/nonlua/tree/master/template/libgdx)
+Just navigate into `template` directory.
 
 Here are few commands to run each template front-end
 
@@ -101,4 +98,4 @@ gradlew ios:createIPA
  * [LibGDX](https://github.com/libgdx/libgdx)
  
 Nonlua is based on LuaJava. So all thanks to Jason Santos for his awesome work on it.
-Nonlua is also using gdx-jnigen for loading and compiling natives in cross-splatform way.
+Nonlua is also using some parts of LibGDX for cross-platform file and shared library loading, so kudos to everyone who is working on it. LibGDX is awesome :smile:
