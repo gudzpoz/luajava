@@ -18,8 +18,11 @@ It allows Java components to be accessed from Lua using the same syntax that is 
 To include Nonlua into your project, you can use Maven or Gradle. Artifacts:
 
 * Core: `io.nondev:nonlua:0.3.0-SNAPSHOT`
+* Desktop backend: `io.nondev:nonlua-backend-desktop:0.3.0-SNAPSHOT`
 * Desktop natives: `io.nondev:nonlua:0.3.0-SNAPSHOT:natives-desktop`
+* Android backend: `io.nondev:nonlua-backend-android:0.3.0-SNAPSHOT`
 * Android natives: `io.nondev:nonlua:0.3.0-SNAPSHOT:natives-android`
+* iOS backend: `io.nondev:nonlua-backend-ios:0.3.0-SNAPSHOT`
 * iOS natives: `io.nondev:nonlua:0.3.0-SNAPSHOT:natives-ios`
 
 You must also include `https://oss.sonatype.org/content/repositories/snapshots/` to repositories.
