@@ -22,11 +22,11 @@
 
 package io.nondev.nonlua;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import com.badlogic.gdx.jnigen.JniGenSharedLibraryLoader;
 import com.badlogic.gdx.utils.ResourcePathFinder;
+import com.badlogic.gdx.Files;
 
 public class Lua {
     // @off
@@ -494,11 +494,14 @@ public class Lua {
     public static final int ERR_MEMORY    = 4;
     public static final int ERR_HANDLER   = 5;
 
-    private ResourcePathFinder finder;
+    public static Files files;
+    public static ResourcePathFinder finder;
+
     private LuaConfiguration cfg;
 
     static {
         JniGenSharedLibraryLoader loader = new JniGenSharedLibraryLoader();
+        finder = new ResourcePathFinder();
         loader.load("luajit");
         loader.load(NONLUA_LIB);
     }
@@ -511,7 +514,6 @@ public class Lua {
     }
 
     public Lua(LuaConfiguration cfg) {
-        finder = new ResourcePathFinder();
         int stateId = LuaFactory.insert(this);
         open(cfg, jniOpen(stateId), stateId);
     }
@@ -548,57 +550,15 @@ public class Lua {
                     }
 
                     if (val == null) val = L.typeName(L.type(i));
-                    Lua.this.cfg.logger.log(val + "\t");
+                    System.out.print(val + "\t");
                 }
 
-                Lua.this.cfg.logger.log("\n");
+                System.out.print("\n");
                 return 0;
             }
         });
 
         set("print");
-
-        push(new LuaFunction(this) {
-            public int call() {
-                if (!L.isString(2)) {
-                    L.error("Wrong argument type, must be string.");
-                }
-
-                String path = L.toString(2);
-                String fixedPath = finder.findResource(path);
-
-                if (fixedPath != null) {
-                    L.push(fixedPath);
-                } else {
-                    L.push(path);
-                }
-
-                return 1;
-            }
-        });
-
-        set("topath");
-
-        push(new LuaFunction(this) {
-            public int call() {
-                if (!L.isString(2)) {
-                    L.error("Wrong argument type, must be string.");
-                }
-
-                String path = L.toString(2);
-                String fixedPath = finder.findLibrary(path);
-
-                if (fixedPath != null) {
-                    L.push(fixedPath);
-                } else {
-                    L.push(path);
-                }
-
-                return 1;
-            }
-        });
-
-        set("tolibpath");
 
         get("package");
         get(-1, "loaders");
@@ -618,7 +578,7 @@ public class Lua {
         set(-2, count + 1);
         pop(1);
         get(-1, "path");
-        push(";" + cfg.loader.path() + "/?.lua");
+        push(";" + files.getLocalStoragePath() + "?.lua");
         concat(2);
         set(-2, "path");
         pop(1);
@@ -636,12 +596,8 @@ public class Lua {
     
     public int run(String chunk) {
         if (chunk.endsWith(".lua")) {
-            try {
-                byte[] buffer = LuaUtils.readStream(LuaUtils.getStream(cfg.loader, chunk)).getBytes();
-                return jniRunBuffer(state, buffer, buffer.length, chunk);
-            } catch (IOException e) {
-                return -1;
-            }
+            byte[] buffer = files.internal(chunk).readBytes();
+            return jniRunBuffer(state, buffer, buffer.length, chunk);
         }
         
         return jniRunString(state, chunk);
@@ -649,12 +605,8 @@ public class Lua {
     
     public int load(String chunk) {
         if (chunk.endsWith(".lua")) {
-            try {
-                byte[] buffer = LuaUtils.readStream(LuaUtils.getStream(cfg.loader, chunk)).getBytes();
-                return jniLoadBuffer(state, buffer, buffer.length, chunk);
-            } catch (IOException e) {
-                return -1;
-            }
+            byte[] buffer = files.internal(chunk).readBytes();
+            return jniLoadBuffer(state, buffer, buffer.length, chunk);
         }
         
         return jniLoadString(state, chunk);

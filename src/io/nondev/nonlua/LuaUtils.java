@@ -63,35 +63,4 @@ public final class LuaUtils {
     
         return null;    
     }
-
-    public static InputStream getStream(LuaLoader loader, String path) throws IOException {
-        File file = null;
-
-        if (loader.path().equals("")) {
-            file = new File(path);
-        } else {
-            file = new File(loader.path(), path);
-        }
-
-        if (file.exists()) {
-            return new FileInputStream(file);
-        }
-
-        String fixedpath = "/" + file.getPath();
-        fixedpath = fixedpath.replace("\\", "/").replace("///", "/").replace("//", "/");
-        
-        return LuaUtils.class.getResourceAsStream(fixedpath);
-    }
-
-    public static String readStream(InputStream in) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        StringBuilder out = new StringBuilder();
-        String line;
-        
-        while ((line = reader.readLine()) != null) {
-            out.append(line).append("\n");
-        }
-        
-        return out.toString();
-    }
 }

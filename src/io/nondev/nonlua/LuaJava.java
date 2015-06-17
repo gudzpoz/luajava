@@ -222,6 +222,27 @@ public final class LuaJava {
         return 1;
     }
 
+    public static int javaFile(int stateIndex, String filename) {
+        Lua L = LuaFactory.getExisting(stateIndex);
+        
+        L.push(Lua.files.internal(filename));
+        return 1;
+    }
+
+    public static int javaToPath(int stateIndex, String filename) {
+        Lua L = LuaFactory.getExisting(stateIndex);
+        
+        L.push(Lua.finder.findResource(filename));
+        return 1;
+    }
+
+    public static int javaToLibPath(int stateIndex, String filename) {
+        Lua L = LuaFactory.getExisting(stateIndex);
+        
+        L.push(Lua.finder.findLibrary(filename));
+        return 1;
+    }
+
     /**
      * Calls the static method <code>methodName</code> in class <code>className</code>
      * that receives a Lua as first parameter.

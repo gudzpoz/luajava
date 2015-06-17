@@ -23,18 +23,6 @@
 package io.nondev.nonlua;
 
 public class LuaConfiguration {
-    public LuaLoader loader = new LuaLoader() {
-        public String path() {
-            return "";
-        }
-    };
-
-    public LuaLogger logger = new LuaLogger() {
-        public void log(String msg) {
-            System.out.print(msg);
-        }
-    };
-
     public boolean javaLib = true;
     public boolean socketLib = true;
 }

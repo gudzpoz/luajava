@@ -29,6 +29,7 @@ import io.nondev.nonlua.LuaException;
 public class lua {
    public static void main(String[] args) {
       try {
+         Lua.files = new com.badlogic.gdx.backends.lwjgl.LwjglFiles();
          Lua L = new Lua();
 
          if (args.length > 0) {
