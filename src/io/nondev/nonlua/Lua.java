@@ -497,12 +497,11 @@ public class Lua {
     public static Files files;
     public static ResourcePathFinder finder;
 
-    private LuaConfiguration cfg;
-
     static {
         JniGenSharedLibraryLoader loader = new JniGenSharedLibraryLoader();
         finder = new ResourcePathFinder();
         loader.load("luajit");
+        loader.load("SDL2");
         loader.load(NONLUA_LIB);
     }
 
@@ -510,26 +509,21 @@ public class Lua {
     protected int stateId;
 
     public Lua() {
-        this(new LuaConfiguration());
-    }
-
-    public Lua(LuaConfiguration cfg) {
         int stateId = LuaFactory.insert(this);
-        open(cfg, jniOpen(stateId), stateId);
+        open(jniOpen(stateId), stateId);
     }
 
     protected Lua(CPtr state) {
         int stateId = LuaFactory.insert(this);
-        open(new LuaConfiguration(), state, stateId);
+        open(state, stateId);
     }
 
-    private void open(LuaConfiguration cfg, CPtr state, int stateId) {
-        this.cfg = cfg;
+    private void open(CPtr state, int stateId) {
         this.state = state;
         this.stateId = stateId;
 
-        if (cfg.javaLib) jniOpenJava(state);
-        if (cfg.socketLib) jniOpenSocket(state);
+        jniOpenJava(state);
+        jniOpenSocket(state);
 
         push(new LuaFunction(this) {
             public int call() {
