@@ -29,6 +29,4 @@
  
 NONLUA_API int luaopen_java (lua_State *L);
 
-NONLUA_API int nonluaopen_socket (lua_State *L);
-
 #endif

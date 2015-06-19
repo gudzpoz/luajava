@@ -1,5 +1,6 @@
 <config>	
 	<libs>
-		<lib>libs/libnonlua.a</lib>		
+		<lib>libs/libluajit.a</lib>
+		<lib>libs/libnonlua.a</lib>
 	</libs>
 </config>

@@ -1,1 +1,0 @@
-java -cp target/nonlua-0.3.0-SNAPSHOT-shaded.jar:target/nonlua-0.3.0-SNAPSHOT-natives-desktop.jar:backends/desktop/target/nonlua-backend-desktop-0.3.0-SNAPSHOT.jar lua $1

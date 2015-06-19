@@ -52,12 +52,6 @@ public class Lua {
         PRELOAD(LUA_JAVALIBNAME, luaopen_java);
     */
 
-    private static native void jniOpenSocket(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
-
-        nonluaopen_socket(L);
-    */
-
     private static native int jniLoadBuffer(CPtr cptr, byte[] buff, long bsize, String name); /*
         lua_State * L = nonlua_getstate(env, cptr);
 
@@ -470,6 +464,7 @@ public class Lua {
         return (jint) lua_status(L);
     */
 
+    private static final String LUAJIT_LIB = "luajit";
     private static final String NONLUA_LIB = "nonlua";
 
     public static final int GLOBALS       = -10002;
@@ -500,8 +495,7 @@ public class Lua {
     static {
         JniGenSharedLibraryLoader loader = new JniGenSharedLibraryLoader();
         finder = new ResourcePathFinder();
-        loader.load("luajit");
-        loader.load("SDL2");
+        loader.load(LUAJIT_LIB);
         loader.load(NONLUA_LIB);
     }
 
@@ -523,7 +517,6 @@ public class Lua {
         this.stateId = stateId;
 
         jniOpenJava(state);
-        jniOpenSocket(state);
 
         push(new LuaFunction(this) {
             public int call() {
@@ -580,6 +573,10 @@ public class Lua {
 
     protected long getCPtrPeer() {
         return (state != null) ? state.getPeer() : 0;
+    }
+
+    public CPtr getState() {
+        return state;
     }
     
     public void dispose() {
@@ -640,7 +637,6 @@ public class Lua {
         for (Object field : table) {
             push(field);
             set(-2, i);
-            pop(1);
             i++;
         }
     }
@@ -651,7 +647,6 @@ public class Lua {
             Map.Entry field = (Map.Entry)entry;
             push(field.getValue());
             set(-2, field.getKey().toString());
-            pop(1);
         }
     }
 
