@@ -28,6 +28,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import io.nondev.nonfilesystem.FileHandleType;
+
 /**
  * Class that contains functions accessed by Lua.
  * @author Thomas Slusny
@@ -225,21 +227,7 @@ public final class LuaJava {
     public static int javaFile(int stateIndex, String filename) {
         Lua L = LuaFactory.getExisting(stateIndex);
         
-        L.push(Lua.files.internal(filename));
-        return 1;
-    }
-
-    public static int javaToPath(int stateIndex, String filename) {
-        Lua L = LuaFactory.getExisting(stateIndex);
-        
-        L.push(Lua.finder.findResource(filename));
-        return 1;
-    }
-
-    public static int javaToLibPath(int stateIndex, String filename) {
-        Lua L = LuaFactory.getExisting(stateIndex);
-        
-        L.push(Lua.finder.findLibrary(filename));
+        L.push(L.fs.get(filename, FileHandleType.Internal));
         return 1;
     }
 

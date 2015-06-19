@@ -25,8 +25,8 @@ package io.nondev.nonlua;
 import java.util.List;
 import java.util.Map;
 import com.badlogic.gdx.jnigen.JniGenSharedLibraryLoader;
-import io.nondev.nonlua.thirdparty.ResourcePathFinder;
-import io.nondev.nonlua.thirdparty.Files;
+import io.nondev.nonfilesystem.FileSystem;
+import io.nondev.nonfilesystem.FileHandleType;
 
 public class Lua {
     // @off
@@ -489,25 +489,26 @@ public class Lua {
     public static final int ERR_MEMORY    = 4;
     public static final int ERR_HANDLER   = 5;
 
-    public static Files files;
-    public static ResourcePathFinder finder;
+    
 
     static {
         JniGenSharedLibraryLoader loader = new JniGenSharedLibraryLoader();
-        finder = new ResourcePathFinder();
         loader.load(LUAJIT_LIB);
         loader.load(NONLUA_LIB);
     }
 
     protected CPtr state;
     protected int stateId;
+    protected FileSystem fs;
 
-    public Lua() {
+    public Lua(FileSystem fs) {
+        this.fs = fs;
         int stateId = LuaFactory.insert(this);
         open(jniOpen(stateId), stateId);
     }
 
-    protected Lua(CPtr state) {
+    protected Lua(FileSystem fs, CPtr state) {
+        this.fs = fs;
         int stateId = LuaFactory.insert(this);
         open(state, stateId);
     }
@@ -565,7 +566,7 @@ public class Lua {
         set(-2, count + 1);
         pop(1);
         get(-1, "path");
-        push(";" + files.getLocalStoragePath() + "?.lua");
+        push(";" + fs.getLocalPath() + "?.lua");
         concat(2);
         set(-2, "path");
         pop(1);
@@ -587,7 +588,7 @@ public class Lua {
     
     public int run(String chunk) {
         if (chunk.endsWith(".lua")) {
-            byte[] buffer = files.internal(chunk).readBytes();
+            byte[] buffer = fs.get(chunk, FileHandleType.Internal).readBytes();
             return jniRunBuffer(state, buffer, buffer.length, chunk);
         }
         
@@ -596,7 +597,7 @@ public class Lua {
     
     public int load(String chunk) {
         if (chunk.endsWith(".lua")) {
-            byte[] buffer = files.internal(chunk).readBytes();
+            byte[] buffer = fs.get(chunk, FileHandleType.Internal).readBytes();
             return jniLoadBuffer(state, buffer, buffer.length, chunk);
         }
         
@@ -604,7 +605,7 @@ public class Lua {
     }
 
     public Lua newThread() {
-        return new Lua(jniNewThread(state));
+        return new Lua(fs, jniNewThread(state));
     }
 
     public void pushNil() {
