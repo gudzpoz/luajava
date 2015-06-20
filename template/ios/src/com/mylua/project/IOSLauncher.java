@@ -7,13 +7,13 @@ import org.robovm.apple.foundation.NSString;
 import org.robovm.apple.uikit.UIApplication;  
 import org.robovm.apple.uikit.UIApplicationDelegateAdapter;
 import io.nondev.nonlua.Lua;
-import io.nondev.nonfilesystem.IOSFileSystem;
+import io.nondev.nonfilesystem.IOSFiles;
 import com.mylua.project.MyLuaProject;
 
 public class IOSLauncher extends UIApplicationDelegateAdapter {
     @Override
     public boolean didFinishLaunching(UIApplication application, NSDictionary<NSString, ?> launchOptions) {
-        new MyLuaProject(new IOSFileSystem());
+        new MyLuaProject(new IOSFiles());
         return true;
     }
 

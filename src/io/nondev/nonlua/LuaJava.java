@@ -28,8 +28,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import io.nondev.nonfilesystem.FileHandleType;
-
 /**
  * Class that contains functions accessed by Lua.
  * @author Thomas Slusny
@@ -227,7 +225,7 @@ public final class LuaJava {
     public static int javaFile(int stateIndex, String filename) {
         Lua L = LuaFactory.getExisting(stateIndex);
         
-        L.push(L.fs.get(filename, FileHandleType.Internal));
+        L.push(L.fs.internal(filename));
         return 1;
     }
 

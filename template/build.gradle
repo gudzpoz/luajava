@@ -18,7 +18,7 @@ allprojects {
     ext {
         appName = 'my-lua-project'
         nonluaVersion = '0.3.0-SNAPSHOT'
-        nonfilesystemVersion = '0.1.0-SNAPSHOT'
+        nonfilesystemVersion = '1.0.0-SNAPSHOT'
     }
 
     repositories {
