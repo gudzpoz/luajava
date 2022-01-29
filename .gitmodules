@@ -1,4 +1,4 @@
 [submodule "jni/luajit"]
 	path = jni/luajit
 	url = https://github.com/LuaJIT/LuaJIT.git
-	branch = v2.0
+	branch = v2.1
