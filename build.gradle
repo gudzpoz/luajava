@@ -49,6 +49,11 @@ String addLuaJitTarget(String platform, List<String> command) {
                     include 'libluajit*a'
                 }
                 into folder
+                rename '(.+)', 'libluajit.a'
+            }
+            exec {
+                workingDir 'jni/luajit'
+                commandLine 'ls', 'src'
             }
         }
         outputs.upToDateWhen {
@@ -64,6 +69,12 @@ void buildLuaTargets(String... targets) {
     tasks.register('buildLua') {
         dependsOn targets
     }
+    // disabling concurrency
+    for (int i = 0; i < targets.length - 1; ++i) {
+        for(int j = i + 1; j < targets.length; ++j) {
+            tasks.getByName(targets[j]).mustRunAfter(tasks.getByName(targets[i]))
+        }
+    }
 }
 
 buildLuaTargets(
@@ -73,11 +84,11 @@ buildLuaTargets(
                  'TARGET_SYS=Linux']),
         addLuaJitTarget('Linux32',
                 ['make', 'amalg',
-                 'CC=gcc -m32', 'CFLAGS=-fPIC',
+                 'CC=gcc -m32 -I/usr/i686-linux-gnu/include', 'CFLAGS=-fPIC',
                  'TARGET_SYS=Linux']),
         addLuaJitTarget('ARM',
                 ['make', 'amalg',
-                 'HOST_CC=gcc -m32', 'CFLAGS=-fPIC',
+                 'HOST_CC=gcc -m32 -I/usr/i686-linux-gnu/include', 'CFLAGS=-fPIC',
                  'TARGET_SYS=Linux', 'CROSS=arm-linux-gnueabihf-']),
         addLuaJitTarget('AARCH',
                 ['make', 'amalg',
@@ -85,12 +96,18 @@ buildLuaTargets(
                  'TARGET_SYS=Linux', 'CROSS=aarch64-linux-gnu-']),
         addLuaJitTarget('Win32',
                 ['make', 'amalg',
-                 'HOST_CC=gcc -m32', 'CFLAGS=-fPIC',
+                 'HOST_CC=gcc -m32 -I/usr/i686-linux-gnu/include', 'CFLAGS=-fPIC',
                  'CROSS=i686-w64-mingw32-', 'TARGET_SYS=Windows']),
         addLuaJitTarget('Win64',
                 ['make', 'amalg',
                  'HOST_CC=gcc -m64', 'CFLAGS=-fPIC',
-                 'CROSS=x86_64-w64-mingw32-', 'TARGET_SYS=Windows'])
+                 'CROSS=x86_64-w64-mingw32-', 'TARGET_SYS=Windows']),
+        addLuaJitTarget('MacOsX',
+                ['make', 'amalg', 'TARGET_FLAGS=-arch x86_64',
+                 'CFLAGS=-fPIC', 'TARGET_SYS=Darwin']),
+        addLuaJitTarget('MacOsXAARCH',
+                ['make', 'amalg', 'TARGET_FLAGS=-arch arm64',
+                 'CFLAGS=-fPIC', 'TARGET_SYS=Darwin'])
 )
 
 void linkerConfig(BuildTarget it, String platformFolder) {
@@ -126,6 +143,32 @@ jnigen {
     add(Linux, x64, ARM, {
         linkerConfig(it, 'aarch')
     })
+    // MacOsX builds for ARM64 and AMD64 regardless of isARM
+    add(MacOsX, x64, false, {
+        linkerConfig(it, 'macosxa')
+    })
 }
 
-tasks.jnigen.dependsOn(tasks.buildLua)
+tasks.register('buildLuaMacOsXMerge', {
+    dependsOn tasks.buildLuaMacOsX, tasks.buildLuaMacOsXAARCH
+    doLast {
+        exec {
+            workingDir 'jni/luajit'
+            commandLine 'mkdir', '-p', 'lib/macosxa'
+        }
+        exec {
+            workingDir 'jni/luajit'
+            commandLine 'lipo', '-create',
+                    'lib/macosx/libluajit.a', 'lib/macosxaarch/libluajit.a',
+                    '-output', 'lib/macosxa/libluajit.a'
+        }
+    }
+})
+
+tasks.jnigenBuildLinux.dependsOn(tasks.buildLuaLinux32)
+tasks.jnigenBuildLinux64.dependsOn(tasks.buildLuaLinux64)
+tasks.jnigenBuildLinuxARM.dependsOn(tasks.buildLuaARM)
+tasks.jnigenBuildLinuxARM64.dependsOn(tasks.buildLuaAARCH)
+tasks.jnigenBuildWindows.dependsOn(tasks.buildLuaWin32)
+tasks.jnigenBuildWindows64.dependsOn(tasks.buildLuaWin64)
+tasks.jnigenBuildMacOsX64.dependsOn(tasks.buildLuaMacOsXMerge)
