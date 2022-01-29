@@ -63,3 +63,9 @@ luajit/*.manifest
 luajit/*.dmp
 luajit/*.swp
 luajit/.tags
+
+## C / C++
+*.o
+*.a
+*.so
+*.dll

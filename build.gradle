@@ -1,0 +1,131 @@
+import com.badlogic.gdx.jnigen.BuildTarget
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.badlogicgames.gdx:gdx-jnigen-gradle:2.1.1'
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+group 'party.iroiro.jua'
+version '2.0.5-alpha'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.badlogicgames.gdx:gdx-jnigen-loader:2.1.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly files('build/libs/jua-2.0.5-alpha-natives-desktop.jar')
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+String addLuaJitTarget(String platform, List<String> command) {
+    String target = "buildLua${platform}"
+    String folder = "jni/luajit/lib/${platform.toLowerCase()}"
+    tasks.register(target) {
+        doLast {
+            exec {
+                workingDir 'jni/luajit'
+                commandLine 'make', 'clean'
+            }
+            exec {
+                workingDir 'jni/luajit'
+                commandLine command
+            }
+            copy {
+                from('./jni/luajit/src') {
+                    include 'libluajit*a'
+                }
+                into folder
+            }
+        }
+        outputs.upToDateWhen {
+            File f = new File(folder)
+            return (f.isDirectory()
+                    && f.listFiles().length > 0)
+        }
+    }
+    return target
+}
+
+void buildLuaTargets(String... targets) {
+    tasks.register('buildLua') {
+        dependsOn targets
+    }
+}
+
+buildLuaTargets(
+        addLuaJitTarget('Linux64',
+                ['make', 'amalg',
+                 'CC=gcc -m64', 'CFLAGS=-fPIC',
+                 'TARGET_SYS=Linux']),
+        addLuaJitTarget('Linux32',
+                ['make', 'amalg',
+                 'CC=gcc -m32', 'CFLAGS=-fPIC',
+                 'TARGET_SYS=Linux']),
+        addLuaJitTarget('ARM',
+                ['make', 'amalg',
+                 'HOST_CC=gcc -m32', 'CFLAGS=-fPIC',
+                 'TARGET_SYS=Linux', 'CROSS=arm-linux-gnueabihf-']),
+        addLuaJitTarget('AARCH',
+                ['make', 'amalg',
+                 'HOST_CC=gcc -m64', 'CFLAGS=-fPIC',
+                 'TARGET_SYS=Linux', 'CROSS=aarch64-linux-gnu-']),
+        addLuaJitTarget('Win32',
+                ['make', 'amalg',
+                 'HOST_CC=gcc -m32', 'CFLAGS=-fPIC',
+                 'CROSS=i686-w64-mingw32-', 'TARGET_SYS=Windows']),
+        addLuaJitTarget('Win64',
+                ['make', 'amalg',
+                 'HOST_CC=gcc -m64', 'CFLAGS=-fPIC',
+                 'CROSS=x86_64-w64-mingw32-', 'TARGET_SYS=Windows'])
+)
+
+void linkerConfig(BuildTarget it, String platformFolder) {
+    // TODO: decide whether to shell-string-escape-and-then-xml-entity-escape $projectDir
+    it.linkerFlags += " -L&quot;$projectDir/jni/luajit/lib/${platformFolder}&quot; "
+}
+
+apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
+jnigen {
+    sharedLibName = 'jua'
+    all {
+        headerDirs = ['luajit/src', 'nonlua']
+        cExcludes = ['luajit/*', 'luajit/**/*']
+        libraries += ' -lluajit '
+    }
+    add(Linux, x64, false, {
+        linkerConfig(it, 'linux64')
+    })
+    add(Linux, x32, false, {
+        linkerConfig(it, 'linux32')
+    })
+    add(Windows, x32, false, {
+        linkerConfig(it, 'win32')
+        it.linkerFlags = it.linkerFlags.replace(' -static ', ' ')
+    })
+    add(Windows, x64, false, {
+        linkerConfig(it, 'win64')
+        it.linkerFlags = it.linkerFlags.replace(' -static ', ' ')
+    })
+    add(Linux, x32, ARM, {
+        linkerConfig(it, 'arm')
+    })
+    add(Linux, x64, ARM, {
+        linkerConfig(it, 'aarch')
+    })
+}
+
+tasks.jnigen.dependsOn(tasks.buildLua)

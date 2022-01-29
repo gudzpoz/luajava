@@ -152,39 +152,6 @@ static int java_loadlib(lua_State * L) {
   return ret;
 }
 
-static int java_file(lua_State * L) {
-  int top = lua_gettop(L);
-
-  if (top == 0) {
-    luaL_error(L, "Error. Invalid number of parameters.");
-  }
-
-  lua_pushstring(L, NONLUA_STATEINDEX);
-  lua_rawget(L, LUA_REGISTRYINDEX);
-
-  if (!lua_isnumber(L, -1)) {
-    luaL_error(L, "Impossible to identify luaState id.");
-  }
-
-  lua_Number stateIndex = lua_tonumber(L, -1);
-  lua_pop(L, 1);
-
-  if (!lua_isstring(L, 1)) {
-    luaL_error(L, "Argument not a lua string.");
-  }
-
-  const char * filename  = lua_tostring(L, 1);
-
-  JNIEnv * env = nonlua_getenv(L);
-  jmethodID method = env->GetStaticMethodID(luajava_api_class, "javaFile", "(ILjava/lang/String;)I");
-  jstring javaFilename  = env->NewStringUTF(filename);
-  jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, javaFilename);
-  nonlua_throw(env, L);
-  env->DeleteLocalRef(javaFilename);
-
-  return ret;
-}
-
 static int java_topath(lua_State * L) {
   int top = lua_gettop(L);
 
@@ -256,7 +223,6 @@ static const luaL_Reg javalib[] = {
   {"new",       java_new},
   {"proxy",     java_proxy},
   {"loadlib",   java_loadlib},
-  {"file",      java_file},
   {"topath",    java_topath},
   {"tolibpath", java_tolibpath},
   {NULL, NULL}
