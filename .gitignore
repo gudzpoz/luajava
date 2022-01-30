@@ -69,3 +69,10 @@ luajit/.tags
 *.a
 *.so
 *.dll
+
+## jnigen
+jni/*.xml
+jni/*.mk
+jni/*.cpp
+jni/*.h
+jni/*.c

@@ -1,6 +1,6 @@
 # Modified from https://github.com/libgdx/libgdx/blob/master/.github/workflows/build-publish.yml
 
-name: Build natives (MacOSX, Linux and Windows) (testing)
+name: Build natives
 
 on:
   workflow_dispatch:
@@ -11,6 +11,7 @@ env:
 
 jobs:
   macos:
+    needs: natives
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
@@ -38,7 +39,6 @@ jobs:
           name: macos-natives
           path: libs
   natives:
-    needs: macos
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -68,7 +68,8 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Build natives
         run: |
-          ./gradlew jniGen jnigenBuildLinux jnigenBuildLinux64 jnigenBuildLinuxARM jnigenBuildLinuxARM64 jnigenBuildWindows jnigenBuildWindows64
+          export export NDK_HOME=$ANDROID_NDK_HOME
+          ./gradlew jniGen jnigenBuildAndroid jnigenBuildLinux jnigenBuildLinux64 jnigenBuildLinuxARM jnigenBuildLinuxARM64 jnigenBuildWindows jnigenBuildWindows64
       - name: Download macOS/iOS natives
         uses: actions/download-artifact@v2.0.5
         with:
