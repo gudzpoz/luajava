@@ -2,6 +2,7 @@ import com.badlogic.gdx.jnigen.BuildTarget
 
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
     }
     dependencies {
@@ -17,6 +18,7 @@ group 'party.iroiro.jua'
 version '2.1.0-beta3-alpha'
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -51,10 +53,6 @@ String addLuaJitTarget(String platform, List<String> command) {
                     }
                     into folder
                     rename '(.+)', 'libluajit.a'
-                }
-                exec {
-                    workingDir 'jni/luajit'
-                    commandLine 'ls', 'src'
                 }
             }
         } else {
@@ -193,3 +191,5 @@ tasks.jnigenBuildWindows64.dependsOn(tasks.buildLuaWin64)
 tasks.jnigenBuildMacOsX64.dependsOn(tasks.buildLuaMacOsXMerge)
 tasks.jnigenBuildAndroid.dependsOn(tasks.buildLuaAndroid)
 // tasks.jnigenBuildIOS.dependsOn(tasks.buildLuaIOS)
+
+apply from: 'publish.gradle'

@@ -19,7 +19,7 @@ echo "########## Building armv7-a ##########"
 TARGET=armv7a-linux-androideabi
 NDKP=$NDKB/${TARGET}-
 NDKCC=$NDKB/${TARGET}${NDKAPI}-clang
-NDKARCH="-march=armv7-a -mhard-float -mfpu=vfpv3-d16 -mfloat-abi=softfp -D_NDK_MATH_NO_SOFTFP=1 -marm -Wl,--fix-cortex-a8"
+NDKARCH="-march=armv7-a -mhard-float -mfpu=vfpv3-d16 -mfloat-abi=softfp -D_NDK_MATH_NO_SOFTFP=1 -marm"
 make HOST_CC="gcc -m32 -I/usr/i686-linux-gnu/include" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
@@ -88,5 +88,3 @@ make HOST_CC="gcc -m64" CROSS=$NDKP \
      TARGET_SYS=Android amalg
 mkdir -p $BUILD_DIR/x86_64
 mv $LUAJIT/src/libluajit.a $BUILD_DIR/x86_64/libluajit.a
-
-ls -R $BUILD_DIR

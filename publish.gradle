@@ -1,0 +1,89 @@
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        String POM_NAME = 'Jua'
+        String POM_DESCRIPTION = 'LuaJIT for Java'
+        String POM_URL = 'https://github.com/gudzpoz/jua'
+        String POM_LICENCE_NAME = 'The MIT License'
+        String POM_LICENCE_URL = 'http://www.opensource.org/licenses/mit-license.php'
+        String POM_SCM_CONNECTION = 'scm:git:git://github.com/gudzpoz/jua.git'
+        String POM_SCM_DEV_CONNECTION = 'scm:git:git://github.com/gudzpoz/jua.git'
+        String POM_SCM_URL = 'https://github.com/gudzpoz/jua.git'
+        mavenJava(MavenPublication) {
+            from components.java
+            pom {
+                name = POM_NAME + ' Native Libraries'
+                description = POM_DESCRIPTION
+                url = POM_URL
+                licenses {
+                    license {
+                        name = POM_LICENCE_NAME
+                        url = POM_LICENCE_URL
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'deathbeam'
+                        url = 'https://github.com/deathbeam'
+                        name = 'Thomas Slusny'
+                        email = 'slusnucky@gmail.com'
+                    }
+                }
+                scm {
+                    connection = POM_SCM_CONNECTION
+                    developerConnection = POM_SCM_DEV_CONNECTION
+                    url = POM_SCM_URL
+                }
+            }
+        }
+        mavenPlatform(MavenPublication) {
+            artifactId = artifactId + '-platform'
+            if(project.tasks.findByName('jnigenJarNativesDesktop')) {
+                artifact jnigenJarNativesDesktop {}
+            }
+            if(project.tasks.findByName('jnigenJarNativesIOS')) {
+                artifact jnigenJarNativesIOS {}
+            }
+            ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each {
+                if(project.tasks.findByName("jnigenJarNativesAndroid$it")) {
+                    artifact "jnigenJarNativesAndroid$it" {}
+                }
+            }
+            pom {
+                name = POM_NAME + ' Native Libraries'
+                description = POM_DESCRIPTION
+                url = POM_URL
+                licenses {
+                    license {
+                        name = POM_LICENCE_NAME
+                        url = POM_LICENCE_URL
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'deathbeam'
+                        url = 'https://github.com/deathbeam'
+                        name = 'Thomas Slusny'
+                        email = 'slusnucky@gmail.com'
+                    }
+                }
+                scm {
+                    connection = POM_SCM_CONNECTION
+                    developerConnection = POM_SCM_DEV_CONNECTION
+                    url = POM_SCM_URL
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = 'GitHub'
+            url = 'https://maven.pkg.github.com/GuDzpoz/jua'
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
