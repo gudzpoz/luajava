@@ -20,7 +20,7 @@
  * SOFTWARE.
  ******************************************************************************/
 
-package io.nondev.nonlua;
+package party.iroiro.jua;
 
 import java.util.List;
 import java.util.Map;
@@ -463,8 +463,7 @@ public class Lua {
         return (jint) lua_status(L);
     */
 
-    private static final String LUAJIT_LIB = "luajit";
-    private static final String NONLUA_LIB = "nonlua";
+    private static final String JUA_LIB = "jua";
 
     public static final int GLOBALS       = -10002;
     public static final int REGISTRY      = -10000;
@@ -492,8 +491,7 @@ public class Lua {
 
     static {
         SharedLibraryLoader loader = new SharedLibraryLoader();
-        loader.load(LUAJIT_LIB);
-        loader.load(NONLUA_LIB);
+        loader.load(JUA_LIB);
     }
 
     protected CPtr state;

@@ -20,7 +20,7 @@
  * SOFTWARE.
  ******************************************************************************/
 
-package io.nondev.nonlua;
+package party.iroiro.jua;
 
 public class CPtr {
     private long peer;

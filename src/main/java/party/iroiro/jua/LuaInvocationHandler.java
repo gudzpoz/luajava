@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 Thomas Slusny.
+ * Copyright (c) 2015 Thomas Slusny
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,20 +20,36 @@
  * SOFTWARE.
  ******************************************************************************/
 
-package io.nondev.nonlua;
+package party.iroiro.jua;
 
-public class LuaReturn {
-	final Object[] objects;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
-	public LuaReturn(Object... objects) {
-		this.objects = objects;
-	}
+public class LuaInvocationHandler implements InvocationHandler {
+    private LuaValue obj;
+    
+    public LuaInvocationHandler(LuaValue obj) {
+        this.obj = obj;
+    }
+    
+    public Object invoke(Object proxy, Method method, Object[] args) throws LuaException {
+        String methodName = method.getName();
+        LuaValue func = obj.get(methodName);
+        if (func.isNil()) return null;
+        
+        Class retType = method.getReturnType();
+        Object ret;
 
-	public int push(Lua L) {
-		for (Object object : objects) {
-			L.push(object);
-		}
-
-		return objects.length;
-	}
+        if (retType.equals(Void.class) || retType.equals(void.class)) {
+            func.call(args , 0);
+            ret = null;
+        } else {
+            ret = func.call(args, 1)[0];
+            if(ret != null && ret instanceof Double) {
+                ret = LuaUtils.convertNumber((Double) ret, retType);
+            }
+        }
+            
+        return ret;
+    }
 }

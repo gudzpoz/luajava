@@ -1,5 +1,6 @@
 # nonlua #
-[![License](https://img.shields.io/github/license/nondev/nonlua.svg)](http://opensource.org/licenses/MIT)  [![Build Status](https://img.shields.io/travis/nondev/nonlua/master.svg)](https://travis-ci.org/nondev/nonlua)
+[![License](https://img.shields.io/github/license/nondev/nonlua.svg)](http://opensource.org/licenses/MIT) 
+[![Build Status](https://github.com/GuDzpoz/jua/actions/workflows/build-natives.yml/badge.svg)](https://github.com/GuDzpoz/jua/actions/workflows/build-natives.yml)
 
   * [About](#about)
   * [Quickstart](#quickstart)
@@ -9,26 +10,19 @@
 
 ## About ##
 
-Nonlua is a scripting tool for Java. The goal of this tool is to allow scripts written in Lua to manipulate components developed in Java.
+Jua is a scripting tool for Java. The goal of this tool is to allow scripts written in Lua to manipulate components developed in Java.
 
 It allows Java components to be accessed from Lua using the same syntax that is used for accessing Lua`s native objects, without any need for declarations or any kind of preprocessing. Nonlua also allows Java to implement an interface using Lua. This way any interface can be implemented in Lua and passed as parameter to any method, and when called, the equivalent function will be called in Lua, and it's result passed back to Java.
 
 ## Quickstart ##
 
-To include Nonlua into your project, you can use Maven or Gradle. Artifacts:
+To include Nonlua into your project, you can use Maven or Gradle. Artifacts (yet to be):
 
-* Core: `io.nondev:nonlua:0.3.0-SNAPSHOT`
-* Desktop backend: `io.nondev:nonfilesystem-desktop:0.1.0-SNAPSHOT`
-* Desktop natives: `io.nondev:nonlua:0.3.0-SNAPSHOT:natives-desktop`
-* Android backend: `io.nondev:nonfilesystem-android:0.1.0-SNAPSHOT`
-* Android natives: `io.nondev:nonlua:0.3.0-SNAPSHOT:natives-android`
-* iOS backend: `io.nondev:nonfilesystem-ios:0.1.0-SNAPSHOT`
-* iOS natives: `io.nondev:nonlua:0.3.0-SNAPSHOT:natives-ios`
-
-You must also include `https://oss.sonatype.org/content/repositories/snapshots/` to repositories.
+* Core: `party.iroiro.jua:jua:2.1.0-beta3-alpha-1`
+* Desktop natives: `party.iroiro.jua:jua-platform:2.1.0-beta3-alpha-1:natives-desktop`
 
 And here is simple example on how to correctly initialize new Lua instance.
-This example will push `message` variable to Lua with value `Hello World from Lua`, then prints it using Lua built-in `print` function and then tries to evaluate `main.lua` script.
+This example will push `message` variable to Lua with value `Hello World from Lua`, then prints it using Lua built-in `print` function.
 
 ```java
 Lua.files = new DesktopFiles();
@@ -37,7 +31,6 @@ Lua L = new Lua();
 L.push("Hello World from Lua");
 L.set("message");
 L.run("print(message)");
-L.run("main.lua");
 
 L.dispose();
 ```
@@ -74,30 +67,10 @@ function dispose()
 end
 ```
 
-## Project template ##
-
-To allow you to step into Lua development in Java, we build easy to use project template.
-Just navigate into `template` directory.
-
-Here are few commands to run each template front-end
-
-```
-gradlew desktop:run
-gradlew android:installDebug android:run
-gradlew ios:launchIPhoneSimulator
-```
-
-And here are commands to build each of them
-
-```
-gradlew desktop:dist
-gradlew android:assembleRelease
-gradlew ios:createIPA
-```
-
 ## Credits ##
 
  * [LuaJava](https://github.com/jasonsantos/luajava)
  * [LibGDX](https://github.com/libgdx/libgdx)
+ * [Nonlua](https://github.com/deathbeam/jua)
  
 Nonlua is based on LuaJava. So all thanks to Jason Santos for his awesome work on it.

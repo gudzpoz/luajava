@@ -20,7 +20,7 @@
  * SOFTWARE.
  ******************************************************************************/
 
-package io.nondev.nonlua;
+package party.iroiro.jua;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;

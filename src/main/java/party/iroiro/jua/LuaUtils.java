@@ -20,7 +20,7 @@
  * SOFTWARE.
  ******************************************************************************/
 
-package io.nondev.nonlua;
+package party.iroiro.jua;
 
 import java.io.BufferedReader;
 import java.io.File;

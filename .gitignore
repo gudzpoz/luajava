@@ -76,3 +76,4 @@ jni/*.mk
 jni/*.cpp
 jni/*.h
 jni/*.c
+libs/*.xml

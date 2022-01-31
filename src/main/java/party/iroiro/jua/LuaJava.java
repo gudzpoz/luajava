@@ -20,7 +20,7 @@
  * SOFTWARE.
  ******************************************************************************/
 
-package io.nondev.nonlua;
+package party.iroiro.jua;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;

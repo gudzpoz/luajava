@@ -25,9 +25,9 @@
 
 #define NONLUA_API LUA_API
 
-#define NONLUA_CPTRCLASS "io/nondev/nonlua/CPtr"
-#define NONLUA_FUNCTIONCLASS "io/nondev/nonlua/LuaFunction"
-#define NONLUA_LUAJAVACLASS "io/nondev/nonlua/LuaJava"
+#define NONLUA_CPTRCLASS "party/iroiro/jua/CPtr"
+#define NONLUA_FUNCTIONCLASS "party/iroiro/jua/LuaFunction"
+#define NONLUA_LUAJAVACLASS "party/iroiro/jua/LuaJava"
 
 #define NONLUA_JNIENVTAG "__nonluajnienv"
 #define NONLUA_STATEINDEX "nonluastateindex"

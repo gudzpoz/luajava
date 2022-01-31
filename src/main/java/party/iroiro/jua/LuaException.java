@@ -20,7 +20,7 @@
  * SOFTWARE.
  ******************************************************************************/
 
-package io.nondev.nonlua;
+package party.iroiro.jua;
 
 public class LuaException extends Exception {
     private static final long serialVersionUID = 1L;

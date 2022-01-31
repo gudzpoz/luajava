@@ -20,55 +20,20 @@
  * SOFTWARE.
  ******************************************************************************/
 
-package io.nondev.nonlua;
+package party.iroiro.jua;
 
-import java.util.ArrayList;
-import java.util.List;
+public class LuaReturn {
+	final Object[] objects;
 
-public final class LuaFactory {
-    private static final List<Lua> states = new ArrayList<Lua>();
+	public LuaReturn(Object... objects) {
+		this.objects = objects;
+	}
 
-    LuaFactory() {}
-    
-    public synchronized static Lua getExisting(int index) {
-        return states.get(index);
-    }
-    
-    public synchronized static int insert(Lua L) {
-        int i;
+	public int push(Lua L) {
+		for (Object object : objects) {
+			L.push(object);
+		}
 
-        for (i = 0 ; i < states.size(); i++) {
-            Lua state = states.get(i);
-            
-            if (state != null && (state.getCPtrPeer() == L.getCPtrPeer())) {
-                return i;
-            }
-        }
-
-        i = getNextIndex();
-
-        if (i == -1) {
-            states.add(L);
-            return states.size() - 1;
-        }
-        
-        states.set(i, L);
-        return i;
-    }
-    
-    public synchronized static void remove(int index) {
-        states.set(index, null);
-    }
-    
-    private synchronized static int getNextIndex() {
-        if (states.size() == 0) return -1;
-
-        for (int i = 0 ; i < states.size(); i++) {
-            if (states.get(i) == null) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
+		return objects.length;
+	}
 }
