@@ -210,4 +210,8 @@ tasks.withType(JavaCompile) {
     options.deprecation = true
 }
 
+tasks.withType(JavaExec) {
+    allJvmArgs += '-Xcheck:jni'
+}
+
 apply from: 'publish.gradle'

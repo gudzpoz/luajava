@@ -20,8 +20,8 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#include "nonlua.h"
-#include "nonlualib.h"
+#include "luajava.h"
+#include "luajavalib.h"
 
 static int java_require (lua_State * L) {
   int top = lua_gettop(L);
@@ -30,17 +30,17 @@ static int java_require (lua_State * L) {
     luaL_error(L, "Function java.require received %d arguments, expected 1.", top);
   }
 
-  JNIEnv * env = nonlua_getenv(L);
+  JNIEnv * env = getEnvFromState(L);
 
   if (!lua_isstring(L, 1)) {
     luaL_error(L, "Invalid parameter type. String expected.");
   }
 
   const char * className = lua_tostring(L, 1);
-  jclass classInstance = nonlua_findclass(env, L, className);
-  nonlua_throw(env, L);
+  jclass classInstance = findJavaClass(env, L, className);
+  handleJavaException(env, L);
 
-  return nonlua_pushclass(L, classInstance);
+  return pushJavaClass(L, classInstance);
 }
 
 static int java_new(lua_State * L) {
@@ -50,7 +50,7 @@ static int java_new(lua_State * L) {
     luaL_error(L, "Error. Invalid number of parameters.");
   }
 
-  lua_pushstring(L, NONLUA_STATEINDEX);
+  lua_pushstring(L, LUAJAVASTATEINDEX);
   lua_rawget(L, LUA_REGISTRYINDEX);
 
   if (!lua_isnumber(L, -1)) {
@@ -60,11 +60,11 @@ static int java_new(lua_State * L) {
   lua_Number stateIndex = lua_tonumber(L, -1);
   lua_pop(L, 1);
 
-  if (!nonlua_isobject(L, 1)) {
+  if (!isJavaObject(L, 1)) {
     luaL_error(L, "Argument not a valid Java Class.");
   }
 
-  JNIEnv * env = nonlua_getenv(L);
+  JNIEnv * env = getEnvFromState(L);
   jclass clazz = env->FindClass("java/lang/Class");
   jobject * userData = (jobject *) lua_touserdata(L, 1);
   jobject classInstance = (jobject) *userData;
@@ -80,7 +80,7 @@ static int java_new(lua_State * L) {
   }
 
   jint ret = env->CallStaticIntMethod(clazz, method, (jint)stateIndex, classInstance);
-  nonlua_throw(env, L);
+  handleJavaException(env, L);
 
   return ret;
 }
@@ -90,7 +90,7 @@ static int java_proxy(lua_State * L) {
     luaL_error(L, "Error. Function proxy expects 2 arguments.");
   }
 
-  lua_pushstring(L, NONLUA_STATEINDEX);
+  lua_pushstring(L, LUAJAVASTATEINDEX);
   lua_rawget(L, LUA_REGISTRYINDEX);
 
   if (!lua_isnumber(L, -1)) {
@@ -104,13 +104,13 @@ static int java_proxy(lua_State * L) {
     luaL_error(L, "Invalid Argument types. Expected (string, table).");
   }
 
-  JNIEnv * env = nonlua_getenv(L);
+  JNIEnv * env = getEnvFromState(L);
   jmethodID method = env->GetStaticMethodID(luajava_api_class, "createProxyObject" , "(ILjava/lang/String;)I");
   const char *impl = lua_tostring(L, 1);
 
   jstring str = env->NewStringUTF(impl);
   jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, str);
-  nonlua_throw(env, L);
+  handleJavaException(env, L);
   env->DeleteLocalRef(str);
 
   return ret;
@@ -123,7 +123,7 @@ static int java_loadlib(lua_State * L) {
     luaL_error(L, "Error. Invalid number of parameters.");
   }
 
-  lua_pushstring(L, NONLUA_STATEINDEX);
+  lua_pushstring(L, LUAJAVASTATEINDEX);
   lua_rawget(L, LUA_REGISTRYINDEX);
 
   if (!lua_isnumber(L, -1)) {
@@ -140,12 +140,12 @@ static int java_loadlib(lua_State * L) {
   const char * className  = lua_tostring(L, 1);
   const char * methodName = lua_tostring(L, 2);
 
-  JNIEnv * env = nonlua_getenv(L);
+  JNIEnv * env = getEnvFromState(L);
   jmethodID method = env->GetStaticMethodID(luajava_api_class, "javaLoadLib" , "(ILjava/lang/String;Ljava/lang/String;)I");
   jstring javaClassName  = env->NewStringUTF(className);
   jstring javaMethodName = env->NewStringUTF(methodName);
   jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, javaClassName, javaMethodName);
-  nonlua_throw(env, L);
+  handleJavaException(env, L);
   env->DeleteLocalRef(javaClassName);
   env->DeleteLocalRef(javaMethodName);
 
@@ -159,7 +159,7 @@ static int java_topath(lua_State * L) {
     luaL_error(L, "Error. Invalid number of parameters.");
   }
 
-  lua_pushstring(L, NONLUA_STATEINDEX);
+  lua_pushstring(L, LUAJAVASTATEINDEX);
   lua_rawget(L, LUA_REGISTRYINDEX);
 
   if (!lua_isnumber(L, -1)) {
@@ -175,11 +175,11 @@ static int java_topath(lua_State * L) {
 
   const char * filename  = lua_tostring(L, 1);
 
-  JNIEnv * env = nonlua_getenv(L);
+  JNIEnv * env = getEnvFromState(L);
   jmethodID method = env->GetStaticMethodID(luajava_api_class, "javaToPath", "(ILjava/lang/String;)I");
   jstring javaFilename  = env->NewStringUTF(filename);
   jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, javaFilename);
-  nonlua_throw(env, L);
+  handleJavaException(env, L);
   env->DeleteLocalRef(javaFilename);
 
   return ret;
@@ -192,7 +192,7 @@ static int java_tolibpath(lua_State * L) {
     luaL_error(L, "Error. Invalid number of parameters.");
   }
 
-  lua_pushstring(L, NONLUA_STATEINDEX);
+  lua_pushstring(L, LUAJAVASTATEINDEX);
   lua_rawget(L, LUA_REGISTRYINDEX);
 
   if (!lua_isnumber(L, -1)) {
@@ -208,11 +208,11 @@ static int java_tolibpath(lua_State * L) {
 
   const char * filename  = lua_tostring(L, 1);
 
-  JNIEnv * env = nonlua_getenv(L);
+  JNIEnv * env = getEnvFromState(L);
   jmethodID method = env->GetStaticMethodID(luajava_api_class, "javaToLibPath", "(ILjava/lang/String;)I");
   jstring javaFilename  = env->NewStringUTF(filename);
   jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, javaFilename);
-  nonlua_throw(env, L);
+  handleJavaException(env, L);
   env->DeleteLocalRef(javaFilename);
 
   return ret;
@@ -228,7 +228,7 @@ static const luaL_Reg javalib[] = {
   {NULL, NULL}
 };
 
-NONLUA_API int luaopen_java (lua_State *L) {
+EXPORT int luaopen_java (lua_State *L) {
   luaL_register(L, LUA_JAVALIBNAME, javalib);
   return 1;
 }

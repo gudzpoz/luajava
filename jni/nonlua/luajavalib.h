@@ -20,23 +20,13 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef nonconf_h
-#define nonconf_h
+#ifndef LUAJAVALIB_H
+#define LUAJAVALIB_H
 
-#define NONLUA_API LUA_API
+#include "luajava.h"
 
-#define NONLUA_CPTRCLASS "party/iroiro/jua/CPtr"
-#define NONLUA_FUNCTIONCLASS "party/iroiro/jua/LuaFunction"
-#define NONLUA_LUAJAVACLASS "party/iroiro/jua/LuaJava"
+#define LUA_JAVALIBNAME	"java"
+ 
+EXPORT int luaopen_java (lua_State *L);
 
-#define NONLUA_JNIENVTAG "__nonluajnienv"
-#define NONLUA_STATEINDEX "nonluastateindex"
-#define NONLUA_ISJAVAOBJECT "__nonluaisjavaobject"
-#define NONLUA_ISFUNCCALLED "__nonluaisfunccalled"
-
-#define LUA_INDEXTAG "__index"
-#define LUA_NEWINDEXTAG "__newindex"
-#define LUA_GCTAG "__gc"
-#define LUA_CALLTAG "__call"
-
-#endif
+#endif /* LUAJAVALIB_H! */

@@ -30,42 +30,41 @@ import com.badlogic.gdx.utils.SharedLibraryLoader;
 public class Lua {
     // @off
     /*JNI
-    #include <nonluaconf.h>
-    #include <nonlua.h>
-    #include <nonlualib.h>
+    #include <luajava.h>
+    #include <luajavalib.h>
      */
 
     private static native CPtr jniOpen(int stateId); /*
-        return nonlua_open(env, stateId);
+        return luajava_open(env, stateId);
     */
 
     private static native void jniClose(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_close(L);
     */
 
     private static native void jniOpenJava(CPtr cptr); /*
-        lua_State* L = nonlua_getstate(env, cptr);
+        lua_State* L = getStateFromCPtr(env, cptr);
 
         PRELOAD(LUA_JAVALIBNAME, luaopen_java);
     */
 
     private static native int jniLoadBuffer(CPtr cptr, byte[] buff, long bsize, String name); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) luaL_loadbuffer(L, buff, (int) bsize, name);
     */
 
     private static native int jniLoadString(CPtr cptr, String str); /*
-        lua_State * L   = nonlua_getstate(env, cptr);
+        lua_State * L   = getStateFromCPtr(env, cptr);
 
         return (jint) luaL_loadstring(L, str);
     */
 
 
     private static native int jniRunBuffer(CPtr cptr, byte[] buff, long bsize, String name); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
         
         int ret = luaL_loadbuffer(L, buff, (int) bsize, name);
         int secRet = lua_pcall(L, 0, LUA_MULTRET, 0);
@@ -74,16 +73,16 @@ public class Lua {
     */
 
     private static native int jniRunString(CPtr cptr, String str); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) luaL_dostring(L, str);
     */
 
     private static native CPtr jniNewThread(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
         lua_State * newThread = lua_newthread(L);
         
-        jclass tempClass = env->FindClass("io/nondev/nonlua/CPtr");
+        jclass tempClass = env->FindClass(CPTRCLASS);
         jobject obj = env->AllocObject(tempClass);
 
         if (obj)
@@ -95,131 +94,135 @@ public class Lua {
     */
 
     private static native void jniPushNil(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_pushnil(L);
     */
 
     private static native void jniPushNumber(CPtr cptr, double db); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_pushnumber(L, (lua_Number) db);
     */
 
     private static native void jniPushString(CPtr cptr, String str); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_pushstring(L, str);
     */
 
     private static native void jniPushBoolean(CPtr cptr, int val); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_pushboolean(L, (int) val);
     */
 
     private static native void jniPushFunction(CPtr cptr, LuaFunction func); /*
-        lua_State* L = nonlua_getstate(env, cptr);
+        lua_State* L = getStateFromCPtr(env, cptr);
 
-        nonlua_pushfunction(L, func);
+        pushJavaFunction(L, func);
     */
 
     private static native void jniPushObject(CPtr cptr, Object obj); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
-        nonlua_pushobject(L, obj);
+        pushJavaObject(L, obj);
     */
 
     private static native void jniPushArray(CPtr cptr, Object obj); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
-        nonlua_pusharray(L, obj);
+        pushJavaArray(L, obj);
     */
 
     private static native int jniIsNumber(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_isnumber(L, (int) index);
     */
 
     private static native int jniIsBoolean(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_isboolean(L, (int) index);
     */
 
     private static native int jniIsString(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_isstring(L, (int) index);
     */
 
     private static native int jniIsFunction(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         int idx = (jint)index;
 
         return (jint)(
             lua_isfunction(L, idx) || 
             lua_iscfunction(L, idx) ||
-            nonlua_isfunction(L, idx)
+            isJavaFunction(L, idx)
        );
     */
 
+    private static native boolean jniIsJavaFunction(CPtr cptr, int index); /*
+
+    */
+
     private static native int jniIsObject(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
         
-        return (jint) nonlua_isobject(L, index);
+        return (jint) isJavaObject(L, index);
     */
 
     private static native int jniIsTable(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_istable(L, (int) index);
     */
 
     private static native int jniIsUserdata(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_isuserdata(L, (int) index);
     */
 
     private static native int jniIsNil(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_isnil(L, (int) index);
     */
 
     private static native int jniIsNone(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_isnone(L, (int) index);
     */
 
     private static native double jniToNumber(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jdouble) lua_tonumber(L, index);
     */
 
     private static native int jniToBoolean(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_toboolean(L, index);
     */
 
     private static native String jniToString(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return env->NewStringUTF(lua_tostring(L, index));
     */
 
     private static native Object jniToObject(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         int idx = (int)index;
 
-        if (!nonlua_isobject(L, idx)) {
+        if (!isJavaObject(L, idx)) {
             return NULL;
         }
         
@@ -228,237 +231,237 @@ public class Lua {
     */
 
     private static native void jniGetGlobal(CPtr cptr, String key); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_getglobal(L, key);
     */
 
     private static native void jniSetGlobal(CPtr cptr, String key); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_setglobal(L, key);
     */
 
     private static native void jniGet(CPtr cptr, int index, String key); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_getfield(L, (int) index, key);
     */
 
     private static native void jniSet(CPtr cptr, int index, String key); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_setfield(L, (int) index, key);
     */
 
     private static native void jniGetI(CPtr cptr, int index, int key); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_rawgeti(L, (int) index, (int) key);
     */
 
     private static native void jniSetI(CPtr cptr, int index, int key); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_rawseti(L, (int) index, (int) key);
     */
 
     private static native int jniGetTop(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_gettop(L);
     */
 
     private static native void jniSetTop(CPtr cptr, int top); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_settop(L, (int) top);
     */
 
     private static native void jniPop(CPtr cptr, int num); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_pop(L, (int) num);
     */
 
     private static native void jniPushValue(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_pushvalue(L, (int) index);
     */
 
     private static native void jniRemove(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_remove(L, (int) index);
     */
 
     private static native void jniInsert(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_insert(L, (int) index);
     */
 
     private static native void jniReplace(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_replace(L, (int) index);
     */
 
     private static native void jniConcat(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_concat(L, (int) index);
     */
 
     private static native String jniGsub(CPtr cptr, String s, String p, String r); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         const char * sub = luaL_gsub(L, s, p, r);
         return env->NewStringUTF(sub);
     */
 
     private static native int jniLen(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_objlen(L, (int) index);
     */
 
     private static native int jniEqual(CPtr cptr, int index1, int index2); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_equal(L, (int) index1, (int) index2);
     */
 
     private static native int jniNext(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_next(L, (int) index);
     */
 
     private static native int jniError(CPtr cptr, String msg); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) luaL_error(L, msg);
     */
 
     private static native void jniWhere(CPtr cptr, int lvl); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         luaL_where(L, (int) lvl);
     */
 
     private static native int jniType(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_type(L, (int) index);
     */
 
     private static native String jniTypeName(CPtr cptr, int type); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
         
         return env->NewStringUTF(lua_typename(L, (int) type));
     */
 
     private static native int jniRef(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) luaL_ref(L, (int) index);
     */
 
     private static native void jniUnRef(CPtr cptr, int index, int ref); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         luaL_unref(L, (int) index, (int) ref);
     */
 
     private static native void jniCall(CPtr cptr, int nArgs, int nResults); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_call(L, (int) nArgs, (int) nResults);
     */
 
     private static native int jniPcall(CPtr cptr, int nArgs, int nResults, int errFunc); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_pcall(L, (int) nArgs, (int) nResults, (int) errFunc);
     */
 
     private static native void jniNewTable(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_newtable(L);
     */
 
     private static native void jniGetTable(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_gettable(L, (int) index);
     */
 
     private static native void jniSetTable(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         lua_settable(L, (int) index);
     */
 
     private static native int jniNewMetatable(CPtr cptr, String name); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) luaL_newmetatable(L, name);
     */
 
     private static native int jniGetMetatable(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
         
         return (jint) lua_getmetatable(L, (int) index);
     */
 
     private static native void jniGetMetatableStr(CPtr cptr, String name); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
         
         luaL_getmetatable(L, name);
     */
 
     private static native int jniSetMetatable(CPtr cptr, int index); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_setmetatable(L, (int) index);
     */
 
     private static native int jniCallmeta(CPtr cptr, int index, String field); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) luaL_callmeta(L, (int) index, field);
     */
 
     private static native int jniGetmeta(CPtr cptr, int index, String field); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) luaL_getmetafield(L, (int) index, field);
     */
 
     private static native void jniMove(CPtr cptr, CPtr to, int index); /*
-        lua_State * fr = nonlua_getstate(env, cptr);
-        lua_State * t  = nonlua_getstate(env, to);
+        lua_State * fr = getStateFromCPtr(env, cptr);
+        lua_State * t  = getStateFromCPtr(env, to);
 
         lua_xmove(fr, t, (int) index);
     */
 
     private static native int jniYield(CPtr cptr, int nResults); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_yield(L, (int) nResults);
     */
 
     private static native int jniResume(CPtr cptr, int nArgs); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_resume(L, (int) nArgs);
     */
 
     private static native int jniStatus(CPtr cptr); /*
-        lua_State * L = nonlua_getstate(env, cptr);
+        lua_State * L = getStateFromCPtr(env, cptr);
 
         return (jint) lua_status(L);
     */
@@ -540,7 +543,6 @@ public class Lua {
                 return 0;
             }
         });
-
         set("print");
 
         get("package");
