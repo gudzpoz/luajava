@@ -32,10 +32,16 @@ public class Lua {
     /*JNI
     #include <luajava.h>
     #include <luajavalib.h>
+    #include <luaexception.h>
      */
 
-    private static native CPtr jniOpen(int stateId); /*
-        return luajava_open(env, stateId);
+    private static native CPtr jniOpen(int stateId)
+            throws ClassNotFoundException, OutOfMemoryError; /*
+        try {
+            return luajava_open(env, stateId);
+        } catch(LuaException const &e) {
+            return NULL;
+        }
     */
 
     private static native void jniClose(CPtr cptr); /*
@@ -501,9 +507,13 @@ public class Lua {
     protected int stateId;
     protected ExternalLoader loader = null;
 
-    public Lua() {
+    public Lua() throws LuaException {
         int stateId = LuaFactory.insert(this);
-        open(jniOpen(stateId), stateId);
+        try {
+            open(jniOpen(stateId), stateId);
+        } catch (ClassNotFoundException e) {
+            throw new LuaException("Could not find essential classes", e);
+        }
     }
 
     protected Lua(CPtr state) {

@@ -31,20 +31,27 @@
 
 #include "luajava.h"
 
-jclass throwable_class;
-jmethodID throwable_to_string_method;
-jmethodID throwable_get_message_method;
+jclass throwable_class                 = NULL;
+jmethodID throwable_to_string_method   = NULL;
+jmethodID throwable_get_message_method = NULL;
 
-jclass luajava_api_class;
-jclass java_function_class;
-jmethodID java_function_method;
-jclass java_lang_class;
-jmethodID for_name_method;
+jclass luajava_api_class               = NULL;
+
+jclass luajava_cptr_class              = NULL;
+jfieldID cptr_peer_fieldID             = NULL;
+
+jclass java_function_class             = NULL;
+jmethodID java_function_method         = NULL;
+
+jclass java_lang_class                 = NULL;
+jmethodID for_name_method              = NULL;
 
 /**
- * Originally make of Java_org_keplerproject_luajava_LuaState_luajava_1open
+ * Originally made of Java_org_keplerproject_luajava_LuaState_luajava_1open
  * and Java_org_keplerproject_luajava_LuaState__1open:
  * Initializes lua State to be used by luajava
+ *
+ * @throws LuaException when some Java exceptions occur
  */
 EXPORT jobject luajava_open(JNIEnv * env, jint stateid) {
  /* Original LuaState::_open() */
@@ -60,11 +67,31 @@ EXPORT jobject luajava_open(JNIEnv * env, jint stateid) {
   jobject obj;
   jclass tempClass;
 
-  tempClass = env->FindClass(CPTRCLASS);
+  if (luajava_cptr_class == NULL) {
+    tempClass = env->FindClass(CPTRCLASS);
 
-  obj = env->AllocObject(tempClass);
+    if (tempClass == NULL) {
+      throw LuaException("Could not find CPtr class");
+    }
+
+    if ((luajava_cptr_class = (jclass)env->NewGlobalRef(tempClass)) == NULL) {
+      throw LuaException("Could not bind to CPtr class");
+    }
+  }
+
+  if (cptr_peer_fieldID == NULL) {
+    cptr_peer_fieldID = env->GetFieldID(luajava_cptr_class, "peer", "J");
+
+    if (cptr_peer_fieldID == NULL) {
+      throw LuaException("Could not find <peer> field in CPtr");
+    }
+  }
+
+  obj = env->AllocObject(luajava_cptr_class);
   if (obj) {
-    env->SetLongField(obj, env->GetFieldID(tempClass, "peer", "J"), (jlong) L);
+    env->SetLongField(obj, cptr_peer_fieldID, (jlong) L);
+  } else {
+    throw LuaException("Could not allocate a new CPtr object");
   }
 
   /* Orginal LuaState::luajava_open */
@@ -72,14 +99,11 @@ EXPORT jobject luajava_open(JNIEnv * env, jint stateid) {
     tempClass = env->FindClass(LUAJAVACLASS);
 
     if (tempClass == NULL) {
-      // TODO: throw
-      fprintf(stderr, "Could not find LuaJava class");
-      exit(1);
+      throw LuaException("Could not find LuaJava class");
     }
 
     if ((luajava_api_class = (jclass)env->NewGlobalRef(tempClass)) == NULL) {
-      fprintf(stderr, "Could not bind to LuaJavaAPI class");
-      exit(1);
+      throw LuaException("Could not bind to LuaJavaAPI class");
     }
   }
 
@@ -87,13 +111,11 @@ EXPORT jobject luajava_open(JNIEnv * env, jint stateid) {
     tempClass = env->FindClass(JAVAFUNCTIONCLASS);
 
     if (tempClass == NULL) {
-      fprintf(stderr, "Could not find LuaFunction interface");
-      exit(1);
+      throw LuaException("Could not find LuaFunction interface");
     }
 
     if ((java_function_class = (jclass) env->NewGlobalRef(tempClass)) == NULL) {
-      fprintf(stderr, "Could not bind to LuaFunction interface");
-      exit(1);
+      throw LuaException("Could not bind to LuaFunction interface");
     }
   }
 
@@ -101,8 +123,7 @@ EXPORT jobject luajava_open(JNIEnv * env, jint stateid) {
     java_function_method = env->GetMethodID(java_function_class, "call", "()I");
 
     if (!java_function_method) {
-      fprintf(stderr, "Could not find <call> method in LuaFunction");
-      exit(1);
+      throw LuaException("Could not find <call> method in LuaFunction");
     }
   }
 
@@ -110,15 +131,13 @@ EXPORT jobject luajava_open(JNIEnv * env, jint stateid) {
     tempClass = env->FindClass("java/lang/Throwable");
 
     if (tempClass == NULL) {
-      fprintf(stderr, "Error. Couldn't bind java class java.lang.Throwable");
-      exit(1);
+      throw LuaException("Error. Couldn't bind java class java.lang.Throwable");
     }
 
     throwable_class = (jclass) env->NewGlobalRef(tempClass);
 
     if (throwable_class == NULL) {
-      fprintf(stderr, "Error. Couldn't bind java class java.lang.Throwable");
-      exit(1);
+      throw LuaException("Error. Couldn't bind java class java.lang.Throwable");
     }
   }
 
@@ -126,8 +145,7 @@ EXPORT jobject luajava_open(JNIEnv * env, jint stateid) {
     throwable_get_message_method = env->GetMethodID(throwable_class, "getMessage", "()Ljava/lang/String;");
 
     if (throwable_get_message_method == NULL) {
-      fprintf(stderr, "Could not find <getMessage> method in java.lang.Throwable");
-      exit(1);
+      throw LuaException("Could not find <getMessage> method in java.lang.Throwable");
     }
   }
 
@@ -135,8 +153,7 @@ EXPORT jobject luajava_open(JNIEnv * env, jint stateid) {
     throwable_to_string_method = env->GetMethodID(throwable_class, "toString", "()Ljava/lang/String;");
 
     if (throwable_to_string_method == NULL) {
-      fprintf(stderr, "Could not find <toString> method in java.lang.Throwable");
-      exit(1);
+      throw LuaException("Could not find <toString> method in java.lang.Throwable");
     }
   }
 
@@ -144,15 +161,13 @@ EXPORT jobject luajava_open(JNIEnv * env, jint stateid) {
     tempClass = env->FindClass("java/lang/Class");
 
     if (tempClass == NULL) {
-      fprintf(stderr, "Error. Coundn't bind java class java.lang.Class\n");
-      exit(1);
+      throw LuaException("Error. Coundn't bind java class java.lang.Class");
     }
 
     java_lang_class = (jclass) env->NewGlobalRef(tempClass);
 
     if (java_lang_class == NULL) {
-      fprintf(stderr, "Error. Couldn't bind java class java.lang.Throwable\n");
-      exit(1);
+      throw LuaException("Error. Couldn't bind java class java.lang.Throwable");
     }
   }
 
@@ -160,8 +175,7 @@ EXPORT jobject luajava_open(JNIEnv * env, jint stateid) {
     for_name_method = env->GetStaticMethodID(java_lang_class, "forName", "(Ljava/lang/String;)Ljava/lang/Class;");
 
     if (for_name_method == NULL) {
-      fprintf(stderr, "Could not find <forName> method in java.lang.Class\n");
-      exit(1);
+      throw LuaException("Could not find <forName> method in java.lang.Class");
     }
   }
 
@@ -227,9 +241,7 @@ EXPORT int isJavaFunction(lua_State * L, int index) {
  * and performs pushJNIEnv by the way
  */
 EXPORT lua_State * getStateFromCPtr(JNIEnv * env, jobject cptr) {
-  jclass classPtr = env->GetObjectClass(cptr);
-  jfieldID CPtr_peer_ID = env->GetFieldID(classPtr, "peer", "J");
-  jbyte * peer = (jbyte *) env->GetLongField(cptr, CPtr_peer_ID);
+  jbyte * peer = (jbyte *) env->GetLongField(cptr, cptr_peer_fieldID);
 
   lua_State * L = (lua_State *)peer;
 

@@ -1,9 +1,10 @@
 #ifndef LUAJAVA_H
 #define LUAJAVA_H
 
-#include <cstdlib>
 #include <lua.hpp>
 #include <jni.h>
+
+#include "luaexception.h"
 
 #define CPTRCLASS "party/iroiro/jua/CPtr"
 #define JAVAFUNCTIONCLASS "party/iroiro/jua/LuaFunction"
