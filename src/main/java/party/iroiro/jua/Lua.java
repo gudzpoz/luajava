@@ -33,6 +33,7 @@ public class Lua {
     #include <luajava.h>
     #include <luajavalib.h>
     #include <luaexception.h>
+    #include <luajavaamalg.h>
      */
 
     private static native CPtr jniOpen(int stateId)
@@ -169,10 +170,6 @@ public class Lua {
             lua_iscfunction(L, idx) ||
             isJavaFunction(L, idx)
        );
-    */
-
-    private static native boolean jniIsJavaFunction(CPtr cptr, int index); /*
-
     */
 
     private static native int jniIsObject(CPtr cptr, int index); /*

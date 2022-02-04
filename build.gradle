@@ -129,9 +129,9 @@ apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
 jnigen {
     sharedLibName = 'jua'
     all {
-        headerDirs = ['luajit/src', 'nonlua']
-        cExcludes = ['luajit/*', 'luajit/**/*']
-        cIncludes = ['nonlua/*.cpp']
+        headerDirs = ['luajit/src', 'luajava']
+        cppExcludes = ['jni-headers/**/*', 'luajava/**/*', 'luajit/**/*', 'scripts/*']
+        cExcludes = ['jni-headers/**/*', 'luajava/**/*', 'luajit/**/*', 'scripts/*']
         libraries += ' -lluajit '
     }
     add(Linux, x64, false, {
