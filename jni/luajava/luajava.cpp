@@ -695,7 +695,7 @@ EXPORT int classIndex(lua_State * L) {
 
   if (ret == 2) {
     lua_getmetatable(L, 1);
-    lua_pushstring(L, LUAJAVAOBJECTIND);
+    lua_pushstring(L, LUAJAVAOBJFUNCCALLED);
     lua_pushstring(L, fieldName);
     lua_rawset(L, -3);
     lua_pop(L, 1);
