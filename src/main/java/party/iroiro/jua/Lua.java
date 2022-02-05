@@ -527,8 +527,8 @@ public class Lua {
             public int call() {
                 int top = L.getTop();
 
+                String val = null;
                 for (int i = 2; i <= top; i++) {
-                    String val = null;
 
                     if (L.isObject(i)) {
                         Object obj = L.toObject(i);
@@ -542,7 +542,11 @@ public class Lua {
                     }
 
                     if (val == null) val = L.typeName(L.type(i));
-                    System.out.print(val + "\t");
+                    if (i == top) {
+                        System.out.print(val);
+                    } else {
+                        System.out.print(val + "\t");
+                    }
                 }
 
                 System.out.print("\n");
@@ -594,9 +598,7 @@ public class Lua {
     }
 
     public int runFile(String path) {
-        synchronized (this) {
-            return (loadFile(path) != 0 || pcall(0, MULTRET, 0) != 0) ? 1 : 0;
-        }
+        return (loadFile(path) != 0 || pcall(0, MULTRET, 0) != 0) ? 1 : 0;
     }
 
     public int load(String chunk) {
