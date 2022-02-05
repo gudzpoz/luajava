@@ -36,6 +36,12 @@ jmethodID throwable_to_string_method   = NULL;
 jmethodID throwable_get_message_method = NULL;
 
 jclass luajava_api_class               = NULL;
+jmethodID object_index_method          = NULL;
+jmethodID object_new_index_method      = NULL;
+jmethodID array_index_method           = NULL;
+jmethodID array_new_index_method       = NULL;
+jmethodID class_index_method           = NULL;
+jmethodID check_field_method           = NULL;
 
 jclass luajava_cptr_class              = NULL;
 jfieldID cptr_peer_fieldID             = NULL;
@@ -103,7 +109,55 @@ EXPORT jobject luajava_open(JNIEnv * env, jint stateid) {
     }
 
     if ((luajava_api_class = (jclass)env->NewGlobalRef(tempClass)) == NULL) {
-      throw LuaException("Could not bind to LuaJavaAPI class");
+      throw LuaException("Could not bind to LuaJava class");
+    }
+  }
+
+  if (object_index_method == NULL) {
+    object_index_method = env->GetStaticMethodID(luajava_api_class, "objectIndex" , "(ILjava/lang/Object;Ljava/lang/String;)I");
+
+    if (!object_index_method) {
+      throw LuaException("Could not find <objectIndex> method in LuaJava");
+    }
+  }
+
+  if (object_new_index_method == NULL) {
+    object_new_index_method = env->GetStaticMethodID(luajava_api_class, "objectNewIndex" , "(ILjava/lang/Object;Ljava/lang/String;)I");
+
+    if (!object_new_index_method) {
+      throw LuaException("Could not find <objectNewIndex> method in LuaJava");
+    }
+  }
+
+  if (array_index_method == NULL) {
+    array_index_method = env->GetStaticMethodID(luajava_api_class, "arrayIndex", "(ILjava/lang/Object;I)I");
+
+    if (!array_index_method) {
+      throw LuaException("Could not find <arrayIndex> method in LuaJava");
+    }
+  }
+
+  if (array_new_index_method == NULL) {
+    array_new_index_method = env->GetStaticMethodID(luajava_api_class, "arrayNewIndex", "(ILjava/lang/Object;I)I");
+
+    if (!array_new_index_method) {
+      throw LuaException("Could not find <arrayNewIndex> method in LuaJava");
+    }
+  }
+
+  if (check_field_method == NULL) {
+    check_field_method = env->GetStaticMethodID(luajava_api_class, "checkField", "(ILjava/lang/Object;Ljava/lang/String;)I");
+
+    if (!check_field_method) {
+      throw LuaException("Could not find <checkField> method in LuaJava");
+    }
+  }
+
+  if (class_index_method == NULL) {
+    class_index_method = env->GetStaticMethodID(luajava_api_class, "classIndex" , "(ILjava/lang/Class;Ljava/lang/String;)I");
+
+    if (!class_index_method) {
+      throw LuaException("Could not find <classIndex> method in LuaJava");
     }
   }
 
@@ -525,9 +579,9 @@ EXPORT int objectIndexReturn(lua_State * L) {
   lua_pop(L, 2);
   jobject * pObject = (jobject*) lua_touserdata(L, 1);
   JNIEnv * env = getEnvFromState(L);
-  jmethodID method = env->GetStaticMethodID(luajava_api_class, "objectIndex" , "(ILjava/lang/Object;Ljava/lang/String;)I");
   jstring str = env->NewStringUTF(methodName);
-  jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, *pObject, str);
+  jint ret = env->CallStaticIntMethod(luajava_api_class, object_index_method,
+                                      (jint)stateIndex, *pObject, str);
   handleJavaException(env, L);
   env->DeleteLocalRef(str);
 
@@ -556,9 +610,8 @@ EXPORT int objectIndex(lua_State * L) {
 
   JNIEnv * env = getEnvFromState(L);
   jobject * obj = (jobject *) lua_touserdata(L, 1);
-  jmethodID method = env->GetStaticMethodID(luajava_api_class, "checkField", "(ILjava/lang/Object;Ljava/lang/String;)I");
   jstring str = env->NewStringUTF(key);
-  jint checkField = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, *obj, str);
+  jint checkField = env->CallStaticIntMethod(luajava_api_class, check_field_method, (jint)stateIndex, *obj, str);
   handleJavaException(env, L);
   env->DeleteLocalRef(str);
 
@@ -602,9 +655,8 @@ EXPORT int objectNewIndex(lua_State * L) {
   const char * fieldName = lua_tostring(L, 2);
   jobject * obj = (jobject*)lua_touserdata(L, 1);
   JNIEnv * env = getEnvFromState(L);
-  jmethodID method = env->GetStaticMethodID(luajava_api_class, "objectNewIndex" , "(ILjava/lang/Object;Ljava/lang/String;)I");
   jstring str = env->NewStringUTF(fieldName);
-  jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, *obj, str);
+  jint ret = env->CallStaticIntMethod(luajava_api_class, object_new_index_method, (jint)stateIndex, *obj, str);
   handleJavaException(env, L);
   env->DeleteLocalRef(str);
 
@@ -632,9 +684,8 @@ EXPORT int classIndex(lua_State * L) {
   const char * fieldName = lua_tostring(L, 2);
   jobject * obj = (jobject*) lua_touserdata(L, 1);
   JNIEnv * env = getEnvFromState(L);
-  jmethodID method = env->GetStaticMethodID(luajava_api_class, "classIndex" , "(ILjava/lang/Class;Ljava/lang/String;)I");
   jstring str = env->NewStringUTF(fieldName);
-  jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, *obj, str);
+  jint ret = env->CallStaticIntMethod(luajava_api_class, class_index_method, (jint)stateIndex, *obj, str);
   handleJavaException(env, L);
   env->DeleteLocalRef(str);
 
@@ -686,8 +737,7 @@ EXPORT int arrayIndex(lua_State * L) {
 
   JNIEnv * env = getEnvFromState(L);
   jobject * obj = (jobject *) lua_touserdata(L, 1);
-  jmethodID method = env->GetStaticMethodID(luajava_api_class, "arrayIndex", "(ILjava/lang/Object;I)I");
-  jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, *obj, (jlong)key);
+  jint ret = env->CallStaticIntMethod(luajava_api_class, array_index_method, (jint)stateIndex, *obj, (jlong)key);
   handleJavaException(env, L);
 
   return ret;
@@ -714,8 +764,7 @@ EXPORT int arrayNewIndex(lua_State * L) {
   lua_Integer key = lua_tointeger(L, 2);
   jobject * obj = (jobject*) lua_touserdata(L, 1);
   JNIEnv * env = getEnvFromState(L);
-  jmethodID method = env->GetStaticMethodID(luajava_api_class, "arrayNewIndex", "(ILjava/lang/Object;I)I");
-  jint ret = env->CallStaticIntMethod(luajava_api_class, method, (jint)stateIndex, *obj, (jint)key);
+  jint ret = env->CallStaticIntMethod(luajava_api_class, array_new_index_method, (jint)stateIndex, *obj, (jint)key);
   handleJavaException(env, L);
 
   return ret;
