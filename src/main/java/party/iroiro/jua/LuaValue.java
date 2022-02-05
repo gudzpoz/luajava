@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2015 Thomas Slusny
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,7 +28,7 @@ import java.util.StringTokenizer;
 
 public class LuaValue {
     protected int ref;
-    protected Lua L;
+    final Lua L;
 
     protected LuaValue(Lua L, String key) {
         this.L = L;
@@ -38,6 +38,7 @@ public class LuaValue {
     }
 
     protected LuaValue(LuaValue parent, String key) {
+
         this.L = parent.getLua();
 
         parent.push();
@@ -163,7 +164,7 @@ public class LuaValue {
         if (isObject()) return toObject().toString();
         if (isUserdata()) return "Userdata";
         if (isTable()) return "Table";
-        return null; 
+        return null;
     }
 
     public boolean toBoolean() {
@@ -250,11 +251,12 @@ public class LuaValue {
         Object[] res = new Object[nres];
 
         for (int i = nres; i > 0; i--) {
-            res[i - 1] = L.toObject(-1);
+            res[i - 1] = L.toJavaObject(-1);
             L.pop(1);
         }
 
         return res;
+
     }
 
     public Object call(Object[] args) throws LuaException {
@@ -262,6 +264,7 @@ public class LuaValue {
     }
 
     public Object createProxy(String implem) throws LuaException {
+
         if (!isTable()) {
             throw new LuaException("Invalid Object. Must be Table.");
         }

@@ -34,4 +34,9 @@ public abstract class LuaFunction {
     }
 
     public abstract int call();
+
+    public void register(String name) {
+        L.push(this);
+        L.set(name);
+    }
 }

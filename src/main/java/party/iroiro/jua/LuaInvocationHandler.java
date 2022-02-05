@@ -31,25 +31,25 @@ public class LuaInvocationHandler implements InvocationHandler {
     public LuaInvocationHandler(LuaValue obj) {
         this.obj = obj;
     }
-    
+
     public Object invoke(Object proxy, Method method, Object[] args) throws LuaException {
         String methodName = method.getName();
         LuaValue func = obj.get(methodName);
         if (func.isNil()) return null;
-        
+
         Class retType = method.getReturnType();
         Object ret;
 
         if (retType.equals(Void.class) || retType.equals(void.class)) {
-            func.call(args , 0);
+            func.call(args, 0);
             ret = null;
         } else {
             ret = func.call(args, 1)[0];
-            if(ret != null && ret instanceof Double) {
+            if (ret != null && ret instanceof Double) {
                 ret = LuaUtils.convertNumber((Double) ret, retType);
             }
         }
-            
+
         return ret;
     }
 }

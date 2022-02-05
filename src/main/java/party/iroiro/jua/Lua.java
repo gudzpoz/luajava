@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2015 Thomas Slusny.
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,6 +24,7 @@ package party.iroiro.jua;
 
 import java.util.List;
 import java.util.Map;
+
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 
 @SuppressWarnings({"rawtypes", "unused"})
@@ -493,8 +494,6 @@ public class Lua {
     public static final int ERR_MEMORY    = 4;
     public static final int ERR_HANDLER   = 5;
 
-    
-
     static {
         SharedLibraryLoader loader = new SharedLibraryLoader();
         loader.load(JUA_LIB);
@@ -532,7 +531,7 @@ public class Lua {
                     String val = null;
 
                     if (L.isObject(i)) {
-                        Object obj = L.toObject(i); 
+                        Object obj = L.toObject(i);
                         if (obj != null) val = obj.toString();
                     } else if (L.isBoolean(i)) {
                         val = L.toBoolean(i) ? "true" : "false";
@@ -555,7 +554,7 @@ public class Lua {
         get("package");
         get(-1, "loaders");
         int count = len(-1);
-        
+
         push(new LuaFunction(this) {
             public int call() {
                 String name = L.toString(-1).replace(".", "/");
@@ -579,7 +578,7 @@ public class Lua {
     public CPtr getState() {
         return state;
     }
-    
+
     public void dispose() {
         LuaFactory.remove(stateId);
         jniClose(state);
@@ -593,7 +592,13 @@ public class Lua {
     public int run(byte[] buffer, String name) {
         return jniRunBuffer(state, buffer, buffer.length, name);
     }
-    
+
+    public int runFile(String path) {
+        synchronized (this) {
+            return (loadFile(path) != 0 || pcall(0, MULTRET, 0) != 0) ? 1 : 0;
+        }
+    }
+
     public int load(String chunk) {
         return jniLoadString(state, chunk);
     }
@@ -603,7 +608,7 @@ public class Lua {
     }
 
     public int loadFile(String path) {
-        if(loader != null) {
+        if (loader != null) {
             return loader.load(path, this);
         } else {
             return -1;
@@ -625,7 +630,7 @@ public class Lua {
     public void push(String str) {
         jniPushString(state, str);
     }
-    
+
     public void push(boolean bool) {
         jniPushBoolean(state, bool ? 1 : 0);
     }
@@ -651,7 +656,7 @@ public class Lua {
     public void push(Map table) {
         newTable();
         for (Object entry : table.entrySet()) {
-            Map.Entry field = (Map.Entry)entry;
+            Map.Entry field = (Map.Entry) entry;
             push(field.getValue());
             set(-2, field.getKey().toString());
         }
@@ -661,19 +666,19 @@ public class Lua {
         if (obj == null) {
             pushNil();
         } else if (obj instanceof Boolean) {
-            push(((Boolean)obj));
+            push(((Boolean) obj));
         } else if (obj instanceof Number) {
-            push(((Number)obj));
+            push(((Number) obj));
         } else if (obj instanceof String) {
             push((String) obj);
         } else if (obj instanceof LuaFunction) {
-            push((LuaFunction)obj);
+            push((LuaFunction) obj);
         } else if (obj instanceof LuaValue) {
-            push((LuaValue)obj);
+            push((LuaValue) obj);
         } else if (obj instanceof List) {
-            push((List)obj);
+            push((List) obj);
         } else if (obj instanceof Map) {
-            push((Map)obj);
+            push((Map) obj);
         } else if (obj.getClass().isArray()) {
             jniPushArray(state, obj);
         } else {
@@ -681,25 +686,29 @@ public class Lua {
         }
     }
 
+    public void pushObject(Object obj) {
+        jniPushObject(state, obj);
+    }
+
     public LuaValue pull(String key) {
         return new LuaValue(this, key);
     }
-    
+
     public LuaValue pull(LuaValue parent, String key) {
         if (parent.getLua().getCPtrPeer() != state.getPeer()) return null;
         if (!parent.isTable() && !parent.isUserdata()) return null;
         return new LuaValue(parent, key);
     }
-    
+
     public LuaValue pull(LuaValue parent, int key) {
         if (parent.getLua().getCPtrPeer() != state.getPeer()) return null;
         if (!parent.isTable() && !parent.isUserdata()) return null;
         return new LuaValue(parent, key);
     }
-    
+
     public LuaValue pull(LuaValue parent, LuaValue key) {
         if (parent.getLua().getCPtrPeer() != state.getPeer() ||
-            parent.getLua().getCPtrPeer() != key.getLua().getCPtrPeer())
+                parent.getLua().getCPtrPeer() != key.getLua().getCPtrPeer())
             return null;
 
         if (parent.getLua() != key.getLua()) return null;
@@ -739,7 +748,7 @@ public class Lua {
     public boolean isObject(int index) {
         return jniIsObject(state, index) != 0;
     }
-    
+
     public boolean isNil(int index) {
         return jniIsNil(state, index) != 0;
     }
@@ -751,7 +760,7 @@ public class Lua {
     public Number toNumber(int index) {
         return jniToNumber(state, index);
     }
-    
+
     public boolean toBoolean(int index) {
         return jniToBoolean(state, index) != 0;
     }
@@ -762,6 +771,33 @@ public class Lua {
 
     public Object toObject(int index) {
         return jniToObject(state, index);
+    }
+
+    public Object toJavaObject(int idx) throws LuaException {
+        Object obj = null;
+
+        if (isObject(idx)) {
+            return toObject(idx);
+        } else if (isBoolean(idx)) {
+            return toBoolean(idx);
+        } else if (isNumber(idx)) {
+            return toNumber(idx).doubleValue();
+        } else if (isString(idx)) { // String or Number
+            return toString(idx);
+        } else if (isFunction(idx)) {
+            return pull(idx);
+        } else if (isTable(idx)) {
+            return pull(idx);
+        } else if (isUserdata(idx)) {
+            if (isObject(idx)) {
+                obj = toObject(idx);
+            } else {
+                obj = pull(idx);
+            }
+        } else if (isNil(idx)) {
+            return null;
+        }
+        return obj;
     }
 
     public void get(String key) {
@@ -796,22 +832,22 @@ public class Lua {
         jniSetTop(state, top);
     }
 
-    public void pop(int num)  {
+    public void pop(int num) {
         jniPop(state, num);
     }
 
-    public void copy(int index)  {
+    public void copy(int index) {
         jniPushValue(state, index);
     }
 
     public void remove(int index) {
         jniRemove(state, index);
     }
-    
+
     public void insert(int index) {
         jniInsert(state, index);
     }
-    
+
     public void replace(int index) {
         jniReplace(state, index);
     }
@@ -855,7 +891,7 @@ public class Lua {
     public int ref(int index) {
         return jniRef(state, index);
     }
-    
+
     public void unRef(int index, int ref) {
         jniUnRef(state, index, ref);
     }
@@ -919,8 +955,12 @@ public class Lua {
     public int resume(int nArgs) {
         return jniResume(state, nArgs);
     }
-    
+
     public int status() {
         return jniStatus(state);
+    }
+
+    public void setLoader(ExternalLoader loader) {
+        this.loader = loader;
     }
 }

@@ -197,14 +197,11 @@ tasks.jnigenBuildMacOsX64.dependsOn(tasks.buildLuaMacOsXMerge)
 tasks.jnigenBuildAndroid.dependsOn(tasks.buildLuaAndroid)
 // tasks.jnigenBuildIOS.dependsOn(tasks.buildLuaIOS)
 
-tasks.register('runTest', JavaExec) {
+test {
     dependsOn jnigenJarNativesDesktop
-    classpath = files(jnigenJarNativesDesktop.outputs)
     classpath += sourceSets.test.runtimeClasspath
-    main = 'party.iroiro.jua.TestJua'
-    args jnigen.sharedLibName
+    classpath += files(jnigenJarNativesDesktop.outputs)
 }
-test.dependsOn runTest
 
 tasks.withType(JavaCompile) {
     options.deprecation = true
