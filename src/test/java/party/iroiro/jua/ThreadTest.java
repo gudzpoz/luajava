@@ -12,16 +12,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testable
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ThreadTest {
     private final PrintStream originalOut = System.out;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private long startTime;
 
     @BeforeAll
     public void startCapture() {
         outContent.reset();
+        startTime = System.currentTimeMillis();
         System.setOut(new PrintStream(outContent));
     }
 
@@ -66,5 +69,7 @@ public class ThreadTest {
                 100,
                 Arrays.stream(outContent.toString().split("\n")).filter("test"::equals).count()
         );
+        System.out.println();
+        assertTrue(System.currentTimeMillis() - startTime > 100 * 100);
     }
 }

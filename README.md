@@ -6,6 +6,7 @@
   * [Quickstart](#quickstart)
     * [Java module](#java-module)
   * [Notes](#notes)
+    * [Bug: No multi-threading](#bug-access-multiple-lua-objects)
   * [Credits](#credits)
 
 ## About ##
@@ -77,6 +78,12 @@ end
 #### Access the same `Lua` object
 
 You must synchronize yourself. See [ThreadTest.java](./src/test/java/party/iroiro/jua/ThreadTest.java) for a simple example.
+
+#### *Bug*: Access multiple `Lua` objects
+
+Bugs persist. If you access multiple `Lua` objects from different threads, even if no two threads access the same `Lua` state, it may still crash the JVM. See [PerThreadTest.java](./src/test/java/party/iroiro/jua/PerThreadTest.java) for an example.
+
+As this fork of LuaJava is based on some other fork in which severe modification has been made, I cannot debug easily. A full rewrite is on the way.
 
 ## Credits ##
 
