@@ -2,21 +2,23 @@ package party.iroiro.jua;
 
 /**
  * Generated with <code>generate-consts.awk</code>:
- * <code>awk -f jni/scripts/generate-consts.awk jni/luajit/src/lua.h \
- *         > src/main/java/party/iroiro/jua/Consts.java</code>
+ * <pre><code>awk -f jni/scripts/generate-consts.awk \
+ *     jni/luajit/src/lua.h \
+ *     jni/luajit/src/lauxlib.h \
+ *     > src/main/java/party/iroiro/jua/Consts.java</code></pre>
  */
 public class Consts {
     /**
      * Generated from jni/luajit/src/lua.h (line 19):
      * <code>#define LUA_VERSION	"Lua 5.1"</code>
      */
-    public static final String  LUA_VERSION =  "Lua 5.1";
+    public static final String LUA_VERSION = "Lua 5.1";
 
     /**
      * Generated from jni/luajit/src/lua.h (line 20):
      * <code>#define LUA_RELEASE	"Lua 5.1.4"</code>
      */
-    public static final String  LUA_RELEASE =  "Lua 5.1.4";
+    public static final String LUA_RELEASE = "Lua 5.1.4";
 
     /**
      * Generated from jni/luajit/src/lua.h (line 21):
@@ -28,19 +30,19 @@ public class Consts {
      * Generated from jni/luajit/src/lua.h (line 22):
      * <code>#define LUA_COPYRIGHT	"Copyright (C) 1994-2008 Lua.org, PUC-Rio"</code>
      */
-    public static final String  LUA_COPYRIGHT =  "Copyright (C) 1994-2008 Lua.org, PUC-Rio";
+    public static final String LUA_COPYRIGHT = "Copyright (C) 1994-2008 Lua.org, PUC-Rio";
 
     /**
      * Generated from jni/luajit/src/lua.h (line 23):
      * <code>#define LUA_AUTHORS	"R. Ierusalimschy, L. H. de Figueiredo & W. Celes"</code>
      */
-    public static final String  LUA_AUTHORS =  "R. Ierusalimschy, L. H. de Figueiredo & W. Celes";
+    public static final String LUA_AUTHORS = "R. Ierusalimschy, L. H. de Figueiredo & W. Celes";
 
     /**
      * Generated from jni/luajit/src/lua.h (line 27):
      * <code>#define	LUA_SIGNATURE	"\033Lua"</code>
      */
-    public static final String  LUA_SIGNATURE =  "\033Lua";
+    public static final String LUA_SIGNATURE = "\033Lua";
 
     /**
      * Generated from jni/luajit/src/lua.h (line 30):
@@ -251,5 +253,17 @@ public class Consts {
      * <code>#define LUA_HOOKTAILRET 4</code>
      */
     public static final int LUA_HOOKTAILRET = 4;
+
+    /**
+     * Generated from jni/luajit/src/lauxlib.h (line 461):
+     * <code>#define LUA_NOREF       (-2)</code>
+     */
+    public static final int LUA_NOREF = (-2);
+
+    /**
+     * Generated from jni/luajit/src/lauxlib.h (line 462):
+     * <code>#define LUA_REFNIL      (-1)</code>
+     */
+    public static final int LUA_REFNIL = (-1);
 
 }
