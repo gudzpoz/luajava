@@ -22,7 +22,20 @@ public class JuaAPI {
     }
 
     public static int objectInvoke(int index, Object obj, String name, int paramCount) throws Exception {
-        return methodInvoke(index, obj.getClass(), obj, name, paramCount);
+        if (name == null) {
+            return juaFunctionCall(index, obj, paramCount);
+        } else {
+            return methodInvoke(index, obj.getClass(), obj, name, paramCount);
+        }
+    }
+
+    private static int juaFunctionCall(int index, Object obj, int ignored) {
+        Jua L = Jua.get(index);
+        if (obj instanceof JuaFunction) {
+            return ((JuaFunction) obj).__call();
+        } else {
+            return 0;
+        }
     }
 
     public static int objectInvoke(int index, Object obj, String name,
