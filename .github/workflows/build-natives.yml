@@ -31,7 +31,7 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Build natives
         run: |
-          ./gradlew jniGen jnigenBuildMacOsX64
+          ./gradlew jniGen jnigenBuildMacOsX64 test
       - name: Upload macOS/iOS natives
         uses: actions/upload-artifact@v2.1.4
         with:
@@ -68,7 +68,7 @@ jobs:
       - name: Build natives
         run: |
           export export NDK_HOME=$ANDROID_NDK_HOME
-          ./gradlew jniGen jnigenBuildAndroid jnigenBuildLinux jnigenBuildLinux64 jnigenBuildLinuxARM jnigenBuildLinuxARM64 jnigenBuildWindows jnigenBuildWindows64
+          ./gradlew jniGen jnigenBuildAndroid jnigenBuildLinux jnigenBuildLinux64 jnigenBuildLinuxARM jnigenBuildLinuxARM64 jnigenBuildWindows jnigenBuildWindows64 test
       - name: Upload all output libs
         uses: actions/upload-artifact@v2.1.4
         with:
