@@ -21,8 +21,8 @@ It allows Java components to be accessed from Lua using the same syntax that is 
 
 To include Jua into your project, you can use Maven or Gradle. Artifacts (yet to be):
 
-* Core: `party.iroiro.jua:jua:2.1.0-beta3-alpha-1`
-* Desktop natives: `party.iroiro.jua:jua-platform:2.1.0-beta3-alpha-1:natives-desktop`
+* Core: `party.iroiro.jua:jua:2.1.0-beta3-beta`
+* Desktop natives: `party.iroiro.jua:jua-platform:2.1.0-beta3-beta:natives-desktop`
 
 Here is simple example on how to correctly initialize new Lua instance.
 This example will push `message` variable to Lua with value `Hello World from Lua`, then prints it using Lua built-in `print` function.
@@ -30,10 +30,11 @@ This example will push `message` variable to Lua with value `Hello World from Lu
 ```java
 public class Main {
     public static void main(String[] args) {
-        Lua L = new Lua();
+        Jua L = new Jua();
         L.push("Hello World from Lua");
-        L.set("message");
+        L.setglobal("message");
         L.run("print(message)");
+        L.run("java.require('java/lang/System').out:println(message)");
         L.dispose();
     }
 }
@@ -78,12 +79,6 @@ end
 #### Access the same `Lua` object
 
 You must synchronize yourself. See [ThreadTest.java](./src/test/java/party/iroiro/jua/ThreadTest.java) for a simple example.
-
-#### *Bug*: Access multiple `Lua` objects
-
-Bugs persist. If you access multiple `Lua` objects from different threads, even if no two threads access the same `Lua` state, it may still crash the JVM. See [PerThreadTest.java](./src/test/java/party/iroiro/jua/PerThreadTest.java) for an example.
-
-As this fork of LuaJava is based on some other fork in which severe modification has been made, I cannot debug easily. A full rewrite is on the way.
 
 ## Credits ##
 
