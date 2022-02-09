@@ -5,8 +5,6 @@
   * [About](#about)
   * [Quickstart](#quickstart)
     * [Java module](#java-module)
-  * [Notes](#notes)
-    * [Bug: No multi-threading](#bug-access-multiple-lua-objects)
   * [Credits](#credits)
 
 ## About ##
