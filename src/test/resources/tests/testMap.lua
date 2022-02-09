@@ -1,7 +1,7 @@
 map     = {}
 local t = {}
 
-function map.size()
+function map:size()
 
     local i = 0
     for k,v in pairs(t) do
@@ -11,12 +11,12 @@ function map.size()
     return i
 end
 
-function map.clear()
+function map:clear()
 
     t = {}
 end
 
-function map.isEmpty()
+function map:isEmpty()
 
     local i = 0
     for k,v in pairs(t) do
@@ -25,12 +25,12 @@ function map.isEmpty()
     return true
 end
 
-function map.containsKey(key)
+function map:containsKey(key)
 
     return t[key] ~= nil
 end
 
-function map.containsValue(value)
+function map:containsValue(value)
 
     for k,v in pairs(t) do
         if v == value then
@@ -40,18 +40,18 @@ function map.containsValue(value)
     return false
 end
 
-function map.putAll(outMap)
+function map:putAll(outMap)
     for k, v in pairs(outMap) do
-        map.put(k, v)
+        map:put(k, v)
     end
 end
 
-function map.get(key)
+function map:get(key)
 
     return t[key]
 end
 
-function map.remove(key)
+function map:remove(key)
 
     local obj = t[key]
     t[key] = nil
@@ -59,7 +59,7 @@ function map.remove(key)
     return obj
 end
 
-function map.put(key, value)
+function map:put(key, value)
 
     local obj = t[key]
 
@@ -70,20 +70,20 @@ end
 
 local startTime = os.clock()
 for i=1,10000 do
-    map.put(i, tostring(i))
+    map:put(i, tostring(i))
 end
 for i=1,10000 do
-    map.put(i, tostring(i+1))
+    map:put(i, tostring(i+1))
 end
 for i=1,10000 do
-    map.put(tostring(i), i)
+    map:put(tostring(i), i)
 end
 for i=1,10000 do
-    map.put(tostring(i), i+1)
+    map:put(tostring(i), i+1)
 end
 local endTime = os.clock()
 
-map.clear()
+map:clear()
 
 io.write("execution time in lua "..(endTime-startTime).."\n")
 io.flush()

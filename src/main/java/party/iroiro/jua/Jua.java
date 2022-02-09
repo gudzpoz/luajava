@@ -913,7 +913,7 @@ public class Jua {
      * </p>
      */
     @CheckReturnValue
-    protected static native int lua_pcall(long ptr, int nargs, int nresults, int errfunc) throws Exception; /*
+    protected static native int lua_pcall(long ptr, int nargs, int nresults, int errfunc); /*
         lua_State * L = (lua_State *) ptr;
         updateJNIEnv(env, L);
         return (jint) lua_pcall(L, (int) nargs, (int) nresults, (int) errfunc);
@@ -1742,7 +1742,7 @@ public class Jua {
     /**
      * See {@link #lua_pcall}
      */
-    public int pcall(int nargs, int nresults) throws Exception {
+    public int pcall(int nargs, int nresults) {
         return lua_pcall(L, nargs, nresults, 0);
     }
 
@@ -1786,6 +1786,10 @@ public class Jua {
         return luaL_ref(L, Consts.LUA_REGISTRYINDEX);
     }
 
+    public void unref(int ref) {
+        luaL_unref(L, Consts.LUA_REGISTRYINDEX, ref);
+    }
+
     public void rawgeti(int index, int n) {
         lua_rawgeti(L, index, n);
     }
@@ -1800,6 +1804,14 @@ public class Jua {
 
     public void settop(int top) {
         lua_settop(L, top);
+    }
+
+    public void newtable() {
+        lua_newtable(L);
+    }
+
+    public void settable(int index) {
+        lua_settable(L, index);
     }
 
     public Object createProxy(String implem) {
@@ -1822,5 +1834,21 @@ public class Jua {
 
     public void pop(int i) {
         lua_pop(L, i);
+    }
+
+    public int next(int i) {
+        return lua_next(L, i);
+    }
+
+    public void pushnil() {
+        lua_pushnil(L);
+    }
+
+    public void gettable(int index) {
+        lua_gettable(L, index);
+    }
+
+    public boolean isnil(int index) {
+        return lua_isnil(L, index) != 0;
     }
 }

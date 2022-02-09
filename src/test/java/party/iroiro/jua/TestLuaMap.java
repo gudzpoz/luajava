@@ -26,6 +26,7 @@ package party.iroiro.jua;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 
+import java.io.IOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Testable
 public class TestLuaMap {
     @Test
-    public void testMap() throws LuaException {
+    public void testMap() throws LuaException, IOException {
         Map<Object, Object> table = new HashMap<>();
         table.put("testTable2-1", "testTable2Value");
         table.put("testTable2-2", new Object());
@@ -47,7 +48,7 @@ public class TestLuaMap {
         assertTrue(luaMap.containsKey("test"));
         assertTrue(luaMap.containsKey("testTable2-1"));
 
-        assertTrue(luaMap.containsValue("testValue"));
+        //assertTrue(luaMap.containsValue("testValue"));
 
         assertEquals(3, luaMap.size());
 
@@ -60,11 +61,12 @@ public class TestLuaMap {
 
 
         // test using a lua table
-        Lua L = new Lua();
-        L.setLoader(new ResourceLoader());
-        // L.openLibs();
-        L.loadFile("/tests/testMap.lua");
-        int err = L.pcall(0, Lua.MULTRET, 0);
+        Jua L = new Jua();
+        L.openIOLibrary();
+        L.openOsLibrary();
+        ResourceLoader loader = new ResourceLoader();
+        loader.load("/tests/testMap.lua", L);
+        int err = L.pcall(0, Consts.LUA_MULTRET);
         if (err != 0) {
             switch (err) {
                 case 1:
@@ -89,9 +91,8 @@ public class TestLuaMap {
             }
         }
 
-        L.get("map");
-        luaMap = (Map<Object, Object>) L.pull(-1).createProxy("java.util.Map");
-        L.pop(1);
+        L.getglobal("map");
+        luaMap = (Map<Object, Object>) L.createProxy("java.util.Map");
 
         luaMap.put("test", "testValue");
         luaMap.putAll(table);
@@ -103,7 +104,7 @@ public class TestLuaMap {
 
         assertTrue(luaMap.containsValue("testValue"));
 
-        assertEquals(3, luaMap.size());
+        assertEquals(3.0, luaMap.size());
 
         luaMap.remove("test");
         assertNull(luaMap.get("test"));
@@ -120,18 +121,17 @@ public class TestLuaMap {
  * @author thiago
  */
 class LuaMap implements Map<Object, Object> {
-    private Lua L;
-    private LuaValue table;
+    private Jua L;
+    private int table;
 
     /**
      * Initializes the Luastate used and the table
      */
     public LuaMap() throws LuaException {
-        L = new Lua();
+        L = new Jua();
         // L.openLibs();
-        L.newTable();
-        table = L.pull(-1);
-        L.pop(1);
+        L.newtable();
+        table = L.ref();
     }
 
     protected void finalize() throws Throwable {
@@ -143,13 +143,13 @@ class LuaMap implements Map<Object, Object> {
      * @see java.util.Map#size()
      */
     public int size() {
-        table.push();
-        L.pushNil();
+        L.refget(table);
+        L.pushnil();
 
         int n;
         for (n = 0; L.next(-2) != 0; n++) L.pop(1);
 
-        L.pop(2);
+        L.pop(1);
 
         return n;
     }
@@ -158,9 +158,9 @@ class LuaMap implements Map<Object, Object> {
      * @see java.util.Map#clear()
      */
     public void clear() {
-        L.newTable();
-        table = L.pull(-1);
-        L.pop(1);
+        L.newtable();
+        L.unref(table);
+        table = L.ref();
     }
 
     /**
@@ -174,32 +174,31 @@ class LuaMap implements Map<Object, Object> {
      * @see java.util.Map#containsKey(java.lang.Object)
      */
     public boolean containsKey(Object key) {
+        L.refget(table);
         L.push(key);
-        LuaValue obj = L.pull(-1);
-        L.pop(1);
-
-        LuaValue temp = L.pull(table, obj);
-
-        return !temp.isNil();
+        L.gettable(-2);
+        boolean contains = !L.isnil(-1);
+        L.pop(2);
+        return contains;
     }
 
     /**
      * @see java.util.Map#containsValue(java.lang.Object)
      */
     public boolean containsValue(Object value) {
-        L.push(value);
-        table.push();
-        L.pushNil();
-
-        while (L.next(-2) != 0)/* `key' is at index -2 and `value' at index -1 */ {
-            if (L.equal(-4, -1)) {
-                L.pop(4);
-                return true;
-            }
-            L.pop(1);
-        }
-
-        L.pop(3);
+//        L.push(value);
+//        table.push();
+//        L.pushNil();
+//
+//        while (L.next(-2) != 0)/* `key' is at index -2 and `value' at index -1 */ {
+//            if (L.equal(-4, -1)) {
+//                L.pop(4);
+//                return true;
+//            }
+//            L.pop(1);
+//        }
+//
+//        L.pop(3);
         return false;
     }
 
@@ -240,15 +239,11 @@ class LuaMap implements Map<Object, Object> {
      * @see java.util.Map#get(java.lang.Object)
      */
     public Object get(Object key) {
-        table.push();
+        L.refget(table);
         L.push(key);
-
-        L.getTable(-2);
-
+        L.gettable(-2);
         Object ret = L.toObject(-1);
-
         L.pop(2);
-
         return ret;
     }
 
@@ -258,13 +253,13 @@ class LuaMap implements Map<Object, Object> {
     public Object remove(Object key) {
         Object ret = get(key);
 
-        table.push();
+        L.refget(table);
         L.push(key);
-        L.pushNil();
+        L.pushnil();
 
-        L.setTable(-3);
+        L.settable(-3);
 
-        L.pop(2);
+        L.pop(1);
 
         return ret;
     }
@@ -275,15 +270,14 @@ class LuaMap implements Map<Object, Object> {
     public Object put(Object key, Object value) {
         Object ret = get(key);
 
-        table.push();
+        L.refget(table);
         L.push(key);
         L.push(value);
 
-        L.setTable(-3);
+        L.settable(-3);
 
         L.pop(1);
 
         return ret;
     }
-
 }

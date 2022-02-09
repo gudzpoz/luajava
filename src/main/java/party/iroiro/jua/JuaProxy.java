@@ -22,19 +22,24 @@ public class JuaProxy implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object object, Method method, Object[] objects) throws Throwable {
+    public Object invoke(Object ignored, Method method, Object[] objects) throws Throwable {
         int top = L.gettop();
         L.refget(ref);
         L.getfield(-1, method.getName());
-        L.push(object);
+        L.refget(ref);
         if (objects == null) {
             L.pcall(1, 1);
         } else {
             Arrays.stream(objects).forEach(L::push);
             L.pcall(objects.length + 1, 1);
         }
-        Object o = L.toObject(-1);
-        L.settop(top);
-        return o;
+        try {
+            Object o = JuaAPI.convertFromLua(L, method.getReturnType(), -1);;
+            L.settop(top);
+            return o;
+        } catch (IllegalArgumentException e) {
+            L.settop(top);
+            throw e;
+        }
     }
 }
