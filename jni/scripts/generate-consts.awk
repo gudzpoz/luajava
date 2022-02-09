@@ -6,7 +6,7 @@ BEGIN {
   print(" * <pre><code>awk -f jni/scripts/generate-consts.awk \\");
   print(" *     jni/luajit/src/lua.h \\");
   print(" *     jni/luajit/src/lauxlib.h \\");
-  print(" *     > src/main/java/party/iroiro/jua/Consts.java</code></pre>");
+  print(" *     &gt; src/main/java/party/iroiro/jua/Consts.java</code></pre>");
   print(" */");
   print("public class Consts {");
 }

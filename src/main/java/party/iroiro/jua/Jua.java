@@ -17,6 +17,11 @@ import java.util.*;
  *
  * <p><code>protected</code> functions that have identical names to lua ones
  * are mostly simply wrapper of the corresponding C API.</p>
+ *
+ * <p>Currently there are not many <code>public</code> methods.
+ * If you want the plain lua C API, probably subclassing Jua is the best.</p>
+ *
+ * @see <a href="https://www.lua.org/manual/5.1/manual.html#3">Lua 5.1 Reference Manual</a>
  */
 public class Jua implements AutoCloseable {
     static {
@@ -29,11 +34,24 @@ public class Jua implements AutoCloseable {
     }
 
     /**
-     * The pointer, i.e. the internal <code>lua_State *</code>
+     * The pointer, that is, the internal <code>lua_State *</code>
      */
     protected final long L;
+    /**
+     * Index to this Jua object
+     *
+     * <p>Used with {@link #get(int)} and stored also in the lua part,
+     * to be used in the JNI part to identity the current state with
+     * Java part</p>
+     */
     protected final int stateIndex;
+    /**
+     * The main (lua) thread
+     */
     protected final Jua mainThread;
+    /**
+     * Sub (lua) threads
+     */
     protected final List<Jua> subThreads;
 
     /*JNI
@@ -93,9 +111,8 @@ public class Jua implements AutoCloseable {
      * Wraps <code>luaL_dostring</code>:
      *
      * <p>Loads and runs the given string. It is defined as the following
-     * macro:
+     * macro:</p>
      * <pre><code>(luaL_loadstring(L, str) || lua_pcall(L, 0, LUA_MULTRET, 0))</code></pre>
-     * </p>
      * <p>It returns 0 if there are no errors or 1 in case of errors.</p>
      */
     @CheckReturnValue
@@ -142,12 +159,12 @@ public class Jua implements AutoCloseable {
      * <p>This function returns the same results as lua_load. name is the
      * chunk name, used for debug information and error messages.</p>
      *
-     * <p>The return values of lua_load are:
+     * <p>The return values of lua_load are:</p>
      * <ul>
      *     <li>0: no errors;</li>
      *     <li>{@link Consts#LUA_ERRSYNTAX}: syntax error during pre-compilation;</li>
      *     <li>{@link Consts#LUA_ERRMEM}: memory allocation error.</li>
-     * </ul></p>
+     * </ul>
      *
      * <p>It assumes the buffer {@link Buffer#isDirect()}</p>
      */
@@ -903,6 +920,7 @@ public class Jua implements AutoCloseable {
      * lua_pcall, since by then the stack has unwound.</p>
      * <p>The lua_pcall function returns 0 in case of success or one of
      * the following error codes (defined in lua.h):
+     * </p>
      * <ul>
      * <li>{@link Consts#LUA_ERRRUN}: a runtime error.</li>
      * <li>{@link Consts#LUA_ERRMEM}: memory allocation error. For such errors, Lua
@@ -910,7 +928,6 @@ public class Jua implements AutoCloseable {
      * <li>{@link Consts#LUA_ERRERR}: error while running the error handler
      *     function.</li>
      * </ul>
-     * </p>
      */
     @CheckReturnValue
     protected static native int lua_pcall(long ptr, int nargs, int nresults, int errfunc); /*
@@ -1462,6 +1479,10 @@ public class Jua implements AutoCloseable {
         lua_xmove(L, (lua_State *) to, (int) n);
     */
 
+    /**
+     * Pushes a Java object to lua state without trying to convert it
+     * to lua native types
+     */
     protected static native void jniPushJavaObject(long ptr, Object obj); /*
         lua_State * L = (lua_State *) ptr;
         updateJNIEnv(env, L);
@@ -1471,6 +1492,10 @@ public class Jua implements AutoCloseable {
         }
     */
 
+    /**
+     * Gets the corresponding object from a wrapped Java object on stack
+     * @return the object, null if not a wrapped Java object
+     */
     protected static native Object jniToJavaObject(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
         updateJNIEnv(env, L);
@@ -1490,12 +1515,21 @@ public class Jua implements AutoCloseable {
     */
 
     private static final ArrayList<Jua> luaInstances = new ArrayList<>();
+
+    /**
+     * Gets a {@link Jua} object by its index
+     */
     public static Jua get(int i) {
         synchronized (luaInstances) {
             return luaInstances.get(i);
         }
     }
 
+    /**
+     * Creates a new Jua object
+     *
+     * See {@link #luaL_newstate} for details
+     */
     public Jua() {
         synchronized (luaInstances) {
             stateIndex = luaInstances.size();
@@ -1506,6 +1540,9 @@ public class Jua implements AutoCloseable {
         }
     }
 
+    /**
+     * Wraps a Jua object around a new lua thread
+     */
     protected Jua(long L, Jua main) {
         synchronized (luaInstances) {
             stateIndex = luaInstances.size();
@@ -1517,6 +1554,15 @@ public class Jua implements AutoCloseable {
         }
     }
 
+    /**
+     * Disposes with {@link #lua_close(long)}, only if the current state is the main state
+     *
+     * <p>Disposes the <code>lua_State *</code> thus deleting relevant JNI object references.</p>
+     *
+     * <p>It does nothing the current state is a sub thread. If so, you should
+     * remove all references (in lua) to the current state and let lua handle
+     * the garbage collection.</p>
+     */
     public void dispose() {
         if (mainThread == this) {
             synchronized (luaInstances) {
@@ -1529,6 +1575,9 @@ public class Jua implements AutoCloseable {
         }
     }
 
+    /**
+     * See {@link #luaL_dostring}
+     */
     public int run(String s) {
         return luaL_dostring(L, s);
     }
@@ -1568,6 +1617,11 @@ public class Jua implements AutoCloseable {
         lua_pushboolean(L, b ? 1 : 0);
     }
 
+    /**
+     * Pushes onto the stack a luatable with key-value pairs from the map
+     *
+     * <p>Note that recursive reference is not supported and will cause overflow the stack.</p>
+     */
     public void push(Map<?, ?> map) {
         lua_createtable(L, 0, map.size());
         map.forEach((k, v) -> {
@@ -1577,6 +1631,13 @@ public class Jua implements AutoCloseable {
         });
     }
 
+    /**
+     * Pushes onto the stack a luatable with key-value pairs from the array
+     *
+     * <p>The keys of the luatable starts from 1.</p>
+     * @param array any array
+     * @param isArray pseudo-param to allow primitive array
+     */
     public void push(Object array, boolean isArray) {
         assert isArray;
         int len = Array.getLength(array);
@@ -1587,6 +1648,11 @@ public class Jua implements AutoCloseable {
         }
     }
 
+    /**
+     * Pushes onto the stack a luatable with key-value pairs from the collection
+     *
+     * <p>The keys of the luatable starts from 1.</p>
+     */
     public void push(Collection<?> array) {
         lua_createtable(L, array.size(), 0);
         int i = 1;
@@ -1601,14 +1667,14 @@ public class Jua implements AutoCloseable {
     /**
      * Pushes element onto the stack
      *
-     * <p>Converts the element to lua types automatically:
+     * <p>Converts the element to lua types automatically:</p>
      * <ul>
-     *     <li>Boolean -> boolean</li>
-     *     <li>String -> string</li>
-     *     <li>Number -> lua_Number</li>
-     *     <li>Object -> Java object wrapped by a metatable {@link #pushJavaObject}</li>
+     *     <li>Boolean -&gt; boolean</li>
+     *     <li>String -&gt; string</li>
+     *     <li>Number -&gt; lua_Number</li>
+     *     <li>Map / Collection / Array -&gt; table</li>
+     *     <li>Object -&gt; Java object wrapped by a metatable {@link #pushJavaObject}</li>
      * </ul>
-     * </p>
      */
     public void push(Object obj) {
         if (obj == null) {
@@ -1669,6 +1735,9 @@ public class Jua implements AutoCloseable {
         return lua_tostring(L, index);
     }
 
+    /**
+     * Converts the luatable at the given index to a {@link List} using <code>unpack</code>
+     */
     public List<Object> toList(int index) {
         int top = lua_gettop(L);
         if (lua_istable(L, index) == 1) {
@@ -1694,6 +1763,15 @@ public class Jua implements AutoCloseable {
         return null;
     }
 
+    /**
+     * Converts the element at the given index to a corresponding Java type
+     *
+     * <p>Unsupported types:</p>
+     * <ul>
+     *     <li>Userdata that are not proxied Java objects</li>
+     *     <li>Lightuserdata</li>
+     * </ul>
+     */
     public Object toObject(int index) {
         int type = lua_type(L, index);
         switch (type) {
@@ -1713,6 +1791,9 @@ public class Jua implements AutoCloseable {
         return null;
     }
 
+    /**
+     * Converts the luatable at the given index to a {@link Map}
+     */
     public Map<Object, Object> toMap(int index) {
         int top = lua_gettop(L);
         if (lua_istable(L, index) == 1) {
@@ -1777,95 +1858,170 @@ public class Jua implements AutoCloseable {
 
     /**
      * See {@link #lua_newthread}
+     *
+     * <p>Note that this is just a wrapper to {@link #lua_newthread(long)},
+     * and no reference to this new thread is created yet. So you need to
+     * create references to it to prevent lua garbage collecting it, which might
+     * very like lead to a crash sometime.</p>
      */
     public Jua newthread() {
         return new Jua(lua_newthread(L), this);
     }
 
+    /**
+     * See {@link #luaopen_bit}
+     */
     public void openBitLibrary() {
         luaopen_bit(L);
     }
 
+    /**
+     * See {@link #luaopen_debug}
+     */
     public void openDebugLibrary() {
         luaopen_debug(L);
     }
 
+    /**
+     * See {@link #luaopen_io}
+     */
     public void openIOLibrary() {
         luaopen_io(L);
     }
 
+    /**
+     * See {@link #luaopen_math}
+     */
     public void openMathLibrary() {
         luaopen_math(L);
     }
 
+    /**
+     * See {@link #luaopen_os}
+     */
     public void openOsLibrary() {
         luaopen_os(L);
     }
 
+    /**
+     * See {@link #luaopen_package}
+     */
     public void openPackageLibrary() {
         luaopen_package(L);
     }
 
+    /**
+     * See {@link #luaopen_string}
+     */
     public void openStringLibrary() {
         luaopen_string(L);
     }
 
+    /**
+     * See {@link #luaopen_table}
+     */
     public void openTableLibrary() {
         luaopen_table(L);
     }
 
+    /**
+     * See {@link #luaL_ref}
+     *
+     * This function always uses {@link Consts#LUA_REGISTRYINDEX} as the table
+     */
     public int ref() {
         return luaL_ref(L, Consts.LUA_REGISTRYINDEX);
     }
 
+    /**
+     * See {@link #luaL_unref}
+     *
+     * This function always uses {@link Consts#LUA_REGISTRYINDEX} as the table
+     */
     public void unref(int ref) {
         luaL_unref(L, Consts.LUA_REGISTRYINDEX, ref);
     }
 
+    /**
+     * Shortcut of <code>lua_rawgeti(L, Consts.LUA_REGISTRYINDEX, ref);</code>
+     */
     public void refget(int ref) {
         lua_rawgeti(L, Consts.LUA_REGISTRYINDEX, ref);
     }
 
+    /**
+     * See {@link #lua_getglobal}
+     */
     public void getglobal(String name) {
         lua_getglobal(L, name);
     }
 
+    /**
+     * See {@link #lua_setglobal}
+     */
     public void setglobal(String name) {
         lua_setglobal(L, name);
     }
 
+    /**
+     * See {@link #lua_newtable}
+     */
     public void newtable() {
         lua_newtable(L);
     }
 
+    /**
+     * See {@link #lua_gettable}
+     */
     public void gettable(int index) {
         lua_gettable(L, index);
     }
 
+    /**
+     * See {@link #lua_settable}
+     */
     public void settable(int index) {
         lua_settable(L, index);
     }
 
+    /**
+     * See {@link #lua_getfield(long, int, String)}
+     */
     public void getfield(int index, String k) {
         lua_getfield(L, index, k);
     }
 
+    /**
+     * See {@link #lua_setfield(long, int, String)}
+     */
     public void setfield(int index, String k) {
         lua_setfield(L, index, k);
     }
 
+    /**
+     * See {@link #lua_rawget(long, int)}
+     */
     public void rawget(int index) {
         lua_rawget(L, index);
     }
 
+    /**
+     * See {@link #lua_rawset(long, int)}
+     */
     public void rawset(int index) {
         lua_rawset(L, index);
     }
 
+    /**
+     * See {@link #lua_rawgeti(long, int, int)}
+     */
     public void rawgeti(int index, int n) {
         lua_rawgeti(L, index, n);
     }
 
+    /**
+     * See {@link #lua_rawseti(long, int, int)}
+     */
     public void rawseti(int index, int n) {
         lua_rawseti(L, index, n);
     }
@@ -1877,42 +2033,73 @@ public class Jua implements AutoCloseable {
         return lua_type(L, index);
     }
 
+    /**
+     * See {@link #lua_isnil(long, int)}
+     */
     public boolean isnil(int index) {
         return lua_isnil(L, index) != 0;
     }
 
+    /**
+     * See {@link #lua_isboolean(long, int)}
+     */
     public boolean isboolean(int index) {
         return lua_isboolean(L, index) != 0;
     }
 
+    /**
+     * See {@link #lua_istable(long, int)}
+     */
     public boolean istable(int index) {
         return lua_istable(L, index) != 0;
     }
 
+    /**
+     * See {@link #lua_isstring(long, int)}
+     */
     public boolean isstring(int index) {
         return lua_isstring(L, index) != 0;
     }
 
+    /**
+     * See {@link #lua_isnumber(long, int)}
+     */
     public boolean isnumber(int index) {
         return lua_isnumber(L, index) != 0;
     }
 
+    /**
+     * See {@link #lua_isnone(long, int)}
+     */
     public boolean isnone(int index) {
         return lua_isnone(L, index) != 0;
     }
 
+    /**
+     * See {@link #lua_next(long, int)}
+     */
     public int next(int i) {
         return lua_next(L, i);
     }
 
+    /**
+     * See {@link #lua_pop(long, int)}
+     */
     public void pop(int i) {
         lua_pop(L, i);
     }
 
+    /**
+     * See {@link #lua_pushnil(long)}
+     */
     public void pushnil() {
         lua_pushnil(L);
     }
 
+    /**
+     * Creates a proxy for a luatable on top of the stack, implementing
+     * the interfaces specified in <code>implem</code> param.
+     */
     public Object createProxy(String implem) {
         if (lua_istable(L, -1) == 0) {
             pop(1);
@@ -1927,6 +2114,9 @@ public class Jua implements AutoCloseable {
         }
     }
 
+    /**
+     * Calls {@link #dispose()}
+     */
     @Override
     public void close() throws Exception {
         if (mainThread == this) {

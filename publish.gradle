@@ -24,10 +24,10 @@ publishing {
                 }
                 developers {
                     developer {
-                        id = 'deathbeam'
-                        url = 'https://github.com/deathbeam'
-                        name = 'Thomas Slusny'
-                        email = 'slusnucky@gmail.com'
+                        id = 'gudzpoz'
+                        url = 'https://github.com/GuDzpoz'
+                        name = 'gudzpoz'
+                        email = 'gudzpoz@live.com'
                     }
                 }
                 scm {
@@ -62,10 +62,10 @@ publishing {
                 }
                 developers {
                     developer {
-                        id = 'deathbeam'
-                        url = 'https://github.com/deathbeam'
-                        name = 'Thomas Slusny'
-                        email = 'slusnucky@gmail.com'
+                        id = 'gudzpoz'
+                        url = 'https://github.com/GuDzpoz'
+                        name = 'gudzpoz'
+                        email = 'gudzpoz@live.com'
                     }
                 }
                 scm {

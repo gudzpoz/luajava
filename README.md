@@ -4,7 +4,8 @@
 
   * [About](#about)
   * [Quickstart](#quickstart)
-    * [Java module](#java-module)
+    * [Artifacts](#artifacts)
+    * [Examples](#examples)
   * [Credits](#credits)
 
 ## About ##
@@ -17,10 +18,20 @@ It allows Java components to be accessed from Lua using the same syntax that is 
 
 ## Quickstart ##
 
+### Artifacts
+
 To include Jua into your project, you can use Maven or Gradle. Artifacts (yet to be):
 
-* Core: `party.iroiro.jua:jua:2.1.0-beta3-beta`
-* Desktop natives: `party.iroiro.jua:jua-platform:2.1.0-beta3-beta:natives-desktop`
+* Core: `party.iroiro.jua:jua:2.1.0-beta3-0.1-beta`
+* Desktop natives: `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-beta:natives-desktop`
+* Android natives:
+  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-beta:natives-armeabi-v7a`
+  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-beta:natives-arm64-v8a`
+  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-beta:natives-x86`
+  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-beta:natives-x86_64`
+* (iOS natives): Coming soon...
+
+### Examples
 
 Here is simple example on how to correctly initialize new Lua instance.
 This example will push `message` variable to Lua with value `Hello World from Lua`, then prints it using Lua built-in `print` function.
@@ -38,7 +49,7 @@ public class Main {
 }
 ```
 
-### Java module ###
+#### Java module ####
 
 Example on how to use `java` module in Lua to create basic LibGDX application:
 
@@ -69,6 +80,14 @@ function dispose()
   img:dispose()
 end
 ```
+
+#### More ####
+
+The tests (most ported from LuaJava tests) provide some simple examples:
+ - [Coroutine (With Lua threads)](src/test/java/party/iroiro/jua/CoroutineTest.java)
+ - [JuaFunction example](src/test/java/party/iroiro/jua/TestClass.java)
+- [Proxy example](src/test/java/party/iroiro/jua/printproxy/PrintProxyTest.java)
+- [Another proxy example](src/test/java/party/iroiro/jua/TestLuaMap.java)
 
 ## Notes
 

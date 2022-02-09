@@ -5,7 +5,7 @@ package party.iroiro.jua;
  * <pre><code>awk -f jni/scripts/generate-consts.awk \
  *     jni/luajit/src/lua.h \
  *     jni/luajit/src/lauxlib.h \
- *     > src/main/java/party/iroiro/jua/Consts.java</code></pre>
+ *     &gt; src/main/java/party/iroiro/jua/Consts.java</code></pre>
  */
 public class Consts {
     /**
@@ -34,7 +34,7 @@ public class Consts {
 
     /**
      * Generated from jni/luajit/src/lua.h (line 23):
-     * <code>#define LUA_AUTHORS	"R. Ierusalimschy, L. H. de Figueiredo & W. Celes"</code>
+     * <code>#define LUA_AUTHORS	"R. Ierusalimschy, L. H. de Figueiredo &amp; W. Celes"</code>
      */
     public static final String LUA_AUTHORS = "R. Ierusalimschy, L. H. de Figueiredo & W. Celes";
 

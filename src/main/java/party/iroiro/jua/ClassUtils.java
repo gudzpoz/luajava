@@ -358,6 +358,7 @@ public abstract class ClassUtils {
      * @param clazz the class to check (typically an interface)
      * @param classLoader the ClassLoader to check against
      * (may be {@code null} in which case this method will always return {@code true})
+     * @return true if visible
      */
     public static boolean isVisible(Class<?> clazz, @Nullable ClassLoader classLoader) {
         if (classLoader == null) {
@@ -382,6 +383,7 @@ public abstract class ClassUtils {
      * @param clazz the class to analyze
      * @param classLoader the ClassLoader to potentially cache metadata in
      * (may be {@code null} which indicates the system class loader)
+     * @return true if cache safe
      */
     public static boolean isCacheSafe(Class<?> clazz, @Nullable ClassLoader classLoader) {
         try {
@@ -569,7 +571,7 @@ public abstract class ClassUtils {
      * slash ('/') to the return value). Built by taking the package of the specified
      * class file, converting all dots ('.') to slashes ('/'), adding a trailing slash
      * if necessary, and concatenating the specified resource name to this.
-     * <br/>As such, this function may be used to build a path suitable for
+     * <br>As such, this function may be used to build a path suitable for
      * loading a resource file that is in the same package as a class file,
      * although org.springframework.core.io.ClassPathResource is usually
      * even more convenient.
