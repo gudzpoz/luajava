@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Testable
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ThreadTest {
+    private final int count = 100;
     private final PrintStream originalOut = System.out;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private long startTime;
@@ -30,20 +31,18 @@ public class ThreadTest {
 
     @Test
     public void threadTest() throws Exception {
-        final Lua L = new Lua();
-        // L.openBase();
-        // L.openIo();
-        // L.openLibs();
-        L.setLoader(new ResourceLoader());
-        int err = L.runFile("/tests/threadTest.lua");
-        assertEquals(0, err);
+        final Jua L = new Jua();
+        ResourceLoader loader = new ResourceLoader();
+        loader.load("/tests/threadTest.lua", L);
+        System.out.println("OK");
+        assertEquals(0, L.pcall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
         ArrayList<Thread> threads = new ArrayList<>();
-        threads.ensureCapacity(100);
+        threads.ensureCapacity(count);
 
-        for(int i = 0 ;i < 100; i++) {
+        for(int i = 0 ;i < count; i++) {
             synchronized (L) {
-                LuaValue obj = L.pull("tb");
-                Object runnable = obj.createProxy("java.lang.Runnable");
+                L.getglobal("tb");
+                Object runnable = L.createProxy("java.lang.Runnable");
                 Thread thread = new Thread(() -> {
                     synchronized (L) {
                         ((Runnable) runnable).run();
@@ -66,7 +65,7 @@ public class ThreadTest {
     public void endCapture() {
         System.setOut(originalOut);
         assertEquals(
-                100,
+                count,
                 Arrays.stream(outContent.toString().split("\n")).filter("test"::equals).count()
         );
         System.out.println();

@@ -305,7 +305,7 @@ public class JuaAPI {
         throw new IllegalArgumentException("Unsupported conversion");
     }
 
-    private static Class<?>[] getClasses(String notSignature) {
+    public static Class<?>[] getClasses(String notSignature) {
         return ClassUtils.toClassArray(Arrays.stream(notSignature.split(",")).map(s -> {
             try {
                 return ClassUtils.forName(s, null);

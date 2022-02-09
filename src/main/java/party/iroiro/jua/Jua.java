@@ -5,6 +5,7 @@ import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.errorprone.annotations.DoNotCall;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Proxy;
 import java.nio.Buffer;
 import java.util.*;
 
@@ -41,9 +42,7 @@ public class Jua {
         #include "juaapi.h"
         #include "jualib.h"
 
-        #include "jua.cpp"
-        #include "juaapi.cpp"
-        #include "jualib.cpp"
+        #include "juaamalg.h"
          */
 
     /**
@@ -1781,5 +1780,47 @@ public class Jua {
 
     public void openTableLibrary() {
         luaopen_table(L);
+    }
+
+    public int ref() {
+        return luaL_ref(L, Consts.LUA_REGISTRYINDEX);
+    }
+
+    public void rawgeti(int index, int n) {
+        lua_rawgeti(L, index, n);
+    }
+
+    public void refget(int ref) {
+        lua_rawgeti(L, Consts.LUA_REGISTRYINDEX, ref);
+    }
+
+    public void getfield(int index, String k) {
+        lua_getfield(L, index, k);
+    }
+
+    public void settop(int top) {
+        lua_settop(L, top);
+    }
+
+    public Object createProxy(String implem) {
+        if (lua_istable(L, -1) == 0) {
+            pop(1);
+            return null;
+        } else {
+            Class<?>[] classes = JuaAPI.getClasses(implem);
+            return Proxy.newProxyInstance(
+                    Jua.class.getClassLoader(),
+                    classes,
+                    new JuaProxy(ref(), this)
+            );
+        }
+    }
+
+    public void getglobal(String name) {
+        lua_getglobal(L, name);
+    }
+
+    public void pop(int i) {
+        lua_pop(L, i);
     }
 }
