@@ -1,22 +1,23 @@
 package party.iroiro.jua.threaded;
 
-import org.junit.jupiter.api.Test;
-import party.iroiro.jua.Jua;
-import party.iroiro.jua.JuaJNITests;
+import org.junit.jupiter.api.RepeatedTest;
+import party.iroiro.jua.APITest;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class ThreadedTests {
-    @Test
+    @RepeatedTest(20)
     public void threadedTests() throws InterruptedException {
         ArrayList<Thread> threads = new ArrayList<>();
         final int cap = 50;
         threads.ensureCapacity(cap);
         for(int i = 0 ;i < cap; i++) {
-            Thread thread = new Thread(new JuaJNITests.JuaTest());
+            Thread thread = new Thread(() -> {
+                APITest test = new APITest();
+                assertDoesNotThrow(test::apiTest);
+            });
             threads.add(thread);
             thread.start();
         }
