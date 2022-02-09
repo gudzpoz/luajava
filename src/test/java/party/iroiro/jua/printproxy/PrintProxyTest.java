@@ -5,11 +5,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.platform.commons.annotation.Testable;
-import party.iroiro.jua.Lua;
-import party.iroiro.jua.LuaException;
-import party.iroiro.jua.LuaValue;
+import party.iroiro.jua.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,40 +25,27 @@ public class PrintProxyTest {
         System.setOut(new PrintStream(outContent));
     }
 
-    static String str =
-            "a = 'campo a';" +
-                    "b = 'campo b';" +
-                    "c = 'campo c';" +
-                    "tab = {" +
-                    "    a='tab a';" +
-                    "    b='tab b';" +
-                    "    c='tab c'," +
-                    "    d={ e='tab d e' }" +
-                    "};" +
-                    "function imprime (str) print(str); return 'joao', 1 end;" +
-                    "luaPrint = {" +
-                    "    implements='org.keplerproject.luajava.test.Printable'," +
-                    "    print=function(str) print('Printing from lua :'..str) end" +
-                    "}";
-
     @Test
-    public void testPrintProxy() throws LuaException, ClassNotFoundException {
-        Lua L = new Lua();
-        // L.openBase();
+    public void testPrintProxy() throws LuaException, ClassNotFoundException, IOException {
+        Jua L = new Jua();
+        new JuaFunction(L) {
+            @Override
+            public int __call() {
+                System.out.println(L.toString(-1));
+                return 0;
+            }
+        }.register("print");
 
-        L.run(str);
-
-        LuaValue func = L.pull("imprime");
-        Object[] teste = func.call(new Object[]{"TESTANDO"}, 2);
-        System.out.println(teste[0]);
-        System.out.println(teste[1]);
+        ResourceLoader loader = new ResourceLoader();
+        loader.load("/tests/printTest.lua", L);
+        L.pcall(0, Consts.LUA_MULTRET);
 
         System.out.println("PROXY TEST :");
         Printable p = new ObjPrint();
         p.print("TESTE 1");
 
-        LuaValue o = L.pull("luaPrint");
-        p = (Printable) o.createProxy("party.iroiro.jua.printproxy.Printable");
+        L.getglobal("luaPrint");
+        p = (Printable) L.createProxy("party.iroiro.jua.printproxy.Printable");
         p.print("Teste 2");
 
         L.dispose();
@@ -69,12 +55,9 @@ public class PrintProxyTest {
     public void endCapture() {
         System.setOut(originalOut);
         assertEquals(
-                "TESTANDO\t\n" +
-                        "joao\n" +
-                        "1.0\n" +
                         "PROXY TEST :\n" +
                         "Printing from Java1...TESTE 1\n" +
-                        "Printing from lua :Teste 2\t\n",
+                        "Printing from lua :Teste 2\n",
                 outContent.toString()
         );
     }

@@ -37,11 +37,10 @@ public class TestClass {
 
     @Test
     public void testClass() throws LuaException {
-        Lua L = new Lua();
-        // L.openBase();
+        Jua L = new Jua();
 
-        LuaFunction jf = new LuaFunction(L) {
-            public int call() {
+        JuaFunction jf = new JuaFunction(L) {
+            public int __call() {
                 L.push("Returned String");
                 setCalled();
                 return 1;
@@ -50,10 +49,11 @@ public class TestClass {
 
         jf.register("javaFuncTest");
 
-        new LuaFunction(L) {
+        new JuaFunction(L) {
             @Override
-            public int call() {
-                assertTrue(L.toBoolean(-1));
+            public int __call() {
+                boolean val = L.toBoolean(-1);
+                assertTrue(val);
                 return 0;
             }
         }.register("assert");
