@@ -2,18 +2,14 @@
 #include "juaapi.h"
 #include "jualib.h"
 
-#include "jualib.h"
-
 static int javaRequire(lua_State * L) {
   const char * className = luaL_checkstring(L, 1);
 
   JNIEnv * env = getJNIEnv(L);
 
-  jclass classInstance;
-  try {
-    classInstance = bindJavaClass(env, className);
-  } catch (LuaException const& e) {
-    return luaL_error(L, e.what());
+  jclass classInstance = bindJavaClass(env, className);
+  if (classInstance == NULL) {
+    return luaL_error(L, "Unable to bind to class %s", className);
   }
 
   return pushJ<JAVA_CLASS_META_REGISTRY>(L, (jobject) classInstance);

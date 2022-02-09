@@ -40,7 +40,6 @@ public class Jua implements AutoCloseable {
         #include "lua.hpp"
         #include "jni.h"
 
-        #include "luaexception.h"
         #include "jua.h"
         #include "juaapi.h"
         #include "jualib.h"
@@ -64,9 +63,7 @@ public class Jua implements AutoCloseable {
      *         GetStaticMethodId</code>, etc. errs
      */
     protected static native void initBindings() throws Exception; /*
-        try {
-            initBindings(env);
-        } catch (LuaException const &e) {
+        if (initBindings(env) != 0) {
             // Java-side exceptions are not cleared if any
             return;
         }

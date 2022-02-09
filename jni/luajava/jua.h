@@ -36,7 +36,7 @@ static inline void luaJ_openlib(lua_State * L, const char *libName, lua_CFunctio
 jclass bindJavaClass(JNIEnv * env, const char * name);
 jmethodID bindJavaStaticMethod(JNIEnv * env, jclass c, const char * name, const char * sig);
 jmethodID bindJavaMethod(JNIEnv * env, jclass c, const char * name, const char * sig);
-void initBindings(JNIEnv * env);
+int initBindings(JNIEnv * env);
 
 void initMetaRegistry(lua_State * L);
 
