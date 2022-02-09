@@ -18,7 +18,7 @@ import java.util.*;
  * <p><code>protected</code> functions that have identical names to lua ones
  * are mostly simply wrapper of the corresponding C API.</p>
  */
-public class Jua {
+public class Jua implements AutoCloseable {
     static {
         new SharedLibraryLoader().load("jua");
         try {
@@ -32,6 +32,9 @@ public class Jua {
      * The pointer, i.e. the internal <code>lua_State *</code>
      */
     protected final long L;
+    protected final int stateIndex;
+    protected final Jua mainThread;
+    protected final List<Jua> subThreads;
 
     /*JNI
         #include "lua.hpp"
@@ -1498,13 +1501,35 @@ public class Jua {
 
     public Jua() {
         synchronized (luaInstances) {
-            this.L = luaL_newstate(luaInstances.size());
+            stateIndex = luaInstances.size();
+            this.L = luaL_newstate(stateIndex);
             luaInstances.add(this);
+            subThreads = new LinkedList<>();
+            mainThread = this;
+        }
+    }
+
+    protected Jua(long L, Jua main) {
+        synchronized (luaInstances) {
+            stateIndex = luaInstances.size();
+            this.L = L;
+            luaInstances.add(this);
+            subThreads = null;
+            mainThread = main;
+            mainThread.subThreads.add(this);
         }
     }
 
     public void dispose() {
-        lua_close(L);
+        if (mainThread == this) {
+            synchronized (luaInstances) {
+                for (Jua thread : subThreads) {
+                    luaInstances.set(thread.stateIndex, null);
+                }
+                luaInstances.set(stateIndex, null);
+                lua_close(L);
+            }
+        }
     }
 
     public int run(String s) {
@@ -1620,13 +1645,6 @@ public class Jua {
     }
 
     /**
-     * See {@link #lua_type}
-     */
-    public int type(int index) {
-        return lua_type(L, index);
-    }
-
-    /**
      * See {@link #lua_toboolean}
      */
     public boolean toBoolean(int index) {
@@ -1723,6 +1741,13 @@ public class Jua {
     }
 
     /**
+     * See {@link #lua_settop}
+     */
+    public void settop(int top) {
+        lua_settop(L, top);
+    }
+
+    /**
      * See {@link #luaL_loadstring}
      */
     public int load(String collect) {
@@ -1746,8 +1771,18 @@ public class Jua {
         return lua_pcall(L, nargs, nresults, 0);
     }
 
-    public void setglobal(String name) {
-        lua_setglobal(L, name);
+    /**
+     * See {@link #lua_resume}
+     */
+    public int resume(int nargs) {
+        return lua_resume(L, nargs);
+    }
+
+    /**
+     * See {@link #lua_newthread}
+     */
+    public Jua newthread() {
+        return new Jua(lua_newthread(L), this);
     }
 
     public void openBitLibrary() {
@@ -1790,28 +1825,95 @@ public class Jua {
         luaL_unref(L, Consts.LUA_REGISTRYINDEX, ref);
     }
 
-    public void rawgeti(int index, int n) {
-        lua_rawgeti(L, index, n);
-    }
-
     public void refget(int ref) {
         lua_rawgeti(L, Consts.LUA_REGISTRYINDEX, ref);
     }
 
-    public void getfield(int index, String k) {
-        lua_getfield(L, index, k);
+    public void getglobal(String name) {
+        lua_getglobal(L, name);
     }
 
-    public void settop(int top) {
-        lua_settop(L, top);
+    public void setglobal(String name) {
+        lua_setglobal(L, name);
     }
 
     public void newtable() {
         lua_newtable(L);
     }
 
+    public void gettable(int index) {
+        lua_gettable(L, index);
+    }
+
     public void settable(int index) {
         lua_settable(L, index);
+    }
+
+    public void getfield(int index, String k) {
+        lua_getfield(L, index, k);
+    }
+
+    public void setfield(int index, String k) {
+        lua_setfield(L, index, k);
+    }
+
+    public void rawget(int index) {
+        lua_rawget(L, index);
+    }
+
+    public void rawset(int index) {
+        lua_rawset(L, index);
+    }
+
+    public void rawgeti(int index, int n) {
+        lua_rawgeti(L, index, n);
+    }
+
+    public void rawseti(int index, int n) {
+        lua_rawseti(L, index, n);
+    }
+
+    /**
+     * See {@link #lua_type}
+     */
+    public int type(int index) {
+        return lua_type(L, index);
+    }
+
+    public boolean isnil(int index) {
+        return lua_isnil(L, index) != 0;
+    }
+
+    public boolean isboolean(int index) {
+        return lua_isboolean(L, index) != 0;
+    }
+
+    public boolean istable(int index) {
+        return lua_istable(L, index) != 0;
+    }
+
+    public boolean isstring(int index) {
+        return lua_isstring(L, index) != 0;
+    }
+
+    public boolean isnumber(int index) {
+        return lua_isnumber(L, index) != 0;
+    }
+
+    public boolean isnone(int index) {
+        return lua_isnone(L, index) != 0;
+    }
+
+    public int next(int i) {
+        return lua_next(L, i);
+    }
+
+    public void pop(int i) {
+        lua_pop(L, i);
+    }
+
+    public void pushnil() {
+        lua_pushnil(L);
     }
 
     public Object createProxy(String implem) {
@@ -1828,27 +1930,10 @@ public class Jua {
         }
     }
 
-    public void getglobal(String name) {
-        lua_getglobal(L, name);
-    }
-
-    public void pop(int i) {
-        lua_pop(L, i);
-    }
-
-    public int next(int i) {
-        return lua_next(L, i);
-    }
-
-    public void pushnil() {
-        lua_pushnil(L);
-    }
-
-    public void gettable(int index) {
-        lua_gettable(L, index);
-    }
-
-    public boolean isnil(int index) {
-        return lua_isnil(L, index) != 0;
+    @Override
+    public void close() throws Exception {
+        if (mainThread == this) {
+            dispose();
+        }
     }
 }
