@@ -3,7 +3,6 @@
 
 #include "jua.h"
 #include "juaapi.h"
-#include "luaexception.h"
 
 // For template usage
 const char JAVA_CLASS_META_REGISTRY[] = "__JavaClassMetatable";
@@ -42,20 +41,18 @@ int fatalError(lua_State * L) {
 
 /**
  * Returns a global reference to the class matching the name
- *
- * Throws C++ LuaException when class not found or whatever.
  */
 jclass bindJavaClass(JNIEnv * env, const char * name) {
   jclass tempClass;
   tempClass = env->FindClass(name);
   if (tempClass == NULL) {
-      throw LuaException("Could not find the class");
+    return NULL;
   } else {
     jclass classRef = (jclass) env->NewGlobalRef(tempClass);
     // https://stackoverflow.com/q/33481144/17780636
     // env->DeleteLocalRef(tempClass);
     if (classRef == NULL) {
-      throw LuaException("Could not bind the class");
+      return NULL;
     } else {
       return classRef;
     }
@@ -63,23 +60,23 @@ jclass bindJavaClass(JNIEnv * env, const char * name) {
 }
 
 /**
- * Returns the methodID or throws LuaException
+ * Returns the methodID
  */
 jmethodID bindJavaStaticMethod(JNIEnv * env, jclass c, const char * name, const char * sig) {
   jmethodID id = env->GetStaticMethodID(c, name, sig);
   if (id == NULL) {
-    throw LuaException("Could not find the method");
+    return NULL;
   }
   return id;
 }
 
 /**
- * Returns the methodID or throws LuaException
+ * Returns the methodID
  */
 jmethodID bindJavaMethod(JNIEnv * env, jclass c, const char * name, const char * sig) {
   jmethodID id = env->GetMethodID(c, name, sig);
   if (id == NULL) {
-    throw LuaException("Could not find the method");
+    return NULL;
   }
   return id;
 }
@@ -88,10 +85,9 @@ jmethodID bindJavaMethod(JNIEnv * env, jclass c, const char * name, const char *
 /**
  * Init JNI cache bindings
  * See Jua.java
- *
- * Throws LuaException when exceptions occur
+ * Returns zero if completed without errors
  */
-void initBindings(JNIEnv * env) {
+int initBindings(JNIEnv * env) {
   java_lang_class_class = bindJavaClass(env, "java/lang/Class");
   java_lang_class_forname = bindJavaStaticMethod(env, java_lang_class_class,
           "forName", "(Ljava/lang/String;)Ljava/lang/Class;");
@@ -123,6 +119,26 @@ void initBindings(JNIEnv * env) {
           "arrayIndex", "(ILjava/lang/Object;I)I");
   juaapi_arraynewindex = bindJavaStaticMethod(env, juaapi_class,
           "arrayNewIndex", "(ILjava/lang/Object;I)I");
+  if (java_lang_class_class == NULL
+      || java_lang_class_forname == NULL
+      || java_lang_throwable_class == NULL
+      || throwable_getmessage == NULL
+      || throwable_tostring == NULL
+      || juaapi_class == NULL
+      || juaapi_classnew == NULL
+      || juaapi_classindex == NULL
+      || juaapi_classinvoke == NULL
+      || juaapi_classnewindex == NULL
+      || juaapi_objectindex == NULL
+      || juaapi_objectinvoke == NULL
+      || juaapi_objectnewindex == NULL
+      || juaapi_arraylen == NULL
+      || juaapi_arrayindex == NULL
+      || juaapi_arraynewindex) {
+    return -1;
+  } else {
+    return 0;
+  }
 }
 
 #define LUA_METAFIELD_GC "__gc"
