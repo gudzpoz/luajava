@@ -26,7 +26,7 @@ public class PrintProxyTest {
     }
 
     @Test
-    public void testPrintProxy() throws LuaException, ClassNotFoundException, IOException {
+    public void testPrintProxy() throws IOException {
         Jua L = new Jua();
         new JuaFunction(L) {
             @Override

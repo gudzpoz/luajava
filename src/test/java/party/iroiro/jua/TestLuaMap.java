@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Testable
 public class TestLuaMap {
     @Test
-    public void testMap() throws LuaException, IOException {
+    public void testMap() throws IOException {
         Map<Object, Object> table = new HashMap<>();
         table.put("testTable2-1", "testTable2Value");
         table.put("testTable2-2", new Object());
@@ -127,7 +127,7 @@ class LuaMap implements Map<Object, Object> {
     /**
      * Initializes the Luastate used and the table
      */
-    public LuaMap() throws LuaException {
+    public LuaMap() {
         L = new Jua();
         // L.openLibs();
         L.newtable();

@@ -36,7 +36,7 @@ public class TestClass {
     }
 
     @Test
-    public void testClass() throws LuaException {
+    public void testClass() {
         Jua L = new Jua();
 
         JuaFunction jf = new JuaFunction(L) {
