@@ -86,14 +86,18 @@ public class JuaJNITests {
             assertEquals(0,
                     luaL_loadbuffer(L, buffer, buffer.limit(),
                             "test.lua"));
-            assertEquals(0, lua_pcall(L, 0, Consts.LUA_MULTRET, 0));
+            assertDoesNotThrow(() ->
+                    assertEquals(0, lua_pcall(L, 0, Consts.LUA_MULTRET, 0))
+            );
             lua_getglobal(L, "t");
             assertEquals(cjk, lua_tostring(L, -1));
             lua_pop(L, 1);
 
             /* luaL_loadstring */
             assertEquals(0, luaL_loadstring(L, "t = 'abc'"));
-            assertEquals(0, lua_pcall(L, 0, Consts.LUA_MULTRET, 0));
+            assertDoesNotThrow(() ->
+                    assertEquals(0, lua_pcall(L, 0, Consts.LUA_MULTRET, 0))
+            );
             lua_getglobal(L, "t");
             assertEquals("abc", lua_tostring(L, -1));
             lua_pop(L, 1);

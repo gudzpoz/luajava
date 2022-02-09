@@ -4,8 +4,9 @@ import com.badlogic.gdx.utils.SharedLibraryLoader;
 import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.errorprone.annotations.DoNotCall;
 
+import java.lang.reflect.Array;
 import java.nio.Buffer;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Wrapper of a <code>lua_State *</code> (LuaJIT)
@@ -36,8 +37,13 @@ public class Jua {
         #include "jni.h"
 
         #include "luaexception.h"
-        #include "luajavatemp.h"
         #include "jua.h"
+        #include "juaapi.h"
+        #include "jualib.h"
+
+        #include "jua.cpp"
+        #include "juaapi.cpp"
+        #include "jualib.cpp"
          */
 
     /**
@@ -201,18 +207,22 @@ public class Jua {
     @CheckReturnValue
     protected static native long luaL_newstate(int index); /*
         lua_State* L = luaL_newstate();
+        lua_atpanic(L, &fatalError);
         // luaL_openlibs(L);
         luaJ_openlib(L, "", &luaopen_base);
         luaJ_openlib(L, LUA_JITLIBNAME, &luaopen_jit);
+        luaJ_openlib(L, LUA_JAVALIBNAME, &luaopen_jua);
 
         lua_pushstring(L, JAVA_STATE_INDEX);
-        lua_pushnumber(L, index);
+        lua_pushinteger(L, index);
         lua_settable(L, LUA_REGISTRYINDEX);
 
         lua_pushstring(L, JNIENV_INDEX);
         JNIEnv ** udEnv = (JNIEnv **) lua_newuserdata(L, sizeof(JNIEnv *));
         *udEnv = env;
         lua_rawset(L, LUA_REGISTRYINDEX);
+
+        initMetaRegistry(L);
 
         return (jlong) L;
     */
@@ -415,6 +425,21 @@ public class Jua {
 
     /**
      * Please use {@link #lua_pcall} instead
+     *
+     * <p>To call a function you must use the following protocol: first, the function
+     * to be called is pushed onto the stack; then, the arguments to the function
+     * are pushed in direct order; that is, the first argument is pushed first.
+     * Finally you call lua_call; nargs is the number of arguments that you pushed onto
+     * the stack. All arguments and the function value are popped from the stack when
+     * the function is called. The function results are pushed onto the stack when the
+     * function returns. The number of results is adjusted to nresults, unless nresults is
+     * LUA_MULTRET. In this case, all results from the function are pushed. Lua takes care
+     * that the returned values fit into the stack space. The function results are pushed
+     * onto the stack in direct order (the first result is pushed first), so that after
+     * the call the last result is on the top of the stack.</p>
+     *
+     * <p>Any error inside the called function is propagated upwards (with a longjmp). </p>
+     *
      * @throws UnsupportedOperationException always
      */
     @SuppressWarnings("unused")
@@ -858,26 +883,26 @@ public class Jua {
     /**
      * Wraps <code>lua_pcall</code>:
      *
-     * Calls a function in protected mode.
-     * Both nargs and nresults have the same meaning as in
+     * <p>Calls a function in protected mode.</p>
+     * <p>Both nargs and nresults have the same meaning as in
      * lua_call. If there are no errors during the call, lua_pcall behaves
-     * exactly like lua_call. However, if there is any error, lua_pcall
+     * exactly like {@link #lua_call}. However, if there is any error, lua_pcall
      * catches it, pushes a single value on the stack (the error
      * message), and returns an error code. Like lua_call, lua_pcall
      * always removes the function and its arguments from the
-     * stack.
-     * If errfunc is 0, then the error message returned on the stack
+     * stack.</p>
+     * <p>If errfunc is 0, then the error message returned on the stack
      * is exactly the original error message. Otherwise, errfunc is
      * the stack index of an error handler function. (In the current
      * implementation, this index cannot be a pseudo-index.) In case
      * of runtime errors, this function will be called with the error
      * message and its return value will be the message returned on
-     * the stack by lua_pcall.
-     * Typically, the error handler function is used to add more debug
+     * the stack by lua_pcall.</p>
+     * <p>Typically, the error handler function is used to add more debug
      * information to the error message, such as a stack traceback.
      * Such information cannot be gathered after the return of
-     * lua_pcall, since by then the stack has unwound.
-     * The lua_pcall function returns 0 in case of success or one of
+     * lua_pcall, since by then the stack has unwound.</p>
+     * <p>The lua_pcall function returns 0 in case of success or one of
      * the following error codes (defined in lua.h):
      * <ul>
      * <li>{@link Consts#LUA_ERRRUN}: a runtime error.</li>
@@ -886,9 +911,10 @@ public class Jua {
      * <li>{@link Consts#LUA_ERRERR}: error while running the error handler
      *     function.</li>
      * </ul>
+     * </p>
      */
     @CheckReturnValue
-    protected static native int lua_pcall(long ptr, int nargs, int nresults, int errfunc); /*
+    protected static native int lua_pcall(long ptr, int nargs, int nresults, int errfunc) throws Exception; /*
         lua_State * L = (lua_State *) ptr;
         updateJNIEnv(env, L);
         return (jint) lua_pcall(L, (int) nargs, (int) nresults, (int) errfunc);
@@ -1437,6 +1463,33 @@ public class Jua {
         lua_xmove(L, (lua_State *) to, (int) n);
     */
 
+    protected static native void jniPushJavaObject(long ptr, Object obj); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        jobject global = env->NewGlobalRef(obj);
+        if (global != NULL) {
+            pushJ<JAVA_OBJECT_META_REGISTRY>(L, global);
+        }
+    */
+
+    protected static native Object jniToJavaObject(long ptr, int index); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        // Lua 5.2 / LuaJIT API
+        void * p = luaL_testudata(L, index, JAVA_OBJECT_META_REGISTRY);
+        if (p == NULL) {
+            p = luaL_testudata(L, index, JAVA_CLASS_META_REGISTRY);
+        }
+        if (p == NULL) {
+            p = luaL_testudata(L, index, JAVA_ARRAY_META_REGISTRY);
+        }
+        if (p == NULL) {
+            return NULL;
+        } else {
+            return *((jobject *) p);
+        }
+    */
+
     private static final ArrayList<Jua> luaInstances = new ArrayList<>();
     public static Jua get(int i) {
         synchronized (luaInstances) {
@@ -1457,5 +1510,276 @@ public class Jua {
 
     public int run(String s) {
         return luaL_dostring(L, s);
+    }
+
+    /**
+     * Pushes element onto the stack
+     */
+    public void push(String string) {
+        lua_pushstring(L, string);
+    }
+
+    /**
+     * Pushes element onto the stack
+     */
+    public void push(int i) {
+        lua_pushinteger(L, i);
+    }
+
+    /**
+     * Pushes element onto the stack
+     */
+    public void push(long i) {
+        lua_pushinteger(L, i);
+    }
+
+    /**
+     * Pushes element onto the stack
+     */
+    public void push(Number n) {
+        lua_pushnumber(L, n.doubleValue());
+    }
+
+    /**
+     * Pushes element onto the stack
+     */
+    public void push(boolean b) {
+        lua_pushboolean(L, b ? 1 : 0);
+    }
+
+    public void push(Map<?, ?> map) {
+        lua_createtable(L, 0, map.size());
+        map.forEach((k, v) -> {
+            push(k);
+            push(v);
+            lua_rawset(L, -3);
+        });
+    }
+
+    public void push(Object array, boolean isArray) {
+        assert isArray;
+        int len = Array.getLength(array);
+        lua_createtable(L, len, 0);
+        for (int i = 0; i != len; ++i) {
+            push(Array.get(array, i));
+            lua_rawseti(L, -2, i+1);
+        }
+    }
+
+    public void push(Collection<?> array) {
+        lua_createtable(L, array.size(), 0);
+        int i = 1;
+        for (Object o :
+                array) {
+            push(o);
+            lua_rawseti(L, -2, i);
+            i++;
+        }
+    }
+
+    /**
+     * Pushes element onto the stack
+     *
+     * <p>Converts the element to lua types automatically:
+     * <ul>
+     *     <li>Boolean -> boolean</li>
+     *     <li>String -> string</li>
+     *     <li>Number -> lua_Number</li>
+     *     <li>Object -> Java object wrapped by a metatable {@link #pushJavaObject}</li>
+     * </ul>
+     * </p>
+     */
+    public void push(Object obj) {
+        if (obj == null) {
+            lua_pushnil(L);
+        } else if (obj instanceof Boolean) {
+            push((boolean) obj);
+        } else if (obj instanceof String) {
+            push((String) obj);
+        } else if (obj instanceof Integer || obj instanceof Long ||
+                obj instanceof Byte || obj instanceof Short) {
+            push(((Number) obj).longValue());
+        } else if (obj instanceof Number) {
+            push((Number) obj);
+        } else if (obj instanceof Map) {
+            push((Map<?, ?>) obj);
+        } else if (obj instanceof Collection) {
+            push((Collection<?>) obj);
+        } else if (obj.getClass().isArray()) {
+            push(obj, true);
+        } else {
+            pushJavaObject(obj);
+        }
+    }
+
+    /**
+     * Pushes the Java object element onto lua stack with a metatable
+     * that reflects fields and method calls
+     */
+    public void pushJavaObject(Object obj) {
+        jniPushJavaObject(L, obj);
+    }
+
+    /**
+     * See {@link #lua_type}
+     */
+    public int type(int index) {
+        return lua_type(L, index);
+    }
+
+    /**
+     * See {@link #lua_toboolean}
+     */
+    public boolean toBoolean(int index) {
+        return lua_toboolean(L, index) == 1;
+    }
+
+    /**
+     * Converts a wrapped Java object back to Java object
+     */
+    public Object toJavaObject(int index) {
+        return jniToJavaObject(L, index);
+    }
+
+    /**
+     * See {@link #lua_tonumber}
+     */
+    public double toNumber(int index) {
+        return lua_tonumber(L, index);
+    }
+
+    /**
+     * See {@link #lua_tostring}
+     */
+    public String toString(int index) {
+        return lua_tostring(L, index);
+    }
+
+    public List<Object> toList(int index) {
+        int top = lua_gettop(L);
+        if (lua_istable(L, index) == 1) {
+            lua_getglobal(L, "unpack");
+            lua_insert(L, -2);
+            try {
+                if (lua_pcall(L, 1, Consts.LUA_MULTRET, 0) == 0) {
+                    int len = lua_gettop(L);
+                    ArrayList<Object> list = new ArrayList<>();
+                    list.ensureCapacity(len - top + 1);
+                    for (int i = top; i <= len; ++i) {
+                        list.add(toObject(i));
+                    }
+                    return list;
+                } else {
+                    lua_settop(L, top);
+                    return null;
+                }
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public Object toObject(int index) {
+        int type = lua_type(L, index);
+        switch (type) {
+            case Consts.LUA_TNIL:
+                return null;
+            case Consts.LUA_TBOOLEAN:
+                return toBoolean(index);
+            case Consts.LUA_TNUMBER:
+                return toNumber(index);
+            case Consts.LUA_TSTRING:
+                return toString(index);
+            case Consts.LUA_TTABLE:
+                return toMap(index);
+            case Consts.LUA_TUSERDATA:
+                return toJavaObject(index);
+        }
+        return null;
+    }
+
+    public Map<Object, Object> toMap(int index) {
+        int top = lua_gettop(L);
+        if (lua_istable(L, index) == 1) {
+            lua_pushnil(L);
+            Map<Object, Object> map = new HashMap<>();
+            while(lua_next(L, -2) != 0) {
+                Object key = toObject(-2);
+                if (key != null) {
+                    map.put(key, toObject(-1));
+                }
+                lua_pop(L, 1);
+            }
+            return map;
+        }
+        return null;
+    }
+
+    /**
+     * See {@link #lua_gettop}
+     */
+    public int gettop() {
+        return lua_gettop(L);
+    }
+
+    /**
+     * See {@link #luaL_loadstring}
+     */
+    public int load(String collect) {
+        return luaL_loadstring(L, collect);
+    }
+
+    /**
+     * See {@link #luaL_loadbuffer}
+     */
+    public int load(Buffer buffer, String name) {
+        if (buffer.isDirect()) {
+            return luaL_loadbuffer(L, buffer, buffer.limit(), name);
+        }
+        return -1;
+    }
+
+    /**
+     * See {@link #lua_pcall}
+     */
+    public int pcall(int nargs, int nresults) throws Exception {
+        return lua_pcall(L, nargs, nresults, 0);
+    }
+
+    public void setglobal(String name) {
+        lua_setglobal(L, name);
+    }
+
+    public void openBitLibrary() {
+        luaopen_bit(L);
+    }
+
+    public void openDebugLibrary() {
+        luaopen_debug(L);
+    }
+
+    public void openIOLibrary() {
+        luaopen_io(L);
+    }
+
+    public void openMathLibrary() {
+        luaopen_math(L);
+    }
+
+    public void openOsLibrary() {
+        luaopen_os(L);
+    }
+
+    public void openPackageLibrary() {
+        luaopen_package(L);
+    }
+
+    public void openStringLibrary() {
+        luaopen_string(L);
+    }
+
+    public void openTableLibrary() {
+        luaopen_table(L);
     }
 }
