@@ -127,6 +127,7 @@ void initBindings(JNIEnv * env) {
 
 #define LUA_METAFIELD_GC "__gc"
 #define LUA_METAFIELD_LEN "__len"
+#define LUA_METAFIELD_CALL "__call"
 #define LUA_METAFIELD_INDEX "__index"
 #define LUA_METAFIELD_NEWINDEX "__newindex"
 /**
@@ -149,6 +150,8 @@ void initMetaRegistry(lua_State * L) {
     lua_setfield(L, -2, LUA_METAFIELD_INDEX);
     lua_pushcfunction(L, &jobjectNewIndex);
     lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
+    lua_pushcfunction(L, &jobjectCall);
+    lua_setfield(L, -2, LUA_METAFIELD_CALL);
     lua_pop(L, 1);
   }
   if (luaL_newmetatable(L, JAVA_ARRAY_META_REGISTRY) == 1) {

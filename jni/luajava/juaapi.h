@@ -37,6 +37,7 @@ static int pushJ(lua_State * L, jobject obj) {
 
 int jclassIndex(lua_State * L);
 int jclassNewIndex(lua_State * L);
+int jobjectCall(lua_State * L);
 int jobjectIndex(lua_State * L);
 int jobjectNewIndex(lua_State * L);
 int jarrayLength(lua_State * L);

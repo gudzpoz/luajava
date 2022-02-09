@@ -59,6 +59,10 @@ int jobjectInvoke(lua_State * L) {
   return jInvoke(L, JAVA_OBJECT_META_REGISTRY, juaapi_objectinvoke);
 }
 
+int jobjectCall(lua_State * L) {
+  return jInvoke(L, JAVA_OBJECT_META_REGISTRY, juaapi_objectinvoke);
+}
+
 int jobjectIndex(lua_State * L) {
   return jIndex(L, JAVA_OBJECT_META_REGISTRY, juaapi_objectindex, &jobjectInvoke);
 }

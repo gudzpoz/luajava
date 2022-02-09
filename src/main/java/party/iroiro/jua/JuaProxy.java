@@ -34,9 +34,15 @@ public class JuaProxy implements InvocationHandler {
             L.pcall(objects.length + 1, 1);
         }
         try {
-            Object o = JuaAPI.convertFromLua(L, method.getReturnType(), -1);;
-            L.settop(top);
-            return o;
+            if (method.getReturnType() == Void.TYPE) {
+                L.settop(top);
+                return null;
+            } else {
+                Object o = JuaAPI.convertFromLua(L, method.getReturnType(), -1);
+                ;
+                L.settop(top);
+                return o;
+            }
         } catch (IllegalArgumentException e) {
             L.settop(top);
             throw e;
