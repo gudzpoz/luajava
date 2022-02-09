@@ -79,6 +79,7 @@ jobs:
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
   pack-natives:
+    environment: OSSRH
     needs:
       - apple-natives
       - most-natives
@@ -122,5 +123,10 @@ jobs:
       - name: Publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+          GPG_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          GPG_PASSPHRASE: ${{ secrets.SIGNING_PASSPHRASE }}
+          GPG_SECKEY: ${{ secrets.SIGNING_SECRET_KEY }}
         run: |
           ./gradlew publish

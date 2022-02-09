@@ -20,21 +20,29 @@ It allows Java components to be accessed from Lua using the same syntax that is 
 
 ### Artifacts
 
-To include Jua into your project, you can use Maven or Gradle. Artifacts (yet to be):
+To include Jua into your project, you can use Maven or Gradle. Artifacts:
 
-* Core: `party.iroiro.jua:jua:2.1.0-beta3-0.1-beta`
-* Desktop natives: `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-beta:natives-desktop`
+* Core:
+  
+  `party.iroiro.jua:jua:2.1.0-beta3-0.1-gamma`
+* Desktop natives:
+  
+  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-gamma:natives-desktop`
 * Android natives:
-  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-beta:natives-armeabi-v7a`
-  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-beta:natives-arm64-v8a`
-  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-beta:natives-x86`
-  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-beta:natives-x86_64`
+  
+  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-gamma:natives-armeabi-v7a`
+  
+  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-gamma:natives-arm64-v8a`
+  
+  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-gamma:natives-x86`
+  
+  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-gamma:natives-x86_64`
 * (iOS natives): Coming soon...
 
 ### Examples
 
-Here is simple example on how to correctly initialize new Lua instance.
-This example will push `message` variable to Lua with value `Hello World from Lua`, then prints it using Lua built-in `print` function.
+Here is a simple example on how to correctly initialize new Lua instance.
+This example will push `message` variable to Lua with value `Hello World from Lua`, then prints it using Lua built-in `print` function and the Java `println`.
 
 ```java
 public class Main {
