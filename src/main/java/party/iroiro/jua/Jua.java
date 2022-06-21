@@ -1562,11 +1562,9 @@ public class Jua implements AutoCloseable {
         }
     }
 
-    protected synchronized boolean addSubThreads(Jua sub) {
+    protected synchronized void addSubThreads(Jua sub) {
         if (this.subThreads != null && mainThread == this) {
-            return subThreads.add(sub);
-        } else {
-            return false;
+            subThreads.add(sub);
         }
     }
 
@@ -2145,9 +2143,20 @@ public class Jua implements AutoCloseable {
      * Calls {@link #dispose()}
      */
     @Override
-    public void close() throws Exception {
+    public void close() {
         if (mainThread == this) {
             dispose();
         }
+    }
+
+    /**
+     * See {@link #lua_equal(long, int, int)}.
+     *
+     * @param i the stack index of the first element
+     * @param i1 the stack index of the second element
+     * @return true if the two elements equal
+     */
+    public boolean equal(int i, int i1) {
+        return lua_equal(L, i, i1) == 1;
     }
 }

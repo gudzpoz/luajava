@@ -233,7 +233,7 @@ public class JuaAPI {
     }
 
     /**
-     * Converts a element on the lua statck at <code>index</code> to Java
+     * Converts an element on the lua statck at <code>index</code> to Java
      * @param L the lua state
      * @param clazz the expected return type
      * @param index a <b>lua</b> index (that is, starts from 1)

@@ -40,7 +40,8 @@ public class TestLuaMap {
         table.put("testTable2-2", new Object());
 
         // test using a java accessed table.
-        Map<Object, Object> luaMap = new LuaMap();
+        LuaMap raw = new LuaMap();
+        Map<Object, Object> luaMap = raw;
 
         luaMap.put("test", "testValue");
         luaMap.putAll(table);
@@ -48,7 +49,7 @@ public class TestLuaMap {
         assertTrue(luaMap.containsKey("test"));
         assertTrue(luaMap.containsKey("testTable2-1"));
 
-        //assertTrue(luaMap.containsValue("testValue"));
+        assertTrue(luaMap.containsValue("testValue"));
 
         assertEquals(3, luaMap.size());
 
@@ -57,8 +58,8 @@ public class TestLuaMap {
 
         luaMap.clear();
 
-        assertEquals(luaMap.size(), 0);
-
+        //noinspection ConstantConditions
+        assertEquals(0, luaMap.size());
 
         // test using a lua table
         Jua L = new Jua();
@@ -92,7 +93,10 @@ public class TestLuaMap {
         }
 
         L.getglobal("map");
-        luaMap = (Map<Object, Object>) L.createProxy("java.util.Map");
+        Object proxy = L.createProxy("java.util.Map");
+        assertTrue(Map.class.isAssignableFrom(proxy.getClass()));
+        //noinspection unchecked
+        luaMap = (Map<Object, Object>) proxy;
 
         luaMap.put("test", "testValue");
         luaMap.putAll(table);
@@ -111,7 +115,10 @@ public class TestLuaMap {
 
         luaMap.clear();
 
+        //noinspection ConstantConditions
         assertEquals(luaMap.size(), 0);
+
+        raw.close();
     }
 }
 
@@ -120,8 +127,8 @@ public class TestLuaMap {
  *
  * @author thiago
  */
-class LuaMap implements Map<Object, Object> {
-    private Jua L;
+class LuaMap implements Map<Object, Object>, AutoCloseable {
+    private final Jua L;
     private int table;
 
     /**
@@ -134,8 +141,7 @@ class LuaMap implements Map<Object, Object> {
         table = L.ref();
     }
 
-    protected void finalize() throws Throwable {
-        super.finalize();
+    public void close() {
         L.dispose();
     }
 
@@ -186,19 +192,19 @@ class LuaMap implements Map<Object, Object> {
      * @see java.util.Map#containsValue(java.lang.Object)
      */
     public boolean containsValue(Object value) {
-//        L.push(value);
-//        table.push();
-//        L.pushNil();
-//
-//        while (L.next(-2) != 0)/* `key' is at index -2 and `value' at index -1 */ {
-//            if (L.equal(-4, -1)) {
-//                L.pop(4);
-//                return true;
-//            }
-//            L.pop(1);
-//        }
-//
-//        L.pop(3);
+        L.push(value);
+        L.refget(table);
+        L.pushnil();
+
+        while (L.next(-2) != 0)/* `key' is at index -2 and `value' at index -1 */ {
+            if (L.equal(-4, -1)) {
+                L.pop(4);
+                return true;
+            }
+            L.pop(1);
+        }
+
+        L.pop(3);
         return false;
     }
 
@@ -208,7 +214,7 @@ class LuaMap implements Map<Object, Object> {
      *
      * @see java.util.Map#values()
      */
-    public Collection values() {
+    public Collection<Object> values() {
         throw new RuntimeException("not implemented");
     }
 
@@ -224,14 +230,14 @@ class LuaMap implements Map<Object, Object> {
     /**
      * @see java.util.Map#entrySet()
      */
-    public Set entrySet() {
+    public Set<Entry<Object, Object>> entrySet() {
         throw new RuntimeException("not implemented");
     }
 
     /**
      * @see java.util.Map#keySet()
      */
-    public Set keySet() {
+    public Set<Object> keySet() {
         throw new RuntimeException("not implemented");
     }
 
