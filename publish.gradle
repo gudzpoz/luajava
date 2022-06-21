@@ -26,7 +26,7 @@ publishing {
                 developers {
                     developer {
                         id = 'gudzpoz'
-                        url = 'https://github.com/GuDzpoz'
+                        url = 'https://github.com/gudzpoz'
                         name = 'gudzpoz'
                         email = 'gudzpoz@live.com'
                     }
@@ -64,7 +64,7 @@ publishing {
                 developers {
                     developer {
                         id = 'gudzpoz'
-                        url = 'https://github.com/GuDzpoz'
+                        url = 'https://github.com/gudzpoz'
                         name = 'gudzpoz'
                         email = 'gudzpoz@live.com'
                     }

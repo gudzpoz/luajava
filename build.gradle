@@ -12,10 +12,11 @@ buildscript {
 
 plugins {
     id 'java'
+    id 'jacoco'
 }
 
 group 'party.iroiro.jua'
-version '2.1.0-beta3-0.1-gamma'
+version '2.1.0-beta3-0.2-SNAPSHOT'
 
 repositories {
     mavenLocal()
@@ -218,4 +219,6 @@ tasks.withType(JavaExec) {
     allJvmArgs += '-Xcheck:jni'
 }
 
+apply from: 'jacoco.gradle'
+apply from: 'javadoc.gradle'
 apply from: 'publish.gradle'
