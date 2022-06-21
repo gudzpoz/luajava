@@ -1767,15 +1767,16 @@ public class Jua implements AutoCloseable {
         int top = lua_gettop(L);
         if (lua_istable(L, index) == 1) {
             lua_getglobal(L, "unpack");
-            lua_insert(L, -2);
+            lua_pushvalue(L, -2);
             try {
                 if (lua_pcall(L, 1, Consts.LUA_MULTRET, 0) == 0) {
                     int len = lua_gettop(L);
                     ArrayList<Object> list = new ArrayList<>();
                     list.ensureCapacity(len - top + 1);
-                    for (int i = top; i <= len; ++i) {
+                    for (int i = top + 1; i <= len; ++i) {
                         list.add(toObject(i));
                     }
+                    lua_settop(L, top);
                     return list;
                 } else {
                     lua_settop(L, top);

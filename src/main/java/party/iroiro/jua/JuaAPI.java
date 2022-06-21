@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * The code gets a bit ugly as I want to avoid calling back into
  * lua again.
  */
-public class JuaAPI {
+public abstract class JuaAPI {
     public static int objectIndex(int index, Object object, String name) {
         return fieldIndex(index, object.getClass(), object, name);
     }
@@ -291,13 +291,12 @@ public class JuaAPI {
                 return (long) toNumber;
             } else if (float.class == clazz) {
                 return (float) toNumber;
-            } else if (double.class == clazz) {
+            } else /* if (double.class == clazz) */ {
                 return toNumber;
             }
         } else {
             return convertBoxedNumber(toNumber, clazz);
         }
-        throw new IllegalArgumentException("Unsupported conversion");
     }
 
     private static Number convertBoxedNumber(double toNumber, Class<?> clazz)

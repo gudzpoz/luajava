@@ -7,7 +7,7 @@ package party.iroiro.jua;
  *     jni/luajit/src/lauxlib.h \
  *     &gt; src/main/java/party/iroiro/jua/Consts.java</code></pre>
  */
-public class Consts {
+public abstract class Consts {
     /**
      * Generated from jni/luajit/src/lua.h (line 19):
      * <code>#define LUA_VERSION	"Lua 5.1"</code>
