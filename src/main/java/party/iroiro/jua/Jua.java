@@ -16,22 +16,26 @@ import java.util.*;
  * loaded with {@link SharedLibraryLoader} and initialized.</p>
  *
  * <p><code>protected</code> functions that have identical names to lua ones
- * are mostly simply wrapper of the corresponding C API.</p>
+ * are mostly simple wrappers of the corresponding C API.</p>
  *
  * <p>Currently there are not many <code>public</code> methods.
- * If you want the plain lua C API, probably subclassing Jua is the best.</p>
+ * If you want the plain lua C API, probably subclassing is the best.</p>
  *
  * @see <a href="https://www.lua.org/manual/5.1/manual.html#3">Lua 5.1 Reference Manual</a>
  */
 public class Jua implements AutoCloseable {
     static {
-        new SharedLibraryLoader().load("jua");
+        boolean availability = false;
         try {
+            new SharedLibraryLoader().load("jua");
             initBindings();
-        } catch (Exception e) {
-            throw new RuntimeException("Jua: Class binding failed", e);
+            availability = true;
+        } catch (Throwable ignored) {
         }
+        NATIVE_AVAILABLE = availability;
     }
+
+    public static final boolean NATIVE_AVAILABLE;
 
     /**
      * The pointer, that is, the internal <code>lua_State *</code>
@@ -44,7 +48,7 @@ public class Jua implements AutoCloseable {
      * to be used in the JNI part to identity the current state with
      * Java part</p>
      */
-    protected final int stateIndex;
+    protected final int stateId;
     /**
      * The main (lua) thread
      */
@@ -77,8 +81,9 @@ public class Jua implements AutoCloseable {
      * <p>It is not multi-thread safe and I am already calling it from
      * a static block in this class (yes {@link Jua}).
      * So you probably do not want to call it again somewhere.</p>
+     *
      * @throws Exception when <code>FindClass, NewGlobalRef,
-     *         GetStaticMethodId</code>, etc. errs
+     *                   GetStaticMethodId</code>, etc. errs
      */
     protected static native void initBindings() throws Exception; /*
         if (initBindings(env) != 0) {
@@ -154,7 +159,7 @@ public class Jua implements AutoCloseable {
      *
      * <p>Loads a buffer as a Lua chunk. This function uses
      * <a href="https://www.lua.org/manual/5.1/manual.html#lua_load">
-     *     lua_load</a> to load the chunk in the buffer pointed
+     * lua_load</a> to load the chunk in the buffer pointed
      * to by buff with size sz.</p>
      * <p>This function returns the same results as lua_load. name is the
      * chunk name, used for debug information and error messages.</p>
@@ -217,6 +222,7 @@ public class Jua implements AutoCloseable {
      *     <li>Allocates space for <code>JNIEnv *</code> storage (updated every call to lua)</li>
      *     <li>Opens the basic (including coroutine) and jit libraries</li>
      * </ul>
+     *
      * @param index an identifier to the state
      * @return the <code>lua_State *</code> pointer
      */
@@ -259,7 +265,8 @@ public class Jua implements AutoCloseable {
      * <p>Loaded by default</p>
      * <p>Also loads the coroutine library</p>
      */
-    @DoNotCall @Deprecated
+    @DoNotCall
+    @Deprecated
     protected static native void luaopen_base(long ptr); /*
         lua_State * L = (lua_State *) ptr;
         updateJNIEnv(env, L);
@@ -342,7 +349,8 @@ public class Jua implements AutoCloseable {
      * <code>luaopen_jit</code>
      * <p>Loaded by default</p>
      */
-    @DoNotCall @Deprecated
+    @DoNotCall
+    @Deprecated
     protected static native void luaopen_jit(long ptr); /*
         lua_State * L = (lua_State *) ptr;
         updateJNIEnv(env, L);
@@ -386,7 +394,8 @@ public class Jua implements AutoCloseable {
      * <p>In any case the function leaves the table on the top of the
      * stack.</p>
      */
-    @DoNotCall @Deprecated
+    @DoNotCall
+    @Deprecated
     protected static native void luaL_register(long ptr, String libname, long l); /*
         lua_State * L = (lua_State *) ptr;
         updateJNIEnv(env, L);
@@ -459,7 +468,8 @@ public class Jua implements AutoCloseable {
      * @throws UnsupportedOperationException always
      */
     @SuppressWarnings("unused")
-    @DoNotCall @Deprecated
+    @DoNotCall
+    @Deprecated
     protected static void lua_call(long ptr, int nargs, int nresults) {
         throw new UnsupportedOperationException("Please use lua_pcall instead");
     }
@@ -467,9 +477,10 @@ public class Jua implements AutoCloseable {
     /**
      * Wrapper of C <code>lua_close</code>
      *
-     * Destroys all objects in the given Lua state
+     * <p>Destroys all objects in the given Lua state
      * (calling the corresponding garbage-collection metamethods, if any)
-     * and frees all dynamic memory used by this state.
+     * and frees all dynamic memory used by this state.</p>
+     *
      * @param ptr the lua_State pointer
      * @see <a href=https://www.lua.org/manual/5.1/manual.html#lua_close>lua_close</a>
      */
@@ -479,8 +490,9 @@ public class Jua implements AutoCloseable {
 
     /**
      * Concatenates the n values at the top of the stack, pops them, and leaves the result at the top.
+     *
      * @param ptr the state pointer
-     * @param n <code>n</code>
+     * @param n   <code>n</code>
      */
     protected static native void lua_concat(long ptr, int n); /*
         lua_State * L = (lua_State *) ptr;
@@ -514,14 +526,15 @@ public class Jua implements AutoCloseable {
      * Raw use of lua_error longjmp is not supported
      */
     @SuppressWarnings("unused")
-    @DoNotCall @Deprecated
+    @DoNotCall
+    @Deprecated
     protected static void lua_error(long ptr) {
         throw new UnsupportedOperationException("Raw use of lua_error longjmp is not supported");
     }
 
     /**
      * Controls the garbage collector.
-     *
+     * <p>
      * Copied from Lua doc:
      * <ul>
      *     <li>{@link Consts#LUA_GCSTOP}: stops the garbage collector.</li>
@@ -540,7 +553,8 @@ public class Jua implements AutoCloseable {
      *     <li>{@link Consts#LUA_GCSETSTEPMUL}: sets data as the new value for the step multiplier of
      *     the collector (see §2.10). The function returns the previous value of the step multiplier.</li>
      * </ul>
-     * @param ptr the state pointer
+     *
+     * @param ptr  the state pointer
      * @param what see desciption
      * @param data depends on <code>what</code>
      * @return depends on <code>what</code>
@@ -585,6 +599,7 @@ public class Jua implements AutoCloseable {
      * Pushes onto the stack the metatable of the value at the given acceptable index.
      * <p>If the index is not valid, or if the value does not have a metatable,
      * the function returns 0 and pushes nothing on the stack.</p>
+     *
      * @return 0 if unexpected
      */
     @CheckReturnValue
@@ -609,6 +624,7 @@ public class Jua implements AutoCloseable {
     /**
      * Returns the index of the top element in the stack. Because indices start at 1,
      * this result is equal to the number of elements in the stack (and so 0 means an empty stack).
+     *
      * @return the stack size
      */
     @CheckReturnValue
@@ -882,7 +898,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_objlen</code>:
-     *
+     * <p>
      * Returns the "length" of the value at the given acceptable
      * index: for strings, this is the string length; for tables, this
      * is the result of the length operator ('#'); for userdata, this
@@ -938,7 +954,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_pop</code>:
-     *
+     * <p>
      * Pops n elements from the stack.
      */
     protected static native void lua_pop(long ptr, int n); /*
@@ -949,7 +965,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_pushboolean</code>:
-     *
+     * <p>
      * Pushes a boolean value with value b onto the stack.
      */
     protected static native void lua_pushboolean(long ptr, int b); /*
@@ -960,7 +976,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_pushcclosure</code>:
-     *
+     * <p>
      * Pushes a new C closure onto the stack.
      * When a C function is created, it is possible to associate some
      * values with it, thus creating a C closure (see §3.4); these values
@@ -973,21 +989,24 @@ public class Jua implements AutoCloseable {
      * function. lua_pushcclosure also pops these values from the
      * stack.
      * The maximum value for n is 255.
+     *
      * @throws UnsupportedOperationException always
      */
     @SuppressWarnings("unused")
-    @DoNotCall @Deprecated
+    @DoNotCall
+    @Deprecated
     protected static void lua_pushcclosure(long ptr, long fn, int n) {
         throw new UnsupportedOperationException("Please don't");
     }
 
     /**
      * Wraps <code>lua_pushcfunction</code>:
-     *
+     * <p>
      * Pushes a C function onto the stack. This function receives a
      * pointer to a C function and pushes onto the stack a Lua value
      * of type function that, when called, invokes the corresponding
      * C function.
+     *
      * @throws UnsupportedOperationException always
      */
     @SuppressWarnings({"unused", "SameParameterValue"})
@@ -998,7 +1017,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_pushinteger</code>:
-     *
+     * <p>
      * Pushes a number with value n onto the stack.
      */
     protected static native void lua_pushinteger(long ptr, long n); /*
@@ -1009,7 +1028,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_pushlightuserdata</code>:
-     *
+     * <p>
      * Pushes a light userdata onto the stack.
      * Userdata represent C values in Lua. A light userdata represents
      * a pointer. It is a value (like a number): you do not create
@@ -1025,7 +1044,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_pushlstring</code>:
-     *
+     * <p>
      * Pushes the string pointed to by s with size len onto the
      * stack. Lua makes (or reuses) an internal copy of the given
      * string, so the memory at s can be freed or reused immediately
@@ -1040,7 +1059,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_pushnil</code>:
-     *
+     * <p>
      * Pushes a nil value onto the stack.
      */
     protected static native void lua_pushnil(long ptr); /*
@@ -1051,7 +1070,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_pushnumber</code>:
-     *
+     * <p>
      * Pushes a number with value n onto the stack.
      */
     protected static native void lua_pushnumber(long ptr, double n); /*
@@ -1062,7 +1081,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_pushstring</code>:
-     *
+     * <p>
      * Pushes the zero-terminated string pointed to by s onto the
      * stack. Lua makes (or reuses) an internal copy of the given
      * string, so the memory at s can be freed or reused immediately
@@ -1077,7 +1096,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_pushthread</code>:
-     *
+     * <p>
      * Pushes the thread represented by L onto the stack. Returns 1
      * if this thread is the main thread of its state.
      */
@@ -1090,7 +1109,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_pushvalue</code>:
-     *
+     * <p>
      * Pushes a copy of the element at the given valid index onto the
      * stack.
      */
@@ -1102,7 +1121,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_rawequal</code>:
-     *
+     * <p>
      * Returns 1 if the two values in acceptable indices index1 and
      * index2 are primitively equal (that is, without calling
      * metamethods). Otherwise returns 0. Also returns 0 if any of the
@@ -1117,7 +1136,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_rawget</code>:
-     *
+     * <p>
      * Similar to {@link #lua_gettable}, but does a raw access (i.e., without
      * metamethods).
      */
@@ -1129,7 +1148,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_rawgeti</code>:
-     *
+     * <p>
      * Pushes onto the stack the value t[n], where t is the value at
      * the given valid index. The access is raw; that is, it does not
      * invoke metamethods.
@@ -1142,7 +1161,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_rawset</code>:
-     *
+     * <p>
      * Similar to {@link #lua_settable}, but does a raw assignment (i.e., without
      * metamethods).
      */
@@ -1154,7 +1173,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_rawseti</code>:
-     *
+     * <p>
      * Does the equivalent of t[n] = v, where t is the value at the
      * given valid index and v is the value at the top of the
      * stack.
@@ -1169,7 +1188,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_remove</code>:
-     *
+     * <p>
      * Removes the element at the given valid index, shifting down the
      * elements above this index to fill the gap. Cannot be called with
      * a pseudo-index, because a pseudo-index is not an actual stack
@@ -1183,7 +1202,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_replace</code>:
-     *
+     * <p>
      * Moves the top element into the given position (and pops it),
      * without shifting any element (therefore replacing the value at
      * the given position).
@@ -1196,7 +1215,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_resume</code>:
-     *
+     * <p>
      * Starts and resumes a coroutine in a given thread.
      * To start a coroutine, you first create a new thread (see
      * lua_newthread); then you push onto its stack the main function
@@ -1222,7 +1241,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_setfenv</code>:
-     *
+     * <p>
      * Pops a table from the stack and sets it as the new environment
      * for the value at the given index. If the value at the given index
      * is neither a function nor a thread nor a userdata, lua_setfenv
@@ -1237,7 +1256,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_setfield</code>:
-     *
+     * <p>
      * Does the equivalent to t[k] = v, where t is the value at the
      * given valid index and v is the value at the top of the
      * stack.
@@ -1252,7 +1271,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_setglobal</code>:
-     *
+     * <p>
      * Pops a value from the stack and sets it as the new value of global
      * name.
      */
@@ -1279,7 +1298,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_settable</code>:
-     *
+     * <p>
      * Does the equivalent to t[k] = v, where t is the value at the
      * given valid index, v is the value at the top of the stack, and
      * k is the value just below the top.
@@ -1295,7 +1314,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_settop</code>:
-     *
+     * <p>
      * Accepts any acceptable index, or 0, and sets the stack top to
      * this index. If the new top is larger than the old one, then the
      * new elements are filled with nil. If index is 0, then all stack
@@ -1309,7 +1328,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_status</code>:
-     *
+     * <p>
      * Returns the status of the thread L.
      * The status can be 0 for a normal thread, an error code if the
      * thread finished its execution with an error, or {@link Consts#LUA_YIELD} if
@@ -1324,7 +1343,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_toboolean</code>:
-     *
+     * <p>
      * Converts the Lua value at the given acceptable index to a C boolean
      * value (0 or 1). Like all tests in Lua, lua_toboolean returns
      * 1 for any Lua value different from false and nil; otherwise it
@@ -1341,7 +1360,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_tointeger</code>:
-     *
+     * <p>
      * Converts the Lua value at the given acceptable index to the signed
      * integral type lua_Integer. The Lua value must be a number or
      * a string convertible to a number (see §2.2.1); otherwise, lua_tointeger
@@ -1358,7 +1377,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_tonumber</code>:
-     *
+     * <p>
      * Converts the Lua value at the given acceptable index to the C
      * type lua_Number (see lua_Number). The Lua value must be a number
      * or a string convertible to a number (see §2.2.1); otherwise,
@@ -1373,7 +1392,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_topointer</code>:
-     *
+     * <p>
      * Converts the value at the given acceptable index to a generic
      * C pointer (void*). The value can be a userdata, a table, a
      * thread, or a function; otherwise, lua_topointer returns
@@ -1390,8 +1409,9 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_tostring</code>:
-     *
+     * <p>
      * Equivalent to lua_tolstring with len equal to NULL.
+     *
      * @return converted Java {@link String}
      */
     @CheckReturnValue
@@ -1405,7 +1425,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_tothread</code>:
-     *
+     * <p>
      * Converts the value at the given acceptable index to a Lua thread
      * (represented as lua_State*). This value must be a thread;
      * otherwise, the function returns NULL.
@@ -1419,7 +1439,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_touserdata</code>:
-     *
+     * <p>
      * If the value at the given acceptable index is a full
      * userdata, returns its block address. If the value is a light
      * userdata, returns its pointer. Otherwise, returns NULL.
@@ -1433,7 +1453,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_type</code>:
-     *
+     * <p>
      * Returns the type of the value in the given acceptable index,
      * or LUA_TNONE for a non-valid index (that is, an index to an
      * "empty" stack position). The types returned by lua_type are coded
@@ -1451,7 +1471,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_typename</code>:
-     *
+     * <p>
      * Returns the name of the type encoded by the value tp, which must
      * be one the values returned by lua_type.
      */
@@ -1466,7 +1486,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Wraps <code>lua_xmove</code>:
-     *
+     * <p>
      * Exchange values between different threads of the same global
      * state.
      * This function pops n values from the stack from, and pushes them
@@ -1494,6 +1514,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * Gets the corresponding object from a wrapped Java object on stack
+     *
      * @return the object, null if not a wrapped Java object
      */
     protected static native Object jniToJavaObject(long ptr, int index); /*
@@ -1514,29 +1535,38 @@ public class Jua implements AutoCloseable {
         }
     */
 
-    private static final ArrayList<Jua> luaInstances = new ArrayList<>();
+    private static final JuaInstances luaInstances = new JuaInstances();
 
     /**
      * Gets a {@link Jua} object by its index
      */
-    public static Jua get(int i) {
-        synchronized (luaInstances) {
-            return luaInstances.get(i);
-        }
+    public static Jua get(int id) {
+        return luaInstances.get(id);
     }
 
     /**
      * Creates a new Jua object
-     *
+     * <p>
      * See {@link #luaL_newstate} for details
+     *
+     * @throws UnsatisfiedLinkError when {@link SharedLibraryLoader} cannot load the native binaries
      */
-    public Jua() {
-        synchronized (luaInstances) {
-            stateIndex = luaInstances.size();
-            this.L = luaL_newstate(stateIndex);
-            luaInstances.add(this);
+    public Jua() throws UnsatisfiedLinkError {
+        if (NATIVE_AVAILABLE) {
+            stateId = luaInstances.add(this);
+            this.L = luaL_newstate(stateId);
             subThreads = new LinkedList<>();
             mainThread = this;
+        } else {
+            throw new UnsatisfiedLinkError("Unable to bind to native binaries");
+        }
+    }
+
+    protected synchronized boolean addSubThreads(Jua sub) {
+        if (this.subThreads != null && mainThread == this) {
+            return subThreads.add(sub);
+        } else {
+            return false;
         }
     }
 
@@ -1544,34 +1574,30 @@ public class Jua implements AutoCloseable {
      * Wraps a Jua object around a new lua thread
      */
     protected Jua(long L, Jua main) {
-        synchronized (luaInstances) {
-            stateIndex = luaInstances.size();
-            this.L = L;
-            luaInstances.add(this);
-            subThreads = null;
-            mainThread = main;
-            mainThread.subThreads.add(this);
-        }
+        stateId = luaInstances.add(this);
+        this.L = L;
+        subThreads = null;
+        mainThread = main;
+        mainThread.addSubThreads(this);
     }
 
     /**
      * Disposes with {@link #lua_close(long)}, only if the current state is the main state
      *
-     * <p>Disposes the <code>lua_State *</code> thus deleting relevant JNI object references.</p>
+     * <p>Disposes the <code>lua_State *</code> and thus deleting relevant JNI object references.</p>
      *
-     * <p>It does nothing the current state is a sub thread. If so, you should
+     * <p>It does nothing if the current state is a sub thread. If so, you should
      * remove all references (in lua) to the current state and let lua handle
      * the garbage collection.</p>
      */
-    public void dispose() {
+    public synchronized void dispose() {
         if (mainThread == this) {
-            synchronized (luaInstances) {
-                for (Jua thread : subThreads) {
-                    luaInstances.set(thread.stateIndex, null);
-                }
-                luaInstances.set(stateIndex, null);
-                lua_close(L);
+            for (Jua thread : subThreads) {
+                luaInstances.remove(thread.stateId);
             }
+            subThreads.clear();
+            luaInstances.remove(stateId);
+            lua_close(L);
         }
     }
 
@@ -1635,7 +1661,8 @@ public class Jua implements AutoCloseable {
      * Pushes onto the stack a luatable with key-value pairs from the array
      *
      * <p>The keys of the luatable starts from 1.</p>
-     * @param array any array
+     *
+     * @param array   any array
      * @param isArray pseudo-param to allow primitive array
      */
     public void push(Object array, boolean isArray) {
@@ -1644,7 +1671,7 @@ public class Jua implements AutoCloseable {
         lua_createtable(L, len, 0);
         for (int i = 0; i != len; ++i) {
             push(Array.get(array, i));
-            lua_rawseti(L, -2, i+1);
+            lua_rawseti(L, -2, i + 1);
         }
     }
 
@@ -1799,7 +1826,7 @@ public class Jua implements AutoCloseable {
         if (lua_istable(L, index) == 1) {
             lua_pushnil(L);
             Map<Object, Object> map = new HashMap<>();
-            while(lua_next(L, -2) != 0) {
+            while (lua_next(L, -2) != 0) {
                 Object key = toObject(-2);
                 if (key != null) {
                     map.put(key, toObject(-1));
@@ -1926,7 +1953,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * See {@link #luaL_ref}
-     *
+     * <p>
      * This function always uses {@link Consts#LUA_REGISTRYINDEX} as the table
      */
     public int ref() {
@@ -1935,7 +1962,7 @@ public class Jua implements AutoCloseable {
 
     /**
      * See {@link #luaL_unref}
-     *
+     * <p>
      * This function always uses {@link Consts#LUA_REGISTRYINDEX} as the table
      */
     public void unref(int ref) {
