@@ -41,6 +41,8 @@ int fatalError(lua_State * L) {
 
 /**
  * Returns a global reference to the class matching the name
+ *
+ * Exceptions on the Java side is not cleared (NoClassDefFoundError, for example).
  */
 jclass bindJavaClass(JNIEnv * env, const char * name) {
   jclass tempClass;
