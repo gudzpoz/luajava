@@ -14,7 +14,7 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
             pom {
-                name = POM_NAME + ' Native Libraries'
+                name = POM_NAME
                 description = POM_DESCRIPTION
                 url = POM_URL
                 licenses {

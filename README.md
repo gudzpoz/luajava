@@ -7,6 +7,7 @@
     * [Artifacts](#artifacts)
     * [Examples](#examples)
   * [Credits](#credits)
+  * [License](#license)
 
 ## About ##
 
@@ -111,3 +112,10 @@ You must synchronize yourself. See [ThreadTest.java](./src/test/java/party/iroir
  * [LibGDX](https://github.com/libgdx/libgdx)
  * [jnigen](https://github.com/libgdx/gdx-jnigen)
  * [Nonlua](https://github.com/deathbeam/jua)
+
+## License ##
+
+Code under [./example](./example) is licensed under [GNU General Public License
+Version 3](https://www.gnu.org/licenses/gpl-3.0.txt).
+
+Other parts are licensed under [the MIT license](https://opensource.org/licenses/MIT).

@@ -32,6 +32,13 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:4.6.1'
 }
 
+configurations {
+    desktopNatives {
+        canBeConsumed = true
+        canBeResolved = false
+    }
+}
+
 test {
     useJUnitPlatform()
 }
@@ -204,6 +211,10 @@ tasks.jnigenBuildAndroid.dependsOn(tasks.buildLuaAndroid)
 java {
     withSourcesJar()
     withJavadocJar()
+}
+
+artifacts {
+    desktopNatives(jnigenJarNativesDesktop)
 }
 
 test {
