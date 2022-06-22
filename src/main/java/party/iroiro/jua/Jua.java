@@ -1513,6 +1513,19 @@ public class Jua implements AutoCloseable {
     */
 
     /**
+     * Pushes a Java array to lua state without trying to convert it
+     * to lua native types
+     */
+    protected static native void jniPushJavaArray(long ptr, Object obj); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        jobject global = env->NewGlobalRef(obj);
+        if (global != NULL) {
+            pushJ<JAVA_ARRAY_META_REGISTRY>(L, global);
+        }
+    */
+
+    /**
      * Gets the corresponding object from a wrapped Java object on stack
      *
      * @return the object, null if not a wrapped Java object
@@ -1661,15 +1674,18 @@ public class Jua implements AutoCloseable {
      * <p>The keys of the luatable starts from 1.</p>
      *
      * @param array   any array
-     * @param isArray pseudo-param to allow primitive array
+     * @param convert {@code true} to convert the array to lua table
      */
-    public void push(Object array, boolean isArray) {
-        assert isArray;
-        int len = Array.getLength(array);
-        lua_createtable(L, len, 0);
-        for (int i = 0; i != len; ++i) {
-            push(Array.get(array, i));
-            lua_rawseti(L, -2, i + 1);
+    public void push(Object array, boolean convert) {
+        if (convert) {
+            int len = Array.getLength(array);
+            lua_createtable(L, len, 0);
+            for (int i = 0; i != len; ++i) {
+                push(Array.get(array, i));
+                lua_rawseti(L, -2, i + 1);
+            }
+        } else {
+            jniPushJavaArray(L, array);
         }
     }
 
@@ -2159,5 +2175,15 @@ public class Jua implements AutoCloseable {
      */
     public boolean equal(int i, int i1) {
         return lua_equal(L, i, i1) == 1;
+    }
+
+    /**
+     * Sets the function as the global name
+     * @param name the global name
+     * @param function the function
+     */
+    public void register(String name, JFunction function) {
+        push(function);
+        setglobal(name);
     }
 }

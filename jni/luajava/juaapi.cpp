@@ -15,7 +15,7 @@ inline int jInvoke(lua_State * L, const char * reg, jmethodID methodID) {
       (jint) stateIndex, *data, str, lua_gettop(L) - 1);
   env->DeleteLocalRef(str);
   if (ret == -1) {
-    return lua_error(L);
+    return luaL_error(L, "No matching method found");
   } else {
     return ret;
   }

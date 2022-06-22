@@ -1,5 +1,6 @@
 package party.iroiro.jua;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.*;
@@ -10,18 +11,55 @@ import java.util.stream.Collectors;
 
 /**
  * Provides complex functions for JNI uses
- *
+ * <p>
  * Most reflection features on the lua side rely on this class.
- *
+ * <p>
  * The code gets a bit ugly as I want to avoid calling back into
  * lua again.
  */
 public abstract class JuaAPI {
-    public static int objectIndex(int index, Object object, String name) {
+    /**
+     * Obtains the value of a certain field of an object
+     *
+     * <p>
+     * This method is mainly used by the JNI side. See {@code jni/luajava/jua.cpp}.
+     * </p>
+     *
+     * <p>
+     * For static fields, use {@link #classIndex(int, Class, String)} instead.
+     * </p>
+     *
+     * @param index  the id of {@link Jua} thread calling this method
+     * @param object the object
+     * @param name   the name of the field
+     * @return 1 if a field is found, 2 otherwise
+     * @see #fieldIndex(int, Class, Object, String)
+     */
+    public static int objectIndex(int index, @NotNull Object object, String name) {
         return fieldIndex(index, object.getClass(), object, name);
     }
 
-    public static int objectInvoke(int index, Object obj, String name, int paramCount) throws Exception {
+    /**
+     * Invokes a member method of an object
+     *
+     * <p>
+     * This method is mainly used by the JNI side. See {@code jni/luajava/jua.cpp}.
+     * If {@code name} is {@code null}, we assume that the object is a {@link JuaFunction}.
+     * </p>
+     *
+     * <p>
+     * For static fields, use {@link #classInvoke(int, Class, String, int)} instead.
+     * </p>
+     *
+     * @param index the id of {@link Jua} thread calling this method
+     * @param obj the object
+     * @param name the name of the field
+     * @param paramCount number of parameters (on the lua stack)
+     * @return the number result pushed on stack
+     * @throws Exception when the calling underlying function throws
+     * @see #methodInvoke(int, Class, Object, String, int)
+     */
+    public static int objectInvoke(int index, @NotNull Object obj, @Nullable String name, int paramCount) throws Exception {
         if (name == null) {
             return juaFunctionCall(index, obj, paramCount);
         } else {
@@ -29,17 +67,26 @@ public abstract class JuaAPI {
         }
     }
 
+    /**
+     * Calls a {@link JuaFunction} or {@link JFunction}
+     * @param index the id of {@link Jua} thread calling this method
+     * @param obj the {@link JuaFunction} or {@link JFunction} object
+     * @param ignored parameter count, but we are not using it
+     * @return the number result pushed on stack
+     */
     private static int juaFunctionCall(int index, Object obj, int ignored) {
         Jua L = Jua.get(index);
         if (obj instanceof JuaFunction) {
             return ((JuaFunction) obj).__call();
+        } else if (obj instanceof JFunction) {
+            return ((JFunction) obj).__call(L);
         } else {
             return 0;
         }
     }
 
     public static int objectInvoke(int index, Object obj, String name,
-                                   String notSignature,int paramCount) throws Exception {
+                                   String notSignature, int paramCount) throws Exception {
         return methodInvoke(index, obj.getClass(), obj, name, notSignature, paramCount);
     }
 
@@ -72,7 +119,7 @@ public abstract class JuaAPI {
     }
 
     public static int classInvoke(int index, Class<?> clazz, String name,
-                                   String notSignature,int paramCount) throws Exception {
+                                  String notSignature, int paramCount) throws Exception {
         return methodInvoke(index, clazz, null, name, notSignature, paramCount);
     }
 
@@ -96,7 +143,8 @@ public abstract class JuaAPI {
         try {
             Jua L = Jua.get(index);
             Array.set(obj, i - 1, L.toObject(i - 1));
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return 0;
     }
 
@@ -110,15 +158,16 @@ public abstract class JuaAPI {
 
     /**
      * Calls the given method <code>{obj}.{name}(... params from stack)</code>
-     *
+     * <p>
      * Judge param types from the lua stack and pushes results afterwards.
      * The params are expected to be on stack positions from <code>-paramCount</code>
      * to <code>-1</code>. For example, if you have two params, then the first
      * is expected to be at -2, and the second be at -1.
-     * @param index the index of Java-side {@link Jua}
-     * @param clazz the {@link Class}
-     * @param obj the object (nullable when calling static methods)
-     * @param name the method name
+     *
+     * @param index      the index of Java-side {@link Jua}
+     * @param clazz      the {@link Class}
+     * @param obj        the object (nullable when calling static methods)
+     * @param name       the method name
      * @param paramCount number of supplied params
      * @return the number result pushed on stack
      */
@@ -136,7 +185,7 @@ public abstract class JuaAPI {
     }
 
     public static int methodInvoke(int index, Class<?> clazz, Object obj, String name,
-                                   String notSignature,int paramCount) throws Exception {
+                                   String notSignature, int paramCount) throws Exception {
         Jua L = Jua.get(index);
         Method method = matchMethod(clazz, name, notSignature);
         if (method != null) {
@@ -148,8 +197,7 @@ public abstract class JuaAPI {
         return 0;
     }
 
-    public static int methodInvoke(Jua L, Method method, @Nullable Object obj, Object[] objects)
-            throws Exception {
+    public static int methodInvoke(Jua L, Method method, @Nullable Object obj, Object[] objects) {
         Object ret;
         try {
             ret = method.invoke(obj, objects);
@@ -170,12 +218,13 @@ public abstract class JuaAPI {
 
     /**
      * Tries to fetch field from a object
-     *
+     * <p>
      * When a matching field is found, it is pushed to the corresponding lua stack
-     * @param index the index of {@link Jua} state
-     * @param clazz the {@link Class}
+     *
+     * @param index  the index of {@link Jua} state
+     * @param clazz  the {@link Class}
      * @param object the object
-     * @param name the name of the field / method
+     * @param name   the name of the field / method
      * @return 1 if a field is found, 2 otherwise
      */
     public static int fieldIndex(int index, Class<?> clazz, @Nullable Object object, String name) {
@@ -186,7 +235,7 @@ public abstract class JuaAPI {
             L = Jua.get(index);
             L.push(obj);
             return 1;
-        } catch (NoSuchFieldException | IllegalAccessException ignored) {
+        } catch (NoSuchFieldException | IllegalAccessException | NullPointerException ignored) {
             return 2;
         }
     }
@@ -198,7 +247,8 @@ public abstract class JuaAPI {
             Class<?> type = field.getType();
             Object o = convertFromLua(L, type, 3);
             field.set(object, o);
-        } catch (NoSuchFieldException | IllegalAccessException ignored) {}
+        } catch (NoSuchFieldException | IllegalAccessException ignored) {
+        }
         return 0;
     }
 
@@ -206,17 +256,18 @@ public abstract class JuaAPI {
     private static <T extends Executable> T matchMethod(Jua L, T[] methods,
                                                         @Nullable String name, Object[] params) {
         for (T method : methods) {
-            if (method.getParameterCount() == params.length &&
-                    (name == null || name.equals(method.getName()))) {
-                Class<?>[] classes = method.getParameterTypes();
-                try {
-                    for (int i = 0; i != params.length; ++i) {
-                        params[i] = convertFromLua(L, classes[i], i+2);
+            if (method.getParameterCount() == params.length) {
+                if (name == null || name.equals(method.getName())) {
+                    Class<?>[] classes = method.getParameterTypes();
+                    try {
+                        for (int i = 0; i != params.length; ++i) {
+                            params[i] = convertFromLua(L, classes[i], i + 2);
+                        }
+                    } catch (IllegalArgumentException e) {
+                        continue;
                     }
-                } catch (IllegalArgumentException e) {
-                    continue;
+                    return method;
                 }
-                return method;
             }
         }
         return null;
@@ -234,7 +285,8 @@ public abstract class JuaAPI {
 
     /**
      * Converts an element on the lua statck at <code>index</code> to Java
-     * @param L the lua state
+     *
+     * @param L     the lua state
      * @param clazz the expected return type
      * @param index a <b>lua</b> index (that is, starts from 1)
      * @return the converted element
@@ -279,7 +331,8 @@ public abstract class JuaAPI {
         if (clazz.isPrimitive()) {
             if (boolean.class == clazz) {
                 return toNumber != 0;
-            } if (char.class == clazz) {
+            }
+            if (char.class == clazz) {
                 return (char) (byte) toNumber;
             } else if (byte.class == clazz) {
                 return (byte) toNumber;
