@@ -2265,6 +2265,13 @@ public class Jua implements AutoCloseable {
     }
 
     /**
+     * See {@link #luaL_openlibs(long)}.
+     */
+    public void openLibraries() {
+        luaL_openlibs(L);
+    }
+
+    /**
      * Controls the degree of conversion from Java to Lua
      */
     public enum Conversion {

@@ -11,6 +11,9 @@ public class ClassObjectTest {
     @Test
     public void classObjectTest() {
         try (Jua L = new Jua()) {
+            assertEquals(1, L.run("t = java.require('java/lang/NoSystem')"));
+            assertTrue(L.toString(-1).contains("Unable to bind to class java/lang/NoSystem"));
+
             assertEquals(0, L.run("t = java.require('party/iroiro/jua/ClassObjectTest')"));
             L.getglobal("t");
             assertEquals(Class.class, L.toJavaObject(-1).getClass());
@@ -22,6 +25,7 @@ public class ClassObjectTest {
     }
 
     private static final AtomicBoolean run = new AtomicBoolean(false);
+
     public static void classMethod(Class<?> c) {
         if (c == ClassObjectTest.class) {
             run.set(true);

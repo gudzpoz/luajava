@@ -7,8 +7,8 @@ static int javaRequire(lua_State * L) {
 
   JNIEnv * env = getJNIEnv(L);
 
-  jclass classInstance = bindJavaClass(env, className);
   bool noExceptions = env->ExceptionCheck() == JNI_FALSE;
+  jclass classInstance = bindJavaClass(env, className);
   if (classInstance == NULL) {
     if (noExceptions) {
       env->ExceptionClear();
