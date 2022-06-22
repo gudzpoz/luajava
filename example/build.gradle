@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
 repositories {
@@ -21,7 +22,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'party.iroiro.jua.Console'
+    mainClassName = 'party.iroiro.jua.Console'
 }
 
 tasks.named('run') {

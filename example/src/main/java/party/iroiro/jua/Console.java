@@ -17,14 +17,13 @@ public class Console {
                 .build();
              Jua L = new Jua()
         ) {
+            L.openLibraries();
             LineReader reader = LineReaderBuilder.builder()
                     .appName("luajit")
                     .terminal(terminal)
                     .highlighter(LuaHighlighter.get())
                     .build();
-            reader.printAbove(Consts.LUA_RELEASE);
-            reader.printAbove(Consts.LUA_AUTHORS);
-            reader.printAbove(Consts.LUA_COPYRIGHT);
+            reader.printAbove(Consts.LUA_RELEASE + '\t' + Consts.LUA_COPYRIGHT);
             while (true) {
                 String s;
                 try {
