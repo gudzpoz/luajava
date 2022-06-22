@@ -142,7 +142,7 @@ public abstract class JuaAPI {
         assert obj.getClass().isArray();
         try {
             Jua L = Jua.get(index);
-            Array.set(obj, i - 1, L.toObject(i - 1));
+            Array.set(obj, i - 1, L.toObject(L.gettop(), obj.getClass().getComponentType()));
         } catch (Exception ignored) {
         }
         return 0;

@@ -74,7 +74,7 @@ int jobjectNewIndex(lua_State * L) {
 int jarrayLength(lua_State * L) {
   jobject * data = (jobject *) luaL_checkudata(L, 1, JAVA_ARRAY_META_REGISTRY);
   JNIEnv * env = getJNIEnv(L);
-  int len = (int) env->CallStaticIntMethod(juaapi_class, juaapi_arrayindex, *data);
+  int len = (int) env->CallStaticIntMethod(juaapi_class, juaapi_arraylen, *data);
   lua_pushinteger(L, len);
   return 1;
 }
@@ -84,9 +84,11 @@ inline int jarrayJIndex(lua_State * L, jmethodID func, bool ret) {
   int i = (int) luaL_checknumber(L, 2);
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
+  int retVal = (int) env->CallStaticIntMethod(juaapi_class, func, (jint) stateIndex, *data, i);
   if (ret) {
-    return (int) env->CallStaticIntMethod(juaapi_class, func, (jint) stateIndex, *data, i);
+    return retVal;
   } else {
+    env->CallStaticIntMethod(juaapi_class, func, (jint) stateIndex, *data, i);
     return 0;
   }
 }

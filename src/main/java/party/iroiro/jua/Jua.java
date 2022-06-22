@@ -3,6 +3,7 @@ package party.iroiro.jua;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 import com.google.errorprone.annotations.CheckReturnValue;
 import com.google.errorprone.annotations.DoNotCall;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Proxy;
@@ -1576,7 +1577,7 @@ public class Jua implements AutoCloseable {
     }
 
     protected synchronized void addSubThreads(Jua sub) {
-        if (this.subThreads != null && mainThread == this) {
+        if (mainThread == this) {
             subThreads.add(sub);
         }
     }
@@ -1657,7 +1658,7 @@ public class Jua implements AutoCloseable {
     /**
      * Pushes onto the stack a luatable with key-value pairs from the map
      *
-     * <p>Note that recursive reference is not supported and will cause overflow the stack.</p>
+     * <p>Note that recursive reference is not supported and will overflow the stack.</p>
      */
     public void push(Map<?, ?> map) {
         lua_createtable(L, 0, map.size());
@@ -1706,37 +1707,51 @@ public class Jua implements AutoCloseable {
     }
 
     /**
-     * Pushes element onto the stack
+     * Pushes element onto the stack with {@link Conversion#FULL}
      *
-     * <p>Converts the element to lua types automatically:</p>
-     * <ul>
-     *     <li>Boolean -&gt; boolean</li>
-     *     <li>String -&gt; string</li>
-     *     <li>Number -&gt; lua_Number</li>
-     *     <li>Map / Collection / Array -&gt; table</li>
-     *     <li>Object -&gt; Java object wrapped by a metatable {@link #pushJavaObject}</li>
-     * </ul>
+     * <p>Converts the element to lua types automatically.</p>
+     *
+     * @see Conversion#FULL
+     * @param obj object to be converted and pushed onto the stack
      */
     public void push(Object obj) {
+        pushJava(obj, Conversion.FULL);
+    }
+
+    /**
+     * Pushes element onto the stack with specified degree of {@link Conversion}
+     * @param obj object to be converted and pushed onto the stack
+     * @param degree the conversion degree
+     * @see Conversion
+     */
+    public void pushJava(Object obj, Conversion degree) {
         if (obj == null) {
             lua_pushnil(L);
-        } else if (obj instanceof Boolean) {
-            push((boolean) obj);
-        } else if (obj instanceof String) {
-            push((String) obj);
-        } else if (obj instanceof Integer || obj instanceof Long ||
-                obj instanceof Byte || obj instanceof Short) {
-            push(((Number) obj).longValue());
-        } else if (obj instanceof Number) {
-            push((Number) obj);
-        } else if (obj instanceof Map) {
-            push((Map<?, ?>) obj);
-        } else if (obj instanceof Collection) {
-            push((Collection<?>) obj);
-        } else if (obj.getClass().isArray()) {
-            push(obj, true);
+        } else if (degree == Conversion.NONE) {
+            pushJavaObjectOrArray(obj);
         } else {
-            pushJavaObject(obj);
+            if (obj instanceof Boolean) {
+                push((boolean) obj);
+            } else if (obj instanceof String) {
+                push((String) obj);
+            } else if (obj instanceof Integer || obj instanceof Long ||
+                    obj instanceof Byte || obj instanceof Short) {
+                push(((Number) obj).longValue());
+            } else if (obj instanceof Number) {
+                push((Number) obj);
+            } else if (degree == Conversion.SEMI) {
+                pushJavaObjectOrArray(obj);
+            } else /* (degree == Conversion.FULL) */ {
+                if (obj instanceof Map) {
+                    push((Map<?, ?>) obj);
+                } else if (obj instanceof Collection) {
+                    push((Collection<?>) obj);
+                } else if (obj.getClass().isArray()) {
+                    push(obj, true);
+                } else {
+                    pushJavaObject(obj);
+                }
+            }
         }
     }
 
@@ -1744,8 +1759,30 @@ public class Jua implements AutoCloseable {
      * Pushes the Java object element onto lua stack with a metatable
      * that reflects fields and method calls
      */
-    public void pushJavaObject(Object obj) {
+    public void pushJavaObject(@NotNull Object obj) {
         jniPushJavaObject(L, obj);
+    }
+
+    /**
+     * Pushes the Java array element onto lua stack with a metatable
+     * that reflects element lookups and assignments
+     *
+     * @param arr the array (primitive or not)
+     */
+    public void pushJavaArray(@NotNull Object arr) {
+        jniPushJavaArray(L, arr);
+    }
+
+    /**
+     * A convenient method
+     * @param obj object or array
+     */
+    protected void pushJavaObjectOrArray(@NotNull Object obj) {
+        if (obj.getClass().isArray()) {
+            pushJavaArray(obj);
+        } else {
+            pushJavaObject(obj);
+        }
     }
 
     /**
@@ -1831,6 +1868,36 @@ public class Jua implements AutoCloseable {
                 return toJavaObject(index);
         }
         return null;
+    }
+
+    public Object toObject(int index, Class<?> type) {
+        Object converted = toObject(index);
+        if (converted == null) {
+            return null;
+        } else if (type.isAssignableFrom(converted.getClass())) {
+            return converted;
+        } else if (Number.class.isAssignableFrom(converted.getClass())) {
+            Number number = ((Number) converted);
+            if (type == byte.class || type == Byte.class) {
+                return number.intValue();
+            }
+            if (type == short.class || type == Short.class) {
+                return number.intValue();
+            }
+            if (type == int.class || type == Integer.class) {
+                return number.intValue();
+            }
+            if (type == long.class || type == Long.class) {
+                return number.intValue();
+            }
+            if (type == float.class || type == Float.class) {
+                return number.intValue();
+            }
+            if (type == double.class || type == Double.class) {
+                return number.intValue();
+            }
+        }
+        throw new IllegalArgumentException("Unable to convert type");
     }
 
     /**
@@ -2104,6 +2171,15 @@ public class Jua implements AutoCloseable {
     }
 
     /**
+     * See {@link #lua_isuserdata(long, int)}
+     * @param index the stack index
+     * @return {@code true} if the element is userdata or lightuserdata
+     */
+    public boolean isuserdata(int index) {
+        return lua_isuserdata(L, index) == 1;
+    }
+
+    /**
      * See {@link #lua_isnumber(long, int)}
      */
     public boolean isnumber(int index) {
@@ -2169,7 +2245,7 @@ public class Jua implements AutoCloseable {
     /**
      * See {@link #lua_equal(long, int, int)}.
      *
-     * @param i the stack index of the first element
+     * @param i  the stack index of the first element
      * @param i1 the stack index of the second element
      * @return true if the two elements equal
      */
@@ -2179,11 +2255,55 @@ public class Jua implements AutoCloseable {
 
     /**
      * Sets the function as the global name
-     * @param name the global name
+     *
+     * @param name     the global name
      * @param function the function
      */
     public void register(String name, JFunction function) {
         push(function);
         setglobal(name);
+    }
+
+    /**
+     * Controls the degree of conversion from Java to Lua
+     */
+    public enum Conversion {
+        /**
+         * Converts everything possible, including the following classes:
+         *
+         * <ul>
+         *     <li>Boolean -&gt; boolean</li>
+         *     <li>String -&gt; string</li>
+         *     <li>Number -&gt; lua_Number</li>
+         *     <li>Map / Collection / Array -&gt; table (recursive)</li>
+         *     <li>Object -&gt; Java object wrapped by a metatable {@link #pushJavaObject}</li>
+         * </ul>
+         *
+         * <p>
+         * Note that this means luatable changes on the lua side will not get reflected
+         * to the Java side.
+         * </p>
+         */
+        FULL,
+        /**
+         * Converts immutable types, including:
+         * <ul>
+         *     <li>Boolean</li>
+         *     <li>String</li>
+         *     <li>Number</li>
+         * </ul>
+         *
+         * <p>
+         *     {@link Map}, {@link Collection}, etc. are pushed with {@link #pushJavaObject(Object)}.
+         *     Arrays are pushed with {@link #pushJavaArray(Object)}.
+         * </p>
+         */
+        SEMI,
+        /**
+         * All objects, including {@link Integer}, for example, are pushed as either
+         * Java objects (with {@link #pushJavaObject(Object)} or Java arrays
+         * (with {@link #pushJavaArray(Object)}).
+         */
+        NONE
     }
 }
