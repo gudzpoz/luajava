@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class ThreadedTests {
-    @RepeatedTest(20)
+    @RepeatedTest(1)
     public void threadedTests() throws InterruptedException {
         ArrayList<Thread> threads = new ArrayList<>();
         final int cap = 50;

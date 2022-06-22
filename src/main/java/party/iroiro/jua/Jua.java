@@ -1879,22 +1879,22 @@ public class Jua implements AutoCloseable {
         } else if (Number.class.isAssignableFrom(converted.getClass())) {
             Number number = ((Number) converted);
             if (type == byte.class || type == Byte.class) {
-                return number.intValue();
+                return number.byteValue();
             }
             if (type == short.class || type == Short.class) {
-                return number.intValue();
+                return number.shortValue();
             }
             if (type == int.class || type == Integer.class) {
                 return number.intValue();
             }
             if (type == long.class || type == Long.class) {
-                return number.intValue();
+                return number.longValue();
             }
             if (type == float.class || type == Float.class) {
-                return number.intValue();
+                return number.floatValue();
             }
             if (type == double.class || type == Double.class) {
-                return number.intValue();
+                return number.doubleValue();
             }
         }
         throw new IllegalArgumentException("Unable to convert type");
