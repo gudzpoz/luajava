@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static party.iroiro.jua.JuaJitNatives.lua_newuserdata;
 
 public class JuaApiTest {
     @Test

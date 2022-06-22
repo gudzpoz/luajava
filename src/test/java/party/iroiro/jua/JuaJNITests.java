@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static party.iroiro.jua.JuaJitNatives.*;
 
 public class JuaJNITests {
     public static class JuaTest extends Jua implements Runnable {
