@@ -1,2 +1,3 @@
 rootProject.name = 'jua'
 include 'example'
+include 'lua51'

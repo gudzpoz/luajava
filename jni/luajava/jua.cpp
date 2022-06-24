@@ -159,8 +159,9 @@ void initMetaRegistry(lua_State * L) {
     lua_setfield(L, -2, LUA_METAFIELD_INDEX);
     lua_pushcfunction(L, &jclassNewIndex);
     lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
-    lua_pop(L, 1);
   }
+  lua_pop(L, 1);
+
   if (luaL_newmetatable(L, JAVA_OBJECT_META_REGISTRY) == 1) {
     lua_pushcfunction(L, &gc<JAVA_OBJECT_META_REGISTRY>);
     lua_setfield(L, -2, LUA_METAFIELD_GC);
@@ -170,8 +171,9 @@ void initMetaRegistry(lua_State * L) {
     lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
     lua_pushcfunction(L, &jobjectCall);
     lua_setfield(L, -2, LUA_METAFIELD_CALL);
-    lua_pop(L, 1);
   }
+  lua_pop(L, 1);
+
   if (luaL_newmetatable(L, JAVA_ARRAY_META_REGISTRY) == 1) {
     lua_pushcfunction(L, &gc<JAVA_ARRAY_META_REGISTRY>);
     lua_setfield(L, -2, LUA_METAFIELD_GC);
@@ -181,8 +183,8 @@ void initMetaRegistry(lua_State * L) {
     lua_setfield(L, -2, LUA_METAFIELD_INDEX);
     lua_pushcfunction(L, &jarrayNewIndex);
     lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
-    lua_pop(L, 1);
   }
+  lua_pop(L, 1);
 }
 
 int getStateIndex(lua_State * L) {

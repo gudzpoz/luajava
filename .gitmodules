@@ -2,3 +2,6 @@
 	path = jni/luajit
 	url = https://github.com/LuaJIT/LuaJIT.git
 	branch = v2.1
+[submodule "lua51/jni/lua51"]
+	path = lua51/jni/lua51
+	url = https://github.com/gudzpoz/lua51.git

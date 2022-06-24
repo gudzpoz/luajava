@@ -24,15 +24,6 @@ extern jmethodID juaapi_arraylen;
 extern jmethodID juaapi_arrayindex;
 extern jmethodID juaapi_arraynewindex;
 
-/**
- * Opens individual libraries when one does not want them all
- */
-static inline void luaJ_openlib(lua_State * L, const char *libName, lua_CFunction loader) {
-  lua_pushcfunction(L, loader);
-  lua_pushstring(L, libName);
-  lua_call(L, 1, 0);
-}
-
 jclass bindJavaClass(JNIEnv * env, const char * name);
 jmethodID bindJavaStaticMethod(JNIEnv * env, jclass c, const char * name, const char * sig);
 jmethodID bindJavaMethod(JNIEnv * env, jclass c, const char * name, const char * sig);
