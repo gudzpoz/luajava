@@ -18,6 +18,10 @@ import java.util.stream.Collectors;
  * lua again.
  */
 public abstract class JuaAPI {
+    public static int threadNewId(int mainId, long ptr) {
+        return AbstractLua.adopt(mainId, ptr);
+    }
+
     /**
      * Obtains the value of a certain field of an object
      *

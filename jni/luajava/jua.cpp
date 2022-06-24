@@ -25,6 +25,7 @@ jmethodID juaapi_objectnewindex = NULL;
 jmethodID juaapi_arraylen       = NULL;
 jmethodID juaapi_arrayindex     = NULL;
 jmethodID juaapi_arraynewindex  = NULL;
+jmethodID juaapi_threadnewid    = NULL;
 // java.lang.Throwable
 jclass java_lang_throwable_class = NULL;
 jmethodID throwable_getmessage   = NULL;
@@ -121,6 +122,8 @@ int initBindings(JNIEnv * env) {
           "arrayIndex", "(ILjava/lang/Object;I)I");
   juaapi_arraynewindex = bindJavaStaticMethod(env, juaapi_class,
           "arrayNewIndex", "(ILjava/lang/Object;I)I");
+  juaapi_threadnewid = bindJavaStaticMethod(env, juaapi_class,
+          "threadNewId", "(IJ)I");
   if (java_lang_class_class == NULL
       || java_lang_class_forname == NULL
       || java_lang_throwable_class == NULL
@@ -136,7 +139,8 @@ int initBindings(JNIEnv * env) {
       || juaapi_objectnewindex == NULL
       || juaapi_arraylen == NULL
       || juaapi_arrayindex == NULL
-      || juaapi_arraynewindex) {
+      || juaapi_arraynewindex == NULL
+      || juaapi_threadnewid == NULL) {
     return -1;
   } else {
     return 0;
@@ -187,19 +191,44 @@ void initMetaRegistry(lua_State * L) {
   lua_pop(L, 1);
 }
 
+int getMainThreadId(lua_State * L) {
+  lua_pushstring(L, JAVA_STATE_INDEX);
+  lua_rawget(L, LUA_REGISTRYINDEX);
+  int i = lua_tointeger(L, -1);
+  lua_pop(L, 1);
+  return i;
+}
+
+int createNewId(lua_State * L) {
+  int mainId = getMainThreadId(L);
+  JNIEnv * env = getJNIEnv(L);
+  int lid = env->CallStaticIntMethod(juaapi_class, juaapi_threadnewid, mainId, (jlong) L);
+  lua_pushthread(L);
+  lua_pushinteger(L, lid);
+  lua_settable(L, LUA_REGISTRYINDEX);
+  return lid;
+}
+
 int getStateIndex(lua_State * L) {
   lua_Integer stateIndex;
   if (lua_pushthread(L) == 1) {
     /* Main thread */
-    lua_pushstring(L, JAVA_STATE_INDEX);
-    lua_rawget(L, LUA_REGISTRYINDEX);
-    stateIndex = lua_tointeger(L, -1);
-    lua_pop(L, 2);
+    lua_pop(L, 1);
+    stateIndex = getMainThreadId(L);
   } else {
     /* Or else use the thread itself as key */
     lua_rawget(L, LUA_REGISTRYINDEX);
-    stateIndex = lua_tointeger(L, -1);
-    lua_pop(L, 1);
+    if (lua_isnil(L, -1)) {
+      /*
+       * Wow, it is a thread created on the Lua side,
+       * i.e., no id is assigned yet.
+       */
+      lua_pop(L, 1);
+      stateIndex = createNewId(L);
+    } else {
+      stateIndex = lua_tointeger(L, -1);
+      lua_pop(L, 1);
+    }
   }
   return (int) stateIndex;
 }

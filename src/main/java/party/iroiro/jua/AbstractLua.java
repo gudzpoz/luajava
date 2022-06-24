@@ -37,6 +37,17 @@ public abstract class AbstractLua implements Lua {
         subThreads = null;
     }
 
+    public static int adopt(int mainId, long ptr) {
+        Lua instance = getInstance(mainId);
+        assert instance instanceof AbstractLua;
+        AbstractLua lua = (AbstractLua) instance;
+        LuaInstances.Token token = instances.add();
+        Lua child = lua.newThread(ptr, token.id, lua);
+        lua.addSubThread(child);
+        token.setter.accept(child);
+        return token.id;
+    }
+
     @Override
     public void push(@Nullable Object object, Conversion degree) {
         if (object == null) {
@@ -434,11 +445,11 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public Lua newThread() {
-        // TODO: No, it does not work for threads created from the Lua side
         LuaInstances.Token token = instances.add();
         long K = C.luaJ_newthread(L, token.id);
         Lua lua = newThread(K, token.id, this.mainThread);
         mainThread.addSubThread(lua);
+        token.setter.accept(lua);
         return lua;
     }
 
