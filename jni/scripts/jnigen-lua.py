@@ -560,6 +560,17 @@ def addExtra(functions):
             ],
         },
     })
+    functions.append({
+        'name': 'luaJ_newthread',
+        'description': 'Create a new thread',
+        'signature': {
+            'return': 'lua_State *',
+            'params': [
+                ['lua_State *', 'L'],
+                ['int', 'lid'],
+            ],
+        },
+    })
 
 
 def getWhole(luaVersion, package):

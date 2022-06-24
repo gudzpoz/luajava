@@ -188,10 +188,19 @@ void initMetaRegistry(lua_State * L) {
 }
 
 int getStateIndex(lua_State * L) {
-  lua_pushstring(L, JAVA_STATE_INDEX);
-  lua_rawget(L, LUA_REGISTRYINDEX);
-  lua_Integer stateIndex = lua_tointeger(L, -1);
-  lua_pop(L, 1);
+  lua_Integer stateIndex;
+  if (lua_pushthread(L) == 1) {
+    /* Main thread */
+    lua_pushstring(L, JAVA_STATE_INDEX);
+    lua_rawget(L, LUA_REGISTRYINDEX);
+    stateIndex = lua_tointeger(L, -1);
+    lua_pop(L, 2);
+  } else {
+    /* Or else use the thread itself as key */
+    lua_rawget(L, LUA_REGISTRYINDEX);
+    stateIndex = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+  }
   return (int) stateIndex;
 }
 

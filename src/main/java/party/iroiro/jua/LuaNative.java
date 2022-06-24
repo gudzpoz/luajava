@@ -86,6 +86,8 @@ public abstract class LuaNative {
 
     protected abstract int lua_yield(long ptr, int nresults);
 
+    protected abstract long luaJ_newthread(long ptr, int lid);
+
     protected abstract long luaL_newstate(int lid);
 
     protected abstract long lua_newthread(long ptr);
@@ -125,6 +127,8 @@ public abstract class LuaNative {
     protected abstract void luaJ_getmetatable(long ptr, String tname);
 
     protected abstract void luaJ_gettable(long ptr, int index);
+
+    protected abstract void luaJ_newmetatable(long ptr, String tname);
 
     protected abstract void luaJ_openlib(long ptr, String lib);
 

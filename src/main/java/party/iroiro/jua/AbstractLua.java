@@ -16,11 +16,23 @@ public abstract class AbstractLua implements Lua {
     protected final LuaNative C;
     protected final long L;
     protected final int id;
+    protected final Lua mainThread;
+    protected final List<Lua> subThreads;
 
     protected AbstractLua(LuaNative luaNative) {
         this.C = luaNative;
         id = instances.add(this);
         L = luaNative.luaL_newstate(id);
+        mainThread = this;
+        subThreads = new LinkedList<>();
+    }
+
+    protected AbstractLua(LuaNative luaNative, long L, int id, @NotNull Lua mainThread) {
+        this.C = luaNative;
+        this.L = L;
+        this.mainThread = mainThread;
+        this.id = id;
+        subThreads = null;
     }
 
     @Override
@@ -178,7 +190,6 @@ public abstract class AbstractLua implements Lua {
             }
         } catch (IllegalArgumentException ignored) {
         }
-        int top = C.lua_gettop(L);
         if (C.lua_istable(L, index) == 1) {
             C.lua_pushnil(L);
             Map<Object, Object> map = new HashMap<>();
@@ -385,12 +396,13 @@ public abstract class AbstractLua implements Lua {
         return C.luaJ_pcall(L, nArgs, nResults);
     }
 
-    @Override
     public Lua newThread() {
-        long J = C.lua_newthread(L);
-        // TODO: subthread
-        return null;
+        LuaInstances.Token token = instances.add();
+        long K = C.luaJ_newthread(L, token.id);
+        return newThread(K, token.id, this.mainThread);
     }
+
+    protected abstract Lua newThread(long L, int id, Lua mainThread);
 
     @Override
     public LuaError resume(int nArgs) {
@@ -406,8 +418,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void yield(int n) {
-        // TODO: Should be done in luaJ_yield, marking a flag or something
-        C.lua_yield(L, n);
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
@@ -522,8 +533,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void error(String message) {
-        // TODO: NONONO
-        C.lua_error(L);
+        throw new RuntimeException(message);
     }
 
     @Override

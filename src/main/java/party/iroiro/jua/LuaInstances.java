@@ -2,10 +2,12 @@ package party.iroiro.jua;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 /**
  * A collection of {@link Jua} instances, each labeled with a unique id
@@ -27,6 +29,10 @@ class LuaInstances {
      */
     @CheckReturnValue
     synchronized int add(@NotNull Lua instance) {
+        return addNullable(instance);
+    }
+
+    private synchronized int addNullable(@Nullable Lua instance) {
         if (freeIds.isEmpty()) {
             int id = instances.size();
             instances.add(instance);
@@ -38,6 +44,12 @@ class LuaInstances {
             instances.set(id, instance);
             return id;
         }
+    }
+
+    @CheckReturnValue
+    synchronized Token add() {
+        int id = addNullable(null);
+        return new Token(id, lua -> instances.set(id, lua));
     }
 
     /**
@@ -75,5 +87,15 @@ class LuaInstances {
      */
     synchronized int size() {
         return instances.size() - freeIds.size();
+    }
+
+    public static class Token {
+        public final int id;
+        public final Consumer<Lua> setter;
+
+        private Token(int id, Consumer<Lua> setter) {
+            this.id = id;
+            this.setter = setter;
+        }
     }
 }

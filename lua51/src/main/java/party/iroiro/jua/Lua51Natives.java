@@ -3143,6 +3143,42 @@ public class Lua51Natives extends LuaNative {
 
 
     /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaL_newmetatable"><code>luaL_newmetatable</code></a>
+     *
+     * <pre><code>
+     * [-0, +1, m]
+     * </code></pre>
+     *
+     * <pre><code>
+     * int luaL_newmetatable (lua_State *L, const char *tname);
+     * </code></pre>
+     *
+     * <p>
+     * If the registry already has the key <code>tname</code>,
+     * returns 0.
+     * Otherwise,
+     * creates a new table to be used as a metatable for userdata,
+     * adds it to the registry with key <code>tname</code>,
+     * and returns 1.
+     * </p>
+     * 
+     * <p>
+     * In both cases pushes onto the stack the final value associated
+     * with <code>tname</code> in the registry.
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param tname type name
+     */
+    protected native void luaJ_newmetatable(long ptr, String tname); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        luaL_newmetatable((lua_State *) L, (const char *) tname);
+    */
+
+
+    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaL_newstate"><code>luaL_newstate</code></a>
      *
      * <pre><code>
@@ -3654,6 +3690,28 @@ public class Lua51Natives extends LuaNative {
         updateJNIEnv(env, L);
         
         jobject returnValueReceiver = (jobject) luaJ_toobject((lua_State *) L, (int) index);
+        return returnValueReceiver;
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_newthread"><code>luaJ_newthread</code></a>
+     *
+     * 
+     *
+     * 
+     *
+     * Create a new thread
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param lid the id of the Lua state, to be used to identify between Java and Lua
+     * @return see description
+     */
+    protected native long luaJ_newthread(long ptr, int lid); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        jlong returnValueReceiver = (jlong) luaJ_newthread((lua_State *) L, (int) lid);
         return returnValueReceiver;
     */
 

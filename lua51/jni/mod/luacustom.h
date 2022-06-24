@@ -20,6 +20,14 @@ static void luaJavaSetup(lua_State * L, JNIEnv * env, int lid) {
     initMetaRegistry(L);
 }
 
+static lua_State * luaJ_newthread(lua_State * L, int lid) {
+    lua_State * K = lua_newthread(L);
+    lua_pushthread(K);
+    lua_pushinteger(K, lid);
+    lua_settable(K, LUA_REGISTRYINDEX);
+    return K;
+}
+
 static int initLua51Bindings(JNIEnv * env) {
     return initBindings(env);
 }
