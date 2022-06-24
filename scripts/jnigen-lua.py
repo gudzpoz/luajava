@@ -3,10 +3,8 @@
 
 # In[109]:
 
-# python jni/scripts/jnigen-lua.py 5.1 party.iroiro.jua lua51/src/main/java/
-# python jni/scripts/jnigen-lua.py 5.2 party.iroiro.jua lua52/src/main/java/
-# python jni/scripts/jnigen-lua.py 5.3 party.iroiro.jua lua53/src/main/java/
-# python jni/scripts/jnigen-lua.py 5.4 party.iroiro.jua lua54/src/main/java/
+# for i in {1..4}; do python scripts/jnigen-lua.py 5.$i party.iroiro.jua lua5${i}/src/main/java/; done
+# Do not forget to update LuaJit
 
 import requests
 from lxml import html
@@ -620,6 +618,15 @@ def getWhole(luaVersion, package):
         '            // Java-side exceptions are not cleared if any\n' +
         '            return;\n' +
         '        }\n' +
+        '    */\n\n'
+    )
+    inner += (
+        '    /**\n' +
+        '     * Get <code>LUA_REGISTRYINDEX</code>, '
+        + 'which is a co,puted compile time constant\n' +
+        '     */\n' +
+        '    protected native int getRegistryIndex(); /*\n' +
+        '        return LUA_REGISTRYINDEX;\n' +
         '    */\n\n'
     )
     addExtra(functions)

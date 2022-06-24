@@ -655,4 +655,19 @@ public abstract class AbstractLua implements Lua {
             }
         }
     }
+
+    @Override
+    public int ref() {
+        return ref(C.getRegistryIndex());
+    }
+
+    @Override
+    public void refGet(int ref) {
+        rawGetI(C.getRegistryIndex(), ref);
+    }
+
+    @Override
+    public void unref(int ref) {
+        unRef(C.getRegistryIndex(), ref);
+    }
 }

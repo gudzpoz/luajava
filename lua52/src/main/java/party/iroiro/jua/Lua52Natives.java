@@ -124,6 +124,13 @@ public class Lua52Natives extends LuaNative {
     */
 
     /**
+     * Get <code>LUA_REGISTRYINDEX</code>, which is a co,puted compile time constant
+     */
+    protected native int getRegistryIndex(); /*
+        return LUA_REGISTRYINDEX;
+    */
+
+    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.2/#lua_absindex"><code>lua_absindex</code></a>
      *
      * <pre><code>

@@ -10,6 +10,8 @@ public abstract class LuaNative {
 
     protected abstract double lua_tonumber(long ptr, int index);
 
+    protected abstract int getRegistryIndex();
+
     protected abstract int lua_error(long ptr);
 
     protected abstract int lua_gethookcount(long ptr);
