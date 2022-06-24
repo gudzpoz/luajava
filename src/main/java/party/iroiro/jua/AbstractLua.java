@@ -357,7 +357,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public @Nullable LuaType type(int index) {
-        return LuaType.valueOf(C, C.lua_type(L, index));
+        return convertType(C.lua_type(L, index));
     }
 
     @Override
@@ -422,16 +422,13 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public LuaError load(String script) {
-        C.luaL_loadstring(L, script);
-        // TODO: Conversion
-        return LuaError.NONE;
+        return convertError(C.luaL_loadstring(L, script));
     }
 
     @Override
     public LuaError load(Buffer buffer, String name) {
         if (buffer.isDirect()) {
-            C.luaJ_loadbuffer(L, buffer, buffer.limit(), name);
-            return LuaError.NONE;
+            return convertError(C.luaJ_loadbuffer(L, buffer, buffer.limit(), name));
         } else {
             return LuaError.MEMORY;
         }
@@ -439,15 +436,13 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public LuaError run(String script) {
-        C.luaL_dostring(L, script);
-        return LuaError.NONE;
+        return convertError(C.luaL_dostring(L, script));
     }
 
     @Override
     public LuaError run(Buffer buffer, String name) {
         if (buffer.isDirect()) {
-            C.luaJ_dobuffer(L, buffer, buffer.limit(), name);
-            return LuaError.NONE;
+            return convertError(C.luaJ_dobuffer(L, buffer, buffer.limit(), name));
         } else {
             return LuaError.MEMORY;
         }
@@ -477,14 +472,12 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public LuaError resume(int nArgs) {
-        C.luaJ_resume(L, nArgs);
-        return LuaError.NONE;
+        return convertError(C.luaJ_resume(L, nArgs));
     }
 
     @Override
     public LuaError status() {
-        C.lua_status(L);
-        return LuaError.NONE;
+        return convertError(C.lua_status(L));
     }
 
     @Override
@@ -670,4 +663,7 @@ public abstract class AbstractLua implements Lua {
     public void unref(int ref) {
         unRef(C.getRegistryIndex(), ref);
     }
+
+    public abstract LuaError convertError(int code);
+    public abstract LuaType convertType(int code);
 }

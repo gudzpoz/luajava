@@ -49,7 +49,7 @@ public class Console {
                     reader.printAbove("UserInterrupt");
                     continue;
                 }
-                if (L.run(s) != Lua.LuaError.NONE) {
+                if (L.run(s) != Lua.LuaError.OK) {
                     if (L.getTop() != 0 && L.isString(-1)) {
                         reader.printAbove(L.toString(-1));
                     }

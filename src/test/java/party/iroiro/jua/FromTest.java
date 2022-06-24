@@ -27,11 +27,11 @@ public class FromTest {
             L.push(obj, Lua.Conversion.NONE);
             assertEquals(obj, L.toObject(-1));
 
-            assertEquals(Lua.LuaError.NONE, L.run("a = function () print('a') end"));
+            assertEquals(Lua.LuaError.OK, L.run("a = function () print('a') end"));
             L.getGlobal("a");
             assertNull(L.toObject(-1));
 
-            assertEquals(Lua.LuaError.NONE, L.run("b = {[a] = 'value'}"));
+            assertEquals(Lua.LuaError.OK, L.run("b = {[a] = 'value'}"));
             L.getGlobal("b");
             Object map = L.toObject(-1);
             assertInstanceOf(Map.class, map);

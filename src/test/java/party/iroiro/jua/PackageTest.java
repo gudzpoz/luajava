@@ -21,20 +21,20 @@ public class PackageTest {
     private void packageRequireTest(String name) {
         String s = "local r = require(\"" + name + "\")";
         try (Lua L = new LuaJit()) {
-            assertNotEquals(Lua.LuaError.NONE, L.run(s));
+            assertNotEquals(Lua.LuaError.OK, L.run(s));
             assertNotEquals(-1, L.toString(-1).indexOf("attempt to call global 'require'"));
         }
         if (!name.equals("package")) {
             try (Lua L = new LuaJit()) {
                 L.openLibrary("package");
-                assertNotEquals(Lua.LuaError.NONE, L.run(s));
+                assertNotEquals(Lua.LuaError.OK, L.run(s));
                 assertNotEquals(-1, L.toString(-1).indexOf("module '" + name + "' not found"));
             }
         }
         try (Lua L = new LuaJit()) {
             L.openLibrary("package");
             L.openLibrary(name);
-            assertEquals(Lua.LuaError.NONE, L.run(s));
+            assertEquals(Lua.LuaError.OK, L.run(s));
         }
     }
 }

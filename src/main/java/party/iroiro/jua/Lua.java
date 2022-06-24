@@ -52,6 +52,7 @@ public interface Lua extends AutoCloseable {
 
     /**
      * Push an array onto the stack, converted to luatable
+     *
      * @param array a array
      * @throws IllegalArgumentException when the object is not array
      */
@@ -66,6 +67,7 @@ public interface Lua extends AutoCloseable {
 
     /**
      * Push a class onto the stack, which may be used with `java.new` on the lua side
+     *
      * @param clazz the class
      */
     void pushJavaClass(@NotNull Class<?> clazz);
@@ -315,41 +317,54 @@ public interface Lua extends AutoCloseable {
     }
 
     enum LuaType {
-        NIL(Consts.LUA_TNIL),
-        STRING(Consts.LUA_TSTRING),
-        NUMBER(Consts.LUA_TNUMBER),
-        LIGHTUSERDATA(Consts.LUA_TLIGHTUSERDATA),
-        USERDATA(Consts.LUA_TUSERDATA),
-        TABLE(Consts.LUA_TTABLE),
-        THREAD(Consts.LUA_TTHREAD),
-        NONE(Consts.LUA_TNONE),
-        FUNCTION(Consts.LUA_TFUNCTION),
-        BOOLEAN(Consts.LUA_TBOOLEAN);
-
-        private final int i;
-
-        LuaType(int i) {
-            this.i = i;
-        }
-
-        public int getType() {
-            return i;
-        }
-
-        private static final HashMap<Integer, LuaType> types = new HashMap<>();
-
-        static {
-            for (LuaType t : LuaType.values()) {
-                types.put(t.getType(), t);
-            }
-        }
-
-        public static @Nullable LuaType valueOf(LuaNative l, int i) {
-            return types.get(i);
-        }
+        BOOLEAN(),
+        FUNCTION(),
+        LIGHTUSERDATA(),
+        NIL(),
+        NONE(),
+        NUMBER(),
+        STRING(),
+        TABLE(),
+        THREAD(),
+        USERDATA()
     }
 
+    /**
+     * Integer values of Lua error codes may vary between version
+     */
     enum LuaError {
-        NONE, SYNTAX, MEMORY, RUNTIME, HANDLER, YIELD,
+        /**
+         * a file-related error
+         */
+        FILE,
+        /**
+         * error while running a __gc metamethod
+         */
+        GC,
+        /**
+         * error while running the message handler
+         */
+        HANDLER,
+        /**
+         * memory allocation error
+         */
+        MEMORY,
+        /**
+         * no errors
+         */
+        OK,
+        /**
+         * a runtime error
+         */
+        RUNTIME,
+        /**
+         * syntax error during precompilation
+         */
+        SYNTAX,
+
+        /**
+         * the thread (coroutine) yields
+         */
+        YIELD,
     }
 }

@@ -49,7 +49,7 @@ public class JuaApiLuaTest {
     }
 
     private void assertError(Lua L, String lua, String message) {
-        assertEquals(Lua.LuaError.NONE, L.load(lua));
+        assertEquals(Lua.LuaError.OK, L.load(lua));
         assertEquals(2, L.pCall(0, Consts.LUA_MULTRET));
         assertTrue(L.toString(-1).contains(message));
         L.setTop(0);
