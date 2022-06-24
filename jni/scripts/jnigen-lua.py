@@ -365,6 +365,7 @@ filtered = [
     'luaL_loadfile',
     'luaL_loadfilex',
     'lua_pushliteral',
+    'luaL_typeerror',
 ]
 
 

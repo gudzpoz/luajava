@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Console {
     public final static String[] VERSIONS = {
-            "5.1", "5.2",
+            "5.1", "5.2", "5.3", "5.4",
     };
 
     public static void main(String[] args) {
@@ -37,6 +37,7 @@ public class Console {
 
     private static void startInteractive(String version, LineReader reader) {
         try (Lua L = getLua(version)) {
+            L.openLibraries();
             reader.printAbove(Consts.LUA_RELEASE + '\t' + Consts.LUA_COPYRIGHT);
             while (true) {
                 String s;
@@ -66,6 +67,10 @@ public class Console {
                 return new Lua51();
             case "5.2":
                 return new Lua52();
+            case "5.3":
+                return new Lua53();
+            case "5.4":
+                return new Lua54();
             default:
                 throw new RuntimeException("Unable to find matching version");
         }
