@@ -1,5 +1,3 @@
-import com.badlogic.gdx.jnigen.BuildTarget
-
 buildscript {
     repositories {
         mavenLocal()
@@ -35,195 +33,17 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:4.6.1'
 }
 
-configurations {
-    desktopNatives {
-        canBeConsumed = true
-        canBeResolved = false
-    }
-}
-
 test {
     useJUnitPlatform()
 }
-
-String addLuaJitTarget(String platform, List<String> command) {
-    String target = "buildLua${platform}"
-    String folder = "jni/luajit/lib/${platform.toLowerCase()}"
-    tasks.register(target) {
-        if(command.get(0) == 'make') {
-            doLast {
-                exec {
-                    workingDir 'jni/luajit'
-                    commandLine 'make', 'clean'
-                }
-                delete {
-                    delete fileTree('jni/luajit/src') {
-                        include 'libluajit*a'
-                    }
-                }
-                exec {
-                    workingDir 'jni/luajit'
-                    commandLine command
-                }
-                copy {
-                    from('./jni/luajit/src') {
-                        include 'libluajit*a'
-                    }
-                    into folder
-                    rename '(.+)', 'libluajit.a'
-                }
-            }
-        } else {
-            doLast {
-                exec {
-                    workingDir 'jni/luajit'
-                    commandLine command
-                }
-            }
-        }
-    }
-    return target
-}
-
-void buildLuaTargets(String... targets) {
-    tasks.register('buildLua') {
-        dependsOn targets
-    }
-    // disabling concurrency
-    for (int i = 0; i < targets.length - 1; ++i) {
-        for(int j = i + 1; j < targets.length; ++j) {
-            tasks.getByName(targets[j]).mustRunAfter(tasks.getByName(targets[i]))
-        }
-    }
-}
-
-buildLuaTargets(
-        addLuaJitTarget('Android',
-                ['bash', '../scripts/build-android.sh']),
-        addLuaJitTarget('IOS',
-                ['bash', '../scripts/build-ios.sh']),
-        addLuaJitTarget('Linux64',
-                ['make', 'amalg',
-                 'CC=gcc -m64', 'CFLAGS=-fPIC',
-                 'TARGET_SYS=Linux']),
-        addLuaJitTarget('Linux32',
-                ['make', 'amalg',
-                 'CC=gcc -m32 -I/usr/i686-linux-gnu/include', 'CFLAGS=-fPIC',
-                 'TARGET_SYS=Linux']),
-        addLuaJitTarget('ARM',
-                ['make', 'amalg',
-                 'HOST_CC=gcc -m32 -I/usr/i686-linux-gnu/include', 'CFLAGS=-fPIC',
-                 'TARGET_SYS=Linux', 'CROSS=arm-linux-gnueabihf-']),
-        addLuaJitTarget('AARCH',
-                ['make', 'amalg',
-                 'HOST_CC=gcc -m64', 'CFLAGS=-fPIC',
-                 'TARGET_SYS=Linux', 'CROSS=aarch64-linux-gnu-']),
-        addLuaJitTarget('Win32',
-                ['make', 'amalg',
-                 'HOST_CC=gcc -m32 -I/usr/i686-linux-gnu/include', 'CFLAGS=-fPIC',
-                 'CROSS=i686-w64-mingw32-', 'TARGET_SYS=Windows']),
-        addLuaJitTarget('Win64',
-                ['make', 'amalg',
-                 'HOST_CC=gcc -m64', 'CFLAGS=-fPIC',
-                 'CROSS=x86_64-w64-mingw32-', 'TARGET_SYS=Windows']),
-        addLuaJitTarget('MacOsX',
-                ['make', 'amalg', 'TARGET_FLAGS=-arch x86_64',
-                 'CFLAGS=-fPIC', 'TARGET_SYS=Darwin']),
-        addLuaJitTarget('MacOsXAARCH',
-                ['make', 'amalg', 'TARGET_FLAGS=-arch arm64',
-                 'CFLAGS=-fPIC', 'TARGET_SYS=Darwin']),
-)
-
-void linkerConfig(BuildTarget it, String platformFolder) {
-    // TODO: decide whether to shell-string-escape-and-then-xml-entity-escape $projectDir
-    it.linkerFlags += " -L&quot;$projectDir/jni/luajit/lib/${platformFolder}&quot; "
-}
-
-apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
-jnigen {
-    sharedLibName = 'jua'
-    all {
-        headerDirs = ['luajit/src', 'luajava']
-        cppExcludes = ['jni-headers/**/*', 'luajava/**/*', 'luajit/**/*', 'scripts/*']
-        cExcludes = ['jni-headers/**/*', 'luajava/**/*', 'luajit/**/*', 'scripts/*']
-        libraries += ' -lluajit '
-    }
-    add(Linux, x64, false, {
-        linkerConfig(it, 'linux64')
-    })
-    add(Linux, x32, false, {
-        linkerConfig(it, 'linux32')
-    })
-    add(Windows, x32, false, {
-        linkerConfig(it, 'win32')
-        it.linkerFlags = it.linkerFlags.replace(' -static ', ' ')
-    })
-    add(Windows, x64, false, {
-        linkerConfig(it, 'win64')
-        it.linkerFlags = it.linkerFlags.replace(' -static ', ' ')
-    })
-    add(Linux, x32, ARM, {
-        linkerConfig(it, 'arm')
-    })
-    add(Linux, x64, ARM, {
-        linkerConfig(it, 'aarch')
-    })
-    // MacOsX builds for ARM64 and AMD64 regardless of isARM
-    add(MacOsX, x64, false, {
-        linkerConfig(it, 'macosxa')
-    })
-//    // Until jnigen allows 64-bit-only iOS builds
-//    add(IOS, x64) {
-//        linkerConfig(it, 'iosa')
-//    }
-    add(Android) {
-        androidABIs = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64']
-        androidApplicationMk = [
-                'APP_PLATFORM := android-16'
-        ]
-        linkerFlags += " -L${projectDir}/jni/luajit/lib/android/\$(TARGET_ARCH_ABI) -lluajit "
-    }
-}
-
-tasks.register('buildLuaMacOsXMerge', {
-    dependsOn tasks.buildLuaMacOsX, tasks.buildLuaMacOsXAARCH
-    doLast {
-        exec {
-            workingDir 'jni/luajit'
-            commandLine 'mkdir', '-p', 'lib/macosxa'
-        }
-        exec {
-            workingDir 'jni/luajit'
-            commandLine 'lipo', '-create',
-                    'lib/macosx/libluajit.a', 'lib/macosxaarch/libluajit.a',
-                    '-output', 'lib/macosxa/libluajit.a'
-        }
-    }
-})
-
-tasks.jnigenBuildLinux.dependsOn(tasks.buildLuaLinux32)
-tasks.jnigenBuildLinux64.dependsOn(tasks.buildLuaLinux64)
-tasks.jnigenBuildLinuxARM.dependsOn(tasks.buildLuaARM)
-tasks.jnigenBuildLinuxARM64.dependsOn(tasks.buildLuaAARCH)
-tasks.jnigenBuildWindows.dependsOn(tasks.buildLuaWin32)
-tasks.jnigenBuildWindows64.dependsOn(tasks.buildLuaWin64)
-tasks.jnigenBuildMacOsX64.dependsOn(tasks.buildLuaMacOsXMerge)
-tasks.jnigenBuildAndroid.dependsOn(tasks.buildLuaAndroid)
-// tasks.jnigenBuildIOS.dependsOn(tasks.buildLuaIOS)
 
 java {
     withSourcesJar()
     withJavadocJar()
 }
 
-artifacts {
-    desktopNatives(jnigenJarNativesDesktop)
-}
-
 test {
-    dependsOn jnigenJarNativesDesktop
     classpath += sourceSets.test.runtimeClasspath
-    classpath += files(jnigenJarNativesDesktop.outputs)
 }
 
 tasks.withType(JavaCompile) {

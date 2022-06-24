@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Console {
     public final static String[] VERSIONS = {
-            "5.1", "5.2", "5.3", "5.4",
+            "5.1", "5.2", "5.3", "5.4", "jit",
     };
 
     public static void main(String[] args) {
@@ -62,7 +62,7 @@ public class Console {
     }
 
     private static Lua getLua(String version) {
-        switch (version) {
+        switch (version.toLowerCase()) {
             case "5.1":
                 return new Lua51();
             case "5.2":
@@ -71,6 +71,8 @@ public class Console {
                 return new Lua53();
             case "5.4":
                 return new Lua54();
+            case "jit":
+                return new LuaJit();
             default:
                 throw new RuntimeException("Unable to find matching version");
         }
@@ -81,7 +83,7 @@ public class Console {
         String version;
         do {
             version = reader.readLine("Lua Version: ");
-        } while (!strings.contains(version));
+        } while (!strings.contains(version.toLowerCase()));
         return version;
     }
 }
