@@ -135,7 +135,10 @@ paramTypedDescriptions = {
     'L': {'lua_State *': 'the <code>lua_State*</code> pointer'},
     'L1': {'lua_State *': 'a <code>lua_State*</code> pointer'},
     'arg': {'int': 'function argument index'},
+    'array': {'jobject': 'the Java array'},
     'b': {'int': 'boolean'},
+    'buffer': {'unsigned char *': 'the buffer (expecting direct)'},
+    'clazz': {'jobject': 'the Java class'},
     'ctx': {'int *': 'the context storage'},
     'data': {'int': 'data'},
     'e': {'const char *': 'field name'},
@@ -157,6 +160,7 @@ paramTypedDescriptions = {
     'k': {'const char *': 'the field name'},
     'len': {'size_t *': 'pointer to length'},
     'level': {'int': 'the running level'},
+    'lib': {'const char *': 'library name'},
     'lid': {'int': 'the id of the Lua state, '
             + 'to be used to identify between Java and Lua'},
     'lvl': {'int': 'the running level'},
@@ -176,7 +180,8 @@ paramTypedDescriptions = {
     'nresults': {'int': 'the number of results, or <code>LUA_MULTRET</code>',
                  'int *': 'pointer to the number of results'},
     'nuvalue': {'int': 'number of associated Lua values (user values)'},
-    'obj': {'int': 'the stack position of the object'},
+    'obj': {'int': 'the stack position of the object',
+            'jobject': 'the Java object'},
     'op': {'int': 'the operator'},
     'p': {'const char *': 'the replaced sequence',
           'void *': 'the pointer',
@@ -184,7 +189,7 @@ paramTypedDescriptions = {
     'ref': {'int': 'the reference'},
     'r': {'const char *': 'the replacing string'},
     's': {'const char *': 'the string'},
-    'size': {'size_t': 'size'},
+    'size': {'size_t': 'size', 'int': 'size'},
     'stat': {'int': '(I have no idea)'},
     'str': {'const char *': 'string'},
     't': {'int': 'the stack index'},
@@ -213,11 +218,15 @@ def replaceL(param1):
     return param1 if param1 != 'L' else 'ptr'
 
 
+def filterEnv(params):
+    return filter(lambda param: param[0] != 'JNIEnv *', params)
+
+
 def javadocSignature(sig, f):
     return (
         javadocQuote('\n'.join([('@param ' + replaceL(name[1])
                                  + ' ' + getParamDescription(name, f))
-                                for name in sig['params']])) + 
+                                for name in filterEnv(sig['params'])])) +
         (('\n' + '     * @return see description')
          if sig['return'] != 'void' else '')
     )
@@ -225,6 +234,7 @@ def javadocSignature(sig, f):
 
 returnTypes = {
     'const char *': 'String',
+    'unsigned char *': 'Buffer',
     'void': 'void',
     'int': 'int',
     'lua_State *': 'long',
@@ -237,6 +247,7 @@ returnTypes = {
     'lua_Unsigned': 'long',
     'const lua_Number *': 'long',
     'size_t *': 'long',
+    'jobject': 'Object',
 }
 
 
@@ -247,10 +258,10 @@ def javaReturnType(cType):
 def javaSignature(f):
     return (
         '    protected native ' + javaReturnType(f['signature']['return'])
-        + ' ' + f['name'] +
+        + ' ' + (f['jname'] if ('jname' in f) else f['name']) +
         '(' + ', '.join([javaReturnType(param[0]) + ' '
                          + replaceL(param[1]) for param
-                         in f['signature']['params']]) +
+                         in filterEnv(f['signature']['params'])]) +
         ');'
     )
 
@@ -262,6 +273,8 @@ def indent(s):
 def acceptJniType(cType):
     if javaReturnType(cType) == 'String':
         return 'const char *'
+    elif javaReturnType(cType) == 'Object':
+        return 'jobject'
     else:
         return 'j' + javaReturnType(cType)
 
@@ -322,9 +335,9 @@ def formatJavadoc(luaVersion, f):
         '     * Wrapper of <a href="' + getRelative(luaVersion)
         + '#' + f['name'] + '"><code>' + f['name'] + '</code></a>\n' +
         '     *\n' + javadocQuote('<pre><code>\n' + f['apii']
-                                  + '\n</code></pre>') + '\n' +
+                                  + '\n</code></pre>' if 'apii' in f else '') + '\n' +
         '     *\n' + javadocQuote('<pre><code>\n' + f['pre']
-                                  + '\n</code></pre>') + '\n' +
+                                  + '\n</code></pre>' if 'pre' in f else '') + '\n' +
         '     *\n' + javadocQuote(f['description']) + '\n' +
         '     *\n' + javadocSignature(f['signature'], f) + '\n' +
         '     */\n' + javaSignature(f) + ' /*\n' + jniGen(f) + '\n    */\n'
@@ -378,6 +391,177 @@ def filterFunction(f):
         return True
 
 
+inconsistencies = [
+    'lua_pcall',
+    'lua_getfield',
+    'lua_getglobal',
+    'lua_geti',
+    'lua_rawget',
+    'lua_rawgeti',
+    'lua_setmetatable',
+    'lua_pushstring',
+    'lua_gettable',
+    'luaL_getmetatable',
+    'luaL_newmetatable',
+]
+
+
+def wantBridging(f):
+    if f['name'] in inconsistencies:
+        f['jname'] = f['name'].replace('lua_',
+                                       'luaJ_').replace('luaL_', 'luaJ_')
+        f['signature']['return'] = 'void'
+        return f
+    else:
+        return None
+
+
+def addExtra(functions):
+    functions.append({
+        'name': 'luaJ_openlib',
+        'description': 'Open a library indivisually, '
+        + 'alternative to <code>luaL_openlibs</code>',
+        'signature': {
+            'return': 'void',
+            'params': [
+                ['lua_State *', 'L'],
+                ['const char *', 'lib'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_compare',
+        'description': 'See <code>lua_compare</code>',
+        'signature': {
+            'return': 'int',
+            'params': [
+                ['lua_State *', 'L'],
+                ['int', 'index1'],
+                ['int', 'index2'],
+                ['int', 'op'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_len',
+        'description': 'Wrapper of <code>lua_(obj)len</code>',
+        'signature': {
+            'return': 'int',
+            'params': [
+                ['lua_State *', 'L'],
+                ['int', 'index'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_loadbuffer',
+        'description': 'Load a direct buffer',
+        'signature': {
+            'return': 'int',
+            'params': [
+                ['lua_State *', 'L'],
+                ['unsigned char *', 'buffer'],
+                ['int', 'size'],
+                ['const char *', 'name'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_dobuffer',
+        'description': 'Run a direct buffer',
+        'signature': {
+            'return': 'int',
+            'params': [
+                ['lua_State *', 'L'],
+                ['unsigned char *', 'buffer'],
+                ['int', 'size'],
+                ['const char *', 'name'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_pcall',
+        'description': 'Protected call',
+        'signature': {
+            'return': 'int',
+            'params': [
+                ['lua_State *', 'L'],
+                ['int', 'nargs'],
+                ['int', 'nresults'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_resume',
+        'description': 'Resume a coroutine',
+        'signature': {
+            'return': 'int',
+            'params': [
+                ['lua_State *', 'L'],
+                ['int', 'nargs'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_pushobject',
+        'description': 'Push a Java object',
+        'signature': {
+            'return': 'void',
+            'params': [
+                ['JNIEnv *', 'env'],
+                ['lua_State *', 'L'],
+                ['jobject', 'obj'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_pushclass',
+        'description': 'Push a Java class',
+        'signature': {
+            'return': 'void',
+            'params': [
+                ['JNIEnv *', 'env'],
+                ['lua_State *', 'L'],
+                ['jobject', 'clazz'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_pusharray',
+        'description': 'Push a Java array',
+        'signature': {
+            'return': 'void',
+            'params': [
+                ['JNIEnv *', 'env'],
+                ['lua_State *', 'L'],
+                ['jobject', 'array'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_isobject',
+        'description': 'Is a Java object (including object, array or class)',
+        'signature': {
+            'return': 'int',
+            'params': [
+                ['lua_State *', 'L'],
+                ['int', 'index'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_toobject',
+        'description': 'Convert to Java object if it is one',
+        'signature': {
+            'return': 'jobject',
+            'params': [
+                ['lua_State *', 'L'],
+                ['int', 'index'],
+            ],
+        },
+    })
+
+
 def getWhole(luaVersion, package):
     functions, errors = generate(luaVersion, transformIntoFunctionInfo)
     inner = '@SuppressWarnings("unused")\n'
@@ -426,28 +610,20 @@ def getWhole(luaVersion, package):
         '        }\n' +
         '    */\n\n'
     )
-    inner += """
-    /**
-     * Open a library indivisually, alternative to <code>luaL_openlibs</code>
-     *
-     * @param ptr the lua state pointer
-     * @param lib the library name
-     */
-    protected native void luaJ_openlib(long ptr, String lib); /*
-        lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
-        luaJ_openlib_comp(L, lib);
-    */
-    """ + '\n\n'
+    addExtra(functions)
     for f in functions:
         if filterFunction(f):
             inner += formatJavadoc(luaVersion, f) + '\n\n'
+            bridged = wantBridging(f)
+            if bridged != None:
+                inner += formatJavadoc(luaVersion, bridged) + '\n\n'
         else:
             errors.append(f['name'])
     inner += '}'
     comment = (
         'package ' + package + ';\n\n' +
         'import java.util.concurrent.atomic.AtomicBoolean;\n' +
+        'import java.nio.Buffer;\n' +
         'import com.badlogic.gdx.utils.SharedLibraryLoader;\n\n' +
         '/**\n' +
         ' * Lua C API wrappers\n' +
@@ -478,7 +654,7 @@ else:
     name, output = getWhole(sys.argv[1], sys.argv[2])
     directory = os.path.join(sys.argv[3], *(sys.argv[2].split('.')))
     out = os.path.join(directory, name + '.java')
-    if input('Writing to ' + out + ', continue? (yes/no) ') == 'yes':
+    if input('Writing to ' + out + ', continue? (yes/no) ') != None:
         os.makedirs(directory, exist_ok=True)
         f = open(out, 'w')
         f.write(output)

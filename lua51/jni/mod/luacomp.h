@@ -8,7 +8,7 @@
 /**
  * Opens individual libraries when one does not want them all
  */
-static inline void luaJ_openlib(lua_State * L, const char *libName, lua_CFunction loader) {
+static inline void luaJ_openlib_call(lua_State * L, const char *libName, lua_CFunction loader) {
   lua_pushcfunction(L, loader);
   lua_pushstring(L, libName);
   lua_call(L, 1, 0);
@@ -31,14 +31,58 @@ luaL_Reg allAvailableLibs[] = {
     { NULL,      NULL },
 };
 
-static void luaJ_openlib_comp(lua_State * L, const char * libName) {
+static void luaJ_openlib(lua_State * L, const char * libName) {
     const luaL_Reg *lib = allAvailableLibs;
     for (; lib->func != NULL; lib++) {
         if (std::strcmp(lib->name, libName) == 0) {
-            luaJ_openlib(L, lib->name, lib->func);
+            luaJ_openlib_call(L, lib->name, lib->func);
             return;
         }
     }
+}
+
+static int luaJ_compare(lua_State * L, int index1, int index2, int op) {
+    if (op < 0) {
+        return lua_lessthan(L, index1, index2);
+    } else if (op == 0) {
+        return lua_equal(L, index1, index2);
+    } else {
+        return lua_lessthan(L, index1, index2) || lua_equal(L, index1, index2);
+    }
+}
+
+static int luaJ_len(lua_State * L, int index) {
+    return lua_objlen(L, index);
+}
+
+static int luaJ_loadbuffer(lua_State * L, unsigned char * buffer, int size, const char * name) {
+    return luaL_loadbuffer(L, (const char *) buffer, size, name);
+}
+
+static int luaJ_dobuffer(lua_State * L, unsigned char * buffer, int size, const char * name) {
+    return (luaL_loadbuffer(L, (const char *) buffer, size, name) || lua_pcall(L, 0, LUA_MULTRET, 0));
+}
+
+static int luaJ_pcall(lua_State * L, int nargs, int nresults) {
+    return lua_pcall(L, nargs, nresults, 0);
+}
+
+static int luaJ_resume(lua_State * L, int narg) {
+    return lua_resume(L, narg);
+}
+
+static void *luaL_testudata (lua_State *L, int ud, const char *tname) {
+  void *p = lua_touserdata(L, ud);
+  if (p != NULL) {  /* value is a userdata? */
+    if (lua_getmetatable(L, ud)) {  /* does it have a metatable? */
+      luaL_getmetatable(L, tname);  /* get correct metatable */
+      if (!lua_rawequal(L, -1, -2))  /* not the same? */
+        p = NULL;  /* value is a userdata with wrong metatable */
+      lua_pop(L, 2);  /* remove both metatables */
+      return p;
+    }
+  }
+  return NULL;  /* value is not a userdata with a metatable */
 }
 
 #endif /* !LUACOMP_H */

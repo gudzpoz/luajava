@@ -62,7 +62,7 @@ public class JuaJitNatives {
      *                   GetStaticMethodId</code>, etc. errs
      */
     protected static native void initBindings() throws Exception; /*
-        if (initBindings(env) != 0) {
+        if (initLuaJitBindings(env) != 0) {
             // Java-side exceptions are not cleared if any
             return;
         }
@@ -80,6 +80,7 @@ public class JuaJitNatives {
      * 1 and pushes onto the stack the value returned by the call. If
      * there is no metatable or no metamethod, this function returns
      * 0 (without pushing any value on the stack).</p>
+     *
      */
     @CheckReturnValue
     protected static native int luaL_callmeta(long ptr, int obj, String e); /*

@@ -204,27 +204,27 @@ public class Jua implements AutoCloseable {
     }
 
     /**
-     * Pushes element onto the stack with {@link Conversion#FULL}
+     * Pushes element onto the stack with {@link Lua.Conversion#FULL}
      *
      * <p>Converts the element to lua types automatically.</p>
      *
-     * @see Conversion#FULL
+     * @see Lua.Conversion#FULL
      * @param obj object to be converted and pushed onto the stack
      */
     public void push(Object obj) {
-        pushJava(obj, Conversion.FULL);
+        pushJava(obj, Lua.Conversion.FULL);
     }
 
     /**
-     * Pushes element onto the stack with specified degree of {@link Conversion}
+     * Pushes element onto the stack with specified degree of {@link Lua.Conversion}
      * @param obj object to be converted and pushed onto the stack
      * @param degree the conversion degree
-     * @see Conversion
+     * @see Lua.Conversion
      */
-    public void pushJava(Object obj, Conversion degree) {
+    public void pushJava(Object obj, Lua.Conversion degree) {
         if (obj == null) {
             lua_pushnil(L);
-        } else if (degree == Conversion.NONE) {
+        } else if (degree == Lua.Conversion.NONE) {
             pushJavaObjectOrArray(obj);
         } else {
             if (obj instanceof Boolean) {
@@ -236,7 +236,7 @@ public class Jua implements AutoCloseable {
                 push(((Number) obj).longValue());
             } else if (obj instanceof Number) {
                 push((Number) obj);
-            } else if (degree == Conversion.SEMI) {
+            } else if (degree == Lua.Conversion.SEMI) {
                 pushJavaObjectOrArray(obj);
             } else /* (degree == Conversion.FULL) */ {
                 if (obj instanceof Map) {
@@ -768,46 +768,4 @@ public class Jua implements AutoCloseable {
         luaL_openlibs(L);
     }
 
-    /**
-     * Controls the degree of conversion from Java to Lua
-     */
-    public enum Conversion {
-        /**
-         * Converts everything possible, including the following classes:
-         *
-         * <ul>
-         *     <li>Boolean -&gt; boolean</li>
-         *     <li>String -&gt; string</li>
-         *     <li>Number -&gt; lua_Number</li>
-         *     <li>Map / Collection / Array -&gt; table (recursive)</li>
-         *     <li>Object -&gt; Java object wrapped by a metatable {@link #pushJavaObject}</li>
-         * </ul>
-         *
-         * <p>
-         * Note that this means luatable changes on the lua side will not get reflected
-         * to the Java side.
-         * </p>
-         */
-        FULL,
-        /**
-         * Converts immutable types, including:
-         * <ul>
-         *     <li>Boolean</li>
-         *     <li>String</li>
-         *     <li>Number</li>
-         * </ul>
-         *
-         * <p>
-         *     {@link Map}, {@link Collection}, etc. are pushed with {@link #pushJavaObject(Object)}.
-         *     Arrays are pushed with {@link #pushJavaArray(Object)}.
-         * </p>
-         */
-        SEMI,
-        /**
-         * All objects, including {@link Integer}, for example, are pushed as either
-         * Java objects (with {@link #pushJavaObject(Object)} or Java arrays
-         * (with {@link #pushJavaArray(Object)}).
-         */
-        NONE
-    }
 }

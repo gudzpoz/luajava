@@ -1,5 +1,7 @@
 package party.iroiro.jua;
 
+import java.nio.Buffer;
+
 /**
  * Generated from the common parts of <code>Lua5.[1..4]</code>
  */
@@ -42,6 +44,20 @@ public abstract class LuaNative {
 
     protected abstract int lua_isuserdata(long ptr, int index);
 
+    protected abstract int luaJ_compare(long ptr, int index1, int index2, int op);
+
+    protected abstract int luaJ_dobuffer(long ptr, Buffer buffer, int size, String name);
+
+    protected abstract int luaJ_isobject(long ptr, int index);
+
+    protected abstract int luaJ_len(long ptr, int index);
+
+    protected abstract int luaJ_loadbuffer(long ptr, Buffer buffer, int size, String name);
+
+    protected abstract int luaJ_pcall(long ptr, int nargs, int nresults);
+
+    protected abstract int luaJ_resume(long ptr, int nargs);
+
     protected abstract int luaL_callmeta(long ptr, int obj, String e);
 
     protected abstract int luaL_dostring(long ptr, String str);
@@ -70,6 +86,8 @@ public abstract class LuaNative {
 
     protected abstract int lua_yield(long ptr, int nresults);
 
+    protected abstract long luaL_newstate(int lid);
+
     protected abstract long lua_newthread(long ptr);
 
     protected abstract long lua_topointer(long ptr, int index);
@@ -77,6 +95,8 @@ public abstract class LuaNative {
     protected abstract long lua_tothread(long ptr, int index);
 
     protected abstract long lua_touserdata(long ptr, int index);
+
+    protected abstract Object luaJ_toobject(long ptr, int index);
 
     protected abstract String lua_getupvalue(long ptr, int funcindex, int n);
 
@@ -97,6 +117,30 @@ public abstract class LuaNative {
     protected abstract void lua_createtable(long ptr, int narr, int nrec);
 
     protected abstract void lua_insert(long ptr, int index);
+
+    protected abstract void luaJ_getfield(long ptr, int index, String k);
+
+    protected abstract void luaJ_getglobal(long ptr, String name);
+
+    protected abstract void luaJ_getmetatable(long ptr, String tname);
+
+    protected abstract void luaJ_gettable(long ptr, int index);
+
+    protected abstract void luaJ_openlib(long ptr, String lib);
+
+    protected abstract void luaJ_pusharray(long ptr, Object array);
+
+    protected abstract void luaJ_pushclass(long ptr, Object clazz);
+
+    protected abstract void luaJ_pushobject(long ptr, Object obj);
+
+    protected abstract void luaJ_pushstring(long ptr, String s);
+
+    protected abstract void luaJ_rawgeti(long ptr, int index, int n);
+
+    protected abstract void luaJ_rawget(long ptr, int index);
+
+    protected abstract void luaJ_setmetatable(long ptr, int index);
 
     protected abstract void luaL_openlibs(long ptr);
 
@@ -136,5 +180,4 @@ public abstract class LuaNative {
 
     protected abstract void lua_xmove(long from, long to, int n);
 
-    protected abstract void luaJ_openlib(long ptr, String name);
 }

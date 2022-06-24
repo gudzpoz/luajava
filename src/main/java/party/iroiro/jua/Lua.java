@@ -24,6 +24,8 @@ public interface Lua extends AutoCloseable {
 
     void push(@NotNull Number number);
 
+    void push(int integer);
+
     void push(@NotNull String string);
 
     /**
@@ -54,6 +56,12 @@ public interface Lua extends AutoCloseable {
      * @param function the function to be pushed onto the stack
      */
     void push(@NotNull JFunction function);
+
+    /**
+     * Push a class onto the stack, which may be used with `java.new` on the lua side
+     * @param clazz the class
+     */
+    void pushJavaClass(@NotNull Class<?> clazz);
 
     /**
      * Push the element onto the stack, converted as is to Java objects
@@ -95,7 +103,7 @@ public interface Lua extends AutoCloseable {
      * @param index the stack position of the element
      * @throws IllegalArgumentException when the element does not exist or cannot be converted
      */
-    @NotNull Map<Object, Object> toMap(int index) throws IllegalArgumentException;
+    @NotNull Map<?, ?> toMap(int index) throws IllegalArgumentException;
 
     /**
      * Get the element at the specified stack position
@@ -103,7 +111,7 @@ public interface Lua extends AutoCloseable {
      * @param index the stack position of the element
      * @throws IllegalArgumentException when the element does not exist or cannot be converted
      */
-    @NotNull List<Object> toList(int index) throws IllegalArgumentException;
+    @NotNull List<?> toList(int index) throws IllegalArgumentException;
 
     /* Type-checking function */
     boolean isBoolean(int index);
@@ -210,10 +218,6 @@ public interface Lua extends AutoCloseable {
     void unRef(int index, int ref);
 
     /* Meta functions */
-    void getFEnv(int index);
-
-    int setFEnv(int index);
-
     void getGlobal(String name);
 
     void setGlobal(String name);
@@ -224,7 +228,7 @@ public interface Lua extends AutoCloseable {
 
     int getMetaField(int index, String field);
 
-    int getRegisteredMetatable(String typeName);
+    void getRegisteredMetatable(String typeName);
 
     int newRegisteredMetatable(String typeName);
 
@@ -240,6 +244,8 @@ public interface Lua extends AutoCloseable {
     void createProxy(Class<?>[] interfaces);
 
     LuaNative getLuaNative();
+
+    long getPointer();
 
     /**
      * Controls the degree of conversion from Java to Lua
@@ -313,7 +319,7 @@ public interface Lua extends AutoCloseable {
             }
         }
 
-        public static @Nullable Lua.LuaType valueOf(int i) {
+        public static @Nullable LuaType valueOf(LuaNative l, int i) {
             return types.get(i);
         }
     }

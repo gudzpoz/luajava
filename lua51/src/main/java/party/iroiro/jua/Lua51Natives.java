@@ -1,6 +1,7 @@
 package party.iroiro.jua;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.nio.Buffer;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 
 /**
@@ -108,20 +109,6 @@ public class Lua51Natives extends LuaNative {
             return;
         }
     */
-
-
-    /**
-     * Open a library indivisually, alternative to <code>luaL_openlibs</code>
-     *
-     * @param ptr the lua state pointer
-     * @param lib the library name
-     */
-    protected native void luaJ_openlib(long ptr, String lib); /*
-        lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
-        luaJ_openlib_comp(L, lib);
-    */
-    
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/#lua_checkstack"><code>lua_checkstack</code></a>
@@ -466,6 +453,36 @@ public class Lua51Natives extends LuaNative {
 
 
     /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#lua_getfield"><code>lua_getfield</code></a>
+     *
+     * <pre><code>
+     * [-0, +1, e]
+     * </code></pre>
+     *
+     * <pre><code>
+     * void lua_getfield (lua_State *L, int index, const char *k);
+     * </code></pre>
+     *
+     * <p>
+     * Pushes onto the stack the value <code>t[k]</code>,
+     * where <code>t</code> is the value at the given valid index.
+     * As in Lua, this function may trigger a metamethod
+     * for the "index" event (see <a href="https://www.lua.org/manual/5.1/#2.8">&#167;2.8</a>).
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @param k the field name
+     */
+    protected native void luaJ_getfield(long ptr, int index, String k); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        lua_getfield((lua_State *) L, (int) index, (const char *) k);
+    */
+
+
+    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/#lua_getglobal"><code>lua_getglobal</code></a>
      *
      * <pre><code>
@@ -490,6 +507,38 @@ public class Lua51Natives extends LuaNative {
      * @param name the name
      */
     protected native void lua_getglobal(long ptr, String name); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        lua_getglobal((lua_State *) L, (const char *) name);
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#lua_getglobal"><code>lua_getglobal</code></a>
+     *
+     * <pre><code>
+     * [-0, +1, e]
+     * </code></pre>
+     *
+     * <pre><code>
+     * void lua_getglobal (lua_State *L, const char *name);
+     * </code></pre>
+     *
+     * <p>
+     * Pushes onto the stack the value of the global <code>name</code>.
+     * It is defined as a macro:
+     * 
+     * </p>
+     * 
+     * <pre>
+     *      #define lua_getglobal(L,s)  lua_getfield(L, LUA_GLOBALSINDEX, s)
+     * </pre>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param name the name
+     */
+    protected native void luaJ_getglobal(long ptr, String name); /*
         lua_State * L = (lua_State *) ptr;
         updateJNIEnv(env, L);
         
@@ -557,6 +606,41 @@ public class Lua51Natives extends LuaNative {
      * @param index the stack position of the element
      */
     protected native void lua_gettable(long ptr, int index); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        lua_gettable((lua_State *) L, (int) index);
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#lua_gettable"><code>lua_gettable</code></a>
+     *
+     * <pre><code>
+     * [-1, +1, e]
+     * </code></pre>
+     *
+     * <pre><code>
+     * void lua_gettable (lua_State *L, int index);
+     * </code></pre>
+     *
+     * <p>
+     * Pushes onto the stack the value <code>t[k]</code>,
+     * where <code>t</code> is the value at the given valid index
+     * and <code>k</code> is the value at the top of the stack.
+     * </p>
+     * 
+     * <p>
+     * This function pops the key from the stack
+     * (putting the resulting value in its place).
+     * As in Lua, this function may trigger a metamethod
+     * for the "index" event (see <a href="https://www.lua.org/manual/5.1/#2.8">&#167;2.8</a>).
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     */
+    protected native void luaJ_gettable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
         updateJNIEnv(env, L);
         
@@ -1302,6 +1386,94 @@ public class Lua51Natives extends LuaNative {
 
 
     /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#lua_pcall"><code>lua_pcall</code></a>
+     *
+     * <pre><code>
+     * [-(nargs + 1), +(nresults|1), -]
+     * </code></pre>
+     *
+     * <pre><code>
+     * int lua_pcall (lua_State *L, int nargs, int nresults, int errfunc);
+     * </code></pre>
+     *
+     * <p>
+     * Calls a function in protected mode.
+     * </p>
+     * 
+     * <p>
+     * Both <code>nargs</code> and <code>nresults</code> have the same meaning as
+     * in <a href="https://www.lua.org/manual/5.1/#lua_call"><code>lua_call</code></a>.
+     * If there are no errors during the call,
+     * <a href="https://www.lua.org/manual/5.1/#lua_pcall"><code>lua_pcall</code></a> behaves exactly like <a href="https://www.lua.org/manual/5.1/#lua_call"><code>lua_call</code></a>.
+     * However, if there is any error,
+     * <a href="https://www.lua.org/manual/5.1/#lua_pcall"><code>lua_pcall</code></a> catches it,
+     * pushes a single value on the stack (the error message),
+     * and returns an error code.
+     * Like <a href="https://www.lua.org/manual/5.1/#lua_call"><code>lua_call</code></a>,
+     * <a href="https://www.lua.org/manual/5.1/#lua_pcall"><code>lua_pcall</code></a> always removes the function
+     * and its arguments from the stack.
+     * </p>
+     * 
+     * <p>
+     * If <code>errfunc</code> is 0,
+     * then the error message returned on the stack
+     * is exactly the original error message.
+     * Otherwise, <code>errfunc</code> is the stack index of an
+     * <em>error handler function</em>.
+     * (In the current implementation, this index cannot be a pseudo-index.)
+     * In case of runtime errors,
+     * this function will be called with the error message
+     * and its return value will be the message returned on the stack by <a href="https://www.lua.org/manual/5.1/#lua_pcall"><code>lua_pcall</code></a>.
+     * </p>
+     * 
+     * <p>
+     * Typically, the error handler function is used to add more debug
+     * information to the error message, such as a stack traceback.
+     * Such information cannot be gathered after the return of <a href="https://www.lua.org/manual/5.1/#lua_pcall"><code>lua_pcall</code></a>,
+     * since by then the stack has unwound.
+     * </p>
+     * 
+     * <p>
+     * The <a href="https://www.lua.org/manual/5.1/#lua_pcall"><code>lua_pcall</code></a> function returns 0 in case of success
+     * or one of the following error codes
+     * (defined in <code>lua.h</code>):
+     * 
+     * </p>
+     * 
+     * <ul>
+     * 
+     * <li>
+     * <b><a><code>LUA_ERRRUN</code></a>:</b>
+     * a runtime error.
+     * </li>
+     * 
+     * <li>
+     * <b><a><code>LUA_ERRMEM</code></a>:</b>
+     * memory allocation error.
+     * For such errors, Lua does not call the error handler function.
+     * </li>
+     * 
+     * <li>
+     * <b><a><code>LUA_ERRERR</code></a>:</b>
+     * error while running the error handler function.
+     * </li>
+     * 
+     * </ul>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param nargs the number of arguments that you pushed onto the stack
+     * @param nresults the number of results, or <code>LUA_MULTRET</code>
+     * @param errfunc 0 or the stack index of an error handler function
+     */
+    protected native void luaJ_pcall(long ptr, int nargs, int nresults, int errfunc); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        lua_pcall((lua_State *) L, (int) nargs, (int) nresults, (int) errfunc);
+    */
+
+
+    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/#lua_pop"><code>lua_pop</code></a>
      *
      * <pre><code>
@@ -1499,6 +1671,38 @@ public class Lua51Natives extends LuaNative {
 
 
     /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#lua_pushstring"><code>lua_pushstring</code></a>
+     *
+     * <pre><code>
+     * [-0, +1, m]
+     * </code></pre>
+     *
+     * <pre><code>
+     * void lua_pushstring (lua_State *L, const char *s);
+     * </code></pre>
+     *
+     * <p>
+     * Pushes the zero-terminated string pointed to by <code>s</code>
+     * onto the stack.
+     * Lua makes (or reuses) an internal copy of the given string,
+     * so the memory at <code>s</code> can be freed or reused immediately after
+     * the function returns.
+     * The string cannot contain embedded zeros;
+     * it is assumed to end at the first zero.
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param s the string
+     */
+    protected native void luaJ_pushstring(long ptr, String s); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        lua_pushstring((lua_State *) L, (const char *) s);
+    */
+
+
+    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/#lua_pushthread"><code>lua_pushthread</code></a>
      *
      * <pre><code>
@@ -1614,6 +1818,33 @@ public class Lua51Natives extends LuaNative {
 
 
     /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#lua_rawget"><code>lua_rawget</code></a>
+     *
+     * <pre><code>
+     * [-1, +1, -]
+     * </code></pre>
+     *
+     * <pre><code>
+     * void lua_rawget (lua_State *L, int index);
+     * </code></pre>
+     *
+     * <p>
+     * Similar to <a href="https://www.lua.org/manual/5.1/#lua_gettable"><code>lua_gettable</code></a>, but does a raw access
+     * (i.e., without metamethods).
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     */
+    protected native void luaJ_rawget(long ptr, int index); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        lua_rawget((lua_State *) L, (int) index);
+    */
+
+
+    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/#lua_rawgeti"><code>lua_rawgeti</code></a>
      *
      * <pre><code>
@@ -1636,6 +1867,36 @@ public class Lua51Natives extends LuaNative {
      * @param n the number of elements
      */
     protected native void lua_rawgeti(long ptr, int index, int n); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        lua_rawgeti((lua_State *) L, (int) index, (int) n);
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#lua_rawgeti"><code>lua_rawgeti</code></a>
+     *
+     * <pre><code>
+     * [-0, +1, -]
+     * </code></pre>
+     *
+     * <pre><code>
+     * void lua_rawgeti (lua_State *L, int index, int n);
+     * </code></pre>
+     *
+     * <p>
+     * Pushes onto the stack the value <code>t[n]</code>,
+     * where <code>t</code> is the value at the given valid index.
+     * The access is raw;
+     * that is, it does not invoke metamethods.
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @param n the number of elements
+     */
+    protected native void luaJ_rawgeti(long ptr, int index, int n); /*
         lua_State * L = (lua_State *) ptr;
         updateJNIEnv(env, L);
         
@@ -1941,6 +2202,34 @@ public class Lua51Natives extends LuaNative {
         
         jint returnValueReceiver = (jint) lua_setmetatable((lua_State *) L, (int) index);
         return returnValueReceiver;
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#lua_setmetatable"><code>lua_setmetatable</code></a>
+     *
+     * <pre><code>
+     * [-1, +0, -]
+     * </code></pre>
+     *
+     * <pre><code>
+     * int lua_setmetatable (lua_State *L, int index);
+     * </code></pre>
+     *
+     * <p>
+     * Pops a table from the stack and
+     * sets it as the new metatable for the value at the given
+     * acceptable index.
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     */
+    protected native void luaJ_setmetatable(long ptr, int index); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        lua_setmetatable((lua_State *) L, (int) index);
     */
 
 
@@ -2714,6 +3003,33 @@ public class Lua51Natives extends LuaNative {
 
 
     /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaL_getmetatable"><code>luaL_getmetatable</code></a>
+     *
+     * <pre><code>
+     * [-0, +1, -]
+     * </code></pre>
+     *
+     * <pre><code>
+     * void luaL_getmetatable (lua_State *L, const char *tname);
+     * </code></pre>
+     *
+     * <p>
+     * Pushes onto the stack the metatable associated with name <code>tname</code>
+     * in the registry (see <a href="https://www.lua.org/manual/5.1/#luaL_newmetatable"><code>luaL_newmetatable</code></a>).
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param tname type name
+     */
+    protected native void luaJ_getmetatable(long ptr, String tname); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        luaL_getmetatable((lua_State *) L, (const char *) tname);
+    */
+
+
+    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaL_gsub"><code>luaL_gsub</code></a>
      *
      * <pre><code>
@@ -3076,6 +3392,269 @@ public class Lua51Natives extends LuaNative {
         updateJNIEnv(env, L);
         
         luaL_where((lua_State *) L, (int) lvl);
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_openlib"><code>luaJ_openlib</code></a>
+     *
+     * 
+     *
+     * 
+     *
+     * Open a library indivisually, alternative to <code>luaL_openlibs</code>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param lib library name
+     */
+    protected native void luaJ_openlib(long ptr, String lib); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        luaJ_openlib((lua_State *) L, (const char *) lib);
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_compare"><code>luaJ_compare</code></a>
+     *
+     * 
+     *
+     * 
+     *
+     * See <code>lua_compare</code>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index1 the stack position of the first element
+     * @param index2 the stack position of the second element
+     * @param op the operator
+     * @return see description
+     */
+    protected native int luaJ_compare(long ptr, int index1, int index2, int op); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        jint returnValueReceiver = (jint) luaJ_compare((lua_State *) L, (int) index1, (int) index2, (int) op);
+        return returnValueReceiver;
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_len"><code>luaJ_len</code></a>
+     *
+     * 
+     *
+     * 
+     *
+     * Wrapper of <code>lua_(obj)len</code>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @return see description
+     */
+    protected native int luaJ_len(long ptr, int index); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        jint returnValueReceiver = (jint) luaJ_len((lua_State *) L, (int) index);
+        return returnValueReceiver;
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_loadbuffer"><code>luaJ_loadbuffer</code></a>
+     *
+     * 
+     *
+     * 
+     *
+     * Load a direct buffer
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param buffer the buffer (expecting direct)
+     * @param size size
+     * @param name the name
+     * @return see description
+     */
+    protected native int luaJ_loadbuffer(long ptr, Buffer buffer, int size, String name); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        jint returnValueReceiver = (jint) luaJ_loadbuffer((lua_State *) L, (unsigned char *) buffer, (int) size, (const char *) name);
+        return returnValueReceiver;
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_dobuffer"><code>luaJ_dobuffer</code></a>
+     *
+     * 
+     *
+     * 
+     *
+     * Run a direct buffer
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param buffer the buffer (expecting direct)
+     * @param size size
+     * @param name the name
+     * @return see description
+     */
+    protected native int luaJ_dobuffer(long ptr, Buffer buffer, int size, String name); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        jint returnValueReceiver = (jint) luaJ_dobuffer((lua_State *) L, (unsigned char *) buffer, (int) size, (const char *) name);
+        return returnValueReceiver;
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_pcall"><code>luaJ_pcall</code></a>
+     *
+     * 
+     *
+     * 
+     *
+     * Protected call
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param nargs the number of arguments that you pushed onto the stack
+     * @param nresults the number of results, or <code>LUA_MULTRET</code>
+     * @return see description
+     */
+    protected native int luaJ_pcall(long ptr, int nargs, int nresults); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        jint returnValueReceiver = (jint) luaJ_pcall((lua_State *) L, (int) nargs, (int) nresults);
+        return returnValueReceiver;
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_resume"><code>luaJ_resume</code></a>
+     *
+     * 
+     *
+     * 
+     *
+     * Resume a coroutine
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param nargs the number of arguments that you pushed onto the stack
+     * @return see description
+     */
+    protected native int luaJ_resume(long ptr, int nargs); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        jint returnValueReceiver = (jint) luaJ_resume((lua_State *) L, (int) nargs);
+        return returnValueReceiver;
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_pushobject"><code>luaJ_pushobject</code></a>
+     *
+     * 
+     *
+     * 
+     *
+     * Push a Java object
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param obj the Java object
+     */
+    protected native void luaJ_pushobject(long ptr, Object obj); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        luaJ_pushobject((JNIEnv *) env, (lua_State *) L, (jobject) obj);
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_pushclass"><code>luaJ_pushclass</code></a>
+     *
+     * 
+     *
+     * 
+     *
+     * Push a Java class
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param clazz the Java class
+     */
+    protected native void luaJ_pushclass(long ptr, Object clazz); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        luaJ_pushclass((JNIEnv *) env, (lua_State *) L, (jobject) clazz);
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_pusharray"><code>luaJ_pusharray</code></a>
+     *
+     * 
+     *
+     * 
+     *
+     * Push a Java array
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param array the Java array
+     */
+    protected native void luaJ_pusharray(long ptr, Object array); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        luaJ_pusharray((JNIEnv *) env, (lua_State *) L, (jobject) array);
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_isobject"><code>luaJ_isobject</code></a>
+     *
+     * 
+     *
+     * 
+     *
+     * Is a Java object (including object, array or class)
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @return see description
+     */
+    protected native int luaJ_isobject(long ptr, int index); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        jint returnValueReceiver = (jint) luaJ_isobject((lua_State *) L, (int) index);
+        return returnValueReceiver;
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_toobject"><code>luaJ_toobject</code></a>
+     *
+     * 
+     *
+     * 
+     *
+     * Convert to Java object if it is one
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @return see description
+     */
+    protected native Object luaJ_toobject(long ptr, int index); /*
+        lua_State * L = (lua_State *) ptr;
+        updateJNIEnv(env, L);
+        
+        jobject returnValueReceiver = (jobject) luaJ_toobject((lua_State *) L, (int) index);
+        return returnValueReceiver;
     */
 
 
