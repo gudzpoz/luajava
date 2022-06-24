@@ -21,7 +21,7 @@ public class JuaApiLuaTest {
 
     @Test
     public void juaApiLuaTest() {
-        try (Jua L = new Jua()) {
+        try (Lua L = new Lua51()) {
             L.register("jfun", L1 -> 0);
             new JuaFunction(L) {
                 @Override
@@ -29,11 +29,11 @@ public class JuaApiLuaTest {
                     return 0;
                 }
             }.register("juafun");
-            L.push(array, false);
-            L.setglobal("arr");
+            L.push(array, Lua.Conversion.NONE);
+            L.setGlobal("arr");
             ResourceLoader loader = new ResourceLoader();
             loader.load("/tests/juaApiTest.lua", L);
-            assertEquals(0, L.pcall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
+            assertEquals(0, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
 
             assertEquals(100, staticField);
             assertEquals(1024, privateField);
@@ -48,11 +48,11 @@ public class JuaApiLuaTest {
         }
     }
 
-    private void assertError(Jua L, String lua, String message) {
-        assertEquals(0, L.load(lua));
-        assertEquals(2, L.pcall(0, Consts.LUA_MULTRET));
+    private void assertError(Lua L, String lua, String message) {
+        assertEquals(Lua.LuaError.NONE, L.load(lua));
+        assertEquals(2, L.pCall(0, Consts.LUA_MULTRET));
         assertTrue(L.toString(-1).contains(message));
-        L.settop(0);
+        L.setTop(0);
     }
 
     public static int staticField = 1024;

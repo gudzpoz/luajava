@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PushTest {
     @Test
     public void pushTest() {
-        try (Jua L = new Jua()) {
+        try (Lua L = new Lua51()) {
             L.push(Collections.singleton("string"));
             Object o = L.toObject(-1);
             assertInstanceOf(Map.class, o);
@@ -23,33 +23,33 @@ public class PushTest {
             //noinspection unchecked
             assertEquals("v", ((Map<Object, Object>) p).get("k"));
 
-            L.pushJava(null, Jua.Conversion.FULL);
-            assertTrue(L.isnil(-1));
+            L.push(null, Lua.Conversion.FULL);
+            assertTrue(L.isNil(-1));
 
-            L.pushJava(false, Jua.Conversion.NONE);
-            assertTrue(L.isuserdata(-1));
+            L.push(false, Lua.Conversion.NONE);
+            assertTrue(L.isUserdata(-1));
 
-            L.pushJava((byte) 1, Jua.Conversion.SEMI);
-            assertTrue(L.isnumber(-1));
-            L.pushJava((short) 1, Jua.Conversion.SEMI);
-            assertTrue(L.isnumber(-1));
+            L.push((byte) 1, Lua.Conversion.SEMI);
+            assertTrue(L.isNumber(-1));
+            L.push((short) 1, Lua.Conversion.SEMI);
+            assertTrue(L.isNumber(-1));
             //noinspection RedundantCast
-            L.pushJava((int) 1, Jua.Conversion.SEMI);
-            assertTrue(L.isnumber(-1));
-            L.pushJava((long) 1, Jua.Conversion.SEMI);
-            assertTrue(L.isnumber(-1));
+            L.push((int) 1, Lua.Conversion.SEMI);
+            assertTrue(L.isNumber(-1));
+            L.push((long) 1, Lua.Conversion.SEMI);
+            assertTrue(L.isNumber(-1));
 
-            L.pushJava(Collections.singletonMap("k", "v"), Jua.Conversion.SEMI);
-            assertTrue(L.isuserdata(-1));
+            L.push(Collections.singletonMap("k", "v"), Lua.Conversion.SEMI);
+            assertTrue(L.isUserdata(-1));
 
-            L.pushJava(Collections.singletonMap("k", "v"), Jua.Conversion.FULL);
-            assertTrue(L.istable(-1));
-            L.pushJava(Collections.singletonList("l"), Jua.Conversion.FULL);
-            assertTrue(L.istable(-1));
-            L.pushJava(new int[] {1}, Jua.Conversion.FULL);
-            assertTrue(L.istable(-1));
+            L.push(Collections.singletonMap("k", "v"), Lua.Conversion.FULL);
+            assertTrue(L.isTable(-1));
+            L.push(Collections.singletonList("l"), Lua.Conversion.FULL);
+            assertTrue(L.isTable(-1));
+            L.push(new int[] {1}, Lua.Conversion.FULL);
+            assertTrue(L.isTable(-1));
 
-            L.settop(0);
+            L.setTop(0);
         }
     }
 }

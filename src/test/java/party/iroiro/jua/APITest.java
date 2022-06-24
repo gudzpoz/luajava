@@ -14,13 +14,13 @@ public class APITest {
 
     @Test
     public void apiTest() throws Exception {
-        Jua L = new Jua();
-        L.openStringLibrary();
+        Lua L = new Lua51();
+        L.openLibrary("string");
         L.push(sum);
-        L.setglobal("sum");
+        L.setGlobal("sum");
         ResourceLoader loader = new ResourceLoader();
         loader.load("/tests/apiTest.lua", L);
-        assertEquals(0, L.pcall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
+        assertEquals(0, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
         assertEquals(1, L.run("System.out:println(instance.testPrivate)"));
         assertEquals(1, L.run("System.out:println(instance.testFriendly)"));
         assertEquals(1, L.run("APITest:assert(false)"));

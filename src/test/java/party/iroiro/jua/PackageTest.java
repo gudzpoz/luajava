@@ -2,40 +2,39 @@ package party.iroiro.jua;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.function.Consumer;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class PackageTest {
     @Test
     public void packageTest() {
-        packageRequireTest("table", Jua::openTableLibrary);
-        packageRequireTest("bit", Jua::openBitLibrary);
-        packageRequireTest("debug", Jua::openDebugLibrary);
-        packageRequireTest("io", Jua::openIOLibrary);
-        packageRequireTest("math", Jua::openMathLibrary);
-        packageRequireTest("os", Jua::openOsLibrary);
-        packageRequireTest("string", Jua::openStringLibrary);
-        packageRequireTest("package", Jua::openPackageLibrary);
+        packageRequireTest("table");
+        packageRequireTest("bit");
+        packageRequireTest("debug");
+        packageRequireTest("io");
+        packageRequireTest("math");
+        packageRequireTest("os");
+        packageRequireTest("string");
+        packageRequireTest("package");
     }
 
-    private void packageRequireTest(String name, Consumer<Jua> opener) {
+    private void packageRequireTest(String name) {
         String s = "local r = require(\"" + name + "\")";
-        try (Jua L = new Jua()) {
-            assertEquals(1, L.run(s));
+        try (Lua L = new LuaJit()) {
+            assertNotEquals(Lua.LuaError.NONE, L.run(s));
             assertNotEquals(-1, L.toString(-1).indexOf("attempt to call global 'require'"));
         }
         if (!name.equals("package")) {
-            try (Jua L = new Jua()) {
-                L.openPackageLibrary();
-                assertEquals(1, L.run(s));
+            try (Lua L = new LuaJit()) {
+                L.openLibrary("package");
+                assertNotEquals(Lua.LuaError.NONE, L.run(s));
                 assertNotEquals(-1, L.toString(-1).indexOf("module '" + name + "' not found"));
             }
         }
-        try (Jua L = new Jua()) {
-            L.openPackageLibrary();
-            opener.accept(L);
-            assertEquals(0, L.run(s));
+        try (Lua L = new LuaJit()) {
+            L.openLibrary("package");
+            L.openLibrary(name);
+            assertEquals(Lua.LuaError.NONE, L.run(s));
         }
     }
 }

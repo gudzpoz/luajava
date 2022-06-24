@@ -11,13 +11,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CoroutineTest {
     @Test
     public void coroutineTest() throws IOException {
-        Jua L = new Jua();
+        Lua L = new Lua51();
         ResourceLoader loader = new ResourceLoader();
         loader.load("/tests/coTest.lua", L);
-        L.pcall(0, Consts.LUA_MULTRET);
-        Jua coL = L.newthread();
+        L.pCall(0, Consts.LUA_MULTRET);
+        Lua coL = L.newThread();
         int ignored = L.ref();
-        coL.getglobal("main");
+        coL.getGlobal("main");
         int i = 1, j = 1;
         for (int l = 0; l < 36; l++) {
             assertEquals(Consts.LUA_YIELD, coL.resume(0));
@@ -27,6 +27,6 @@ public class CoroutineTest {
             i = j;
             j = k;
         }
-        L.dispose();
+        L.close();
     }
 }

@@ -7,11 +7,11 @@ import org.junit.platform.commons.annotation.Testable;
 public class SimpleTest {
     @Test
     public void simpleTest() {
-        Jua L = new Jua();
+        Lua L = new Lua51();
         L.push("Hello World from Lua");
-        L.setglobal("message");
+        L.setGlobal("message");
         L.run("print(message)");
         L.run("java.require('java/lang/System').out:println(message)");
-        L.dispose();
+        L.close();
     }
 }

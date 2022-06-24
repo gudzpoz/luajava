@@ -10,12 +10,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FromTest {
     @Test
     public void fromTest() {
-        try (Jua L = new Jua()) {
+        try (Lua L = new Lua51()) {
             L.push(1);
             assertNull(L.toList(-1));
             assertNull(L.toMap(-1));
 
-            L.pushnil();
+            L.pushNil();
             assertNull(L.toObject(-1));
 
             L.push(true);
@@ -24,25 +24,25 @@ public class FromTest {
             assertEquals(false, L.toObject(-1));
 
             Object obj = new Object();
-            L.push(obj);
+            L.push(obj, Lua.Conversion.NONE);
             assertEquals(obj, L.toObject(-1));
 
-            assertEquals(0, L.run("a = function () print('a') end"));
-            L.getglobal("a");
+            assertEquals(Lua.LuaError.NONE, L.run("a = function () print('a') end"));
+            L.getGlobal("a");
             assertNull(L.toObject(-1));
 
-            assertEquals(0, L.run("b = {[a] = 'value'}"));
-            L.getglobal("b");
+            assertEquals(Lua.LuaError.NONE, L.run("b = {[a] = 'value'}"));
+            L.getGlobal("b");
             Object map = L.toObject(-1);
             assertInstanceOf(Map.class, map);
             //noinspection unchecked
             assertEquals(0, ((Map<Object, Object>) map).size());
 
-            L.pushnil();
+            L.pushNil();
             assertNull(L.toObject(-1, Class.class));
 
             FromTest from = new FromTest();
-            L.push(from);
+            L.push(from, Lua.Conversion.NONE);
             assertEquals(from, L.toObject(-1, FromTest.class));
             assertThrows(IllegalArgumentException.class,
                     () -> L.toObject(-1, String.class),
@@ -66,7 +66,7 @@ public class FromTest {
             assertEquals(n, L.toObject(-1, double.class));
             assertEquals(n, L.toObject(-1, Double.class));
 
-            L.settop(0);
+            L.setTop(0);
         }
     }
 }

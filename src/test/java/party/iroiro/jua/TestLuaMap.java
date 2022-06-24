@@ -26,15 +26,17 @@ package party.iroiro.jua;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @Testable
 public class TestLuaMap {
     @Test
-    public void testMap() throws IOException {
+    public void testMap() throws Exception {
         Map<Object, Object> table = new HashMap<>();
         table.put("testTable2-1", "testTable2Value");
         table.put("testTable2-2", new Object());
@@ -62,12 +64,12 @@ public class TestLuaMap {
         assertEquals(0, luaMap.size());
 
         // test using a lua table
-        Jua L = new Jua();
-        L.openIOLibrary();
-        L.openOsLibrary();
+        Lua L = new Lua51();
+        L.openLibrary("io");
+        L.openLibrary("os");
         ResourceLoader loader = new ResourceLoader();
         loader.load("/tests/testMap.lua", L);
-        int err = L.pcall(0, Consts.LUA_MULTRET);
+        int err = L.pCall(0, Consts.LUA_MULTRET);
         if (err != 0) {
             switch (err) {
                 case 1:
@@ -92,8 +94,8 @@ public class TestLuaMap {
             }
         }
 
-        L.getglobal("map");
-        Object proxy = L.createProxy("java.util.Map");
+        L.getGlobal("map");
+        Object proxy = L.createProxy(new Class[]{Map.class}, Lua.Conversion.SEMI);
         assertTrue(Map.class.isAssignableFrom(proxy.getClass()));
         //noinspection unchecked
         luaMap = (Map<Object, Object>) proxy;
@@ -128,29 +130,29 @@ public class TestLuaMap {
  * @author thiago
  */
 class LuaMap implements Map<Object, Object>, AutoCloseable {
-    private final Jua L;
+    private final Lua L;
     private int table;
 
     /**
      * Initializes the Luastate used and the table
      */
     public LuaMap() {
-        L = new Jua();
+        L = new Lua51();
         // L.openLibs();
-        L.newtable();
+        L.createTable(0, 0);
         table = L.ref();
     }
 
-    public void close() {
-        L.dispose();
+    public void close() throws Exception {
+        L.close();
     }
 
     /**
      * @see java.util.Map#size()
      */
     public int size() {
-        L.refget(table);
-        L.pushnil();
+        L.refGet(table);
+        L.pushNil();
 
         int n;
         for (n = 0; L.next(-2) != 0; n++) L.pop(1);
@@ -164,7 +166,7 @@ class LuaMap implements Map<Object, Object>, AutoCloseable {
      * @see java.util.Map#clear()
      */
     public void clear() {
-        L.newtable();
+        L.createTable(0, 0);
         L.unref(table);
         table = L.ref();
     }
@@ -180,10 +182,10 @@ class LuaMap implements Map<Object, Object>, AutoCloseable {
      * @see java.util.Map#containsKey(java.lang.Object)
      */
     public boolean containsKey(Object key) {
-        L.refget(table);
-        L.push(key);
-        L.gettable(-2);
-        boolean contains = !L.isnil(-1);
+        L.refGet(table);
+        L.push(key, Lua.Conversion.SEMI);
+        L.getTable(-2);
+        boolean contains = !L.isNil(-1);
         L.pop(2);
         return contains;
     }
@@ -192,9 +194,9 @@ class LuaMap implements Map<Object, Object>, AutoCloseable {
      * @see java.util.Map#containsValue(java.lang.Object)
      */
     public boolean containsValue(Object value) {
-        L.push(value);
-        L.refget(table);
-        L.pushnil();
+        L.push(value, Lua.Conversion.SEMI);
+        L.refGet(table);
+        L.pushNil();
 
         while (L.next(-2) != 0)/* `key' is at index -2 and `value' at index -1 */ {
             if (L.equal(-4, -1)) {
@@ -245,9 +247,9 @@ class LuaMap implements Map<Object, Object>, AutoCloseable {
      * @see java.util.Map#get(java.lang.Object)
      */
     public Object get(Object key) {
-        L.refget(table);
-        L.push(key);
-        L.gettable(-2);
+        L.refGet(table);
+        L.push(key, Lua.Conversion.SEMI);
+        L.getTable(-2);
         Object ret = L.toObject(-1);
         L.pop(2);
         return ret;
@@ -259,11 +261,11 @@ class LuaMap implements Map<Object, Object>, AutoCloseable {
     public Object remove(Object key) {
         Object ret = get(key);
 
-        L.refget(table);
-        L.push(key);
-        L.pushnil();
+        L.refGet(table);
+        L.push(key, Lua.Conversion.SEMI);
+        L.pushNil();
 
-        L.settable(-3);
+        L.setTable(-3);
 
         L.pop(1);
 
@@ -276,11 +278,11 @@ class LuaMap implements Map<Object, Object>, AutoCloseable {
     public Object put(Object key, Object value) {
         Object ret = get(key);
 
-        L.refget(table);
-        L.push(key);
-        L.push(value);
+        L.refGet(table);
+        L.push(key, Lua.Conversion.SEMI);
+        L.push(value, Lua.Conversion.SEMI);
 
-        L.settable(-3);
+        L.setTable(-3);
 
         L.pop(1);
 

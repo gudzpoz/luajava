@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PrintProxyTest {
     private final PrintStream originalOut = System.out;
-    private ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
     @BeforeAll
     public void startCapture() {
@@ -27,7 +27,7 @@ public class PrintProxyTest {
 
     @Test
     public void testPrintProxy() throws IOException {
-        Jua L = new Jua();
+        Lua L = new Lua51();
         new JuaFunction(L) {
             @Override
             public int __call() {
@@ -38,17 +38,19 @@ public class PrintProxyTest {
 
         ResourceLoader loader = new ResourceLoader();
         loader.load("/tests/printTest.lua", L);
-        L.pcall(0, Consts.LUA_MULTRET);
+        L.pCall(0, Consts.LUA_MULTRET);
 
         System.out.println("PROXY TEST :");
         Printable p = new ObjPrint();
         p.print("TESTE 1");
 
-        L.getglobal("luaPrint");
-        p = (Printable) L.createProxy("party.iroiro.jua.printproxy.Printable");
+        L.getGlobal("luaPrint");
+        p = (Printable) L.createProxy(
+                new Class[]{Printable.class}, Lua.Conversion.SEMI
+        );
         p.print("Teste 2");
 
-        L.dispose();
+        L.close();
     }
 
     @AfterAll

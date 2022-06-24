@@ -212,7 +212,7 @@ public interface Lua extends AutoCloseable {
 
     void setTable(int index);
 
-    void next(int n);
+    int next(int n);
 
     void rawGet(int index);
 
@@ -226,11 +226,11 @@ public interface Lua extends AutoCloseable {
 
     int ref();
 
-    int refGet(int ref);
+    void refGet(int ref);
 
     void unRef(int index, int ref);
 
-    int unref();
+    void unref(int ref);
 
     /* Meta functions */
     void getGlobal(String name);
@@ -267,6 +267,9 @@ public interface Lua extends AutoCloseable {
     void addSubThread(Lua lua);
 
     int getId();
+
+    @Override
+    void close();
 
     /**
      * Controls the degree of conversion from Java to Lua

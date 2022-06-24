@@ -31,18 +31,19 @@ public class ThreadTest {
 
     @Test
     public void threadTest() throws Exception {
-        final Jua L = new Jua();
+        final Lua L = new Lua51();
         ResourceLoader loader = new ResourceLoader();
         loader.load("/tests/threadTest.lua", L);
         System.out.println("OK");
-        assertEquals(0, L.pcall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
+        assertEquals(0, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
         ArrayList<Thread> threads = new ArrayList<>();
         threads.ensureCapacity(count);
 
         for(int i = 0 ;i < count; i++) {
             synchronized (L) {
-                L.getglobal("tb");
-                Object runnable = L.createProxy("java.lang.Runnable");
+                L.getGlobal("tb");
+                Object runnable = L.createProxy(new Class[] {java.lang.Runnable.class},
+                        Lua.Conversion.SEMI);
                 Thread thread = new Thread(() -> {
                     synchronized (L) {
                         ((Runnable) runnable).run();

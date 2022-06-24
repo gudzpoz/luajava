@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static party.iroiro.jua.JuaJitNatives.lua_newuserdata;
 
 public class JuaApiTest {
     @Test
@@ -27,7 +26,7 @@ public class JuaApiTest {
 
     @Test
     public void juaApiConvertFromLuaTest() {
-        try (Jua L = new Jua()) {
+        try (Lua L = new Lua51()) {
             convertBooleanTest(L);
             convertNumberTest(L);
             convertTableTest(L);
@@ -35,9 +34,9 @@ public class JuaApiTest {
         }
     }
 
-    private void convertTableTest(Jua L) {
+    private void convertTableTest(Lua L) {
         L.run("t = {a = 1; b = 2; [1] = 3; [2] = 4}");
-        L.getglobal("t");
+        L.getGlobal("t");
 
         assertEquals(Arrays.asList(3.0, 4.0), JuaAPI.convertFromLua(L, List.class, -1));
 
@@ -64,20 +63,16 @@ public class JuaApiTest {
     }
 
     private void convertUserdataTest() {
-        var L = new Jua() {
-            void pushUserdata() {
-                //noinspection ResultOfMethodCallIgnored
-                lua_newuserdata(L, 1024);
-            }
-        };
-        L.pushUserdata();
+        Lua L = new Lua51();
+        assertNotEquals(0, ((Lua51Natives) L.getLuaNative())
+                .lua_newuserdata(L.getPointer(), 1024));
         assertThrows(IllegalArgumentException.class,
                 () -> JuaAPI.convertFromLua(L, Integer.class, -1),
                 "Unable to convert to " + Integer.class.getName());
         L.pop(1);
 
         Consumer<Integer> randomObject = integer -> {};
-        L.push(randomObject);
+        L.push(randomObject, Lua.Conversion.NONE);
         assertThrows(IllegalArgumentException.class,
                 () -> JuaAPI.convertFromLua(L, Integer.class, -1),
                 "Unable to convert to " + Integer.class.getName());
@@ -87,7 +82,7 @@ public class JuaApiTest {
         L.close();
     }
 
-    private void convertNumberTest(Jua L) {
+    private void convertNumberTest(Lua L) {
         double n = 3.1415926;
         L.push(n);
 
@@ -124,7 +119,7 @@ public class JuaApiTest {
         L.pop(1);
     }
 
-    private void convertBooleanTest(Jua L) {
+    private void convertBooleanTest(Lua L) {
         L.push(false);
         assertEquals(false, JuaAPI.convertFromLua(L, boolean.class, -1));
         assertEquals(Boolean.FALSE, JuaAPI.convertFromLua(L, Boolean.class, -1));

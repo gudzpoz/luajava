@@ -518,8 +518,8 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void next(int n) {
-        C.lua_next(L, n);
+    public int next(int n) {
+        return C.lua_next(L, n);
     }
 
     @Override
@@ -635,6 +635,11 @@ public abstract class AbstractLua implements Lua {
     @Override
     public long getPointer() {
         return L;
+    }
+
+    @Override
+    public int getId() {
+        return id;
     }
 
     @Override

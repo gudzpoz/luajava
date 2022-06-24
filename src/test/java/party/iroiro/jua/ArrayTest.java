@@ -7,10 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ArrayTest {
     @Test
     public void arrayTest() {
-        try (Jua L = new Jua()) {
+        try (Lua L = new Lua51()) {
             int[] i = new int[] { 1, 2, 3, 4 };
             L.pushJavaArray(i);
-            L.setglobal("i");
+            L.setGlobal("i");
             assertEquals(0, L.run("assert(i[1] == 1)"));
             assertEquals(0, L.run("assert(i[2] == 2)"));
             assertEquals(0, L.run("assert(i[3] == 3)"));

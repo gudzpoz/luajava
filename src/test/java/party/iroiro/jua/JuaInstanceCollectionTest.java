@@ -12,8 +12,8 @@ import static org.mockito.Mockito.mock;
 public class JuaInstanceCollectionTest {
     @Test
     public void juaInstanceCollectionTest() {
-        Jua jua = mock(Jua.class);
-        JuaInstances instances = new JuaInstances();
+        Lua jua = mock(Lua.class);
+        LuaInstances instances = new LuaInstances();
         for (int i = 0; i < 10; i++) {
             assertEquals(i, instances.add(jua));
         }

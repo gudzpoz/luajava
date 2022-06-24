@@ -36,8 +36,8 @@ public class TestClass {
     }
 
     @Test
-    public void testClass() {
-        Jua L = new Jua();
+    public void testClass() throws Exception {
+        Lua L = new Lua51();
 
         JuaFunction jf = new JuaFunction(L) {
             public int __call() {
@@ -61,6 +61,6 @@ public class TestClass {
         L.run(" f=javaFuncTest(); assert(f == 'Returned String'); ");
         assertTrue(called);
 
-        L.dispose();
+        L.close();
     }
 }

@@ -10,12 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ClassObjectTest {
     @Test
     public void classObjectTest() {
-        try (Jua L = new Jua()) {
+        try (Lua L = new Lua51()) {
             assertEquals(1, L.run("t = java.require('java/lang/NoSystem')"));
             assertTrue(L.toString(-1).contains("Unable to bind to class java/lang/NoSystem"));
 
             assertEquals(0, L.run("t = java.require('party/iroiro/jua/ClassObjectTest')"));
-            L.getglobal("t");
+            L.getGlobal("t");
             assertEquals(Class.class, L.toJavaObject(-1).getClass());
 
             run.set(false);
