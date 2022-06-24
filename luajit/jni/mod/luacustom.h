@@ -4,13 +4,13 @@
 #include "lua.hpp"
 
 int luaopen_jua(lua_State * L) {
-    luaL_newlib(L, javalib);
+    luaL_register(L, LUA_JAVALIBNAME, javalib);
     return 1;
 }
 
 static void luaJavaSetup(lua_State * L, JNIEnv * env, int lid) {
     lua_atpanic(L, &fatalError);
-    luaJ_openlib(L, "_G");
+    luaJ_openlib(L, "");
     luaJ_openlib_call(L, LUA_JAVALIBNAME, &luaopen_jua);
 
     lua_pushstring(L, JAVA_STATE_INDEX);

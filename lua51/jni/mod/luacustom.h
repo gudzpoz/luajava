@@ -4,8 +4,8 @@
 #include "lua.hpp"
 
 int luaopen_jua(lua_State *L) {
-  luaL_register(L, LUA_JAVALIBNAME, javalib);
-  return 1;
+    luaL_register(L, LUA_JAVALIBNAME, javalib);
+    return 1;
 }
 
 static void luaJavaSetup(lua_State * L, JNIEnv * env, int lid) {
