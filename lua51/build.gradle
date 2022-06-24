@@ -17,6 +17,16 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    desktopNatives {
+        canBeConsumed = true
+        canBeResolved = false
+    }
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
 dependencies {
     implementation project(':')
     implementation 'com.badlogicgames.gdx:gdx-jnigen-loader:2.3.1'
@@ -46,4 +56,8 @@ jnigen {
     add(MacOsX, x64, ARM)
     add(Android)
     add(IOS)
+}
+
+artifacts {
+    desktopNatives(jnigenJarNativesDesktop)
 }

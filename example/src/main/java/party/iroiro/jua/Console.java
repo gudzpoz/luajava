@@ -10,16 +10,16 @@ import org.jline.terminal.TerminalBuilder;
 import java.io.IOException;
 
 public class Console {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         try (Terminal terminal = TerminalBuilder.builder()
                 .jansi(true)
                 .nativeSignals(true)
                 .build();
-             Jua L = new Jua()
+             Lua L = new Lua51()
         ) {
             L.openLibraries();
             LineReader reader = LineReaderBuilder.builder()
-                    .appName("luajit")
+                    .appName("lua")
                     .terminal(terminal)
                     .highlighter(LuaHighlighter.get())
                     .build();
@@ -34,13 +34,15 @@ public class Console {
                     reader.printAbove("UserInterrupt");
                     continue;
                 }
-                if (L.run(s) == 1) {
-                    if (L.gettop() != 0 && L.isstring(-1)) {
+                if (L.run(s) != Lua.LuaError.NONE) {
+                    if (L.getTop() != 0 && L.isString(-1)) {
                         reader.printAbove(L.toString(-1));
                     }
-                    L.settop(0);
+                    L.setTop(0);
                 }
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
     }
