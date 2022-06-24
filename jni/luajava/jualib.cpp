@@ -28,13 +28,8 @@ static int javaNew(lua_State * L) {
       (jint) stateIndex, *data, lua_gettop(L) - 1);
 }
 
-static const luaL_Reg javalib[] = {
+const luaL_Reg javalib[] = {
   {"require",   javaRequire},
   {"new",       javaNew},
   {NULL, NULL}
 };
-
-int luaopen_jua(lua_State *L) {
-  luaL_register(L, LUA_JAVALIBNAME, javalib);
-  return 1;
-}

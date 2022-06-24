@@ -37,4 +37,11 @@ JNIEnv * getJNIEnv(lua_State * L);
 
 int fatalError(lua_State * L);
 
+lua_State * luaJ_newthread(lua_State * L, int lid);
+void luaJ_pushobject(JNIEnv * env, lua_State * L, jobject obj);
+void luaJ_pushclass(JNIEnv * env, lua_State * L, jobject clazz);
+void luaJ_pusharray(JNIEnv * env, lua_State * L, jobject array);
+jobject luaJ_toobject(lua_State * L, int index);
+int luaJ_isobject(lua_State * L, int index);
+
 #endif /* JUA_H! */

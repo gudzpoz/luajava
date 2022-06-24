@@ -3,14 +3,14 @@
 
 #include "lua.hpp"
 
-int luaopen_jua(lua_State *L) {
-  luaL_register(L, LUA_JAVALIBNAME, javalib);
-  return 1;
+int luaopen_jua(lua_State * L) {
+    luaL_newlib(L, javalib);
+    return 1;
 }
 
 static void luaJavaSetup(lua_State * L, JNIEnv * env, int lid) {
     lua_atpanic(L, &fatalError);
-    luaJ_openlib(L, "");
+    luaJ_openlib(L, "_G");
     luaJ_openlib_call(L, LUA_JAVALIBNAME, &luaopen_jua);
 
     lua_pushstring(L, JAVA_STATE_INDEX);
@@ -25,7 +25,7 @@ static void luaJavaSetup(lua_State * L, JNIEnv * env, int lid) {
     initMetaRegistry(L);
 }
 
-static int initLua51Bindings(JNIEnv * env) {
+static int initLua52Bindings(JNIEnv * env) {
     return initBindings(env);
 }
 

@@ -18,8 +18,10 @@ targetCompatibility = '1.8'
 dependencies {
     implementation project(':')
     implementation project(':lua51')
+    implementation project(':lua52')
     implementation project(path: ':', configuration: 'desktopNatives')
     implementation project(path: ':lua51', configuration: 'desktopNatives')
+    implementation project(path: ':lua52', configuration: 'desktopNatives')
     implementation "org.jline:jline-reader:$jlineVersion"
     implementation "org.jline:jline-terminal:$jlineVersion"
     implementation "org.jline:jline-builtins:$jlineVersion"
