@@ -76,14 +76,6 @@ public abstract class AbstractLua implements Lua {
         }
     }
 
-    protected <T> T notNull(T t) throws IllegalArgumentException {
-        if (t == null) {
-            throw new IllegalArgumentException("Invalid argument");
-        } else {
-            return t;
-        }
-    }
-
     @Override
     public void pushNil() {
         C.lua_pushnil(L);
@@ -173,17 +165,17 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public double toNumber(int index) throws IllegalArgumentException {
+    public double toNumber(int index) {
         return C.lua_tonumber(L, index);
     }
 
     @Override
-    public boolean toBoolean(int index) throws IllegalArgumentException {
+    public boolean toBoolean(int index) {
         return C.lua_toboolean(L, index) != 0;
     }
 
     @Override
-    public Object toObject(int index) {
+    public @Nullable Object toObject(int index) {
         int type = C.lua_type(L, index);
         switch (type) {
             case Consts.LUA_TNIL:
@@ -203,7 +195,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public Object toObject(int index, Class<?> type) {
+    public @Nullable Object toObject(int index, Class<?> type) {
         Object converted = toObject(index);
         if (converted == null) {
             return null;
@@ -230,51 +222,42 @@ public abstract class AbstractLua implements Lua {
                 return number.doubleValue();
             }
         }
-        throw new IllegalArgumentException("Unable to convert type");
+        return null;
     }
 
     @Override
-    public @NotNull String toString(int index) throws IllegalArgumentException {
-        return notNull(C.lua_tostring(L, index));
+    public @Nullable String toString(int index) {
+        return C.lua_tostring(L, index);
     }
 
     @Override
-    public @NotNull Object toJavaObject(int index) throws IllegalArgumentException {
-        return notNull(C.luaJ_toobject(L, index));
+    public @Nullable Object toJavaObject(int index) {
+        return C.luaJ_toobject(L, index);
     }
 
     @Override
-    public @NotNull Map<?, ?> toMap(int index) throws IllegalArgumentException {
-        try {
-            Object obj = toJavaObject(index);
-            if (obj instanceof Map) {
-                return ((Map<?, ?>) obj);
-            }
-        } catch (IllegalArgumentException ignored) {
+    public @Nullable Map<?, ?> toMap(int index) {
+        Object obj = toJavaObject(index);
+        if (obj instanceof Map) {
+            return ((Map<?, ?>) obj);
         }
         if (C.lua_istable(L, index) == 1) {
             C.lua_pushnil(L);
             Map<Object, Object> map = new HashMap<>();
             while (C.lua_next(L, -2) != 0) {
-                try {
-                    map.put(toObject(-2), toObject(-1));
-                } catch (IllegalArgumentException ignored) {
-                }
+                map.put(toObject(-2), toObject(-1));
                 C.lua_pop(L, 1);
             }
             return map;
         }
-        throw new IllegalArgumentException("Not a Java map or luatable");
+        return null;
     }
 
     @Override
-    public @NotNull List<?> toList(int index) throws IllegalArgumentException {
-        try {
-            Object obj = toJavaObject(index);
-            if (obj instanceof List) {
-                return ((List<?>) obj);
-            }
-        } catch (IllegalArgumentException ignored) {
+    public @Nullable List<?> toList(int index) {
+        Object obj = toJavaObject(index);
+        if (obj instanceof List) {
+            return ((List<?>) obj);
         }
         int top = C.lua_gettop(L);
         if (C.lua_istable(L, index) == 1) {
@@ -285,19 +268,15 @@ public abstract class AbstractLua implements Lua {
                 ArrayList<Object> list = new ArrayList<>();
                 list.ensureCapacity(len - top + 1);
                 for (int i = top + 1; i <= len; ++i) {
-                    try {
-                        list.add(toObject(i));
-                    } catch (IllegalArgumentException ignored) {
-                    }
+                    list.add(toObject(i));
                 }
                 C.lua_settop(L, top);
                 return list;
             } else {
                 C.lua_settop(L, top);
-                throw new IllegalArgumentException("unpack exception");
             }
         }
-        throw new IllegalArgumentException("Not a Java list or luatable");
+        return null;
     }
 
     @Override
@@ -449,8 +428,8 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public int pCall(int nArgs, int nResults) {
-        return C.luaJ_pcall(L, nArgs, nResults);
+    public LuaError pCall(int nArgs, int nResults) {
+        return convertError(C.luaJ_pcall(L, nArgs, nResults));
     }
 
     @Override
@@ -665,5 +644,6 @@ public abstract class AbstractLua implements Lua {
     }
 
     public abstract LuaError convertError(int code);
+
     public abstract LuaType convertType(int code);
 }

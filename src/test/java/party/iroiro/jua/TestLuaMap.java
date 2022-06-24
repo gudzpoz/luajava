@@ -69,22 +69,22 @@ public class TestLuaMap {
         L.openLibrary("os");
         ResourceLoader loader = new ResourceLoader();
         loader.load("/tests/testMap.lua", L);
-        int err = L.pCall(0, Consts.LUA_MULTRET);
-        if (err != 0) {
+        Lua.LuaError err = L.pCall(0, Consts.LUA_MULTRET);
+        if (err != Lua.LuaError.OK) {
             switch (err) {
-                case 1:
+                case RUNTIME:
                     System.out.println("Runtime error. " + L.toString(-1));
                     break;
 
-                case 2:
+                case FILE:
                     System.out.println("File not found. " + L.toString(-1));
                     break;
 
-                case 3:
+                case SYNTAX:
                     System.out.println("Syntax error. " + L.toString(-1));
                     break;
 
-                case 4:
+                case MEMORY:
                     System.out.println("Memory error. " + L.toString(-1));
                     break;
 

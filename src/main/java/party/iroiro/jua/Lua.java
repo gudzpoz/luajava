@@ -78,7 +78,7 @@ public interface Lua extends AutoCloseable {
      * @param object the element to be pushed onto the stack
      * @throws IllegalArgumentException when argument is {@code null} or an array
      */
-    void pushJavaObject(@NotNull Object object) throws IllegalArgumentException;
+    void pushJavaObject(@NotNull Object object);
 
     /**
      * Push the element onto the stack, converted as is to Java arrays
@@ -86,43 +86,40 @@ public interface Lua extends AutoCloseable {
      * @param array the element to be pushed onto the stack
      * @throws IllegalArgumentException when argument is {@code null} or a non-array object
      */
-    void pushJavaArray(@NotNull Object array) throws IllegalArgumentException;
+    void pushJavaArray(@NotNull Object array);
 
     /* Convert-something (into Java) functions */
 
-    double toNumber(int index) throws IllegalArgumentException;
+    double toNumber(int index);
 
-    boolean toBoolean(int index) throws IllegalArgumentException;
+    boolean toBoolean(int index);
 
     Object toObject(int index);
 
     Object toObject(int index, Class<?> type);
 
-    @NotNull String toString(int index) throws IllegalArgumentException;
+    @Nullable String toString(int index);
 
     /**
      * Get the element at the specified stack position, if the element is a Java object / array / class
      *
      * @param index the stack position of the element
-     * @throws IllegalArgumentException when the element does not exist or cannot be converted
      */
-    @NotNull Object toJavaObject(int index) throws IllegalArgumentException;
+    @Nullable Object toJavaObject(int index);
 
     /**
      * Get the element at the specified stack position
      *
      * @param index the stack position of the element
-     * @throws IllegalArgumentException when the element does not exist or cannot be converted
      */
-    @NotNull Map<?, ?> toMap(int index) throws IllegalArgumentException;
+    @Nullable Map<?, ?> toMap(int index);
 
     /**
      * Get the element at the specified stack position
      *
      * @param index the stack position of the element
-     * @throws IllegalArgumentException when the element does not exist or cannot be converted
      */
-    @NotNull List<?> toList(int index) throws IllegalArgumentException;
+    @Nullable List<?> toList(int index);
 
     /* Type-checking function */
     boolean isBoolean(int index);
@@ -192,7 +189,7 @@ public interface Lua extends AutoCloseable {
 
     LuaError run(Buffer buffer, String name);
 
-    int pCall(int nArgs, int nResults);
+    LuaError pCall(int nArgs, int nResults);
 
     /* Thread functions */
     Lua newThread();

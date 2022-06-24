@@ -20,10 +20,10 @@ public class APITest {
         L.setGlobal("sum");
         ResourceLoader loader = new ResourceLoader();
         loader.load("/tests/apiTest.lua", L);
-        assertEquals(0, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
-        assertEquals(1, L.run("System.out:println(instance.testPrivate)"));
-        assertEquals(1, L.run("System.out:println(instance.testFriendly)"));
-        assertEquals(1, L.run("APITest:assert(false)"));
+        assertEquals(Lua.LuaError.OK, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
+        assertEquals(Lua.LuaError.RUNTIME, L.run("System.out:println(instance.testPrivate)"));
+        assertEquals(Lua.LuaError.RUNTIME, L.run("System.out:println(instance.testFriendly)"));
+        assertEquals(Lua.LuaError.RUNTIME, L.run("APITest:assert(false)"));
     }
 
     private final int testPrivate = 443;
