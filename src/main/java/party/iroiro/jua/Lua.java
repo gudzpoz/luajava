@@ -51,6 +51,13 @@ public interface Lua extends AutoCloseable {
     void push(@NotNull Collection<?> collection);
 
     /**
+     * Push an array onto the stack, converted to luatable
+     * @param array a array
+     * @throws IllegalArgumentException when the object is not array
+     */
+    void pushArray(@NotNull Object array) throws IllegalArgumentException;
+
+    /**
      * Push the function onto the stack, converted to a callable element
      *
      * @param function the function to be pushed onto the stack
@@ -85,7 +92,9 @@ public interface Lua extends AutoCloseable {
 
     boolean toBoolean(int index) throws IllegalArgumentException;
 
-    @NotNull Object toObject(int index) throws IllegalArgumentException;
+    Object toObject(int index);
+
+    Object toObject(int index, Class<?> type);
 
     @NotNull String toString(int index) throws IllegalArgumentException;
 
@@ -215,7 +224,13 @@ public interface Lua extends AutoCloseable {
 
     int ref(int index);
 
+    int ref();
+
+    int refGet(int ref);
+
     void unRef(int index, int ref);
+
+    int unref();
 
     /* Meta functions */
     void getGlobal(String name);
@@ -241,11 +256,17 @@ public interface Lua extends AutoCloseable {
 
     void error(String message);
 
-    void createProxy(Class<?>[] interfaces);
+    Object createProxy(Class<?>[] interfaces, Conversion degree);
+
+    void register(String name, JFunction function);
 
     LuaNative getLuaNative();
 
     long getPointer();
+
+    void addSubThread(Lua lua);
+
+    int getId();
 
     /**
      * Controls the degree of conversion from Java to Lua
@@ -299,7 +320,8 @@ public interface Lua extends AutoCloseable {
         TABLE(Consts.LUA_TTABLE),
         THREAD(Consts.LUA_TTHREAD),
         NONE(Consts.LUA_TNONE),
-        FUNCTION(Consts.LUA_TFUNCTION);
+        FUNCTION(Consts.LUA_TFUNCTION),
+        BOOLEAN(Consts.LUA_TBOOLEAN);
 
         private final int i;
 

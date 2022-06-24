@@ -51,9 +51,9 @@ public abstract class JuaAPI {
      * For static fields, use {@link #classInvoke(int, Class, String, int)} instead.
      * </p>
      *
-     * @param index the id of {@link Jua} thread calling this method
-     * @param obj the object
-     * @param name the name of the field
+     * @param index      the id of {@link Jua} thread calling this method
+     * @param obj        the object
+     * @param name       the name of the field
      * @param paramCount number of parameters (on the lua stack)
      * @return the number result pushed on stack
      * @throws Exception when the calling underlying function throws
@@ -69,13 +69,14 @@ public abstract class JuaAPI {
 
     /**
      * Calls a {@link JuaFunction} or {@link JFunction}
-     * @param index the id of {@link Jua} thread calling this method
-     * @param obj the {@link JuaFunction} or {@link JFunction} object
+     *
+     * @param index   the id of {@link Jua} thread calling this method
+     * @param obj     the {@link JuaFunction} or {@link JFunction} object
      * @param ignored parameter count, but we are not using it
      * @return the number result pushed on stack
      */
     private static int juaFunctionCall(int index, Object obj, int ignored) {
-        Jua L = Jua.get(index);
+        Lua L = Jua.get(index);
         if (obj instanceof JuaFunction) {
             return ((JuaFunction) obj).__call();
         } else if (obj instanceof JFunction) {
@@ -95,7 +96,7 @@ public abstract class JuaAPI {
     }
 
     public static int classNew(int index, Class<?> clazz, int paramCount) {
-        Jua L = Jua.get(index);
+        Lua L = Jua.get(index);
         Object[] objects = new Object[paramCount];
         Constructor<?> constructor = matchMethod(L, clazz.getConstructors(), null, objects);
         if (constructor != null) {
@@ -131,7 +132,7 @@ public abstract class JuaAPI {
         assert obj.getClass().isArray();
         try {
             Object e = Array.get(obj, i - 1);
-            Jua.get(index).push(e);
+            Jua.get(index).push(e, Lua.Conversion.SEMI);
             return 1;
         } catch (Exception e) {
             return 0;
@@ -141,8 +142,8 @@ public abstract class JuaAPI {
     public static int arrayNewIndex(int index, Object obj, int i) {
         assert obj.getClass().isArray();
         try {
-            Jua L = Jua.get(index);
-            Array.set(obj, i - 1, L.toObject(L.gettop(), obj.getClass().getComponentType()));
+            Lua L = Jua.get(index);
+            Array.set(obj, i - 1, L.toObject(L.getTop(), obj.getClass().getComponentType()));
         } catch (Exception ignored) {
         }
         return 0;
@@ -173,7 +174,7 @@ public abstract class JuaAPI {
      */
     public static int methodInvoke(int index, Class<?> clazz, @Nullable Object obj,
                                    String name, int paramCount) throws Exception {
-        Jua L = Jua.get(index);
+        Lua L = Jua.get(index);
         /* Storage of converted params */
         Object[] objects = new Object[paramCount];
         Method method = matchMethod(L, clazz.getMethods(), name, objects);
@@ -186,7 +187,7 @@ public abstract class JuaAPI {
 
     public static int methodInvoke(int index, Class<?> clazz, Object obj, String name,
                                    String notSignature, int paramCount) throws Exception {
-        Jua L = Jua.get(index);
+        Lua L = Jua.get(index);
         Method method = matchMethod(clazz, name, notSignature);
         if (method != null) {
             Object[] objects = new Object[paramCount];
@@ -197,7 +198,7 @@ public abstract class JuaAPI {
         return 0;
     }
 
-    public static int methodInvoke(Jua L, Method method, @Nullable Object obj, Object[] objects) {
+    public static int methodInvoke(Lua L, Method method, @Nullable Object obj, Object[] objects) {
         Object ret;
         try {
             ret = method.invoke(obj, objects);
@@ -211,13 +212,13 @@ public abstract class JuaAPI {
         if (ret == null) {
             return 0;
         } else {
-            L.push(ret);
+            L.push(ret, Lua.Conversion.SEMI);
             return 1;
         }
     }
 
     /**
-     * Tries to fetch field from a object
+     * Tries to fetch field from an object
      * <p>
      * When a matching field is found, it is pushed to the corresponding lua stack
      *
@@ -228,12 +229,12 @@ public abstract class JuaAPI {
      * @return 1 if a field is found, 2 otherwise
      */
     public static int fieldIndex(int index, Class<?> clazz, @Nullable Object object, String name) {
-        Jua L;
+        Lua L;
         try {
             Field field = clazz.getField(name);
             Object obj = field.get(object);
             L = Jua.get(index);
-            L.push(obj);
+            L.push(obj, Lua.Conversion.SEMI);
             return 1;
         } catch (NoSuchFieldException | IllegalAccessException | NullPointerException ignored) {
             return 2;
@@ -243,7 +244,7 @@ public abstract class JuaAPI {
     private static int fieldNewIndex(int index, Class<?> clazz, Object object, String name) {
         try {
             Field field = clazz.getField(name);
-            Jua L = Jua.get(index);
+            Lua L = Jua.get(index);
             Class<?> type = field.getType();
             Object o = convertFromLua(L, type, 3);
             field.set(object, o);
@@ -253,7 +254,7 @@ public abstract class JuaAPI {
     }
 
     @Nullable
-    private static <T extends Executable> T matchMethod(Jua L, T[] methods,
+    private static <T extends Executable> T matchMethod(Lua L, T[] methods,
                                                         @Nullable String name, Object[] params) {
         for (T method : methods) {
             if (method.getParameterCount() == params.length) {
@@ -293,28 +294,26 @@ public abstract class JuaAPI {
      * @throws IllegalArgumentException when unable to convert
      */
     @Nullable
-    public static Object convertFromLua(Jua L, Class<?> clazz, int index)
+    public static Object convertFromLua(Lua L, Class<?> clazz, int index)
             throws IllegalArgumentException {
-        int type = L.type(index);
-        if (type == Consts.LUA_TNIL) {
+        Lua.LuaType type = L.type(index);
+        if (type == Lua.LuaType.NIL) {
             return null;
-        } else if (type == Consts.LUA_TBOOLEAN) {
+        } else if (type == Lua.LuaType.BOOLEAN) {
             if (clazz == boolean.class || clazz.isAssignableFrom(Boolean.class)) {
                 return L.toBoolean(index);
             }
-        } else if (type == Consts.LUA_TSTRING && clazz.isAssignableFrom(String.class)) {
+        } else if (type == Lua.LuaType.STRING && clazz.isAssignableFrom(String.class)) {
             return L.toString(index);
-        } else if (type == Consts.LUA_TNUMBER && (clazz.isPrimitive() ||
+        } else if (type == Lua.LuaType.NUMBER && (clazz.isPrimitive() ||
                 Number.class.isAssignableFrom(clazz))) {
             return convertNumber(L.toNumber(index), clazz);
-        } else if (type == Consts.LUA_TUSERDATA) {
+        } else if (type == Lua.LuaType.USERDATA) {
             Object object = L.toJavaObject(index);
-            if (object != null) {
-                if (clazz.isAssignableFrom(object.getClass())) {
-                    return object;
-                }
+            if (clazz.isAssignableFrom(object.getClass())) {
+                return object;
             }
-        } else if (type == Consts.LUA_TTABLE) {
+        } else if (type == Lua.LuaType.TABLE) {
             if (clazz.isAssignableFrom(List.class)) {
                 return L.toList(index);
             } else if (clazz.isArray() && clazz.getComponentType() == Object.class) {

@@ -4,9 +4,9 @@ package party.iroiro.jua;
  * Java alternative to <code>lua_CFunction</code>
  */
 public abstract class JuaFunction {
-    protected final Jua L;
+    protected final Lua L;
 
-    protected JuaFunction(Jua L) {
+    protected JuaFunction(Lua L) {
         this.L = L;
     }
 
@@ -23,7 +23,7 @@ public abstract class JuaFunction {
      * Registers a global name
      */
     public void register(String name) {
-        L.push(this);
-        L.setglobal(name);
+        L.push(this, Lua.Conversion.NONE);
+        L.setGlobal(name);
     }
 }

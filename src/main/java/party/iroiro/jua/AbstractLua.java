@@ -3,13 +3,15 @@ package party.iroiro.jua;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Proxy;
 import java.nio.Buffer;
 import java.util.*;
 
 public abstract class AbstractLua implements Lua {
     protected static LuaInstances instances = new LuaInstances();
 
-    public Lua getInstance(int lid) {
+    public static Lua getInstance(int lid) {
         return instances.get(lid);
     }
 
@@ -129,6 +131,20 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
+    public void pushArray(@NotNull Object array) throws IllegalArgumentException {
+        if (array.getClass().isArray()) {
+            int len = Array.getLength(array);
+            C.lua_createtable(L, len, 0);
+            for (int i = 0; i != len; ++i) {
+                push(Array.get(array, i), Conversion.FULL);
+                C.luaJ_rawgeti(L, -2, i + 1);
+            }
+        } else {
+            throw new IllegalArgumentException("Not a array");
+        }
+    }
+
+    @Override
     public void push(@NotNull JFunction function) {
         pushJavaObject(function);
     }
@@ -167,8 +183,54 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public @NotNull Object toObject(int index) throws IllegalArgumentException {
-        return notNull(C.luaJ_toobject(L, index));
+    public Object toObject(int index) {
+        int type = C.lua_type(L, index);
+        switch (type) {
+            case Consts.LUA_TNIL:
+                return null;
+            case Consts.LUA_TBOOLEAN:
+                return toBoolean(index);
+            case Consts.LUA_TNUMBER:
+                return toNumber(index);
+            case Consts.LUA_TSTRING:
+                return toString(index);
+            case Consts.LUA_TTABLE:
+                return toMap(index);
+            case Consts.LUA_TUSERDATA:
+                return toJavaObject(index);
+        }
+        return null;
+    }
+
+    @Override
+    public Object toObject(int index, Class<?> type) {
+        Object converted = toObject(index);
+        if (converted == null) {
+            return null;
+        } else if (type.isAssignableFrom(converted.getClass())) {
+            return converted;
+        } else if (Number.class.isAssignableFrom(converted.getClass())) {
+            Number number = ((Number) converted);
+            if (type == byte.class || type == Byte.class) {
+                return number.byteValue();
+            }
+            if (type == short.class || type == Short.class) {
+                return number.shortValue();
+            }
+            if (type == int.class || type == Integer.class) {
+                return number.intValue();
+            }
+            if (type == long.class || type == Long.class) {
+                return number.longValue();
+            }
+            if (type == float.class || type == Float.class) {
+                return number.floatValue();
+            }
+            if (type == double.class || type == Double.class) {
+                return number.doubleValue();
+            }
+        }
+        throw new IllegalArgumentException("Unable to convert type");
     }
 
     @Override
@@ -396,10 +458,19 @@ public abstract class AbstractLua implements Lua {
         return C.luaJ_pcall(L, nArgs, nResults);
     }
 
+    @Override
     public Lua newThread() {
+        // TODO: No, it does not work for threads created from the Lua side
         LuaInstances.Token token = instances.add();
         long K = C.luaJ_newthread(L, token.id);
-        return newThread(K, token.id, this.mainThread);
+        Lua lua = newThread(K, token.id, this.mainThread);
+        mainThread.addSubThread(lua);
+        return lua;
+    }
+
+    @Override
+    public synchronized void addSubThread(Lua lua) {
+        subThreads.add(lua);
     }
 
     protected abstract Lua newThread(long L, int id, Lua mainThread);
@@ -537,8 +608,23 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void createProxy(Class<?>[] interfaces) {
+    public Object createProxy(Class<?>[] interfaces, Conversion degree) {
+        if (C.lua_istable(L, -1) == 0) {
+            pop(1);
+            return null;
+        } else {
+            return Proxy.newProxyInstance(
+                    Jua.class.getClassLoader(),
+                    interfaces,
+                    new LuaProxy(ref(), this, degree)
+            );
+        }
+    }
 
+    @Override
+    public void register(String name, JFunction function) {
+        push(function);
+        setGlobal(name);
     }
 
     @Override
@@ -553,7 +639,15 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void close() {
-        instances.remove(id);
-        C.lua_close(L);
+        synchronized (mainThread) {
+            if (mainThread == this) {
+                for (Lua lua : subThreads) {
+                    instances.remove(lua.getId());
+                }
+                subThreads.clear();
+                instances.remove(id);
+                C.lua_close(L);
+            }
+        }
     }
 }
