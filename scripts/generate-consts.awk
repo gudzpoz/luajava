@@ -3,18 +3,18 @@ BEGIN {
   print("");
   print("/**");
   print(" * Generated with <code>generate-consts.awk</code>:");
-  print(" * <pre><code>awk -f jni/scripts/generate-consts.awk \\");
-  print(" *     jni/luajit/src/lua.h \\");
-  print(" *     jni/luajit/src/lauxlib.h \\");
-  print(" *     &gt; src/main/java/party/iroiro/jua/Consts.java</code></pre>");
+  print(" * <pre><code>awk -f scripts/generate-consts.awk \\");
+  print(" *     .../lua.h \\");
+  print(" *     .../lauxlib.h \\");
+  print(" *     &gt; .../party/iroiro/jua/...Consts.java</code></pre>");
   print(" */");
-  print("public class Consts {");
+  print("public abstract class Consts {");
 }
 
 /^#define\s+\w+\s+((-?(0x)?[0-9a-fA-F]+)|(\(-?(0x)?[0-9a-fA-F]+\)))$/ {
   print("    /**");
   print("     * Generated from " FILENAME " (line " NR "):");
-  print("     * <code>" $0 "</code>");
+  print("     * <pre><code>" $0 "</code></pre>");
   print("     */");
   print("    public static final int " $2 " = " $3";");
   print("");
@@ -23,7 +23,7 @@ BEGIN {
 /^#define\s+\w+\s+"[^"]+"$/ {
   print("    /**");
   print("     * Generated from " FILENAME " (line " NR "):");
-  print("     * <code>" $0 "</code>");
+  print("     * <pre><code>" $0 "</code></pre>");
   print("     */");
   $1 = "    public static final String";
   $2 = $2 " =";
