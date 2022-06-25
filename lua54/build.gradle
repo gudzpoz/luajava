@@ -52,10 +52,17 @@ jnigen {
     add(Linux, x64)
     add(Linux, x32, ARM)
     add(Linux, x64, ARM)
-    add(MacOsX, x64)
-    add(MacOsX, x64, ARM)
-    add(Android)
-    add(IOS)
+    add(MacOsX, x64) {
+        libraries = ''
+    }
+    add(Android) {
+        androidApplicationMk = [
+                'APP_PLATFORM := android-21'
+        ]
+    }
+    add(IOS) {
+        libraries = ''
+    }
 }
 
 artifacts {
