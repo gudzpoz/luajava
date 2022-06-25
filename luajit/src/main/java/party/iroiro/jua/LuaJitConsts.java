@@ -34,7 +34,7 @@ public abstract class LuaJitConsts {
 
     /**
      * Generated from luajit/jni/luajit/src/lua.h (line 23):
-     * <pre><code>#define LUA_AUTHORS	"R. Ierusalimschy, L. H. de Figueiredo & W. Celes"</code></pre>
+     * <pre><code>#define LUA_AUTHORS	"R. Ierusalimschy, L. H. de Figueiredo &amp; W. Celes"</code></pre>
      */
     public static final String LUA_AUTHORS = "R. Ierusalimschy, L. H. de Figueiredo & W. Celes";
 

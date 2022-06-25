@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+apply plugin: 'java-library'
+
 ext {
     jdk = JavaVersion.current().majorVersion
     jdkJavadoc = "https://docs.oracle.com/javase/$jdk/docs/api/"

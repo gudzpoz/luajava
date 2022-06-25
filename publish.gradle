@@ -1,108 +1,153 @@
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
+configure([
+        project(':'),
+        project(':lua51'),
+        project(':lua52'),
+        project(':lua53'),
+        project(':lua54'),
+        project(':luajit'),
+]) {
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
 
-publishing {
-    publications {
-        String POM_NAME = 'Jua'
-        String POM_DESCRIPTION = 'LuaJIT for Java'
-        String POM_URL = 'https://github.com/gudzpoz/jua'
-        String POM_LICENCE_NAME = 'The MIT License'
-        String POM_LICENCE_URL = 'http://www.opensource.org/licenses/mit-license.php'
-        String POM_SCM_CONNECTION = 'scm:git:git://github.com/gudzpoz/jua.git'
-        String POM_SCM_DEV_CONNECTION = 'scm:git:git://github.com/gudzpoz/jua.git'
-        String POM_SCM_URL = 'https://github.com/gudzpoz/jua.git'
-        mavenJava(MavenPublication) {
-            from components.java
-            pom {
-                name = POM_NAME
-                description = POM_DESCRIPTION
-                url = POM_URL
-                licenses {
-                    license {
-                        name = POM_LICENCE_NAME
-                        url = POM_LICENCE_URL
+    apply from: project(':').file('javadoc.gradle')
+
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    afterEvaluate { project ->
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    from components.java
+                    versionMapping {
+                        usage('java-api') {
+                            fromResolutionOf('runtimeClasspath')
+                        }
+                        usage('java-runtime') {
+                            fromResolutionResult()
+                        }
+                    }
+                    pom {
+                        name = POM_NAME
+                        if (!POM_DESCRIPTION.isEmpty()) {
+                            description = POM_DESCRIPTION
+                        }
+                        url = POM_URL
+
+                        licenses {
+                            license {
+                                name = POM_LICENCE_NAME
+                                url = POM_LICENCE_URL
+                                distribution = POM_LICENCE_DIST
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id = POM_DEV_ID
+                                url = POM_DEV_URL
+                                name = POM_DEV_ID
+                                email = POM_DEV_EMAIL
+                            }
+                        }
+
+                        scm {
+                            connection = POM_SCM_CONNECTION
+                            developerConnection = POM_SCM_DEV_CONNECTION
+                            url = POM_SCM_URL
+                        }
                     }
                 }
-                developers {
-                    developer {
-                        id = 'gudzpoz'
-                        url = 'https://github.com/gudzpoz'
-                        name = 'gudzpoz'
-                        email = 'gudzpoz@live.com'
+
+                if (project.tasks.findByName('jnigen')) {
+                    mavenPlatform(MavenPublication) {
+                        artifactId = artifactId + '-platform'
+                        if (project.tasks.findByName('jnigenJarNativesDesktop')) {
+                            artifact jnigenJarNativesDesktop {}
+                        }
+                        if (project.tasks.findByName('jnigenJarNativesIOS')) {
+                            artifact jnigenJarNativesIOS {}
+                        }
+                        ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { arch ->
+                            if (project.tasks.findByName("jnigenJarNativesAndroid$arch")) {
+                                artifact "jnigenJarNativesAndroid$arch" {}
+                            }
+                        }
+                        pom {
+                            name = POM_NAME + ' Native Libraries'
+                            if (!POM_DESCRIPTION.isEmpty()) {
+                                description = POM_DESCRIPTION
+                            }
+                            url = POM_URL
+                            licenses {
+                                license {
+                                    name = POM_LICENCE_NAME
+                                    url = POM_LICENCE_URL
+                                    distribution = POM_LICENCE_DIST
+                                }
+                            }
+                            developers {
+                                developer {
+                                    id = POM_DEV_ID
+                                    url = POM_DEV_URL
+                                    name = POM_DEV_ID
+                                    email = POM_DEV_EMAIL
+                                }
+                            }
+                            scm {
+                                connection = POM_SCM_CONNECTION
+                                developerConnection = POM_SCM_DEV_CONNECTION
+                                url = POM_SCM_URL
+                            }
+                        }
                     }
-                }
-                scm {
-                    connection = POM_SCM_CONNECTION
-                    developerConnection = POM_SCM_DEV_CONNECTION
-                    url = POM_SCM_URL
                 }
             }
         }
-        mavenPlatform(MavenPublication) {
-            artifactId = artifactId + '-platform'
-            if(project.tasks.findByName('jnigenJarNativesDesktop')) {
-                artifact jnigenJarNativesDesktop {}
-            }
-            if(project.tasks.findByName('jnigenJarNativesIOS')) {
-                artifact jnigenJarNativesIOS {}
-            }
-            ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each {
-                if(project.tasks.findByName("jnigenJarNativesAndroid$it")) {
-                    artifact "jnigenJarNativesAndroid$it" {}
+
+        repositories {
+            mavenLocal()
+            maven {
+                name = 'GitHub'
+                url = 'https://maven.pkg.github.com/gudzpoz/luajava'
+                credentials {
+                    username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+                    password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
                 }
             }
-            pom {
-                name = POM_NAME + ' Native Libraries'
-                description = POM_DESCRIPTION
-                url = POM_URL
-                licenses {
-                    license {
-                        name = POM_LICENCE_NAME
-                        url = POM_LICENCE_URL
-                    }
+            maven {
+                name = 'OSSRH'
+                url = version.toString().endsWith('-SNAPSHOT')
+                        ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                        : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                credentials {
+                    username = System.getenv("MAVEN_USERNAME")
+                    password = System.getenv("MAVEN_PASSWORD")
                 }
-                developers {
-                    developer {
-                        id = 'gudzpoz'
-                        url = 'https://github.com/gudzpoz'
-                        name = 'gudzpoz'
-                        email = 'gudzpoz@live.com'
-                    }
-                }
-                scm {
-                    connection = POM_SCM_CONNECTION
-                    developerConnection = POM_SCM_DEV_CONNECTION
-                    url = POM_SCM_URL
+            }
+        }
+
+        signing {
+            useInMemoryPgpKeys(
+                    System.getenv("GPG_KEY_ID"),
+                    System.getenv("GPG_SECKEY"),
+                    System.getenv("GPG_PASSPHRASE"),
+            )
+            sign publishing.publications.mavenJava
+
+            if (project.tasks.findByName('jnigen')) {
+                sign publishing.publications.mavenPlatform
+            }
+        }
+
+        gradle.taskGraph.whenReady {
+            tasks.withType(Sign) {
+                onlyIf {
+                    !rootProject.version.toString().endsWith('-SNAPSHOT')
                 }
             }
         }
     }
-    repositories {
-        maven {
-            name = 'GitHub'
-            url = 'https://maven.pkg.github.com/GuDzpoz/jua'
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
-        maven {
-            name = 'OSSRH'
-            url = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-            credentials {
-                username = System.getenv("MAVEN_USERNAME")
-                password = System.getenv("MAVEN_PASSWORD")
-            }
-        }
-    }
-}
-
-signing {
-    useInMemoryPgpKeys(
-            System.getenv("GPG_KEY_ID"),
-            System.getenv("GPG_SECKEY"),
-            System.getenv("GPG_PASSPHRASE"),
-    )
-    sign publishing.publications.mavenJava
-    sign publishing.publications.mavenPlatform
 }

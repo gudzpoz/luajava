@@ -4,7 +4,9 @@ name: Build natives
 
 on:
   workflow_dispatch:
-    branches: [ main ]
+    branches:
+      - main
+      - luas
 
 env:
   MACOSX_DEPLOYMENT_TARGET: "10.10"
@@ -31,12 +33,12 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Build natives
         run: |
-          ./gradlew jniGen jnigenBuildMacOsX64 test
+          ./gradlew jniGen jnigenBuild check
       - name: Upload macOS/iOS natives
         uses: actions/upload-artifact@v2.1.4
         with:
           name: apple-natives
-          path: libs
+          path: ./*/libs
   most-natives:
     runs-on: ubuntu-20.04
     steps:
@@ -68,12 +70,12 @@ jobs:
       - name: Build natives
         run: |
           export export NDK_HOME=$ANDROID_NDK_HOME
-          ./gradlew jniGen jnigenBuildAndroid jnigenBuildLinux jnigenBuildLinux64 jnigenBuildLinuxARM jnigenBuildLinuxARM64 jnigenBuildWindows jnigenBuildWindows64 test
+          ./gradlew jniGen jnigenBuild check
       - name: Upload all output libs
         uses: actions/upload-artifact@v2.1.4
         with:
           name: most-natives
-          path: libs
+          path: ./*/libs
       - name: Cleanup Gradle Cache
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
@@ -100,26 +102,28 @@ jobs:
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-      - name: Download natives-ios artifact
+            ${{ runner.os }}-gradle-
       - name: Download apple-natives artifact
         uses: actions/download-artifact@v2
         with:
           name: apple-natives
-          path: libs
       - name: Download most-natives artifact
         uses: actions/download-artifact@v2
         with:
           name: most-natives
-          path: libs
       - name: Pack desktop natives
         run: |
           ./gradlew jniGen
-          ant -f jni/build.xml pack-natives
+          ant -f lua51/jni/build.xml pack-natives
+          ant -f lua52/jni/build.xml pack-natives
+          ant -f lua53/jni/build.xml pack-natives
+          ant -f lua54/jni/build.xml pack-natives
+          ant -f luajit/jni/build.xml pack-natives
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: natives
-          path: libs
+          path: ./*/libs
       - name: Publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -129,4 +133,12 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.SIGNING_PASSPHRASE }}
           GPG_SECKEY: ${{ secrets.SIGNING_SECRET_KEY }}
         run: |
-          ./gradlew publish
+          ./gradlew build publish
+      - name: Build example
+        run: |
+          ./gradlew :example:shadowJar
+      - name: Upload example
+        uses: actions/upload-artifact@v2.1.4
+        with:
+          name: example
+          path: example/build/libs/example-all.jar

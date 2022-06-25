@@ -15,7 +15,7 @@ plugins {
 }
 
 group 'party.iroiro.jua'
-version '2.1.0-beta3-0.2-SNAPSHOT'
+version '3.0.0-SNAPSHOT'
 
 repositories {
     mavenLocal()
@@ -65,5 +65,4 @@ tasks.withType(JavaExec) {
 }
 
 apply from: 'jacoco.gradle'
-apply from: 'javadoc.gradle'
 apply from: 'publish.gradle'
