@@ -61,3 +61,6 @@ jnigen {
 artifacts {
     desktopNatives(jnigenJarNativesDesktop)
 }
+
+tasks.jnigen.dependsOn(tasks.build)
+

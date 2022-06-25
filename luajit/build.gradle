@@ -40,7 +40,7 @@ String addLuaJitTarget(String platform, List<String> command) {
     String target = "buildLua${platform}"
     String folder = "jni/luajit/lib/${platform.toLowerCase()}"
     tasks.register(target) {
-        if(command.get(0) == 'make') {
+        if (command.get(0) == 'make') {
             doLast {
                 exec {
                     workingDir 'jni/luajit'
@@ -81,7 +81,7 @@ void buildLuaTargets(String... targets) {
     }
     // disabling concurrency
     for (int i = 0; i < targets.length - 1; ++i) {
-        for(int j = i + 1; j < targets.length; ++j) {
+        for (int j = i + 1; j < targets.length; ++j) {
             tasks.getByName(targets[j]).mustRunAfter(tasks.getByName(targets[i]))
         }
     }
@@ -212,3 +212,6 @@ apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
 artifacts {
     desktopNatives(jnigenJarNativesDesktop)
 }
+
+tasks.jnigen.dependsOn(tasks.build)
+
