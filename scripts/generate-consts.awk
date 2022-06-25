@@ -1,5 +1,5 @@
 BEGIN {
-  print("package party.iroiro.jua;");
+  print("package party.iroiro.luajava;");
   print("");
   print("/**");
   print(" * Generated with <code>generate-consts.awk</code>:");

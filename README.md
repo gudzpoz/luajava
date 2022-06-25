@@ -25,19 +25,19 @@ To include Jua into your project, you can use Maven or Gradle. Artifacts:
 
 * Core:
   
-  `party.iroiro.jua:jua:2.1.0-beta3-0.1-gamma`
+  `party.iroiro.luajava:jua:2.1.0-beta3-0.1-gamma`
 * Desktop natives:
   
-  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-gamma:natives-desktop`
+  `party.iroiro.luajava:jua-platform:2.1.0-beta3-0.1-gamma:natives-desktop`
 * Android natives:
   
-  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-gamma:natives-armeabi-v7a`
+  `party.iroiro.luajava:jua-platform:2.1.0-beta3-0.1-gamma:natives-armeabi-v7a`
   
-  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-gamma:natives-arm64-v8a`
+  `party.iroiro.luajava:jua-platform:2.1.0-beta3-0.1-gamma:natives-arm64-v8a`
   
-  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-gamma:natives-x86`
+  `party.iroiro.luajava:jua-platform:2.1.0-beta3-0.1-gamma:natives-x86`
   
-  `party.iroiro.jua:jua-platform:2.1.0-beta3-0.1-gamma:natives-x86_64`
+  `party.iroiro.luajava:jua-platform:2.1.0-beta3-0.1-gamma:natives-x86_64`
 * (iOS natives): Coming soon...
 
 ### Examples

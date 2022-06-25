@@ -3,7 +3,7 @@
 
 # In[109]:
 
-# for i in {1..4}; do python scripts/jnigen-lua.py 5.$i party.iroiro.jua lua5${i}/src/main/java/; done
+# for i in {1..4}; do python scripts/jnigen-lua.py 5.$i party.iroiro.luajava lua5${i}/src/main/java/; done
 # Do not forget to update LuaJit
 
 import requests

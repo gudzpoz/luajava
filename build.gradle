@@ -14,7 +14,7 @@ plugins {
     id 'jacoco'
 }
 
-group 'party.iroiro.jua'
+group 'party.iroiro.luajava'
 version '3.0.0-SNAPSHOT'
 
 repositories {
@@ -22,23 +22,22 @@ repositories {
     mavenCentral()
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-    withSourcesJar()
-    withJavadocJar()
+subprojects {
+    java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        withSourcesJar()
+        withJavadocJar()
+    }
 }
 
-test {
-    classpath += sourceSets.test.runtimeClasspath
-}
-
-tasks.withType(JavaCompile) {
-    options.deprecation = true
-}
-
-tasks.withType(JavaExec) {
-    allJvmArgs += '-Xcheck:jni'
+ext {
+    jdk = JavaVersion.current().majorVersion
+    jdkJavadoc = "https://docs.oracle.com/javase/$jdk/docs/api/"
+    if (JavaVersion.current().isJava11Compatible()) {
+        jdkJavadoc = "https://docs.oracle.com/en/java/javase/$jdk/docs/api/"
+    }
+    println "JDK Javadoc link for this build is ${rootProject.jdkJavadoc}"
 }
 
 apply from: 'jacoco.gradle'

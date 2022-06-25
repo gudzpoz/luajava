@@ -1,5 +1,5 @@
 configure([
-        project(':'),
+        project(':luajava'),
         project(':lua51'),
         project(':lua52'),
         project(':lua53'),
@@ -20,6 +20,9 @@ configure([
         publishing {
             publications {
                 mavenJava(MavenPublication) {
+                    version = rootProject.version
+                    groupId = rootProject.group
+
                     from components.java
                     versionMapping {
                         usage('java-api') {
@@ -64,7 +67,10 @@ configure([
 
                 if (project.tasks.findByName('jnigen')) {
                     mavenPlatform(MavenPublication) {
+                        version = rootProject.version
+                        groupId = rootProject.group
                         artifactId = artifactId + '-platform'
+
                         if (project.tasks.findByName('jnigenJarNativesDesktop')) {
                             artifact jnigenJarNativesDesktop {}
                         }

@@ -1,1 +1,0 @@
-package party.iroiro.jua;

@@ -1,5 +1,5 @@
-rootProject.name = 'jua'
-include 'jua'
+rootProject.name = 'luajava-root'
+include 'luajava'
 include 'example'
 include 'lua51'
 include 'lua52'
