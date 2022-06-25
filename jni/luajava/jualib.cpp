@@ -28,8 +28,15 @@ static int javaNew(lua_State * L) {
       (jint) stateIndex, *data, lua_gettop(L) - 1);
 }
 
+static int javaLuaify(lua_State * L) {
+  JNIEnv * env = getJNIEnv(L);
+  int stateIndex = getStateIndex(L);
+  return env->CallStaticIntMethod(juaapi_class, juaapi_luaify, (jint) stateIndex);
+}
+
 const luaL_Reg javalib[] = {
-  {"require",   javaRequire},
-  {"new",       javaNew},
+  { "require",   javaRequire },
+  { "new",       javaNew },
+  { "luaify",    javaLuaify },
   {NULL, NULL}
 };

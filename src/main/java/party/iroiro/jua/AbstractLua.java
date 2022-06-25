@@ -426,13 +426,13 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public LuaError run(String script) {
-        return convertError(C.luaL_dostring(L, script));
+        return C.luaL_dostring(L, script) == 0 ? LuaError.OK : LuaError.RUNTIME;
     }
 
     @Override
     public LuaError run(Buffer buffer, String name) {
         if (buffer.isDirect()) {
-            return convertError(C.luaJ_dobuffer(L, buffer, buffer.limit(), name));
+            return C.luaJ_dobuffer(L, buffer, buffer.limit(), name) == 0 ? LuaError.OK : LuaError.RUNTIME;
         } else {
             return LuaError.MEMORY;
         }

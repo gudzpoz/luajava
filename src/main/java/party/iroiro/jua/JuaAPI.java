@@ -18,6 +18,27 @@ import java.util.stream.Collectors;
  * lua again.
  */
 public abstract class JuaAPI {
+    /**
+     * Converts a value on top of the stack into a more Lua-style form
+     *
+     * @param id the state id
+     */
+    public static int luaify(int id) {
+        Lua L = Jua.get(id);
+        Object o = L.toJavaObject(-1);
+        if (o != null) {
+            L.push(o, Lua.Conversion.FULL);
+        }
+        return 1;
+    }
+
+    /**
+     * Allocates an id for a thread created on the Lua side
+     *
+     * @param mainId the main thread id
+     * @param ptr    the pointer to the lua state who does not have an id
+     * @return an allocated id
+     */
     public static int threadNewId(int mainId, long ptr) {
         return AbstractLua.adopt(mainId, ptr);
     }
@@ -177,7 +198,7 @@ public abstract class JuaAPI {
      * @return the number result pushed on stack
      */
     public static int methodInvoke(int index, Class<?> clazz, @Nullable Object obj,
-                                   String name, int paramCount) throws Exception {
+                                   String name, int paramCount) {
         Lua L = Jua.get(index);
         /* Storage of converted params */
         Object[] objects = new Object[paramCount];

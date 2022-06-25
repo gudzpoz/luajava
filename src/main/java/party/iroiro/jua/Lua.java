@@ -104,6 +104,7 @@ public interface Lua extends AutoCloseable {
      * Get the element at the specified stack position, if the element is a Java object / array / class
      *
      * @param index the stack position of the element
+     * @return the java object or null
      */
     @Nullable Object toJavaObject(int index);
 
@@ -111,6 +112,7 @@ public interface Lua extends AutoCloseable {
      * Get the element at the specified stack position
      *
      * @param index the stack position of the element
+     * @return the map or null
      */
     @Nullable Map<?, ?> toMap(int index);
 
@@ -118,6 +120,7 @@ public interface Lua extends AutoCloseable {
      * Get the element at the specified stack position
      *
      * @param index the stack position of the element
+     * @return the list or null
      */
     @Nullable List<?> toList(int index);
 

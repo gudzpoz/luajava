@@ -23,6 +23,7 @@ extern jmethodID juaapi_objectnewindex;
 extern jmethodID juaapi_arraylen;
 extern jmethodID juaapi_arrayindex;
 extern jmethodID juaapi_arraynewindex;
+extern jmethodID juaapi_luaify;
 
 jclass bindJavaClass(JNIEnv * env, const char * name);
 jmethodID bindJavaStaticMethod(JNIEnv * env, jclass c, const char * name, const char * sig);
