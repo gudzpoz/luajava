@@ -19,6 +19,9 @@ repositories {
     mavenCentral()
 }
 
+group = rootProject.group
+version = rootProject.version
+
 configurations {
     desktopNatives {
         canBeConsumed = true

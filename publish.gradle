@@ -20,9 +20,6 @@ configure([
         publishing {
             publications {
                 mavenJava(MavenPublication) {
-                    version = rootProject.version
-                    groupId = rootProject.group
-
                     from components.java
                     versionMapping {
                         usage('java-api') {
@@ -67,8 +64,6 @@ configure([
 
                 if (project.tasks.findByName('jnigen')) {
                     mavenPlatform(MavenPublication) {
-                        version = rootProject.version
-                        groupId = rootProject.group
                         artifactId = artifactId + '-platform'
 
                         if (project.tasks.findByName('jnigenJarNativesDesktop')) {
@@ -127,6 +122,7 @@ configure([
                     url = rootProject.version.toString().endsWith('-SNAPSHOT')
                             ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
                             : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                    System.out.println(url)
                     credentials {
                         username = System.getenv("MAVEN_USERNAME")
                         password = System.getenv("MAVEN_PASSWORD")
