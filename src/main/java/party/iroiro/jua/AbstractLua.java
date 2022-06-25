@@ -68,7 +68,9 @@ public abstract class AbstractLua implements Lua {
             } else if (degree == Lua.Conversion.SEMI) {
                 pushJavaObjectOrArray(object);
             } else /* (degree == Conversion.FULL) */ {
-                if (object instanceof Map) {
+                if (object instanceof Class) {
+                    pushJavaClass(((Class<?>) object));
+                } else if (object instanceof Map) {
                     push((Map<?, ?>) object);
                 } else if (object instanceof Collection) {
                     push((Collection<?>) object);

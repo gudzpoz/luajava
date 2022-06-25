@@ -23,6 +23,7 @@ public abstract class JuaAPI {
      * Converts a value on top of the stack into a more Lua-style form
      *
      * @param id the state id
+     * @return the number of return values, always 1
      */
     public static int luaify(int id) {
         Lua L = Jua.get(id);
