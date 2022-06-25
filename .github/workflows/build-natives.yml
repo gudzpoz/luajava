@@ -53,6 +53,8 @@ jobs:
         run: |
           sudo apt install -y --force-yes gcc g++ linux-libc-dev libc6-dev
           sudo apt install -y --force-yes libc6-dev-i386 lib32stdc++-9-dev
+          sudo apt install -y --force-yes linux-libc-dev linux-libc-dev-i386-cross
+          sudo apt install -y --force-yes linux-libc-dev-armhf-cross linux-libc-dev-arm64-cross linux-libc-dev-amd64-cross
           sudo apt install -y --force-yes libstdc++-9-dev-i386-cross libstdc++-9-dev-arm64-cross libstdc++-9-dev-armhf-cross
           sudo apt install -y --force-yes gcc-i686-linux-gnu g++-i686-linux-gnu libc6-dev-i386-cross
           sudo apt install -y --force-yes gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross
