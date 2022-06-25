@@ -95,8 +95,10 @@ public class TestLuaMap {
         }
 
         L.getGlobal("map");
-        Object proxy = L.createProxy(new Class[]{Map.class}, Lua.Conversion.SEMI);
+        Object proxy = L.createProxy(new Class[]{Map.class, AutoCloseable.class}, Lua.Conversion.SEMI);
         assertTrue(Map.class.isAssignableFrom(proxy.getClass()));
+        assertTrue(AutoCloseable.class.isAssignableFrom(proxy.getClass()));
+        ((AutoCloseable) proxy).close();
         //noinspection unchecked
         luaMap = (Map<Object, Object>) proxy;
 
@@ -119,6 +121,10 @@ public class TestLuaMap {
 
         //noinspection ConstantConditions
         assertEquals(luaMap.size(), 0);
+
+        //noinspection ResultOfMethodCallIgnored
+        assertThrows(IllegalArgumentException.class,
+                luaMap::isEmpty);
 
         raw.close();
     }

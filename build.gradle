@@ -10,14 +10,12 @@ buildscript {
 
 plugins {
     id 'java'
+    id 'java-library'
     id 'jacoco'
 }
 
 group 'party.iroiro.jua'
 version '2.1.0-beta3-0.2-SNAPSHOT'
-
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
 
 repositories {
     mavenLocal()
@@ -48,6 +46,8 @@ test {
 }
 
 java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
     withSourcesJar()
     withJavadocJar()
 }

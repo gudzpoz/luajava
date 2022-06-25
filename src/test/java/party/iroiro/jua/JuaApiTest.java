@@ -31,6 +31,10 @@ public class JuaApiTest {
             convertNumberTest(L);
             convertTableTest(L);
             convertUserdataTest();
+            L.pushNil();
+            assertEquals(1, JuaAPI.luaify(L.getId()));
+            assertTrue(L.isNil(-1));
+            L.pop(1);
         }
     }
 

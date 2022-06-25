@@ -7,6 +7,12 @@ jacocoTestReport {
         csv.enabled false
         xml.destination file("${buildDir}/reports/jacoco/report.xml")
     }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: 'org/springframework/util/**')
+        }))
+    }
 }
 
 check.dependsOn jacocoTestReport

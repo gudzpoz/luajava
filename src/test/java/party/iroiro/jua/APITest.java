@@ -4,7 +4,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static party.iroiro.jua.Lua.LuaError.MEMORY;
+import static party.iroiro.jua.Lua.LuaError.OK;
 
 @Testable
 public class APITest {
@@ -20,10 +26,22 @@ public class APITest {
         L.setGlobal("sum");
         ResourceLoader loader = new ResourceLoader();
         loader.load("/tests/apiTest.lua", L);
-        assertEquals(Lua.LuaError.OK, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
+        assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
         assertEquals(Lua.LuaError.RUNTIME, L.run("System.out:println(instance.testPrivate)"));
         assertEquals(Lua.LuaError.RUNTIME, L.run("System.out:println(instance.testFriendly)"));
         assertEquals(Lua.LuaError.RUNTIME, L.run("APITest:assert(false)"));
+
+        byte[] bytes = "System.out:println('OK')".getBytes(StandardCharsets.UTF_8);
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(bytes.length);
+        byteBuffer.put(bytes);
+        assertEquals(OK, L.run(byteBuffer, "ok"));
+        assertEquals(MEMORY, L.run(ByteBuffer.allocate(0), "notOk"));
+        assertEquals(MEMORY, L.load(ByteBuffer.allocate(0), "notOk"));
+
+        assertEquals(OK, L.status());
+
+        assertThrows(UnsupportedOperationException.class,
+                () -> L.yield(1));
     }
 
     private final int testPrivate = 443;

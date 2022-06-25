@@ -2,6 +2,7 @@ package party.iroiro.jua;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.*;
 import java.util.Arrays;
@@ -335,14 +336,17 @@ public abstract class JuaAPI {
             return convertNumber(L.toNumber(index), clazz);
         } else if (type == Lua.LuaType.USERDATA) {
             Object object = L.toJavaObject(index);
-            if (clazz.isAssignableFrom(object.getClass())) {
+            if (object != null && clazz.isAssignableFrom(object.getClass())) {
                 return object;
             }
         } else if (type == Lua.LuaType.TABLE) {
             if (clazz.isAssignableFrom(List.class)) {
                 return L.toList(index);
             } else if (clazz.isArray() && clazz.getComponentType() == Object.class) {
-                return L.toList(index).toArray(new Object[0]);
+                List<?> list = L.toList(index);
+                if (list != null) {
+                    return list.toArray(new Object[0]);
+                }
             } else if (clazz.isAssignableFrom(Map.class)) {
                 return L.toMap(index);
             }

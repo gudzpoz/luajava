@@ -16,13 +16,17 @@ function map:clear()
     t = {}
 end
 
-function map:isEmpty()
+function map:close()
+    -- nothing
+end
 
-    local i = 0
-    for k,v in pairs(t) do
-        return false
-    end
-    return true
+function map:isEmpty()
+    return "Not convertable to boolean"
+    --local i = 0
+    --for k,v in pairs(t) do
+    --    return false
+    --end
+    --return true
 end
 
 function map:containsKey(key)
@@ -41,7 +45,7 @@ function map:containsValue(value)
 end
 
 function map:putAll(outMap)
-    for k, v in pairs(outMap) do
+    for k, v in pairs(java.luaify(outMap)) do
         map:put(k, v)
     end
 end
