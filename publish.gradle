@@ -26,6 +26,7 @@ configure([
                             fromResolutionOf('runtimeClasspath')
                         }
                         usage('java-runtime') {
+                            //noinspection GroovyImplicitNullArgumentCall
                             fromResolutionResult()
                         }
                     }
@@ -105,26 +106,25 @@ configure([
                     }
                 }
             }
-        }
 
-        repositories {
-            mavenLocal()
-            maven {
-                name = 'GitHub'
-                url = 'https://maven.pkg.github.com/gudzpoz/luajava'
-                credentials {
-                    username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
-                    password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+            repositories {
+                maven {
+                    name = 'GitHub'
+                    url = 'https://maven.pkg.github.com/gudzpoz/luajava'
+                    credentials {
+                        username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+                        password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+                    }
                 }
-            }
-            maven {
-                name = 'OSSRH'
-                url = version.toString().endsWith('-SNAPSHOT')
-                        ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-                        : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-                credentials {
-                    username = System.getenv("MAVEN_USERNAME")
-                    password = System.getenv("MAVEN_PASSWORD")
+                maven {
+                    name = 'OSSRH'
+                    url = rootProject.version.toString().endsWith('-SNAPSHOT')
+                            ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                            : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                    credentials {
+                        username = System.getenv("MAVEN_USERNAME")
+                        password = System.getenv("MAVEN_PASSWORD")
+                    }
                 }
             }
         }
@@ -139,14 +139,6 @@ configure([
 
             if (project.tasks.findByName('jnigen')) {
                 sign publishing.publications.mavenPlatform
-            }
-        }
-
-        gradle.taskGraph.whenReady {
-            tasks.withType(Sign) {
-                onlyIf {
-                    !rootProject.version.toString().endsWith('-SNAPSHOT')
-                }
             }
         }
     }
