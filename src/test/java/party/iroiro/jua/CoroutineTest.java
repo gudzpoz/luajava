@@ -20,7 +20,7 @@ public class CoroutineTest {
         coL.getGlobal("main");
         int i = 1, j = 1;
         for (int l = 0; l < 36; l++) {
-            assertEquals(Consts.LUA_YIELD, coL.resume(0));
+            assertEquals(Lua.LuaError.YIELD, coL.resume(0));
             assertEquals(i, coL.toNumber(-1));
             coL.pop(1);
             int k = i + j;

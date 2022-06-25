@@ -186,4 +186,5 @@ public abstract class LuaNative {
 
     protected abstract void lua_xmove(long from, long to, int n);
 
+    protected abstract void lua_rawseti(long ptr, int index, int i);
 }

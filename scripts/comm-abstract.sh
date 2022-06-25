@@ -16,4 +16,6 @@ echo '@SuppressWarnings("unused")'
 echo "public abstract class LuaNative {"
 echo
 echo "$COMM1234" | sed -e 's/native/abstract/' -e 's# /\*#\n#'
+# Param name differs
+echo "    protected abstract void lua_rawseti(long ptr, int index, int i);"
 echo "}"

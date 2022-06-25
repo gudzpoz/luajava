@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,7 +34,7 @@ public class JuaApiLuaTest {
             L.setGlobal("arr");
             ResourceLoader loader = new ResourceLoader();
             loader.load("/tests/juaApiTest.lua", L);
-            assertEquals(0, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
+            assertEquals(Lua.LuaError.OK, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
 
             assertEquals(100, staticField);
             assertEquals(1024, privateField);
@@ -50,8 +51,8 @@ public class JuaApiLuaTest {
 
     private void assertError(Lua L, String lua, String message) {
         assertEquals(Lua.LuaError.OK, L.load(lua));
-        assertEquals(2, L.pCall(0, Consts.LUA_MULTRET));
-        assertTrue(L.toString(-1).contains(message));
+        assertEquals(Lua.LuaError.RUNTIME, L.pCall(0, Consts.LUA_MULTRET));
+        assertTrue(Objects.requireNonNull(L.toString(-1)).contains(message));
         L.setTop(0);
     }
 

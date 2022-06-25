@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,8 +36,9 @@ public class FromTest {
             L.getGlobal("b");
             Object map = L.toObject(-1);
             assertInstanceOf(Map.class, map);
+            System.out.println(map);
             //noinspection unchecked
-            assertEquals(0, ((Map<Object, Object>) map).size());
+            assertEquals(0, ((Map<Object, Object>) Objects.requireNonNull(map)).size());
 
             L.pushNil();
             assertNull(L.toObject(-1, Class.class));
@@ -44,15 +46,11 @@ public class FromTest {
             FromTest from = new FromTest();
             L.push(from, Lua.Conversion.NONE);
             assertEquals(from, L.toObject(-1, FromTest.class));
-            assertThrows(IllegalArgumentException.class,
-                    () -> L.toObject(-1, String.class),
-                    "Unable to convert type");
+            assertNull(L.toObject(-1, String.class));
 
             double n = 3.0;
             L.push(n);
-            assertThrows(IllegalArgumentException.class,
-                    () -> L.toObject(-1, BigInteger.class),
-                    "Unable to convert type");
+            assertNull(L.toObject(-1, BigInteger.class));
             assertEquals((byte) n, L.toObject(-1, byte.class));
             assertEquals((byte) n, L.toObject(-1, Byte.class));
             assertEquals((short) n, L.toObject(-1, short.class));

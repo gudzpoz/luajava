@@ -2,24 +2,28 @@ package party.iroiro.jua;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static party.iroiro.jua.Lua.LuaError.OK;
+import static party.iroiro.jua.Lua.LuaError.RUNTIME;
 
 public class ClassObjectTest {
     @Test
     public void classObjectTest() {
         try (Lua L = new Lua51()) {
-            assertEquals(1, L.run("t = java.require('java/lang/NoSystem')"));
-            assertTrue(L.toString(-1).contains("Unable to bind to class java/lang/NoSystem"));
+            assertEquals(RUNTIME, L.run("t = java.require('java/lang/NoSystem')"));
+            assertTrue(Objects.requireNonNull(L.toString(-1))
+                    .contains("Unable to bind to class java/lang/NoSystem"));
 
-            assertEquals(0, L.run("t = java.require('party/iroiro/jua/ClassObjectTest')"));
+            assertEquals(OK, L.run("t = java.require('party/iroiro/jua/ClassObjectTest')"));
             L.getGlobal("t");
-            assertEquals(Class.class, L.toJavaObject(-1).getClass());
+            assertEquals(Class.class, Objects.requireNonNull(L.toJavaObject(-1)).getClass());
 
             run.set(false);
-            assertEquals(0, L.run("t:classMethod(t)"));
+            assertEquals(OK, L.run("t:classMethod(t)"));
             assertTrue(run.get());
         }
     }

@@ -30,11 +30,13 @@ public class LuaProxy implements InvocationHandler {
         L.getField(-1, method.getName());
         L.refGet(ref);
 
+        int nResults = method.getReturnType() == Void.class ? 0 : 1;
+
         if (objects == null) {
-            L.pCall(1, 1);
+            L.pCall(1, nResults);
         } else {
             Arrays.stream(objects).forEach(o -> L.push(o, degree));
-            L.pCall(objects.length + 1, 1);
+            L.pCall(objects.length + 1, nResults);
         }
 
         try {

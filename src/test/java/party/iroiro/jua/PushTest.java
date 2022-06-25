@@ -14,12 +14,14 @@ public class PushTest {
             L.push(Collections.singleton("string"));
             Object o = L.toObject(-1);
             assertInstanceOf(Map.class, o);
+            assertNotNull(o);
             //noinspection unchecked
             assertEquals("string", ((Map<Object, Object>) o).get(1.0));
 
             L.push(Collections.singletonMap("k", "v"));
             Object p = L.toObject(-1);
             assertInstanceOf(Map.class, p);
+            assertNotNull(p);
             //noinspection unchecked
             assertEquals("v", ((Map<Object, Object>) p).get("k"));
 

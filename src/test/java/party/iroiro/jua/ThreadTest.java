@@ -8,11 +8,13 @@ import org.junit.platform.commons.annotation.Testable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static party.iroiro.jua.Lua.LuaError.OK;
 
 @Testable
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -35,7 +37,7 @@ public class ThreadTest {
         ResourceLoader loader = new ResourceLoader();
         loader.load("/tests/threadTest.lua", L);
         System.out.println("OK");
-        assertEquals(0, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
+        assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
         ArrayList<Thread> threads = new ArrayList<>();
         threads.ensureCapacity(count);
 
@@ -60,6 +62,7 @@ public class ThreadTest {
         for (Thread t : threads) {
             t.join();
         }
+        L.close();
     }
 
     @AfterAll
@@ -70,6 +73,6 @@ public class ThreadTest {
                 Arrays.stream(outContent.toString().split("\n")).filter("test"::equals).count()
         );
         System.out.println();
-        assertTrue(System.currentTimeMillis() - startTime > 100 * 100);
+        assertTrue(System.currentTimeMillis() - startTime >= 100 * count);
     }
 }

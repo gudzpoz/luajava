@@ -21,8 +21,8 @@ APITest:assertTrue(class:equals(APITest))
 APITest:assertTrue(instance.testPublic == 443)
 
 -- array
-a = APITest.array
-b = APITest.arrays
+a = java.luaify(APITest.array)
+b = java.luaify(APITest.arrays)
 APITest:assertTrue(type(a) == 'table')
 APITest:assertTrue(type(b) == 'table')
 total = 0

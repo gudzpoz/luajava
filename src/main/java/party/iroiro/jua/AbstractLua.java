@@ -72,8 +72,10 @@ public abstract class AbstractLua implements Lua {
                     push((Map<?, ?>) object);
                 } else if (object instanceof Collection) {
                     push((Collection<?>) object);
+                } else if (object.getClass().isArray()) {
+                    pushArray(object);
                 } else {
-                    pushJavaObjectOrArray(object);
+                    pushJavaObject(object);
                 }
             }
         }
@@ -128,7 +130,7 @@ public abstract class AbstractLua implements Lua {
         int i = 1;
         for (Object o : collection) {
             push(o, Conversion.FULL);
-            C.luaJ_rawgeti(L, -2, i);
+            C.lua_rawseti(L, -2, i);
             i++;
         }
     }
@@ -140,7 +142,7 @@ public abstract class AbstractLua implements Lua {
             C.lua_createtable(L, len, 0);
             for (int i = 0; i != len; ++i) {
                 push(Array.get(array, i), Conversion.FULL);
-                C.luaJ_rawgeti(L, -2, i + 1);
+                C.lua_rawseti(L, -2, i + 1);
             }
         } else {
             throw new IllegalArgumentException("Not a array");
@@ -187,19 +189,22 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public @Nullable Object toObject(int index) {
-        int type = C.lua_type(L, index);
+        LuaType type = type(index);
+        if (type == null) {
+            return null;
+        }
         switch (type) {
-            case Consts.LUA_TNIL:
+            case NIL:
                 return null;
-            case Consts.LUA_TBOOLEAN:
+            case BOOLEAN:
                 return toBoolean(index);
-            case Consts.LUA_TNUMBER:
+            case NUMBER:
                 return toNumber(index);
-            case Consts.LUA_TSTRING:
+            case STRING:
                 return toString(index);
-            case Consts.LUA_TTABLE:
+            case TABLE:
                 return toMap(index);
-            case Consts.LUA_TUSERDATA:
+            case USERDATA:
                 return toJavaObject(index);
         }
         return null;
@@ -256,8 +261,12 @@ public abstract class AbstractLua implements Lua {
             C.lua_pushnil(L);
             Map<Object, Object> map = new HashMap<>();
             while (C.lua_next(L, -2) != 0) {
-                map.put(toObject(-2), toObject(-1));
-                C.lua_pop(L, 1);
+                Object k = toObject(-2);
+                Object v = toObject(-1);
+                if (k != null && v != null) {
+                    map.put(k, v);
+                }
+                pop(1);
             }
             return map;
         }
@@ -387,6 +396,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void pop(int n) {
+        int top = getTop();
         C.lua_pop(L, n);
     }
 
@@ -522,7 +532,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void rawSetI(int index, int n) {
-        C.luaJ_rawgeti(L, index, n);
+        C.lua_rawseti(L, index, n);
     }
 
     @Override
@@ -592,15 +602,15 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public Object createProxy(Class<?>[] interfaces, Conversion degree) {
-        if (C.lua_istable(L, -1) == 0) {
-            pop(1);
-            return null;
-        } else {
+        if (isTable(-1)) {
             return Proxy.newProxyInstance(
                     Jua.class.getClassLoader(),
                     interfaces,
                     new LuaProxy(ref(), this, degree)
             );
+        } else {
+            pop(1);
+            return null;
         }
     }
 

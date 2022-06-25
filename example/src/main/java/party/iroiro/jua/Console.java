@@ -38,7 +38,7 @@ public class Console {
     private static void startInteractive(String version, LineReader reader) {
         try (Lua L = getLua(version)) {
             L.openLibraries();
-            reader.printAbove(Consts.LUA_RELEASE + '\t' + Consts.LUA_COPYRIGHT);
+            L.run("print(_VERSION)");
             while (true) {
                 String s;
                 try {
