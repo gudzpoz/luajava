@@ -76,3 +76,5 @@ luajit/.tags
 **/jni/*.h
 **/jni/*.c
 **/libs/*.xml
+
+**/jni-headers/

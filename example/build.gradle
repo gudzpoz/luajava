@@ -16,7 +16,7 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 dependencies {
-    implementation project(':')
+    implementation project(':jua')
     implementation project(':lua51')
     implementation project(':lua52')
     implementation project(':lua53')
