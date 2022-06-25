@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+dependencies {
+    implementation 'com.badlogicgames.gdx:gdx-jnigen-loader:2.3.1'
+    implementation 'com.google.errorprone:error_prone_annotations:2.14.0'
+    implementation 'org.jetbrains:annotations:23.0.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation 'org.mockito:mockito-core:4.6.1'
+}
+
+test {
+    useJUnitPlatform()
+}

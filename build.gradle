@@ -22,29 +22,6 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation 'com.badlogicgames.gdx:gdx-jnigen-loader:2.3.1'
-    implementation 'com.google.errorprone:error_prone_annotations:2.14.0'
-    implementation 'org.jetbrains:annotations:23.0.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    testImplementation 'org.mockito:mockito-core:4.6.1'
-    testImplementation project(':lua51')
-    testImplementation project(':lua52')
-    testImplementation project(':lua53')
-    testImplementation project(':lua54')
-    testImplementation project(':luajit')
-    testImplementation project(path: ':lua51', configuration: 'desktopNatives')
-    testImplementation project(path: ':lua52', configuration: 'desktopNatives')
-    testImplementation project(path: ':lua53', configuration: 'desktopNatives')
-    testImplementation project(path: ':lua54', configuration: 'desktopNatives')
-    testImplementation project(path: ':luajit', configuration: 'desktopNatives')
-}
-
-test {
-    useJUnitPlatform()
-}
-
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
