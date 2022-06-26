@@ -102,7 +102,7 @@ int initBindings(JNIEnv * env) {
   throwable_tostring = bindJavaMethod(env, java_lang_throwable_class,
           "toString", "()Ljava/lang/String;");
 
-  juaapi_class = bindJavaClass(env, "party/iroiro/jua/JuaAPI");
+  juaapi_class = bindJavaClass(env, "party/iroiro/luajava/JuaAPI");
   juaapi_classnew = bindJavaStaticMethod(env, juaapi_class,
           "classNew", "(ILjava/lang/Class;I)I");
   juaapi_classindex = bindJavaStaticMethod(env, juaapi_class,

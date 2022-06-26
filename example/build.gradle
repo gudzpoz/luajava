@@ -36,8 +36,12 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:4.6.1'
 }
 
+test {
+    useJUnitPlatform()
+}
+
 application {
-    mainClassName = 'party.iroiro.jua.Console'
+    mainClassName = 'party.iroiro.luajava.Console'
 }
 
 tasks.named('run') {
