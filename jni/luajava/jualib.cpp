@@ -34,9 +34,31 @@ static int javaLuaify(lua_State * L) {
   return env->CallStaticIntMethod(juaapi_class, juaapi_luaify, (jint) stateIndex);
 }
 
+static int javaImport(lua_State * L) {
+  const char * className = luaL_checkstring(L, 1);
+
+  if (className == NULL) {
+    return 0;
+  }
+
+  JNIEnv * env = getJNIEnv(L);
+  int stateIndex = getStateIndex(L);
+
+  return env->CallStaticIntMethod(juaapi_class, juaapi_import, (jint) stateIndex,
+                                  env->NewStringUTF(className));
+}
+
+static int javaProxy(lua_State * L) {
+  JNIEnv * env = getJNIEnv(L);
+  int stateIndex = getStateIndex(L);
+  return env->CallStaticIntMethod(juaapi_class, juaapi_proxy, (jint) stateIndex);
+}
+
 const luaL_Reg javalib[] = {
   { "require",   javaRequire },
   { "new",       javaNew },
   { "luaify",    javaLuaify },
+  { "import",    javaImport },
+  { "proxy",     javaProxy },
   {NULL, NULL}
 };

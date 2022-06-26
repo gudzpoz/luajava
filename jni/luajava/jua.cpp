@@ -27,6 +27,8 @@ jmethodID juaapi_arrayindex     = NULL;
 jmethodID juaapi_arraynewindex  = NULL;
 jmethodID juaapi_threadnewid    = NULL;
 jmethodID juaapi_luaify         = NULL;
+jmethodID juaapi_import         = NULL;
+jmethodID juaapi_proxy          = NULL;
 // java.lang.Throwable
 jclass java_lang_throwable_class = NULL;
 jmethodID throwable_getmessage   = NULL;
@@ -127,6 +129,10 @@ int initBindings(JNIEnv * env) {
           "threadNewId", "(IJ)I");
   juaapi_luaify = bindJavaStaticMethod(env, juaapi_class,
           "luaify", "(I)I");
+  juaapi_import = bindJavaStaticMethod(env, juaapi_class,
+          "javaImport", "(ILjava/lang/String;)I");
+  juaapi_proxy = bindJavaStaticMethod(env, juaapi_class,
+          "proxy", "(I)I");
   if (java_lang_class_class == NULL
       || java_lang_class_forname == NULL
       || java_lang_throwable_class == NULL
@@ -144,7 +150,9 @@ int initBindings(JNIEnv * env) {
       || juaapi_arrayindex == NULL
       || juaapi_arraynewindex == NULL
       || juaapi_threadnewid == NULL
-      || juaapi_luaify == NULL) {
+      || juaapi_luaify == NULL
+      || juaapi_import == NULL
+      || juaapi_proxy == NULL) {
     return -1;
   } else {
     return 0;

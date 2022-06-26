@@ -4,7 +4,6 @@
 #include "lua.hpp"
 #include "jni.h"
 
-#define LUAJAVALIBCLASS "party/iroiro/jua/LuaJavaLib"
 #define JNIENV_INDEX "__TheTemporaryJNIEnv"
 #define JAVA_STATE_INDEX "__JavaJuaStateIndex"
 
@@ -24,6 +23,8 @@ extern jmethodID juaapi_arraylen;
 extern jmethodID juaapi_arrayindex;
 extern jmethodID juaapi_arraynewindex;
 extern jmethodID juaapi_luaify;
+extern jmethodID juaapi_import;
+extern jmethodID juaapi_proxy;
 
 jclass bindJavaClass(JNIEnv * env, const char * name);
 jmethodID bindJavaStaticMethod(JNIEnv * env, jclass c, const char * name, const char * sig);

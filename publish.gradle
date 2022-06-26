@@ -122,7 +122,6 @@ configure([
                     url = rootProject.version.toString().endsWith('-SNAPSHOT')
                             ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
                             : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-                    System.out.println(url)
                     credentials {
                         username = System.getenv("MAVEN_USERNAME")
                         password = System.getenv("MAVEN_PASSWORD")

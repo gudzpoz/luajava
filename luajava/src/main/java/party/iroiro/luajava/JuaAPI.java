@@ -4,10 +4,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.ClassUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.net.URL;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -19,6 +20,80 @@ import java.util.stream.Collectors;
  * lua again.
  */
 public abstract class JuaAPI {
+    public static int proxy(int id) {
+        Lua L = Jua.get(id);
+        int interfaces = L.getTop() - 1;
+        LinkedList<Class<?>> classes = new LinkedList<>();
+        for (int i = 1; i <= interfaces; i++) {
+            try {
+                Class<?> c = ClassUtils.forName(L.toString(i), null);
+                if (c.isInterface()) {
+                    classes.add(c);
+                } else {
+                    return 0;
+                }
+            } catch (ClassNotFoundException e) {
+                return 0;
+            }
+        }
+        Object o = L.createProxy(classes.toArray(new Class[0]), Lua.Conversion.SEMI);
+        L.push(o, Lua.Conversion.NONE);
+        return 1;
+    }
+
+    public static int javaImport(int id, String className) {
+        Lua L = Jua.get(id);
+        if (className.endsWith(".*")) {
+            Map<String, Class<?>> classes = getPackageClasses(className.substring(0, className.length() - 2));
+            L.push(classes);
+            return 1;
+        } else {
+            try {
+                L.pushJavaClass(ClassUtils.forName(className, null));
+                return 1;
+            } catch (ClassNotFoundException e) {
+                return 0;
+            }
+        }
+    }
+
+    private static Map<String, Class<?>> getPackageClasses(String packageName) {
+        HashMap<String, Class<?>> classes = new HashMap<>();
+        ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
+        if (classLoader != null) {
+            String path = packageName.replace('.', '/');
+            try {
+                Enumeration<URL> resources = classLoader.getResources(path);
+                while (resources.hasMoreElements()) {
+                    URL resource = resources.nextElement();
+                    File directory = new File(resource.getFile());
+                    if (directory.isDirectory()) {
+                        File[] files = directory.listFiles(
+                                file -> file.isFile() && file.getName().endsWith(".class"));
+                        if (files != null) {
+                            for (File file : files) {
+                                String name = file.getName();
+                                try {
+                                    Class<?> aClass = ClassUtils.forName(
+                                            packageName + "." + name.substring(0, name.length() - 6),
+                                            null
+                                    );
+                                    if (aClass != null) {
+                                        classes.put(aClass.getSimpleName(), aClass);
+                                    }
+                                } catch (ClassNotFoundException ignored) {
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return classes;
+    }
+
     /**
      * Converts a value on top of the stack into a more Lua-style form
      *
@@ -139,7 +214,13 @@ public abstract class JuaAPI {
     }
 
     public static int classIndex(int index, Class<?> clazz, String name) {
-        return fieldIndex(index, clazz, null, name);
+        if (name.equals("class")) {
+            Lua L = Jua.get(index);
+            L.pushJavaObject(clazz);
+            return 1;
+        } else {
+            return fieldIndex(index, clazz, null, name);
+        }
     }
 
     public static int classInvoke(int index, Class<?> clazz, String name, int paramCount) throws Exception {

@@ -25,32 +25,34 @@ public class LuaProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object ignored, Method method, Object[] objects) {
-        int top = L.getTop();
-        L.refGet(ref);
-        L.getField(-1, method.getName());
-        L.refGet(ref);
+        synchronized (L) {
+            int top = L.getTop();
+            L.refGet(ref);
+            L.getField(-1, method.getName());
+            L.refGet(ref);
 
-        int nResults = method.getReturnType() == Void.TYPE ? 0 : 1;
+            int nResults = method.getReturnType() == Void.TYPE ? 0 : 1;
 
-        if (objects == null) {
-            L.pCall(1, nResults);
-        } else {
-            Arrays.stream(objects).forEach(o -> L.push(o, degree));
-            L.pCall(objects.length + 1, nResults);
-        }
-
-        try {
-            if (method.getReturnType() == Void.TYPE) {
-                L.setTop(top);
-                return null;
+            if (objects == null) {
+                L.pCall(1, nResults);
             } else {
-                Object o = JuaAPI.convertFromLua(L, method.getReturnType(), -1);
-                L.setTop(top);
-                return o;
+                Arrays.stream(objects).forEach(o -> L.push(o, degree));
+                L.pCall(objects.length + 1, nResults);
             }
-        } catch (IllegalArgumentException e) {
-            L.setTop(top);
-            throw e;
+
+            try {
+                if (method.getReturnType() == Void.TYPE) {
+                    L.setTop(top);
+                    return null;
+                } else {
+                    Object o = JuaAPI.convertFromLua(L, method.getReturnType(), -1);
+                    L.setTop(top);
+                    return o;
+                }
+            } catch (IllegalArgumentException e) {
+                L.setTop(top);
+                throw e;
+            }
         }
     }
 }
