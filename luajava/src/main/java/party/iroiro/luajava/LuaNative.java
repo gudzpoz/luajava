@@ -12,6 +12,8 @@ public abstract class LuaNative {
 
     protected abstract int getRegistryIndex();
 
+    protected abstract int lua_checkstack(long ptr, int extra);
+
     protected abstract int lua_error(long ptr);
 
     protected abstract int lua_gethookcount(long ptr);
@@ -74,6 +76,8 @@ public abstract class LuaNative {
 
     protected abstract int lua_next(long ptr, int index);
 
+    protected abstract int lua_pcall(long ptr, int nargs, int nresults, int errfunc);
+
     protected abstract int lua_pushthread(long ptr);
 
     protected abstract int lua_rawequal(long ptr, int index1, int index2);
@@ -134,6 +138,8 @@ public abstract class LuaNative {
 
     protected abstract void luaJ_openlib(long ptr, String lib);
 
+    protected abstract void luaJ_pcall(long ptr, int nargs, int nresults, int errfunc);
+
     protected abstract void luaJ_pusharray(long ptr, Object array);
 
     protected abstract void luaJ_pushclass(long ptr, Object clazz);
@@ -186,5 +192,6 @@ public abstract class LuaNative {
 
     protected abstract void lua_xmove(long from, long to, int n);
 
-    protected abstract void lua_rawseti(long ptr, int index, int i);
+    protected abstract void lua_rawseti(long ptr, int index, int n);
+
 }

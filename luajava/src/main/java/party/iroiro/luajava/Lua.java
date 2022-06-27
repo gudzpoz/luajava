@@ -7,6 +7,8 @@ import java.nio.Buffer;
 import java.util.*;
 
 public interface Lua extends AutoCloseable {
+    void checkStack(int extra) throws RuntimeException;
+
     /* Push-something functions */
 
     /**

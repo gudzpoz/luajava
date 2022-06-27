@@ -49,7 +49,15 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
+    public void checkStack(int extra) throws RuntimeException {
+        if (C.lua_checkstack(L, extra) == 0) {
+            throw new RuntimeException("No more stack space available");
+        }
+    }
+
+    @Override
     public void push(@Nullable Object object, Conversion degree) {
+        checkStack(1);
         if (object == null) {
             C.lua_pushnil(L);
         } else if (degree == Lua.Conversion.NONE) {
@@ -61,6 +69,8 @@ public abstract class AbstractLua implements Lua {
                 push((String) object);
             } else if (object instanceof Integer || object instanceof Byte || object instanceof Short) {
                 push(((Number) object).intValue());
+            } else if (object instanceof Character) {
+                push(((int) (Character) object));
             } else if (object instanceof Long) {
                 push((long) object);
             } else if (object instanceof Number) {
@@ -84,6 +94,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     protected void pushJavaObjectOrArray(Object object) {
+        checkStack(1);
         if (object.getClass().isArray()) {
             pushJavaArray(object);
         } else {
@@ -93,31 +104,37 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void pushNil() {
+        checkStack(1);
         C.lua_pushnil(L);
     }
 
     @Override
     public void push(boolean bool) {
+        checkStack(1);
         C.lua_pushboolean(L, bool ? 1 : 0);
     }
 
     @Override
     public void push(@NotNull Number number) {
+        checkStack(1);
         C.lua_pushnumber(L, number.doubleValue());
     }
 
     @Override
     public void push(int integer) {
+        checkStack(1);
         C.lua_pushinteger(L, integer);
     }
 
     @Override
     public void push(@NotNull String string) {
+        checkStack(1);
         C.luaJ_pushstring(L, string);
     }
 
     @Override
     public void push(@NotNull Map<?, ?> map) {
+        checkStack(3);
         C.lua_createtable(L, 0, map.size());
         map.forEach((k, v) -> {
             push(k, Conversion.FULL);
@@ -128,6 +145,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void push(@NotNull Collection<?> collection) {
+        checkStack(2);
         C.lua_createtable(L, collection.size(), 0);
         int i = 1;
         for (Object o : collection) {
@@ -139,6 +157,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void pushArray(@NotNull Object array) throws IllegalArgumentException {
+        checkStack(2);
         if (array.getClass().isArray()) {
             int len = Array.getLength(array);
             C.lua_createtable(L, len, 0);
@@ -161,6 +180,7 @@ public abstract class AbstractLua implements Lua {
         if (object.getClass().isArray()) {
             throw new IllegalArgumentException("Expecting non-array argument");
         } else {
+            checkStack(1);
             C.luaJ_pushobject(L, object);
         }
     }
@@ -168,6 +188,7 @@ public abstract class AbstractLua implements Lua {
     @Override
     public void pushJavaArray(@NotNull Object array) throws IllegalArgumentException {
         if (array.getClass().isArray()) {
+            checkStack(1);
             C.luaJ_pusharray(L, array);
         } else {
             throw new IllegalArgumentException("Expecting non-array argument");
@@ -176,6 +197,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void pushJavaClass(@NotNull Class<?> clazz) {
+        checkStack(1);
         C.luaJ_pushclass(L, clazz);
     }
 
@@ -259,6 +281,7 @@ public abstract class AbstractLua implements Lua {
         if (obj instanceof Map) {
             return ((Map<?, ?>) obj);
         }
+        checkStack(2);
         if (C.lua_istable(L, index) == 1) {
             C.lua_pushnil(L);
             Map<Object, Object> map = new HashMap<>();
@@ -281,22 +304,17 @@ public abstract class AbstractLua implements Lua {
         if (obj instanceof List) {
             return ((List<?>) obj);
         }
-        int top = C.lua_gettop(L);
+        checkStack(1);
         if (C.lua_istable(L, index) == 1) {
-            C.luaJ_getglobal(L, "unpack");
-            C.lua_pushvalue(L, -2);
-            if (C.luaJ_pcall(L, 1, Consts.LUA_MULTRET) == 0) {
-                int len = C.lua_gettop(L);
-                ArrayList<Object> list = new ArrayList<>();
-                list.ensureCapacity(len - top + 1);
-                for (int i = top + 1; i <= len; ++i) {
-                    list.add(toObject(i));
-                }
-                C.lua_settop(L, top);
-                return list;
-            } else {
-                C.lua_settop(L, top);
+            int length = length(index);
+            ArrayList<Object> list = new ArrayList<>();
+            list.ensureCapacity(length);
+            for (int i = 1; i <= length; i++) {
+                C.luaJ_rawgeti(L, index, i);
+                list.add(toObject(-1));
+                pop(1);
             }
+            return list;
         }
         return null;
     }
@@ -404,6 +422,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void pushValue(int index) {
+        checkStack(1);
         C.lua_pushvalue(L, index);
     }
 
@@ -419,17 +438,20 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void xMove(Lua other, int n) throws IllegalArgumentException {
+        other.checkStack(n);
         C.lua_xmove(L, other.getPointer(), n);
     }
 
     @Override
     public LuaError load(String script) {
+        checkStack(1);
         return convertError(C.luaL_loadstring(L, script));
     }
 
     @Override
     public LuaError load(Buffer buffer, String name) {
         if (buffer.isDirect()) {
+            checkStack(1);
             return convertError(C.luaJ_loadbuffer(L, buffer, buffer.limit(), name));
         } else {
             return LuaError.MEMORY;
@@ -438,12 +460,14 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public LuaError run(String script) {
+        checkStack(1);
         return C.luaL_dostring(L, script) == 0 ? LuaError.OK : LuaError.RUNTIME;
     }
 
     @Override
     public LuaError run(Buffer buffer, String name) {
         if (buffer.isDirect()) {
+            checkStack(1);
             return C.luaJ_dobuffer(L, buffer, buffer.limit(), name) == 0 ? LuaError.OK : LuaError.RUNTIME;
         } else {
             return LuaError.MEMORY;
@@ -457,6 +481,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public Lua newThread() {
+        checkStack(1);
         LuaInstances.Token token = instances.add();
         long K = C.luaJ_newthread(L, token.id);
         Lua lua = newThread(K, token.id, this.mainThread);
@@ -489,11 +514,13 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void createTable(int nArr, int nRec) {
+        checkStack(1);
         C.lua_createtable(L, nArr, nArr);
     }
 
     @Override
     public void getField(int index, String key) {
+        checkStack(1);
         C.luaJ_getfield(L, index, key);
     }
 
@@ -514,6 +541,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public int next(int n) {
+        checkStack(1);
         return C.lua_next(L, n);
     }
 
@@ -524,6 +552,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void rawGetI(int index, int n) {
+        checkStack(1);
         C.luaJ_rawgeti(L, index, n);
     }
 
@@ -549,6 +578,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void getGlobal(String name) {
+        checkStack(1);
         C.luaJ_getglobal(L, name);
     }
 
@@ -559,6 +589,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public int getMetatable(int index) {
+        checkStack(1);
         return C.lua_getmetatable(L, index);
     }
 
@@ -569,31 +600,39 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public int getMetaField(int index, String field) {
+        checkStack(1);
         return C.luaL_getmetafield(L, index, field);
     }
 
     @Override
     public void getRegisteredMetatable(String typeName) {
+        checkStack(1);
         C.luaJ_getmetatable(L, typeName);
     }
 
     @Override
     public int newRegisteredMetatable(String typeName) {
+        checkStack(1);
         return C.luaL_newmetatable(L, typeName);
     }
 
     @Override
     public void openLibraries() {
+        checkStack(1);
         C.luaL_openlibs(L);
     }
 
     @Override
     public void openLibrary(String name) {
+        checkStack(1);
         C.luaJ_openlib(L, name);
     }
 
     @Override
     public void concat(int n) {
+        if (n == 0) {
+            checkStack(1);
+        }
         C.lua_concat(L, n);
     }
 
