@@ -6,6 +6,7 @@ import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.widget.AutopairWidgets;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -25,20 +26,29 @@ public class Console {
             LineReader reader = LineReaderBuilder.builder()
                     .appName("lua")
                     .terminal(terminal)
-                    .highlighter(LuaHighlighter.get())
                     .build();
             String version = requestLuaVersion(reader);
-            startInteractive(version, reader);
+            startInteractive(version, terminal);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    private static void startInteractive(String version, LineReader reader) {
+    private static void startInteractive(String version, Terminal terminal) {
         try (Lua L = getLua(version)) {
+            LineReader reader = LineReaderBuilder.builder()
+                    .appName("lua")
+                    .terminal(terminal)
+                    .highlighter(LuaHighlighter.get())
+                    .parser(new LuaConsoleParser())
+                    .variable(LineReader.SECONDARY_PROMPT_PATTERN, "  > ")
+                    .variable(LineReader.INDENTATION, 2)
+                    .build();
+            AutopairWidgets autopairWidgets = new AutopairWidgets(reader, false);
+            autopairWidgets.enable();
             L.openLibraries();
-            L.run("print(_VERSION)");
+            L.run("print('Running ' .. _VERSION)");
             while (true) {
                 String s;
                 try {
@@ -48,6 +58,8 @@ public class Console {
                 } catch (UserInterruptException ignored) {
                     reader.printAbove("UserInterrupt");
                     continue;
+                } catch (Throwable ignored) {
+                    s = "";
                 }
                 if (L.run(s) != Lua.LuaError.OK) {
                     if (L.getTop() != 0 && L.isString(-1)) {

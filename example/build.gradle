@@ -27,11 +27,14 @@ dependencies {
     implementation project(path: ':lua53', configuration: 'desktopNatives')
     implementation project(path: ':lua54', configuration: 'desktopNatives')
     implementation project(path: ':luajit', configuration: 'desktopNatives')
+    implementation 'org.antlr:antlr4-runtime:4.10.1'
     implementation "org.jline:jline-reader:$jlineVersion"
+    implementation "org.jline:jline-console:$jlineVersion"
     implementation "org.jline:jline-terminal:$jlineVersion"
     implementation "org.jline:jline-builtins:$jlineVersion"
     implementation "org.jline:jline-terminal-jansi:$jlineVersion"
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     testImplementation 'org.mockito:mockito-core:4.6.1'
 }
