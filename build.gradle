@@ -8,27 +8,12 @@ buildscript {
     }
 }
 
-plugins {
-    id 'java'
-    id 'java-library'
-    id 'jacoco'
-}
-
 group 'party.iroiro.luajava'
 version '3.0.0-SNAPSHOT'
 
 repositories {
     mavenLocal()
     mavenCentral()
-}
-
-subprojects {
-    java {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-        withSourcesJar()
-        withJavadocJar()
-    }
 }
 
 ext {
@@ -40,5 +25,4 @@ ext {
     println "JDK Javadoc link for this build is ${rootProject.jdkJavadoc}"
 }
 
-apply from: 'jacoco.gradle'
 apply from: 'publish.gradle'

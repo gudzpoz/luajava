@@ -59,7 +59,7 @@ public abstract class AbstractLua implements Lua {
     public void push(@Nullable Object object, Conversion degree) {
         checkStack(1);
         if (object == null) {
-            C.lua_pushnil(L);
+            pushNil();
         } else if (degree == Lua.Conversion.NONE) {
             pushJavaObjectOrArray(object);
         } else {

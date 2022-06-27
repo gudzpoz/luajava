@@ -18,7 +18,7 @@ public class ClassObjectTest {
             assertTrue(Objects.requireNonNull(L.toString(-1))
                     .contains("Unable to bind to class java/lang/NoSystem"));
 
-            assertEquals(OK, L.run("t = java.require('party/iroiro/jua/ClassObjectTest')"));
+            assertEquals(OK, L.run("t = java.require('party/iroiro/luajava/ClassObjectTest')"));
             L.getGlobal("t");
             assertEquals(Class.class, Objects.requireNonNull(L.toJavaObject(-1)).getClass());
 

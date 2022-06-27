@@ -14,7 +14,7 @@ public class JuaApiTest {
     @Test
     public void juaApiGetClassesTest() {
         Class<?>[] classes = JuaAPI.getClasses("java.lang.String,java.lang.Object," +
-                "java.lang.Boolean,party.iroiro.jua.Jua");
+                "java.lang.Boolean,party.iroiro.luajava.Jua");
         assertEquals(String.class, classes[0]);
         assertEquals(Object.class, classes[1]);
         assertEquals(Boolean.class, classes[2]);

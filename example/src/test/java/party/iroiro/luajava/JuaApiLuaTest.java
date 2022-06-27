@@ -56,7 +56,7 @@ public class JuaApiLuaTest {
     private void adoptTest(Lua L) {
         assertEquals(OK, L.run("" +
                 "coroutine.resume(coroutine.create(function()" +
-                "java.require('party/iroiro/jua/JuaApiLuaTest').staticField = 200 end" +
+                "java.require('party/iroiro/luajava/JuaApiLuaTest').staticField = 200 end" +
                 "))"));
         assertEquals(200, staticField);
     }

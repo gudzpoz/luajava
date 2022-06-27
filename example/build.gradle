@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'jacoco'
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
@@ -41,14 +42,14 @@ dependencies {
 
 test {
     useJUnitPlatform()
+
+    jacoco {
+        destinationFile = project(':luajava').buildDir.toPath().resolve('jacoco/test.exec').toFile()
+    }
+
 }
 
 application {
     mainClassName = 'party.iroiro.luajava.Console'
 }
 
-tasks.named('run') {
-    standardInput = System.in
-    classpath += files(rootProject.sourceSets.main.runtimeClasspath)
-    classpath += files(rootProject.projectDir.toPath().resolve("libs").toFile().listFiles())
-}
