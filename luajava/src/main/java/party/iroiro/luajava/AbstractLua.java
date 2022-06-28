@@ -9,9 +9,9 @@ import java.nio.Buffer;
 import java.util.*;
 
 public abstract class AbstractLua implements Lua {
-    protected static LuaInstances instances = new LuaInstances();
+    protected static LuaInstances<AbstractLua> instances = new LuaInstances<>();
 
-    public static Lua getInstance(int lid) {
+    public static AbstractLua getInstance(int lid) {
         return instances.get(lid);
     }
 
@@ -38,11 +38,9 @@ public abstract class AbstractLua implements Lua {
     }
 
     public static int adopt(int mainId, long ptr) {
-        Lua instance = getInstance(mainId);
-        assert instance instanceof AbstractLua;
-        AbstractLua lua = (AbstractLua) instance;
-        LuaInstances.Token token = instances.add();
-        Lua child = lua.newThread(ptr, token.id, lua);
+        AbstractLua lua = getInstance(mainId);
+        LuaInstances.Token<AbstractLua> token = instances.add();
+        AbstractLua child = lua.newThread(ptr, token.id, lua);
         lua.addSubThread(child);
         token.setter.accept(child);
         return token.id;
@@ -73,7 +71,7 @@ public abstract class AbstractLua implements Lua {
                 push(((int) (Character) object));
             } else if (object instanceof Long) {
                 push((long) object);
-            } else if (object instanceof Number) {
+            } else if (object instanceof Float || object instanceof Double) {
                 push((Number) object);
             } else if (degree == Lua.Conversion.SEMI) {
                 pushJavaObjectOrArray(object);
@@ -386,6 +384,8 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public int length(int index) {
+        /* luaJ_len might push the length on stack then pop it. */
+        checkStack(1);
         return C.luaJ_len(L, index);
     }
 
@@ -416,7 +416,6 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void pop(int n) {
-        int top = getTop();
         C.lua_pop(L, n);
     }
 
@@ -480,11 +479,11 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public Lua newThread() {
+    public AbstractLua newThread() {
         checkStack(1);
-        LuaInstances.Token token = instances.add();
+        LuaInstances.Token<AbstractLua> token = instances.add();
         long K = C.luaJ_newthread(L, token.id);
-        Lua lua = newThread(K, token.id, this.mainThread);
+        AbstractLua lua = newThread(K, token.id, this.mainThread);
         mainThread.addSubThread(lua);
         token.setter.accept(lua);
         return lua;
@@ -495,7 +494,7 @@ public abstract class AbstractLua implements Lua {
         subThreads.add(lua);
     }
 
-    protected abstract Lua newThread(long L, int id, Lua mainThread);
+    protected abstract AbstractLua newThread(long L, int id, Lua mainThread);
 
     @Override
     public LuaError resume(int nArgs) {

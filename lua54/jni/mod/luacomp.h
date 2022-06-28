@@ -66,7 +66,8 @@ static int luaJ_pcall(lua_State * L, int nargs, int nresults) {
 }
 
 static int luaJ_resume(lua_State * L, int narg) {
-    return lua_resume(L, NULL, narg, NULL);
+    int nresults;
+    return lua_resume(L, NULL, narg, &nresults);
 }
 
 #endif /* !LUACOMP_H */

@@ -29,7 +29,7 @@ public class Lua53 extends AbstractLua {
     }
 
     @Override
-    protected Lua newThread(long L, int id, Lua mainThread) {
+    protected AbstractLua newThread(long L, int id, Lua mainThread) {
         return new Lua53(L, id, mainThread);
     }
 

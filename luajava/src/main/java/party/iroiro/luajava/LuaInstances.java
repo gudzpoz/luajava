@@ -12,8 +12,8 @@ import java.util.function.Consumer;
 /**
  * A collection of {@link Jua} instances, each labeled with a unique id
  */
-class LuaInstances {
-    private final ArrayList<Lua> instances;
+class LuaInstances<T extends Lua> {
+    private final ArrayList<T> instances;
     private final HashSet<Integer> freeIds;
 
     LuaInstances() {
@@ -28,11 +28,11 @@ class LuaInstances {
      * @return the allocated id
      */
     @CheckReturnValue
-    synchronized int add(@NotNull Lua instance) {
+    synchronized int add(@NotNull T instance) {
         return addNullable(instance);
     }
 
-    private synchronized int addNullable(@Nullable Lua instance) {
+    private synchronized int addNullable(@Nullable T instance) {
         if (freeIds.isEmpty()) {
             int id = instances.size();
             instances.add(instance);
@@ -47,9 +47,9 @@ class LuaInstances {
     }
 
     @CheckReturnValue
-    synchronized Token add() {
+    synchronized Token<T> add() {
         int id = addNullable(null);
-        return new Token(id, lua -> instances.set(id, lua));
+        return new Token<>(id, lua -> instances.set(id, lua));
     }
 
     /**
@@ -58,7 +58,7 @@ class LuaInstances {
      * @return the element with the specified id
      */
     @CheckReturnValue
-    synchronized Lua get(int id) {
+    synchronized T get(int id) {
         return instances.get(id);
     }
 
@@ -89,11 +89,11 @@ class LuaInstances {
         return instances.size() - freeIds.size();
     }
 
-    public static class Token {
+    public static class Token<T> {
         public final int id;
-        public final Consumer<Lua> setter;
+        public final Consumer<T> setter;
 
-        private Token(int id, Consumer<Lua> setter) {
+        private Token(int id, Consumer<T> setter) {
             this.id = id;
             this.setter = setter;
         }
