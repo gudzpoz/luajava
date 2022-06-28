@@ -1,19 +1,19 @@
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.badlogicgames.gdx:gdx-jnigen-gradle:2.1.1'
-    }
-}
-
 group 'party.iroiro.luajava'
 version '3.0.0-SNAPSHOT'
 
 repositories {
     mavenLocal()
     mavenCentral()
+}
+
+subprojects {
+    apply plugin: 'java'
+    java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        withSourcesJar()
+        withJavadocJar()
+    }
 }
 
 ext {

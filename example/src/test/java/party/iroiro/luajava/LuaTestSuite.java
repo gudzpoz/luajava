@@ -126,9 +126,12 @@ public class LuaTestSuite<T extends Lua> {
         }
         for (Consumer<T> t : stackIncrementingOperations) {
             assertThrows(RuntimeException.class, () -> {
+                double i = 1.0;
                 //noinspection InfiniteLoopStatement
                 while (true) {
+                    L.checkStack((int) i);
                     t.accept(L);
+                    i *= 1.0001;
                 }
             }, "No more stack space available");
             L.setTop(testTableI);

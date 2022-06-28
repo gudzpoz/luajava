@@ -4,7 +4,6 @@
 #include "lua.hpp"
 #include "jni.h"
 
-#define JNIENV_INDEX "__TheTemporaryJNIEnv"
 #define JAVA_STATE_INDEX "__JavaJuaStateIndex"
 
 extern const char JAVA_CLASS_META_REGISTRY[];
@@ -34,7 +33,6 @@ int initBindings(JNIEnv * env);
 void initMetaRegistry(lua_State * L);
 
 int getStateIndex(lua_State * L);
-void updateJNIEnv(JNIEnv * env, lua_State * L);
 JNIEnv * getJNIEnv(lua_State * L);
 
 int fatalError(lua_State * L);

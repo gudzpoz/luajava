@@ -17,11 +17,6 @@ static void luaJavaSetup(lua_State * L, JNIEnv * env, int lid) {
     lua_pushinteger(L, lid);
     lua_settable(L, LUA_REGISTRYINDEX);
 
-    lua_pushstring(L, JNIENV_INDEX);
-    JNIEnv ** udEnv = (JNIEnv **) lua_newuserdata(L, sizeof(JNIEnv *));
-    *udEnv = env;
-    lua_rawset(L, LUA_REGISTRYINDEX);
-
     initMetaRegistry(L);
 }
 

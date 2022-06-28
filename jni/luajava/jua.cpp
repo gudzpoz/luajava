@@ -34,6 +34,8 @@ jclass java_lang_throwable_class = NULL;
 jmethodID throwable_getmessage   = NULL;
 jmethodID throwable_tostring     = NULL;
 
+int updateJNIEnv(JNIEnv * env);
+
 /**
  * The new panic function that panics the JVM
  */
@@ -90,10 +92,14 @@ jmethodID bindJavaMethod(JNIEnv * env, jclass c, const char * name, const char *
 // TODO: switch to reinterpret_cast<jclass> etc.
 /**
  * Init JNI cache bindings
- * See Jua.java
+ * See AbstractLua.java
  * Returns zero if completed without errors
  */
 int initBindings(JNIEnv * env) {
+  if (updateJNIEnv(env) != 0) {
+    return -1;
+  }
+
   java_lang_class_class = bindJavaClass(env, "java/lang/Class");
   java_lang_class_forname = bindJavaStaticMethod(env, java_lang_class_class,
           "forName", "(Ljava/lang/String;)Ljava/lang/Class;");
@@ -245,22 +251,32 @@ int getStateIndex(lua_State * L) {
   return (int) stateIndex;
 }
 
-void updateJNIEnv(JNIEnv * env, lua_State * L) {
-  JNIEnv ** udEnv;
-  lua_pushstring(L, JNIENV_INDEX);
-  lua_rawget(L, LUA_REGISTRYINDEX);
-  udEnv = (JNIEnv **) lua_touserdata(L, -1);
-  *udEnv = env;
-  lua_pop(L, 1);
+static JavaVM * javaVm = NULL;
+static jint jniEnvVersion;
+
+int updateJNIEnv(JNIEnv * env) {
+  if (env->GetJavaVM(&javaVm) == 0) {
+    jniEnvVersion = env->GetVersion();
+    return 0;
+  } else {
+    return -1;
+  }
 }
 
 JNIEnv * getJNIEnv(lua_State * L) {
-  JNIEnv * env;
-  lua_pushstring(L, JNIENV_INDEX);
-  lua_rawget(L, LUA_REGISTRYINDEX);
-  env = * (JNIEnv **) lua_touserdata(L, -1);
-  lua_pop(L, 1);
-  return env;
+  if (javaVm != NULL) {
+    JNIEnv * env;
+    int result = javaVm->GetEnv((void **) &env, jniEnvVersion);
+    if (result == JNI_OK) {
+      return env;
+    } else {
+      luaL_error(L, "Unable to get JNIEnv pointer: Code %d", result);
+      return NULL;
+    }
+  } else {
+    luaL_error(L, "Unable to get JavaVM pointer");
+    return NULL;
+  }
 }
 
 lua_State * luaJ_newthread(lua_State * L, int lid) {

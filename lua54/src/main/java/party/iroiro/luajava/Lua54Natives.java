@@ -111,7 +111,9 @@ public class Lua54Natives extends LuaNative {
             if (loaded.get()) { return; }
             try {
                 new SharedLibraryLoader().load("lua54");
-                initBindings();
+                if (initBindings() != 0) {
+                    throw new RuntimeException("Unable to init bindings");
+                }
                 loaded.set(true);
             } catch (Throwable e) {
                 throw new IllegalStateException(e);
@@ -119,15 +121,12 @@ public class Lua54Natives extends LuaNative {
         }
     }
 
-    private native static void initBindings() throws Exception; /*
-        if (initLua54Bindings(env) != 0) {
-            // Java-side exceptions are not cleared if any
-            return;
-        }
+    private native static int initBindings() throws Exception; /*
+        return (jint) initLua54Bindings(env);
     */
 
     /**
-     * Get <code>LUA_REGISTRYINDEX</code>, which is a co,puted compile time constant
+     * Get <code>LUA_REGISTRYINDEX</code>, which is a computed compile time constant
      */
     protected native int getRegistryIndex(); /*
         return LUA_REGISTRYINDEX;
@@ -156,7 +155,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_absindex(long ptr, int idx); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_absindex((lua_State *) L, (int) idx);
         return returnValueReceiver;
@@ -227,7 +225,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_arith(long ptr, int op); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_arith((lua_State *) L, (int) op);
     */
@@ -263,7 +260,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_checkstack(long ptr, int n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_checkstack((lua_State *) L, (int) n);
         return returnValueReceiver;
@@ -300,7 +296,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_close(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_close((lua_State *) L);
     */
@@ -338,7 +333,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_closeslot(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_closeslot((lua_State *) L, (int) index);
     */
@@ -389,7 +383,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_compare(long ptr, int index1, int index2, int op); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_compare((lua_State *) L, (int) index1, (int) index2, (int) op);
         return returnValueReceiver;
@@ -422,7 +415,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_concat(long ptr, int n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_concat((lua_State *) L, (int) n);
     */
@@ -452,7 +444,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_copy(long ptr, int fromidx, int toidx); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_copy((lua_State *) L, (int) fromidx, (int) toidx);
     */
@@ -487,7 +478,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_createtable(long ptr, int narr, int nrec); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_createtable((lua_State *) L, (int) narr, (int) nrec);
     */
@@ -517,7 +507,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_error(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_error((lua_State *) L);
         return returnValueReceiver;
@@ -553,7 +542,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_getfield(long ptr, int index, String k); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_getfield((lua_State *) L, (int) index, (const char *) k);
         return returnValueReceiver;
@@ -588,7 +576,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_getfield(long ptr, int index, String k); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_getfield((lua_State *) L, (int) index, (const char *) k);
     */
@@ -628,7 +615,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native long lua_getextraspace(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jlong returnValueReceiver = (jlong) lua_getextraspace((lua_State *) L);
         return returnValueReceiver;
@@ -657,7 +643,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_getglobal(long ptr, String name); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_getglobal((lua_State *) L, (const char *) name);
         return returnValueReceiver;
@@ -685,7 +670,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_getglobal(long ptr, String name); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_getglobal((lua_State *) L, (const char *) name);
     */
@@ -720,7 +704,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_geti(long ptr, int index, int i); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_geti((lua_State *) L, (int) index, (lua_Integer) i);
         return returnValueReceiver;
@@ -755,7 +738,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_geti(long ptr, int index, int i); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_geti((lua_State *) L, (int) index, (lua_Integer) i);
     */
@@ -785,7 +767,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_getmetatable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_getmetatable((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -826,7 +807,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_gettable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_gettable((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -866,7 +846,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_gettable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_gettable((lua_State *) L, (int) index);
     */
@@ -895,7 +874,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_gettop(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_gettop((lua_State *) L);
         return returnValueReceiver;
@@ -931,7 +909,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_getiuservalue(long ptr, int index, int n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_getiuservalue((lua_State *) L, (int) index, (int) n);
         return returnValueReceiver;
@@ -961,7 +938,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_insert(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_insert((lua_State *) L, (int) index);
     */
@@ -989,7 +965,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_isboolean(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_isboolean((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1018,7 +993,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_iscfunction(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_iscfunction((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1047,7 +1021,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_isfunction(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_isfunction((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1077,7 +1050,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_isinteger(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_isinteger((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1106,7 +1078,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_islightuserdata(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_islightuserdata((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1135,7 +1106,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_isnil(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_isnil((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1164,7 +1134,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_isnone(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_isnone((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1194,7 +1163,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_isnoneornil(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_isnoneornil((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1224,7 +1192,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_isnumber(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_isnumber((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1254,7 +1221,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_isstring(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_isstring((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1283,7 +1249,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_istable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_istable((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1312,7 +1277,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_isthread(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_isthread((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1341,7 +1305,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_isuserdata(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_isuserdata((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1369,7 +1332,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_isyieldable(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_isyieldable((lua_State *) L);
         return returnValueReceiver;
@@ -1399,7 +1361,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_len(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_len((lua_State *) L, (int) index);
     */
@@ -1425,7 +1386,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_newtable(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_newtable((lua_State *) L);
     */
@@ -1460,7 +1420,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native long lua_newthread(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jlong returnValueReceiver = (jlong) lua_newthread((lua_State *) L);
         return returnValueReceiver;
@@ -1501,7 +1460,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native long lua_newuserdatauv(long ptr, int size, int nuvalue); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jlong returnValueReceiver = (jlong) lua_newuserdatauv((lua_State *) L, (size_t) size, (int) nuvalue);
         return returnValueReceiver;
@@ -1567,7 +1525,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_next(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_next((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -1636,7 +1593,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_pcall(long ptr, int nargs, int nresults, int msgh); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_pcall((lua_State *) L, (int) nargs, (int) nresults, (int) msgh);
         return returnValueReceiver;
@@ -1704,7 +1660,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_pcall(long ptr, int nargs, int nresults, int msgh); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_pcall((lua_State *) L, (int) nargs, (int) nresults, (int) msgh);
     */
@@ -1731,7 +1686,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_pop(long ptr, int n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_pop((lua_State *) L, (int) n);
     */
@@ -1757,7 +1711,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_pushboolean(long ptr, int b); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_pushboolean((lua_State *) L, (int) b);
     */
@@ -1782,7 +1735,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_pushglobaltable(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_pushglobaltable((lua_State *) L);
     */
@@ -1808,7 +1760,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_pushinteger(long ptr, int n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_pushinteger((lua_State *) L, (lua_Integer) n);
     */
@@ -1844,7 +1795,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_pushlightuserdata(long ptr, long p); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_pushlightuserdata((lua_State *) L, (void *) p);
     */
@@ -1869,7 +1819,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_pushnil(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_pushnil((lua_State *) L);
     */
@@ -1895,7 +1844,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_pushnumber(long ptr, double n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_pushnumber((lua_State *) L, (lua_Number) n);
     */
@@ -1934,7 +1882,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native String lua_pushstring(long ptr, String s); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         const char * returnValueReceiver = (const char *) lua_pushstring((lua_State *) L, (const char *) s);
         return env->NewStringUTF(returnValueReceiver);
@@ -1973,7 +1920,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_pushstring(long ptr, String s); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_pushstring((lua_State *) L, (const char *) s);
     */
@@ -2000,7 +1946,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_pushthread(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_pushthread((lua_State *) L);
         return returnValueReceiver;
@@ -2028,7 +1973,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_pushvalue(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_pushvalue((lua_State *) L, (int) index);
     */
@@ -2060,7 +2004,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_rawequal(long ptr, int index1, int index2); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_rawequal((lua_State *) L, (int) index1, (int) index2);
         return returnValueReceiver;
@@ -2089,7 +2032,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_rawget(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_rawget((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -2117,7 +2059,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_rawget(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_rawget((lua_State *) L, (int) index);
     */
@@ -2152,7 +2093,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_rawgeti(long ptr, int index, int n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_rawgeti((lua_State *) L, (int) index, (lua_Integer) n);
         return returnValueReceiver;
@@ -2187,7 +2127,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_rawgeti(long ptr, int index, int n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_rawgeti((lua_State *) L, (int) index, (lua_Integer) n);
     */
@@ -2223,7 +2162,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_rawgetp(long ptr, int index, long p); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_rawgetp((lua_State *) L, (int) index, (const void *) p);
         return returnValueReceiver;
@@ -2257,7 +2195,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native long lua_rawlen(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jlong returnValueReceiver = (jlong) lua_rawlen((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -2285,7 +2222,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_rawset(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_rawset((lua_State *) L, (int) index);
     */
@@ -2320,7 +2256,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_rawseti(long ptr, int index, int i); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_rawseti((lua_State *) L, (int) index, (lua_Integer) i);
     */
@@ -2356,7 +2291,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_rawsetp(long ptr, int index, long p); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_rawsetp((lua_State *) L, (int) index, (const void *) p);
     */
@@ -2385,7 +2319,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_remove(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_remove((lua_State *) L, (int) index);
     */
@@ -2414,7 +2347,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_replace(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_replace((lua_State *) L, (int) index);
     */
@@ -2448,7 +2380,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_resetthread(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_resetthread((lua_State *) L);
         return returnValueReceiver;
@@ -2513,8 +2444,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_resume(long ptr, long from, int nargs, long nresults); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
-        updateJNIEnv(env, (lua_State *) from);
         
         jint returnValueReceiver = (jint) lua_resume((lua_State *) L, (lua_State *) from, (int) nargs, (int *) nresults);
         return returnValueReceiver;
@@ -2551,7 +2480,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_rotate(long ptr, int idx, int n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_rotate((lua_State *) L, (int) idx, (int) n);
     */
@@ -2586,7 +2514,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_setfield(long ptr, int index, String k); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_setfield((lua_State *) L, (int) index, (const char *) k);
     */
@@ -2613,7 +2540,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_setglobal(long ptr, String name); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_setglobal((lua_State *) L, (const char *) name);
     */
@@ -2648,7 +2574,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_seti(long ptr, int index, int n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_seti((lua_State *) L, (int) index, (lua_Integer) n);
     */
@@ -2679,7 +2604,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_setiuservalue(long ptr, int index, int n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_setiuservalue((lua_State *) L, (int) index, (int) n);
         return returnValueReceiver;
@@ -2714,7 +2638,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_setmetatable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_setmetatable((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -2748,7 +2671,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_setmetatable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_setmetatable((lua_State *) L, (int) index);
     */
@@ -2783,7 +2705,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_settable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_settable((lua_State *) L, (int) index);
     */
@@ -2818,7 +2739,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_settop(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_settop((lua_State *) L, (int) index);
     */
@@ -2858,7 +2778,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_status(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_status((lua_State *) L);
         return returnValueReceiver;
@@ -2896,7 +2815,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_stringtonumber(long ptr, String s); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_stringtonumber((lua_State *) L, (const char *) s);
         return returnValueReceiver;
@@ -2931,7 +2849,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_toboolean(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_toboolean((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -2984,7 +2901,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_toclose(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_toclose((lua_State *) L, (int) index);
     */
@@ -3011,7 +2927,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_tointeger(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_tointeger((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -3050,7 +2965,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_tointegerx(long ptr, int index, long isnum); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_tointegerx((lua_State *) L, (int) index, (int *) isnum);
         return returnValueReceiver;
@@ -3078,7 +2992,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native double lua_tonumber(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jdouble returnValueReceiver = (jdouble) lua_tonumber((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -3117,7 +3030,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native double lua_tonumberx(long ptr, int index, long isnum); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jdouble returnValueReceiver = (jdouble) lua_tonumberx((lua_State *) L, (int) index, (int *) isnum);
         return returnValueReceiver;
@@ -3154,7 +3066,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native long lua_topointer(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jlong returnValueReceiver = (jlong) lua_topointer((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -3182,7 +3093,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native String lua_tostring(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         const char * returnValueReceiver = (const char *) lua_tostring((lua_State *) L, (int) index);
         return env->NewStringUTF(returnValueReceiver);
@@ -3213,7 +3123,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native long lua_tothread(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jlong returnValueReceiver = (jlong) lua_tothread((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -3245,7 +3154,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native long lua_touserdata(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jlong returnValueReceiver = (jlong) lua_touserdata((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -3286,7 +3194,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_type(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_type((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -3315,7 +3222,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native String lua_typename(long ptr, int tp); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         const char * returnValueReceiver = (const char *) lua_typename((lua_State *) L, (int) tp);
         return env->NewStringUTF(returnValueReceiver);
@@ -3368,7 +3274,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native double lua_version(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jdouble returnValueReceiver = (jdouble) lua_version((lua_State *) L);
         return returnValueReceiver;
@@ -3402,7 +3307,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_warning(long ptr, String msg, int tocont); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_warning((lua_State *) L, (const char *) msg, (int) tocont);
     */
@@ -3433,9 +3337,6 @@ public class Lua54Natives extends LuaNative {
      * @param n the number of elements
      */
     protected native void lua_xmove(long from, long to, int n); /*
-        updateJNIEnv(env, (lua_State *) from);
-        updateJNIEnv(env, (lua_State *) to);
-        
         lua_xmove((lua_State *) from, (lua_State *) to, (int) n);
     */
 
@@ -3467,7 +3368,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_yield(long ptr, int nresults); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_yield((lua_State *) L, (int) nresults);
         return returnValueReceiver;
@@ -3494,7 +3394,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_gethookcount(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_gethookcount((lua_State *) L);
         return returnValueReceiver;
@@ -3521,7 +3420,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int lua_gethookmask(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) lua_gethookmask((lua_State *) L);
         return returnValueReceiver;
@@ -3559,7 +3457,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native String lua_getupvalue(long ptr, int funcindex, int n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         const char * returnValueReceiver = (const char *) lua_getupvalue((lua_State *) L, (int) funcindex, (int) n);
         return env->NewStringUTF(returnValueReceiver);
@@ -3601,7 +3498,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native String lua_setupvalue(long ptr, int funcindex, int n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         const char * returnValueReceiver = (const char *) lua_setupvalue((lua_State *) L, (int) funcindex, (int) n);
         return env->NewStringUTF(returnValueReceiver);
@@ -3645,7 +3541,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native long lua_upvalueid(long ptr, int funcindex, int n); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jlong returnValueReceiver = (jlong) lua_upvalueid((lua_State *) L, (int) funcindex, (int) n);
         return returnValueReceiver;
@@ -3677,7 +3572,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_upvaluejoin(long ptr, int funcindex1, int n1, int funcindex2, int n2); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         lua_upvaluejoin((lua_State *) L, (int) funcindex1, (int) n1, (int) funcindex2, (int) n2);
     */
@@ -3715,7 +3609,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaL_callmeta(long ptr, int obj, String e); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaL_callmeta((lua_State *) L, (int) obj, (const char *) e);
         return returnValueReceiver;
@@ -3754,7 +3647,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaL_dostring(long ptr, String str); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaL_dostring((lua_State *) L, (const char *) str);
         return returnValueReceiver;
@@ -3784,7 +3676,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaL_execresult(long ptr, int stat); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaL_execresult((lua_State *) L, (int) stat);
         return returnValueReceiver;
@@ -3815,7 +3706,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaL_fileresult(long ptr, int stat, String fname); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaL_fileresult((lua_State *) L, (int) stat, (const char *) fname);
         return returnValueReceiver;
@@ -3848,7 +3738,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaL_getmetafield(long ptr, int obj, String e); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaL_getmetafield((lua_State *) L, (int) obj, (const char *) e);
         return returnValueReceiver;
@@ -3879,7 +3768,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaL_getmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaL_getmetatable((lua_State *) L, (const char *) tname);
         return returnValueReceiver;
@@ -3909,7 +3797,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_getmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         luaL_getmetatable((lua_State *) L, (const char *) tname);
     */
@@ -3942,7 +3829,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaL_getsubtable(long ptr, int idx, String fname); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaL_getsubtable((lua_State *) L, (int) idx, (const char *) fname);
         return returnValueReceiver;
@@ -3978,7 +3864,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native String luaL_gsub(long ptr, String s, String p, String r); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         const char * returnValueReceiver = (const char *) luaL_gsub((lua_State *) L, (const char *) s, (const char *) p, (const char *) r);
         return env->NewStringUTF(returnValueReceiver);
@@ -4010,7 +3895,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaL_len(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaL_len((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -4049,7 +3933,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaL_loadstring(long ptr, String s); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaL_loadstring((lua_State *) L, (const char *) s);
         return returnValueReceiver;
@@ -4089,7 +3972,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaL_newmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaL_newmetatable((lua_State *) L, (const char *) tname);
         return returnValueReceiver;
@@ -4128,7 +4010,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_newmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         luaL_newmetatable((lua_State *) L, (const char *) tname);
     */
@@ -4187,7 +4068,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaL_openlibs(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         luaL_openlibs((lua_State *) L);
     */
@@ -4212,7 +4092,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaL_pushfail(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         luaL_pushfail((lua_State *) L);
     */
@@ -4257,7 +4136,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaL_ref(long ptr, int t); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaL_ref((lua_State *) L, (int) t);
         return returnValueReceiver;
@@ -4286,7 +4164,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaL_setmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         luaL_setmetatable((lua_State *) L, (const char *) tname);
     */
@@ -4316,7 +4193,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native long luaL_testudata(long ptr, int arg, String tname); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jlong returnValueReceiver = (jlong) luaL_testudata((lua_State *) L, (int) arg, (const char *) tname);
         return returnValueReceiver;
@@ -4357,7 +4233,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native String luaL_tolstring(long ptr, int idx, long len); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         const char * returnValueReceiver = (const char *) luaL_tolstring((lua_State *) L, (int) idx, (size_t *) len);
         return env->NewStringUTF(returnValueReceiver);
@@ -4391,8 +4266,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaL_traceback(long ptr, long L1, String msg, int level); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
-        updateJNIEnv(env, (lua_State *) L1);
         
         luaL_traceback((lua_State *) L, (lua_State *) L1, (const char *) msg, (int) level);
     */
@@ -4419,7 +4292,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native String luaL_typename(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         const char * returnValueReceiver = (const char *) luaL_typename((lua_State *) L, (int) index);
         return env->NewStringUTF(returnValueReceiver);
@@ -4456,7 +4328,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaL_unref(long ptr, int t, int ref); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         luaL_unref((lua_State *) L, (int) t, (int) ref);
     */
@@ -4499,7 +4370,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaL_where(long ptr, int lvl); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         luaL_where((lua_State *) L, (int) lvl);
     */
@@ -4519,7 +4389,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_openlib(long ptr, String lib); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         luaJ_openlib((lua_State *) L, (const char *) lib);
     */
@@ -4542,7 +4411,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaJ_compare(long ptr, int index1, int index2, int op); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaJ_compare((lua_State *) L, (int) index1, (int) index2, (int) op);
         return returnValueReceiver;
@@ -4564,7 +4432,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaJ_len(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaJ_len((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -4588,7 +4455,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaJ_loadbuffer(long ptr, Buffer buffer, int size, String name); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaJ_loadbuffer((lua_State *) L, (unsigned char *) buffer, (int) size, (const char *) name);
         return returnValueReceiver;
@@ -4612,7 +4478,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaJ_dobuffer(long ptr, Buffer buffer, int size, String name); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaJ_dobuffer((lua_State *) L, (unsigned char *) buffer, (int) size, (const char *) name);
         return returnValueReceiver;
@@ -4635,7 +4500,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaJ_pcall(long ptr, int nargs, int nresults); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaJ_pcall((lua_State *) L, (int) nargs, (int) nresults);
         return returnValueReceiver;
@@ -4657,7 +4521,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaJ_resume(long ptr, int nargs); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaJ_resume((lua_State *) L, (int) nargs);
         return returnValueReceiver;
@@ -4678,7 +4541,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_pushobject(long ptr, Object obj); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         luaJ_pushobject((JNIEnv *) env, (lua_State *) L, (jobject) obj);
     */
@@ -4698,7 +4560,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_pushclass(long ptr, Object clazz); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         luaJ_pushclass((JNIEnv *) env, (lua_State *) L, (jobject) clazz);
     */
@@ -4718,7 +4579,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void luaJ_pusharray(long ptr, Object array); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         luaJ_pusharray((JNIEnv *) env, (lua_State *) L, (jobject) array);
     */
@@ -4739,7 +4599,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native int luaJ_isobject(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jint returnValueReceiver = (jint) luaJ_isobject((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -4761,7 +4620,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native Object luaJ_toobject(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jobject returnValueReceiver = (jobject) luaJ_toobject((lua_State *) L, (int) index);
         return returnValueReceiver;
@@ -4783,7 +4641,6 @@ public class Lua54Natives extends LuaNative {
      */
     protected native long luaJ_newthread(long ptr, int lid); /*
         lua_State * L = (lua_State *) ptr;
-        updateJNIEnv(env, L);
         
         jlong returnValueReceiver = (jlong) luaJ_newthread((lua_State *) L, (int) lid);
         return returnValueReceiver;

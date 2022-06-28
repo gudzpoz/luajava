@@ -304,12 +304,7 @@ def jniStatePointerConv(f):
     s = ''
     for param in f['signature']['params']:
         if param[0] == 'lua_State *' and param[1] == 'L':
-            s += (
-                'lua_State * L = (lua_State *) ptr;\n' +
-                'updateJNIEnv(env, L);\n'
-            )
-        elif param[0] == 'lua_State *':
-            s += 'updateJNIEnv(env, (lua_State *) ' + param[1] + ');\n'
+            s += 'lua_State * L = (lua_State *) ptr;\n'
     return s
 
 
@@ -603,7 +598,9 @@ def getWhole(luaVersion, package):
         '            try {\n' +
         '                new SharedLibraryLoader().load("'
         + 'lua' + luaVersion.replace('.', '') + '");\n' +
-        '                initBindings();\n' +
+        '                if (initBindings() != 0) {\n' +
+        '                    throw new RuntimeException("Unable to init bindings");\n' +
+        '                }\n' +
         '                loaded.set(true);\n' +
         '            } catch (Throwable e) {\n' +
         '                throw new IllegalStateException(e);\n' +
@@ -612,18 +609,15 @@ def getWhole(luaVersion, package):
         '    }\n\n'
     )
     inner += (
-        '    private native static void initBindings() throws Exception; /*\n' +
-        '        if (initLua'
-        + luaVersion.replace('.', '') + 'Bindings(env) != 0) {\n' +
-        '            // Java-side exceptions are not cleared if any\n' +
-        '            return;\n' +
-        '        }\n' +
+        '    private native static int initBindings() throws Exception; /*\n' +
+        '        return (jint) initLua'
+        + luaVersion.replace('.', '') + 'Bindings(env);\n'
         '    */\n\n'
     )
     inner += (
         '    /**\n' +
         '     * Get <code>LUA_REGISTRYINDEX</code>, '
-        + 'which is a co,puted compile time constant\n' +
+        + 'which is a computed compile time constant\n' +
         '     */\n' +
         '    protected native int getRegistryIndex(); /*\n' +
         '        return LUA_REGISTRYINDEX;\n' +

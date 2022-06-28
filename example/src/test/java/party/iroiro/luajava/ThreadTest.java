@@ -1,9 +1,6 @@
 package party.iroiro.luajava;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.platform.commons.annotation.Testable;
 
 import java.io.ByteArrayOutputStream;
@@ -19,6 +16,7 @@ import static party.iroiro.luajava.Lua.LuaError.OK;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ThreadTest {
     private final int count = 100;
+    public final static int REPEATED = 100;
     private final PrintStream originalOut = System.out;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private long startTime;
@@ -30,7 +28,7 @@ public class ThreadTest {
         System.setOut(new PrintStream(outContent));
     }
 
-    @Test
+    @RepeatedTest(REPEATED)
     public void threadTest() throws Exception {
         final Lua L = new Lua51();
         ResourceLoader loader = new ResourceLoader();
@@ -68,10 +66,11 @@ public class ThreadTest {
     public void endCapture() {
         System.setOut(originalOut);
         assertEquals(
-                count,
+                count * REPEATED,
                 Arrays.stream(outContent.toString().split("\n")).filter("test"::equals).count()
         );
         System.out.println();
-        assertTrue(System.currentTimeMillis() - startTime >= 100 * count);
+        long time = System.currentTimeMillis() - startTime;
+        assertTrue(time >= 3 * count * REPEATED);
     }
 }
