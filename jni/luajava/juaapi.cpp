@@ -5,20 +5,31 @@
 
 #include <cstdio>
 
-inline int jInvoke(lua_State * L, const char * reg, jmethodID methodID) {
-  jobject * data = (jobject *) luaL_checkudata(L, 1, reg);
-  const char * name = lua_tostring(L, lua_upvalueindex(1));
+inline int jInvokeObject(lua_State * L, jmethodID methodID,
+                         jobject data, const char * name, int params) {
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
-  jstring str = env->NewStringUTF(name);
-  jint ret = env->CallStaticIntMethod(juaapi_class, methodID,
-      (jint) stateIndex, *data, str, lua_gettop(L) - 1);
-  env->DeleteLocalRef(str);
+  jint ret;
+  if (name == NULL) {
+    ret = env->CallStaticIntMethod(juaapi_class, methodID,
+                                   (jint) stateIndex, data, NULL, params);
+  } else {
+    jstring str = env->NewStringUTF(name);
+    ret = env->CallStaticIntMethod(juaapi_class, methodID,
+                                   (jint) stateIndex, data, str, params);
+    env->DeleteLocalRef(str);
+  }
   if (ret == -1) {
     return luaL_error(L, "No matching method found");
   } else {
     return ret;
   }
+}
+
+inline int jInvoke(lua_State * L, const char * reg, jmethodID methodID) {
+  jobject * data = (jobject *) luaL_checkudata(L, 1, reg);
+  const char * name = lua_tostring(L, lua_upvalueindex(1));
+  return jInvokeObject(L, methodID, *data, name, lua_gettop(L) - 1);
 }
 
 inline int jIndex(lua_State * L, const char * reg, jmethodID methodID, lua_CFunction func, bool ret) {
@@ -61,6 +72,11 @@ int jobjectInvoke(lua_State * L) {
 
 int jobjectCall(lua_State * L) {
   return jInvoke(L, JAVA_OBJECT_META_REGISTRY, juaapi_objectinvoke);
+}
+
+int jfunctionWrapper(lua_State * L) {
+  jobject * data = (jobject *) lua_touserdata(L, lua_upvalueindex(1));
+  return jInvokeObject(L, juaapi_objectinvoke, *data, NULL, lua_gettop(L));
 }
 
 int jobjectIndex(lua_State * L) {

@@ -144,6 +144,8 @@ public abstract class LuaNative {
 
     protected abstract void luaJ_pushclass(long ptr, Object clazz);
 
+    protected abstract void luaJ_pushfunction(long ptr, Object func);
+
     protected abstract void luaJ_pushobject(long ptr, Object obj);
 
     protected abstract void luaJ_pushstring(long ptr, String s);

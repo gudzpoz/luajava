@@ -3342,11 +3342,7 @@ public class LuaJitNatives extends LuaNative {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_openlib"><code>luaJ_openlib</code></a>
-     *
-     * 
-     *
-     * 
+     * A wrapper function
      *
      * Open a library indivisually, alternative to <code>luaL_openlibs</code>
      *
@@ -3361,11 +3357,7 @@ public class LuaJitNatives extends LuaNative {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_compare"><code>luaJ_compare</code></a>
-     *
-     * 
-     *
-     * 
+     * A wrapper function
      *
      * See <code>lua_compare</code>
      *
@@ -3384,11 +3376,7 @@ public class LuaJitNatives extends LuaNative {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_len"><code>luaJ_len</code></a>
-     *
-     * 
-     *
-     * 
+     * A wrapper function
      *
      * Wrapper of <code>lua_(obj)len</code>
      *
@@ -3405,11 +3393,7 @@ public class LuaJitNatives extends LuaNative {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_loadbuffer"><code>luaJ_loadbuffer</code></a>
-     *
-     * 
-     *
-     * 
+     * A wrapper function
      *
      * Load a direct buffer
      *
@@ -3428,11 +3412,7 @@ public class LuaJitNatives extends LuaNative {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_dobuffer"><code>luaJ_dobuffer</code></a>
-     *
-     * 
-     *
-     * 
+     * A wrapper function
      *
      * Run a direct buffer
      *
@@ -3451,11 +3431,7 @@ public class LuaJitNatives extends LuaNative {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_pcall"><code>luaJ_pcall</code></a>
-     *
-     * 
-     *
-     * 
+     * A wrapper function
      *
      * Protected call
      *
@@ -3473,11 +3449,7 @@ public class LuaJitNatives extends LuaNative {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_resume"><code>luaJ_resume</code></a>
-     *
-     * 
-     *
-     * 
+     * A wrapper function
      *
      * Resume a coroutine
      *
@@ -3494,11 +3466,7 @@ public class LuaJitNatives extends LuaNative {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_pushobject"><code>luaJ_pushobject</code></a>
-     *
-     * 
-     *
-     * 
+     * A wrapper function
      *
      * Push a Java object
      *
@@ -3513,11 +3481,7 @@ public class LuaJitNatives extends LuaNative {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_pushclass"><code>luaJ_pushclass</code></a>
-     *
-     * 
-     *
-     * 
+     * A wrapper function
      *
      * Push a Java class
      *
@@ -3532,11 +3496,7 @@ public class LuaJitNatives extends LuaNative {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_pusharray"><code>luaJ_pusharray</code></a>
-     *
-     * 
-     *
-     * 
+     * A wrapper function
      *
      * Push a Java array
      *
@@ -3551,11 +3511,22 @@ public class LuaJitNatives extends LuaNative {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_isobject"><code>luaJ_isobject</code></a>
+     * A wrapper function
      *
-     * 
+     * Push a JFunction
      *
-     * 
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param func the function object
+     */
+    protected native void luaJ_pushfunction(long ptr, Object func); /*
+        lua_State * L = (lua_State *) ptr;
+        
+        luaJ_pushfunction((JNIEnv *) env, (lua_State *) L, (jobject) func);
+    */
+
+
+    /**
+     * A wrapper function
      *
      * Is a Java object (including object, array or class)
      *
@@ -3572,11 +3543,7 @@ public class LuaJitNatives extends LuaNative {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_toobject"><code>luaJ_toobject</code></a>
-     *
-     * 
-     *
-     * 
+     * A wrapper function
      *
      * Convert to Java object if it is one
      *
@@ -3593,11 +3560,7 @@ public class LuaJitNatives extends LuaNative {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/#luaJ_newthread"><code>luaJ_newthread</code></a>
-     *
-     * 
-     *
-     * 
+     * A wrapper function
      *
      * Create a new thread
      *

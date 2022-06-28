@@ -44,8 +44,19 @@ public abstract class JuaAPI {
     public static int javaImport(int id, String className) {
         Lua L = Jua.get(id);
         if (className.endsWith(".*")) {
-            Map<String, Class<?>> classes = getPackageClasses(className.substring(0, className.length() - 2));
-            L.push(classes);
+            L.createTable(0, 0);
+            L.createTable(0, 1);
+            String packageName = className.substring(0, className.length() - 1);
+            L.push(l -> {
+                String name = l.toString(-1);
+                if (name != null) {
+                    return javaImport(l.getId(), packageName + name);
+                } else {
+                    return 0;
+                }
+            });
+            L.setField(-2, "__index");
+            L.setMetatable(-2);
             return 1;
         } else {
             try {
@@ -55,43 +66,6 @@ public abstract class JuaAPI {
                 return 0;
             }
         }
-    }
-
-    private static Map<String, Class<?>> getPackageClasses(String packageName) {
-        HashMap<String, Class<?>> classes = new HashMap<>();
-        ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
-        if (classLoader != null) {
-            String path = packageName.replace('.', '/');
-            try {
-                Enumeration<URL> resources = classLoader.getResources(path);
-                while (resources.hasMoreElements()) {
-                    URL resource = resources.nextElement();
-                    File directory = new File(resource.getFile());
-                    if (directory.isDirectory()) {
-                        File[] files = directory.listFiles(
-                                file -> file.isFile() && file.getName().endsWith(".class"));
-                        if (files != null) {
-                            for (File file : files) {
-                                String name = file.getName();
-                                try {
-                                    Class<?> aClass = ClassUtils.forName(
-                                            packageName + "." + name.substring(0, name.length() - 6),
-                                            null
-                                    );
-                                    if (aClass != null) {
-                                        classes.put(aClass.getSimpleName(), aClass);
-                                    }
-                                } catch (ClassNotFoundException ignored) {
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return classes;
     }
 
     /**
@@ -146,7 +120,7 @@ public abstract class JuaAPI {
      *
      * <p>
      * This method is mainly used by the JNI side. See {@code jni/luajava/jua.cpp}.
-     * If {@code name} is {@code null}, we assume that the object is a {@link JuaFunction}.
+     * If {@code name} is {@code null}, we assume that the object is a {@link JFunction}.
      * </p>
      *
      * <p>
@@ -158,10 +132,9 @@ public abstract class JuaAPI {
      * @param name       the name of the field
      * @param paramCount number of parameters (on the lua stack)
      * @return the number result pushed on stack
-     * @throws Exception when the calling underlying function throws
      * @see #methodInvoke(int, Class, Object, String, int)
      */
-    public static int objectInvoke(int index, @NotNull Object obj, @Nullable String name, int paramCount) throws Exception {
+    public static int objectInvoke(int index, @NotNull Object obj, @Nullable String name, int paramCount) {
         if (name == null) {
             return juaFunctionCall(index, obj, paramCount);
         } else {
@@ -170,18 +143,16 @@ public abstract class JuaAPI {
     }
 
     /**
-     * Calls a {@link JuaFunction} or {@link JFunction}
+     * Calls a {@link JFunction}
      *
      * @param index   the id of {@link Jua} thread calling this method
-     * @param obj     the {@link JuaFunction} or {@link JFunction} object
+     * @param obj     the {@link JFunction} object
      * @param ignored parameter count, but we are not using it
      * @return the number result pushed on stack
      */
     private static int juaFunctionCall(int index, Object obj, int ignored) {
         Lua L = Jua.get(index);
-        if (obj instanceof JuaFunction) {
-            return ((JuaFunction) obj).__call();
-        } else if (obj instanceof JFunction) {
+        if (obj instanceof JFunction) {
             return ((JFunction) obj).__call(L);
         } else {
             return 0;
@@ -189,7 +160,7 @@ public abstract class JuaAPI {
     }
 
     public static int objectInvoke(int index, Object obj, String name,
-                                   String notSignature, int paramCount) throws Exception {
+                                   String notSignature, int paramCount) {
         return methodInvoke(index, obj.getClass(), obj, name, notSignature, paramCount);
     }
 
@@ -223,12 +194,12 @@ public abstract class JuaAPI {
         }
     }
 
-    public static int classInvoke(int index, Class<?> clazz, String name, int paramCount) throws Exception {
+    public static int classInvoke(int index, Class<?> clazz, String name, int paramCount) {
         return methodInvoke(index, clazz, null, name, paramCount);
     }
 
     public static int classInvoke(int index, Class<?> clazz, String name,
-                                  String notSignature, int paramCount) throws Exception {
+                                  String notSignature, int paramCount) {
         return methodInvoke(index, clazz, null, name, notSignature, paramCount);
     }
 
@@ -294,7 +265,7 @@ public abstract class JuaAPI {
     }
 
     public static int methodInvoke(int index, Class<?> clazz, Object obj, String name,
-                                   String notSignature, int paramCount) throws Exception {
+                                   String notSignature, int paramCount) {
         Lua L = Jua.get(index);
         Method method = matchMethod(clazz, name, notSignature);
         if (method != null) {
@@ -370,7 +341,7 @@ public abstract class JuaAPI {
                     Class<?>[] classes = method.getParameterTypes();
                     try {
                         for (int i = 0; i != params.length; ++i) {
-                            params[i] = convertFromLua(L, classes[i], i + 2);
+                            params[i] = convertFromLua(L, classes[i], -params.length + i);
                         }
                     } catch (IllegalArgumentException e) {
                         continue;
@@ -406,7 +377,11 @@ public abstract class JuaAPI {
             throws IllegalArgumentException {
         Lua.LuaType type = L.type(index);
         if (type == Lua.LuaType.NIL) {
-            return null;
+            if (clazz.isPrimitive()) {
+                throw new IllegalArgumentException("Primitive not accepting null values");
+            } else {
+                return null;
+            }
         } else if (type == Lua.LuaType.BOOLEAN) {
             if (clazz == boolean.class || clazz.isAssignableFrom(Boolean.class)) {
                 return L.toBoolean(index);

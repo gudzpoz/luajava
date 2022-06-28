@@ -281,6 +281,7 @@ JNIEnv * getJNIEnv(lua_State * L) {
 
 lua_State * luaJ_newthread(lua_State * L, int lid) {
     lua_State * K = lua_newthread(L);
+    /* This also prevents the thread from being garbage collected */
     lua_pushthread(K);
     lua_pushinteger(K, lid);
     lua_settable(K, LUA_REGISTRYINDEX);
@@ -325,4 +326,9 @@ jobject luaJ_toobject(lua_State * L, int index) {
 
 int luaJ_isobject(lua_State * L, int index) {
     return luaJ_toobject(L, index) != NULL;
+}
+
+void luaJ_pushfunction(JNIEnv * env, lua_State * L, jobject func) {
+  luaJ_pushobject(env, L, func);
+  lua_pushcclosure(L, &jfunctionWrapper, 1);
 }

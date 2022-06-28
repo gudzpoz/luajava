@@ -28,13 +28,10 @@ public class PrintProxyTest {
     @Test
     public void testPrintProxy() throws IOException {
         Lua L = new Lua51();
-        new JuaFunction(L) {
-            @Override
-            public int __call() {
-                System.out.println(L.toString(-1));
-                return 0;
-            }
-        }.register("print");
+        L.register("print", l -> {
+            System.out.println(l.toString(-1));
+            return 0;
+        });
 
         ResourceLoader loader = new ResourceLoader();
         loader.load("/tests/printTest.lua", L);
@@ -57,7 +54,7 @@ public class PrintProxyTest {
     public void endCapture() {
         System.setOut(originalOut);
         assertEquals(
-                        "PROXY TEST :\n" +
+                "PROXY TEST :\n" +
                         "Printing from Java1...TESTE 1\n" +
                         "Printing from lua :Teste 2\n",
                 outContent.toString()

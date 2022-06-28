@@ -26,12 +26,7 @@ public class JuaApiLuaTest {
         try (Lua L = new Lua51()) {
             L.register("jfun", L1 -> 0);
             L.openLibraries();
-            new JuaFunction(L) {
-                @Override
-                public int __call() {
-                    return 0;
-                }
-            }.register("juafun");
+            L.register("juafun", l -> 0);
             L.push(array, Lua.Conversion.NONE);
             L.setGlobal("arr");
             ResourceLoader loader = new ResourceLoader();

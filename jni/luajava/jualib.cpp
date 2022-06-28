@@ -44,8 +44,11 @@ static int javaImport(lua_State * L) {
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
 
-  return env->CallStaticIntMethod(juaapi_class, juaapi_import, (jint) stateIndex,
-                                  env->NewStringUTF(className));
+  jstring str = env->NewStringUTF(className);
+  int ret = env->CallStaticIntMethod(juaapi_class, juaapi_import, (jint) stateIndex,
+                                     str);
+  env->DeleteLocalRef(str);
+  return ret;
 }
 
 static int javaProxy(lua_State * L) {

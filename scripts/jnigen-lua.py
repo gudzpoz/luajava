@@ -145,6 +145,7 @@ paramTypedDescriptions = {
     'fname': {'const char *': 'the filename'},
     'from': {'lua_State *': 'a thread'},
     'fromidx': {'int': 'a stack position'},
+    'func': {'jobject': 'the function object'},
     'funcindex': {'int': 'the stack position of the closure'},
     'funcindex1': {'int': 'the stack position of the closure'},
     'funcindex2': {'int': 'the stack position of the closure'},
@@ -322,11 +323,15 @@ def jniGen(f):
         )
 
 
+emptyPattern = re.compile('(     \\*( )?\n){2,}')
+
+
 def formatJavadoc(luaVersion, f):
-    return (
+    return emptyPattern.sub('     *\n', (
         '    /**\n' +
-        '     * Wrapper of <a href="' + getRelative(luaVersion)
-        + '#' + f['name'] + '"><code>' + f['name'] + '</code></a>\n' +
+        ('     * A wrapper function\n' if 'luaJ' in f['name'] else (
+         '     * Wrapper of <a href="' + getRelative(luaVersion)
+        + '#' + f['name'] + '"><code>' + f['name'] + '</code></a>\n')) +
         '     *\n' + javadocQuote('<pre><code>\n' + f['apii']
                                   + '\n</code></pre>' if 'apii' in f else '') + '\n' +
         '     *\n' + javadocQuote('<pre><code>\n' + f['pre']
@@ -334,7 +339,7 @@ def formatJavadoc(luaVersion, f):
         '     *\n' + javadocQuote(f['description']) + '\n' +
         '     *\n' + javadocSignature(f['signature'], f) + '\n' +
         '     */\n' + javaSignature(f) + ' /*\n' + jniGen(f) + '\n    */\n'
-    )
+    ))
 
 
 def functionHas(f, noGo):
@@ -529,6 +534,18 @@ def addExtra(functions):
                 ['JNIEnv *', 'env'],
                 ['lua_State *', 'L'],
                 ['jobject', 'array'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_pushfunction',
+        'description': 'Push a JFunction',
+        'signature': {
+            'return': 'void',
+            'params': [
+                ['JNIEnv *', 'env'],
+                ['lua_State *', 'L'],
+                ['jobject', 'func'],
             ],
         },
     })

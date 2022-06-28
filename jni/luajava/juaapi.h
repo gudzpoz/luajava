@@ -43,5 +43,6 @@ int jobjectNewIndex(lua_State * L);
 int jarrayLength(lua_State * L);
 int jarrayIndex(lua_State * L);
 int jarrayNewIndex(lua_State * L);
+int jfunctionWrapper(lua_State * L);
 
 #endif /* JUAAPI_H! */

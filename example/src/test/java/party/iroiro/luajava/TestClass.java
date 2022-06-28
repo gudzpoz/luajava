@@ -31,32 +31,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Testable
 public class TestClass {
     private boolean called = false;
+
     public void setCalled() {
         called = true;
     }
 
     @Test
-    public void testClass() throws Exception {
+    public void testClass() {
         Lua L = new Lua51();
 
-        JuaFunction jf = new JuaFunction(L) {
-            public int __call() {
-                L.push("Returned String");
-                setCalled();
-                return 1;
-            }
-        };
+        L.register("javaFuncTest", l -> {
+            L.push("Returned String");
+            setCalled();
+            return 1;
+        });
 
-        jf.register("javaFuncTest");
-
-        new JuaFunction(L) {
-            @Override
-            public int __call() {
-                boolean val = L.toBoolean(-1);
-                assertTrue(val);
-                return 0;
-            }
-        }.register("assert");
+        L.register("assert", l -> {
+            boolean val = L.toBoolean(-1);
+            assertTrue(val);
+            return 0;
+        });
 
         L.run(" f=javaFuncTest(); assert(f == 'Returned String'); ");
         assertTrue(called);

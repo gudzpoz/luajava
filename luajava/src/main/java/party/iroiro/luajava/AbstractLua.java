@@ -73,6 +73,8 @@ public abstract class AbstractLua implements Lua {
                 push((long) object);
             } else if (object instanceof Float || object instanceof Double) {
                 push((Number) object);
+            } else if (object instanceof JFunction) {
+                push(((JFunction) object));
             } else if (degree == Lua.Conversion.SEMI) {
                 pushJavaObjectOrArray(object);
             } else /* (degree == Conversion.FULL) */ {
@@ -170,7 +172,8 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void push(@NotNull JFunction function) {
-        pushJavaObject(function);
+        checkStack(1);
+        C.luaJ_pushfunction(L, function);
     }
 
     @Override
