@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static party.iroiro.luajava.Lua.Conversion.FULL;
 import static party.iroiro.luajava.Lua.Conversion.SEMI;
 import static party.iroiro.luajava.Lua.LuaError.*;
@@ -32,11 +33,23 @@ public class LuaTestSuite<T extends Lua> {
         testMeasurements();
         testStackOperations();
         testRef();
+        testMetatables();
         testRunners();
         testThreads();
         testProxy();
         testNotSupported();
         testOthers();
+    }
+
+    private void testMetatables() {
+        L.createTable(0, 0);
+        assertEquals(0, L.getMetatable(-1));
+        assertEquals(0, L.getMetaField(-1, "__call"));
+        L.createTable(0, 0);
+        L.setMetatable(-2);
+        assertEquals(0, L.getMetaField(-1, "__call"));
+        assertNotEquals(0, L.getMetatable(-1));
+        L.pop(2);
     }
 
     public static final AtomicInteger proxyIntegerTest = new AtomicInteger(0);
@@ -88,7 +101,7 @@ public class LuaTestSuite<T extends Lua> {
 
         AbstractLua lua = new AbstractLua(L.getLuaNative()) {
             @Override
-            protected AbstractLua newThread(long L, int id, Lua mainThread) {
+            protected AbstractLua newThread(long L, int id, AbstractLua mainThread) {
                 return null;
             }
 
@@ -175,6 +188,10 @@ public class LuaTestSuite<T extends Lua> {
         Enumeration<Object> objectEnumeration = Collections.emptyEnumeration();
         L.push(objectEnumeration, Lua.Conversion.NONE);
         L.xMove(sub, 1);
+
+        assertThrows(IllegalArgumentException.class, () -> L.xMove(new Lua51(), 1));
+        assertThrows(IllegalArgumentException.class, () -> L.xMove(mock(Lua.class), 1));
+
         assertSame(objectEnumeration, sub.toObject(-1));
         assertEquals(top, L.getTop());
 
@@ -208,7 +225,7 @@ public class LuaTestSuite<T extends Lua> {
         assertFalse(L.lessThan(-1, -2));
         assertEquals(RUNTIME, L.run("a = 1 \n print(#a)"));
         L.push(Arrays.asList(1, 2, 3));
-        assertEquals(3, L.length(-1));
+        assertEquals(3, L.rawLength(-1));
         L.pop(3);
     }
 
@@ -283,7 +300,7 @@ public class LuaTestSuite<T extends Lua> {
                 Object o = L.toObject(-1, classes.get(i + j));
                 assertInstanceOf(classes.get(i + 2), o);
                 assertInstanceOf(Number.class, o);
-                assertEquals(127.0, ((Number) o).doubleValue());
+                assertEquals(127.0, ((Number) Objects.requireNonNull(o)).doubleValue());
             }
         }
         assertNull(L.toObject(-1, BigDecimal.class));

@@ -8,6 +8,9 @@ import java.lang.reflect.Proxy;
 import java.nio.Buffer;
 import java.util.*;
 
+/**
+ * An implementation that relys on {@link LuaNative} for most of the features independent of Lua versions
+ */
 public abstract class AbstractLua implements Lua {
     protected static LuaInstances<AbstractLua> instances = new LuaInstances<>();
 
@@ -18,7 +21,7 @@ public abstract class AbstractLua implements Lua {
     protected final LuaNative C;
     protected final long L;
     protected final int id;
-    protected final Lua mainThread;
+    protected final AbstractLua mainThread;
     protected final List<Lua> subThreads;
 
     protected AbstractLua(LuaNative luaNative) {
@@ -29,7 +32,7 @@ public abstract class AbstractLua implements Lua {
         subThreads = new LinkedList<>();
     }
 
-    protected AbstractLua(LuaNative luaNative, long L, int id, @NotNull Lua mainThread) {
+    protected AbstractLua(LuaNative luaNative, long L, int id, @NotNull AbstractLua mainThread) {
         this.C = luaNative;
         this.L = L;
         this.mainThread = mainThread;
@@ -307,7 +310,7 @@ public abstract class AbstractLua implements Lua {
         }
         checkStack(1);
         if (C.lua_istable(L, index) == 1) {
-            int length = length(index);
+            int length = rawLength(index);
             ArrayList<Object> list = new ArrayList<>();
             list.ensureCapacity(length);
             for (int i = 1; i <= length; i++) {
@@ -386,7 +389,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public int length(int index) {
+    public int rawLength(int index) {
         /* luaJ_len might push the length on stack then pop it. */
         checkStack(1);
         return C.luaJ_len(L, index);
@@ -440,8 +443,12 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void xMove(Lua other, int n) throws IllegalArgumentException {
-        other.checkStack(n);
-        C.lua_xmove(L, other.getPointer(), n);
+        if (other instanceof AbstractLua && ((AbstractLua) other).mainThread == mainThread) {
+            other.checkStack(n);
+            C.lua_xmove(L, other.getPointer(), n);
+        } else {
+            throw new IllegalArgumentException("Not sharing same global state");
+        }
     }
 
     @Override
@@ -492,12 +499,11 @@ public abstract class AbstractLua implements Lua {
         return lua;
     }
 
-    @Override
     public synchronized void addSubThread(Lua lua) {
         subThreads.add(lua);
     }
 
-    protected abstract AbstractLua newThread(long L, int id, Lua mainThread);
+    protected abstract AbstractLua newThread(long L, int id, AbstractLua mainThread);
 
     @Override
     public LuaError resume(int nArgs) {

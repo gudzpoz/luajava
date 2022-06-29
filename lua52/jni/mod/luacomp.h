@@ -47,10 +47,7 @@ static int luaJ_compare(lua_State * L, int index1, int index2, int op) {
 }
 
 static int luaJ_len(lua_State * L, int index) {
-    lua_len(L, index);
-    int length = lua_tointeger(L, -1);
-    lua_pop(L, 1);
-    return length;
+    return lua_rawlen(L, index);
 }
 
 static int luaJ_loadbuffer(lua_State * L, unsigned char * buffer, int size, const char * name) {

@@ -11,7 +11,7 @@ public class LuaJit extends AbstractLua {
         super(getNatives());
     }
 
-    protected LuaJit(long L, int id, Lua main) {
+    protected LuaJit(long L, int id, AbstractLua main) {
         super(main.getLuaNative(), L, id, main);
     }
 
@@ -29,7 +29,7 @@ public class LuaJit extends AbstractLua {
     }
 
     @Override
-    protected AbstractLua newThread(long L, int id, Lua mainThread) {
+    protected AbstractLua newThread(long L, int id, AbstractLua mainThread) {
         return new LuaJit(L, id, mainThread);
     }
 
