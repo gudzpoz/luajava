@@ -1,9 +1,9 @@
--- java.require
-APITest = java.require('party/iroiro/jua/APITest')
-System = java.require('java/lang/System')
-Thread = java.require('java/lang/Thread')
-Class = java.require('java/lang/Class')
-Short = java.require('java/lang/Short')
+-- java.import
+APITest = java.import('party.iroiro.luajava.APITest')
+System = java.import('java.lang.System')
+Thread = java.import('java.lang.Thread')
+Class = java.import('java.lang.Class')
+Short = java.import('java.lang.Short')
 APITest:assertTrue(Class ~= nil)
 
 -- static memebers

@@ -1,12 +1,18 @@
 # Modified from https://github.com/libgdx/libgdx/blob/master/.github/workflows/build-publish.yml
 
-name: Build natives
+name: Build and Publish
 
 on:
   workflow_dispatch:
     branches:
       - main
       - luas
+  push:
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+    branches:
+      - main
 
 env:
   MACOSX_DEPLOYMENT_TARGET: "10.10"
@@ -73,6 +79,15 @@ jobs:
         run: |
           export export NDK_HOME=$ANDROID_NDK_HOME
           ./gradlew jniGen jnigenBuild check
+      - name: Jacoco Test Report
+        run: |
+          export export NDK_HOME=$ANDROID_NDK_HOME
+          ./gradlew jacocoTestReport
+      - name: Upload test result
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./lua51/build/reports/jacoco/report.xml,./lua52/build/reports/jacoco/report.xml,./lua53/build/reports/jacoco/report.xml,./lua54/build/reports/jacoco/report.xml,./luajit/build/reports/jacoco/report.xml,./luajava/build/reports/jacoco/report.xml
+          verbose: true
       - name: Upload all output libs
         uses: actions/upload-artifact@v2.1.4
         with:
@@ -144,3 +159,8 @@ jobs:
         with:
           name: example
           path: example/build/libs/example-all.jar
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: example/build/libs/example-all.jar

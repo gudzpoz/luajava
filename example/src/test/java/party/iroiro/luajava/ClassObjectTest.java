@@ -14,11 +14,10 @@ public class ClassObjectTest {
     @Test
     public void classObjectTest() {
         try (Lua L = new Lua51()) {
-            assertEquals(RUNTIME, L.run("t = java.require('java/lang/NoSystem')"));
-            assertTrue(Objects.requireNonNull(L.toString(-1))
-                    .contains("Unable to bind to class java/lang/NoSystem"));
+            assertEquals(OK, L.run("t = java.import('java.lang.NoSystem')"));
+            assertEquals(OK, L.run("assert(t == nil)"));
 
-            assertEquals(OK, L.run("t = java.require('party/iroiro/luajava/ClassObjectTest')"));
+            assertEquals(OK, L.run("t = java.import('party.iroiro.luajava.ClassObjectTest')"));
             L.getGlobal("t");
             assertEquals(Class.class, Objects.requireNonNull(L.toJavaObject(-1)).getClass());
 

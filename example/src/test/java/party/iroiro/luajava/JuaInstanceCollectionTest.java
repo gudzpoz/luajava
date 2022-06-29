@@ -6,14 +6,14 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 public class JuaInstanceCollectionTest {
     @Test
     public void juaInstanceCollectionTest() {
         Lua jua = mock(Lua.class);
-        LuaInstances instances = new LuaInstances();
+        LuaInstances<Lua> instances = new LuaInstances<>();
         for (int i = 0; i < 10; i++) {
             assertEquals(i, instances.add(jua));
         }
@@ -42,5 +42,10 @@ public class JuaInstanceCollectionTest {
 
         assertEquals(10, instances.add(jua));
         assertEquals(11, instances.size());
+        LuaInstances.Token<Lua> add = instances.add();
+        assertEquals(12, instances.size());
+        assertNull(instances.get(add.id));
+        add.setter.accept(jua);
+        assertSame(jua, instances.get(add.id));
     }
 }

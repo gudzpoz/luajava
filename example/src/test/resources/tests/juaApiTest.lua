@@ -1,9 +1,9 @@
--- java.require
-t = java.require('party/iroiro/jua/JuaApiLuaTest')
+-- java.import
+t = java.import('party.iroiro.luajava.JuaApiLuaTest')
 
 -- java.new
-assert(type(java.new(java.require('java/lang/Object'))) == 'userdata')
-i = java.new(java.require('java/lang/Integer'), '1024')
+assert(type(java.new(java.import('java.lang.Object'))) == 'userdata')
+i = java.new(java.import('java.lang.Integer'), '1024')
 assert(type(i) == 'userdata')
 assert(java.new(t, 'no', 'match') == nil)
 
