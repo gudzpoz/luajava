@@ -62,6 +62,14 @@ int jclassIndex(lua_State * L) {
   return jIndex(L, JAVA_CLASS_META_REGISTRY, juaapi_classindex, &jclassInvoke);
 }
 
+int jclassCall(lua_State * L) {
+  jobject * data = (jobject *) lua_touserdata(L, 1);
+  JNIEnv * env = getJNIEnv(L);
+  int stateIndex = getStateIndex(L);
+  return env->CallStaticIntMethod(juaapi_class, juaapi_classnew,
+                                  (jint) stateIndex, *data, lua_gettop(L) - 1);
+}
+
 int jclassNewIndex(lua_State * L) {
   return jIndex(L, JAVA_CLASS_META_REGISTRY, juaapi_classnewindex, NULL, false);
 }
@@ -115,4 +123,54 @@ int jarrayIndex(lua_State * L) {
 
 int jarrayNewIndex(lua_State * L) {
   return jarrayJIndex(L, juaapi_arraynewindex, false);
+}
+
+// c = jobject('methodName', 'signature') --> returns a closure
+inline int jSigCall(lua_State * L, lua_CFunction func) {
+  if (lua_gettop(L) == 3) {
+    lua_pushcclosure(L, func, 3);
+    return 1;
+  } else if (lua_gettop(L) == 2) {
+    lua_pushcclosure(L, func, 2);
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+// c = jobject('methodName', 'signature') --> returns a closure
+// c(param1, param2) --> method call
+inline int jSigInvoke(lua_State * L, const char * reg, jmethodID methodID) {
+  jobject * data = (jobject *) luaL_checkudata(L, lua_upvalueindex(1), reg);
+  const char * name = luaL_checkstring(L, lua_upvalueindex(2));
+  const char * signature = luaL_optstring(L, lua_upvalueindex(3), NULL);
+
+  JNIEnv * env = getJNIEnv(L);
+  int stateIndex = getStateIndex(L);
+
+  jstring nameS = env->NewStringUTF(name);
+  jstring signatureS = signature == NULL ? NULL : env->NewStringUTF(signature);
+  int ret = env->CallStaticIntMethod(juaapi_class, methodID,
+                                     (jint) stateIndex, *data, nameS, signatureS, lua_gettop(L));
+  if (signature != NULL) {
+    env->DeleteLocalRef(signatureS);
+  }
+  env->DeleteLocalRef(nameS);
+  return ret;
+}
+
+int jclassSigInvoke(lua_State * L) {
+  return jSigInvoke(L, JAVA_CLASS_META_REGISTRY, juaapi_classsiginvoke);
+}
+
+int jobjectSigInvoke(lua_State * L) {
+  return jSigInvoke(L, JAVA_OBJECT_META_REGISTRY, juaapi_objsiginvoke);
+}
+
+int jclassSigCall(lua_State * L) {
+  return jSigCall(L, &jclassSigInvoke);
+}
+
+int jobjectSigCall(lua_State * L) {
+  return jSigCall(L, &jobjectSigInvoke);
 }

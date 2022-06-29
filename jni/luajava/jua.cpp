@@ -18,9 +18,11 @@ jclass    juaapi_class          = NULL;
 jmethodID juaapi_classnew       = NULL;
 jmethodID juaapi_classindex     = NULL;
 jmethodID juaapi_classinvoke    = NULL;
+jmethodID juaapi_classsiginvoke = NULL;
 jmethodID juaapi_classnewindex  = NULL;
 jmethodID juaapi_objectindex    = NULL;
 jmethodID juaapi_objectinvoke   = NULL;
+jmethodID juaapi_objsiginvoke   = NULL;
 jmethodID juaapi_objectnewindex = NULL;
 jmethodID juaapi_arraylen       = NULL;
 jmethodID juaapi_arrayindex     = NULL;
@@ -117,12 +119,16 @@ int initBindings(JNIEnv * env) {
           "classIndex", "(ILjava/lang/Class;Ljava/lang/String;)I");
   juaapi_classinvoke = bindJavaStaticMethod(env, juaapi_class,
           "classInvoke", "(ILjava/lang/Class;Ljava/lang/String;I)I");
+  juaapi_classsiginvoke = bindJavaStaticMethod(env, juaapi_class,
+          "classInvoke", "(ILjava/lang/Class;Ljava/lang/String;Ljava/lang/String;I)I");
   juaapi_classnewindex = bindJavaStaticMethod(env, juaapi_class,
           "classNewIndex", "(ILjava/lang/Class;Ljava/lang/String;)I");
   juaapi_objectindex = bindJavaStaticMethod(env, juaapi_class,
           "objectIndex", "(ILjava/lang/Object;Ljava/lang/String;)I");
   juaapi_objectinvoke = bindJavaStaticMethod(env, juaapi_class,
           "objectInvoke", "(ILjava/lang/Object;Ljava/lang/String;I)I");
+  juaapi_objsiginvoke = bindJavaStaticMethod(env, juaapi_class,
+          "objectInvoke", "(ILjava/lang/Object;Ljava/lang/String;Ljava/lang/String;I)I");
   juaapi_objectnewindex = bindJavaStaticMethod(env, juaapi_class,
           "objectNewIndex", "(ILjava/lang/Object;Ljava/lang/String;)I");
   juaapi_arraylen = bindJavaStaticMethod(env, juaapi_class,
@@ -148,9 +154,11 @@ int initBindings(JNIEnv * env) {
       || juaapi_classnew == NULL
       || juaapi_classindex == NULL
       || juaapi_classinvoke == NULL
+      || juaapi_classsiginvoke == NULL
       || juaapi_classnewindex == NULL
       || juaapi_objectindex == NULL
       || juaapi_objectinvoke == NULL
+      || juaapi_objsiginvoke == NULL
       || juaapi_objectnewindex == NULL
       || juaapi_arraylen == NULL
       || juaapi_arrayindex == NULL
@@ -181,6 +189,8 @@ void initMetaRegistry(lua_State * L) {
     lua_setfield(L, -2, LUA_METAFIELD_INDEX);
     lua_pushcfunction(L, &jclassNewIndex);
     lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
+    lua_pushcfunction(L, &jclassCall);
+    lua_setfield(L, -2, LUA_METAFIELD_CALL);
   }
   lua_pop(L, 1);
 
@@ -191,8 +201,6 @@ void initMetaRegistry(lua_State * L) {
     lua_setfield(L, -2, LUA_METAFIELD_INDEX);
     lua_pushcfunction(L, &jobjectNewIndex);
     lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
-    lua_pushcfunction(L, &jobjectCall);
-    lua_setfield(L, -2, LUA_METAFIELD_CALL);
   }
   lua_pop(L, 1);
 

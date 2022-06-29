@@ -456,6 +456,9 @@ public abstract class JuaAPI {
     }
 
     public static Class<?>[] getClasses(String notSignature) {
+        if (notSignature == null || notSignature.isEmpty()) {
+            return new Class<?>[0];
+        }
         return ClassUtils.toClassArray(Arrays.stream(notSignature.split(",")).map(s -> {
             try {
                 return ClassUtils.forName(s, null);
