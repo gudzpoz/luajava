@@ -39,7 +39,10 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Build natives
         run: |
-          ./gradlew jniGen jnigenBuild check
+          ./gradlew jniGen jnigenBuild
+      - name: Test
+        run: |
+          ./gradlew check
       - name: Upload macOS/iOS natives
         uses: actions/upload-artifact@v2.1.4
         with:
@@ -78,7 +81,11 @@ jobs:
       - name: Build natives
         run: |
           export export NDK_HOME=$ANDROID_NDK_HOME
-          ./gradlew jniGen jnigenBuild check
+          ./gradlew jniGen jnigenBuild
+      - name: Test
+        run: |
+          export export NDK_HOME=$ANDROID_NDK_HOME
+          ./gradlew check
       - name: Jacoco Test Report
         run: |
           export export NDK_HOME=$ANDROID_NDK_HOME
@@ -120,6 +127,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+      - name: JniGen
+        run: |
+          ./gradlew jniGen
       - name: Download apple-natives artifact
         uses: actions/download-artifact@v2
         with:
@@ -130,7 +140,6 @@ jobs:
           name: most-natives
       - name: Pack desktop natives
         run: |
-          ./gradlew jniGen
           ant -f lua51/jni/build.xml pack-natives
           ant -f lua52/jni/build.xml pack-natives
           ant -f lua53/jni/build.xml pack-natives
