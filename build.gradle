@@ -27,3 +27,14 @@ ext {
 
 apply from: 'publish.gradle'
 apply from: 'jacoco.gradle'
+
+task allJavadoc(type: Javadoc) {
+    source subprojects.findAll { it.name != 'example' }.collect {
+        it.sourceSets.main.allJava
+    }
+    classpath = files(subprojects.findAll { it.name != 'example' }.collect {
+        it.sourceSets.main.compileClasspath
+    })
+    exclude '**/org/springframework/util/**'
+    destinationDir = file("${buildDir}/docs/javadoc")
+}

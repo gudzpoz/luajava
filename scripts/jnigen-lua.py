@@ -63,7 +63,7 @@ javaComment = re.compile(re.escape('*/'))
 
 
 def strippedPrettyPrint(luaVersion, e):
-    relative = getRelative(luaVersion)
+    relative = getUrl(luaVersion)
     for a in e.xpath('.//a'):
         if 'name' in a.attrib:
             del a.attrib['name']
@@ -330,7 +330,7 @@ def formatJavadoc(luaVersion, f):
     return emptyPattern.sub('     *\n', (
         '    /**\n' +
         ('     * A wrapper function\n' if 'luaJ' in f['name'] else (
-         '     * Wrapper of <a href="' + getRelative(luaVersion)
+         '     * Wrapper of <a href="' + getUrl(luaVersion)
         + '#' + f['name'] + '"><code>' + f['name'] + '</code></a>\n')) +
         '     *\n' + javadocQuote('<pre><code>\n' + f['apii']
                                   + '\n</code></pre>' if 'apii' in f else '') + '\n' +
