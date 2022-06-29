@@ -25,7 +25,7 @@ public class LuaProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object ignored, Method method, Object[] objects) {
-        synchronized (L) {
+        synchronized (L.getMainState()) {
             int top = L.getTop();
             L.refGet(ref);
             L.getField(-1, method.getName());

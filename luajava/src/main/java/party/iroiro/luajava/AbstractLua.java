@@ -675,6 +675,11 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
+    public AbstractLua getMainState() {
+        return mainThread;
+    }
+
+    @Override
     public long getPointer() {
         return L;
     }

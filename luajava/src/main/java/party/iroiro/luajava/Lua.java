@@ -976,6 +976,11 @@ public interface Lua extends AutoCloseable {
     LuaNative getLuaNative();
 
     /**
+     * @return the main Lua state
+     */
+    Lua getMainState();
+
+    /**
      * @return the pointer to the internal {@code lua_State}
      */
     long getPointer();
@@ -1032,7 +1037,7 @@ public interface Lua extends AutoCloseable {
         SEMI,
         /**
          * All objects, including {@link Integer}, for example, are pushed as either
-         * Java objects (with {@link #pushJavaObject(Object)} or Java arrays
+         * Java objects (with {@link #pushJavaObject(Object)}) or Java arrays
          * (with {@link #pushJavaArray(Object)}).
          */
         NONE
