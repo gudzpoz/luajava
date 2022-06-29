@@ -4,10 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.ClassUtils;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.*;
-import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -208,7 +205,6 @@ public abstract class JuaAPI {
     }
 
     public static int arrayIndex(int index, Object obj, int i) {
-        assert obj.getClass().isArray();
         try {
             Object e = Array.get(obj, i - 1);
             Jua.get(index).push(e, Lua.Conversion.SEMI);
@@ -219,7 +215,6 @@ public abstract class JuaAPI {
     }
 
     public static int arrayNewIndex(int index, Object obj, int i) {
-        assert obj.getClass().isArray();
         try {
             Lua L = Jua.get(index);
             Array.set(obj, i - 1, L.toObject(L.getTop(), obj.getClass().getComponentType()));
@@ -327,7 +322,7 @@ public abstract class JuaAPI {
             Class<?> type = field.getType();
             Object o = convertFromLua(L, type, 3);
             field.set(object, o);
-        } catch (NoSuchFieldException | IllegalAccessException ignored) {
+        } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException ignored) {
         }
         return 0;
     }
@@ -383,14 +378,19 @@ public abstract class JuaAPI {
                 return null;
             }
         } else if (type == Lua.LuaType.BOOLEAN) {
-            if (clazz == boolean.class || clazz.isAssignableFrom(Boolean.class)) {
+            if (clazz == boolean.class || clazz == Boolean.class) {
                 return L.toBoolean(index);
             }
         } else if (type == Lua.LuaType.STRING && clazz.isAssignableFrom(String.class)) {
             return L.toString(index);
-        } else if (type == Lua.LuaType.NUMBER && (clazz.isPrimitive() ||
-                Number.class.isAssignableFrom(clazz))) {
-            return convertNumber(L.toNumber(index), clazz);
+        } else if (type == Lua.LuaType.NUMBER) {
+            if (clazz.isPrimitive() || Number.class.isAssignableFrom(clazz)) {
+                return convertNumber(L.toNumber(index), clazz);
+            } else if (Character.class == clazz) {
+                return (char) L.toNumber(index);
+            } else if (Boolean.class == clazz) {
+                return L.toNumber(index) != 0;
+            }
         } else if (type == Lua.LuaType.USERDATA) {
             Object object = L.toJavaObject(index);
             if (object != null && clazz.isAssignableFrom(object.getClass())) {
@@ -400,10 +400,7 @@ public abstract class JuaAPI {
             if (clazz.isAssignableFrom(List.class)) {
                 return L.toList(index);
             } else if (clazz.isArray() && clazz.getComponentType() == Object.class) {
-                List<?> list = L.toList(index);
-                if (list != null) {
-                    return list.toArray(new Object[0]);
-                }
+                return Objects.requireNonNull(L.toList(index)).toArray(new Object[0]);
             } else if (clazz.isAssignableFrom(Map.class)) {
                 return L.toMap(index);
             }
