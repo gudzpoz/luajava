@@ -1,1 +1,0 @@
-import{_ as c,I as n,R as r,$ as l,o as m,c as f}from"./app.7fe5e49d.js";const t={__name:"Asciinema",props:["file"],setup(e){const o=e,a=n(null);return r(()=>{l(()=>import("./index.bdaba625.js"),[]).then(i=>i.create(o.file,a.value,{rows:12}))}),(i,g)=>(m(),f("div",{ref_key:"cinema",ref:a},null,512))}};var b=c(t,[["__file","Asciinema.vue"]]);export{b as default};
