@@ -47,6 +47,7 @@ export default defineUserConfig({
         children: [
           '/examples/hello-world.md',
           '/examples/awt.md',
+          '/examples/modules.md',
         ]
       },
     ],
