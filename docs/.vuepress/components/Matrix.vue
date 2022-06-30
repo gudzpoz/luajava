@@ -10,7 +10,7 @@
 <script setup>
 import { ref } from 'vue'
 const groupId = 'party.iroiro.luajava'
-const version = '3.0.0-SNAPSHOT'
+const version = '3.0.0'
 
 const lua = ref('lua51')
 const luaVersions = {
@@ -40,7 +40,7 @@ const managers = {
                                    .join('') + '\n')
   },
   Gradle (groupId, artifactId, version, classifier) {
-    return `implementation <span class="token string">${groupId}:${artifactId}:${version}${classifier ? ':' + classifier : ''}'</span>`
+    return `implementation <span class="token string">'${groupId}:${artifactId}:${version}${classifier ? ':' + classifier : ''}'</span>`
   },
 }
 

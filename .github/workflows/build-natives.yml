@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
     branches:
       - main
-      - luas
   push:
     paths-ignore:
       - '.github/**'
       - 'docs/**'
+      - 'README.md'
     branches:
       - main
 

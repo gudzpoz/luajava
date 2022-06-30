@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
     branches:
       - main
-      - luas
   push:
     paths:
       - 'docs/**'
