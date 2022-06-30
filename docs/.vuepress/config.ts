@@ -62,7 +62,8 @@ export default defineUserConfig({
   plugins: [
     registerComponentsPlugin({
       components: {
-        Asciinema: path.resolve(__dirname, './components/Asciinema.vue')
+        Asciinema: path.resolve(__dirname, './components/Asciinema.vue'),
+        Matrix: path.resolve(__dirname, './components/Matrix.vue'),
       },
     })
   ],

@@ -4,46 +4,34 @@ You may try things first [with an interactive console](./console.md).
 
 ## Getting It
 
+::: tip
+Go to [Initializer](#initializer) to get the required dependencies for your build system.
+:::
+
 The library consists of two parts:
 
 1. The Java interface
 2. The compiled native binaries
 
-So you will need both to get LuaJava to work correctly. For Gradle users, you may choose one of the following according to the wanted Lua version. For Maven users, check [#Maven](#maven).
+So you will need both to get LuaJava to work correctly. Basically, using Maven Central:
 
-### Gradle
+- The `groupId` is `party.iroiro.luajava`.
+- The Java interface has `artifactId` like `lua5N` (`lua51` `lua52` ...) or `luajit`.
+- The natives has `artifactId` like `lua5N-platform` (`lua51` `lua52` ...) or `luajit-platform`.
 
-<script setup>
-const luaVersions = {
-  lua51: 'Lua 5.1',
-  lua52: 'Lua 5.2',
-  lua53: 'Lua 5.3',
-  lua54: 'Lua 5.4',
-  luajit: 'LuaJIT',
-}
+However, there are different native artifacts for different platforms, each with a different `classifier`:
 
-const libraryVersion = '3.0.0'
-</script>
+- For desktop platforms, including Linux, Windows and MacOS, on x64 or x32 or ARM(32/64), we provide an integrated artifact with classifier `natives-desktop`.
+- For mobile devices:
+  - iOS: An artifact with classifier `natives-ios`.
+  - Android: Since there are different architectures for Android, you can choose from the following four according to your target devices. (I recommend you to just include all the four though.)
+    - Artifact with classifier `natives-armeabi-v7a`.
+    - Artifact with classifier `natives-arm64-v8a`.
+    - Artifact with classifier `natives-x86`.
+    - Artifact with classifier `natives-x86_64`.
 
-<div v-for="(v, k) in luaVersions" :key="k">
-<h4>{{ v }}</h4>
-<pre class="language-groovy"><code>implementation <span class="token string">'party.iroiro.luajava:{{k}}:{{libraryVersion}}'</span>
-implementation <span class="token string">'party.iroiro.luajava:{{k}}-platform:{{libraryVersion}}'</span></code></pre>
-</div>
+### Initializer
 
-### Maven
+You may get the required dependencies for your build system using the following simple form.
 
-<div v-for="(v, k) in luaVersions" :key="k">
-<h4>{{ v }}</h4>
-<pre class="language-xml"><code><span class="token punctuation">&lt;</span><span class="token tag">dependency</span><span class="token punctuation">&gt;</span>
-    <span class="token punctuation">&lt;</span><span class="token tag">groupId</span><span class="token punctuation">&gt;</span>party.iroiro.luajava<span class="token punctuation">&lt;/</span><span class="token tag">groupId</span><span class="token punctuation">&gt;</span>
-    <span class="token punctuation">&lt;</span><span class="token tag">artifactId</span><span class="token punctuation">&gt;</span>{{k}}<span class="token punctuation">&lt;/</span><span class="token tag">artifactId</span><span class="token punctuation">&gt;</span>
-    <span class="token punctuation">&lt;</span><span class="token tag">version</span><span class="token punctuation">&gt;</span>{{libraryVersion}}<span class="token punctuation">&lt;/</span><span class="token tag">version</span><span class="token punctuation">&gt;</span>
-<span class="token punctuation">&lt;/</span><span class="token tag">dependency</span><span class="token punctuation">&gt;</span>
-<span class="token punctuation">&lt;</span><span class="token tag">dependency</span><span class="token punctuation">&gt;</span>
-    <span class="token punctuation">&lt;</span><span class="token tag">groupId</span><span class="token punctuation">&gt;</span>party.iroiro.luajava<span class="token punctuation">&lt;/</span><span class="token tag">groupId</span><span class="token punctuation">&gt;</span>
-    <span class="token punctuation">&lt;</span><span class="token tag">artifactId</span><span class="token punctuation">&gt;</span>{{k}}-platform<span class="token punctuation">&lt;/</span><span class="token tag">artifactId</span><span class="token punctuation">&gt;</span>
-    <span class="token punctuation">&lt;</span><span class="token tag">version</span><span class="token punctuation">&gt;</span>{{libraryVersion}}<span class="token punctuation">&lt;/</span><span class="token tag">version</span><span class="token punctuation">&gt;</span>
-<span class="token punctuation">&lt;/</span><span class="token tag">dependency</span><span class="token punctuation">&gt;</span>
-</code></pre>
-</div>
+<Matrix/>

@@ -51,13 +51,14 @@ const matrix = {
 const classes = ['unsupported', 'available', 'tested'];
 </script>
 
-<style>
+<style scoped>
 div.legend {
   border: 1px solid var(--c-border-dark);
   display: inline-block;
   vertical-align: sub;
   width: 1em;
   height: 1em;
+  margin-right: .3em;
 }
 .tested {
   background-color: lightgreen;
@@ -77,14 +78,20 @@ div.legend {
 .dark .unsupported {
   background-color: gray;
 }
+ul {
+  padding: 0;
+}
+ul li {
+  display: inline-block;
+  margin: .5em;
+}
 </style>
 
-> <div class="legend tested"></div>
-> Available and tested
-> <div class="legend available"></div>
-> Native available but not thoroughly tested yet
-> <div class="legend unsupported"></div>
-> Not available (yet!)
+<ul>
+  <li><div class="legend tested"></div>Available and tested</li>
+  <li><div class="legend available"></div>Native available but not thoroughly tested yet</li>
+  <li><div class="legend unsupported"></div>Not available (yet!)</li>
+</ul>
 
 <table class="matrix">
 <tr><td></td><th v-for="col in columns" :key="col" v-text="col"></th></tr>
