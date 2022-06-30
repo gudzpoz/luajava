@@ -1,11 +1,13 @@
 import { defineUserConfig, defaultTheme } from 'vuepress'
+const { registerComponentsPlugin } = require('@vuepress/plugin-register-components')
+const { path } = require('@vuepress/utils')
 
 export default defineUserConfig({
   lang: 'en-US',
   title: 'LuaJava',
   description: 'Lua for Java',
   base: '/luajava/',
-  head: [['link', { rel: 'icon', href: '/favicon.png' }]],
+  head: [['link', { rel: 'icon', href: '/luajava/favicon.png' }]],
   theme: defaultTheme({
     logo: '/lua-java.svg',
     repo: 'https://github.com/gudzpoz/luajava',
@@ -17,7 +19,7 @@ export default defineUserConfig({
     editLinkPattern: ':repo/blob/:branch/:path',
     navbar: [
       { text: 'Home', link: '/', },
-      { text: 'Javadoc', link: '/javadoc/', },
+      { text: 'Javadoc', link: '/javadoc/index.html', },
       { text: 'Lua', link: 'https://www.lua.org', },
       { text: 'LuaJIT', link: 'https://luajit.org/luajit.html' },
     ],
@@ -57,4 +59,11 @@ export default defineUserConfig({
   extendsMarkdown (md) {
     md.use(require('markdown-it-footnote'))
   },
+  plugins: [
+    registerComponentsPlugin({
+      components: {
+        Asciinema: path.resolve(__dirname, './components/Asciinema.vue')
+      },
+    })
+  ],
 })

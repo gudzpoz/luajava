@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@vuepress/client': 2.0.0-beta.48
   '@vuepress/plugin-external-link-icon': 2.0.0-beta.48
+  '@vuepress/plugin-register-components': 2.0.0-beta.48
   asciinema-player: ^3.0.1
   markdown-it-footnote: ^3.0.3
   vue: ^3.2.37
@@ -11,6 +12,7 @@ specifiers:
 devDependencies:
   '@vuepress/client': registry.npmmirror.com/@vuepress/client/2.0.0-beta.48
   '@vuepress/plugin-external-link-icon': registry.npmmirror.com/@vuepress/plugin-external-link-icon/2.0.0-beta.48
+  '@vuepress/plugin-register-components': registry.npmmirror.com/@vuepress/plugin-register-components/2.0.0-beta.48
   asciinema-player: registry.npmmirror.com/asciinema-player/3.0.1
   markdown-it-footnote: registry.npmmirror.com/markdown-it-footnote/3.0.3
   vue: registry.npmmirror.com/vue/3.2.37
@@ -463,6 +465,18 @@ packages:
     dependencies:
       '@vuepress/core': registry.npmmirror.com/@vuepress/core/2.0.0-beta.48
       prismjs: registry.npmmirror.com/prismjs/1.28.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  registry.npmmirror.com/@vuepress/plugin-register-components/2.0.0-beta.48:
+    resolution: {integrity: sha512-JufzTmhCt2vKvyh0Ogk+Y/Ql4OCROHaDrQxcX1uE/G3qpvR/5o7LGPDJlo/O0zNzEz5LXMZN3FtI3tFxV6hbxg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@vuepress/plugin-register-components/-/plugin-register-components-2.0.0-beta.48.tgz}
+    name: '@vuepress/plugin-register-components'
+    version: 2.0.0-beta.48
+    dependencies:
+      '@vuepress/core': registry.npmmirror.com/@vuepress/core/2.0.0-beta.48
+      '@vuepress/utils': registry.npmmirror.com/@vuepress/utils/2.0.0-beta.48
+      chokidar: registry.npmmirror.com/chokidar/3.5.3
     transitivePeerDependencies:
       - supports-color
     dev: true

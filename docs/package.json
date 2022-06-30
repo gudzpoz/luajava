@@ -13,6 +13,7 @@
   "devDependencies": {
     "@vuepress/client": "2.0.0-beta.48",
     "@vuepress/plugin-external-link-icon": "2.0.0-beta.48",
+    "@vuepress/plugin-register-components": "2.0.0-beta.48",
     "asciinema-player": "^3.0.1",
     "markdown-it-footnote": "^3.0.3",
     "vue": "^3.2.37",
