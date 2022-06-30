@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-092c548f","path":"/examples/hello-world.html","title":"Examples","lang":"en-US","frontmatter":{"lang":"en-US","title":"Examples","description":"Examples"},"excerpt":"","headers":[],"git":{"updatedTime":1656596165000},"filePathRelative":"examples/hello-world.md"}');export{e as data};

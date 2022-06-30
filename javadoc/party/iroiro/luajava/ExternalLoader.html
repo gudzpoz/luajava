@@ -96,9 +96,14 @@ var activeTableTab = "activeTableTab";
 <div class="description">
 <ul class="blockList">
 <li class="blockList">
+<dl>
+<dt>All Known Implementing Classes:</dt>
+<dd><a href="../../../party/iroiro/luajava/ClassPathLoader.html" title="class in party.iroiro.luajava">ClassPathLoader</a></dd>
+</dl>
 <hr>
 <br>
 <pre>public interface <span class="typeNameLabel">ExternalLoader</span></pre>
+<div class="block">An external resource loader to load external module file</div>
 </li>
 </ul>
 </div>
@@ -118,9 +123,11 @@ var activeTableTab = "activeTableTab";
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../party/iroiro/luajava/ExternalLoader.html#load-java.lang.String-party.iroiro.luajava.Lua-">load</a></span>(java.lang.String&nbsp;path,
-    <a href="../../../party/iroiro/luajava/Lua.html" title="interface in party.iroiro.luajava">Lua</a>&nbsp;L)</code>&nbsp;</td>
+<td class="colFirst"><code>@Nullable java.nio.Buffer</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../party/iroiro/luajava/ExternalLoader.html#load-java.lang.String-party.iroiro.luajava.Lua-">load</a></span>(java.lang.String&nbsp;module,
+    <a href="../../../party/iroiro/luajava/Lua.html" title="interface in party.iroiro.luajava">Lua</a>&nbsp;L)</code>
+<div class="block">Reads an external Lua module file into a direct buffer</div>
+</td>
 </tr>
 </table>
 </li>
@@ -143,12 +150,16 @@ var activeTableTab = "activeTableTab";
 <ul class="blockListLast">
 <li class="blockList">
 <h4>load</h4>
-<pre>int&nbsp;load(java.lang.String&nbsp;path,
-         <a href="../../../party/iroiro/luajava/Lua.html" title="interface in party.iroiro.luajava">Lua</a>&nbsp;L)
-  throws java.io.IOException</pre>
+<pre>@Nullable
+@Nullable java.nio.Buffer&nbsp;load(java.lang.String&nbsp;module,
+                                         <a href="../../../party/iroiro/luajava/Lua.html" title="interface in party.iroiro.luajava">Lua</a>&nbsp;L)</pre>
+<div class="block">Reads an external Lua module file into a direct buffer</div>
 <dl>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.io.IOException</code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>module</code> - the module</dd>
+<dd><code>L</code> - the Lua state requesting the module</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a direct buffer containing the module file, with position at zero, limit as the length</dd>
 </dl>
 </li>
 </ul>
