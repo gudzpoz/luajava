@@ -71,7 +71,7 @@ static int luaJ_resume(lua_State * L, int narg) {
     return lua_resume(L, narg);
 }
 
-static void *luaL_testudata (lua_State *L, int ud, const char *tname) {
+static void *luaL_testudata(lua_State *L, int ud, const char *tname) {
   void *p = lua_touserdata(L, ud);
   if (p != NULL) {  /* value is a userdata? */
     if (lua_getmetatable(L, ud)) {  /* does it have a metatable? */
@@ -83,6 +83,10 @@ static void *luaL_testudata (lua_State *L, int ud, const char *tname) {
     }
   }
   return NULL;  /* value is not a userdata with a metatable */
+}
+
+static int luaJ_initloader(lua_State * L) {
+  return luaJ_insertloader(L, "loaders");
 }
 
 #endif /* !LUACOMP_H */

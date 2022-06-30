@@ -66,4 +66,8 @@ static int luaJ_resume(lua_State * L, int narg) {
     return lua_resume(L, narg);
 }
 
+static int luaJ_initloader(lua_State * L) {
+  return luaJ_insertloader(L, "loaders");
+}
+
 #endif /* !LUACOMP_H */

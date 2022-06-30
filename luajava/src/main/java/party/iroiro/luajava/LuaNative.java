@@ -2348,4 +2348,13 @@ public abstract class LuaNative {
      */
     protected abstract void lua_rawseti(long ptr, int index, int n);
 
+    /**
+     * A wrapper function
+     *
+     * Append a searcher loading from Java side into <code>package.searchers / loaders</code>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @return see description
+     */
+    protected abstract int luaJ_initloader(long ptr);
 }

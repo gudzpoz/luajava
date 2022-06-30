@@ -971,6 +971,34 @@ public interface Lua extends AutoCloseable {
     void register(String name, JFunction function);
 
     /**
+     * Sets a {@link ExternalLoader} for the main state
+     *
+     * <p>
+     * The provided external loader will be integrated into Lua's module resolution progress.
+     * See <a href="https://www.lua.org/manual/5.2/manual.html#pdf-require">require (modname)</a>
+     * for an overview.
+     * </p>
+     * <p>
+     * We will register a new searcher by appending to <code>package.searchers</code> (or
+     * <code>package.loaders</code> for Lua 5.1) to load Lua files with this {@link ExternalLoader}.
+     * </p>
+     * <p>
+     * You need to load the <code>package</code> library before calling this method, or else it will fail.
+     * </p>
+     *
+     * @param loader the loader that will be used to find files
+     * @throws IllegalStateException if the package module is not yet loaded
+     */
+    void setExternalLoader(ExternalLoader loader) throws IllegalStateException;
+
+    /**
+     * Loads a chunk from a {@link ExternalLoader} set by {@link #setExternalLoader(ExternalLoader)}
+     * @param module the module
+     * @return the return code from {@link #load(Buffer, String)}
+     */
+    LuaError loadExternal(String module);
+
+    /**
      * @return the underlying {@link LuaNative} natives
      */
     LuaNative getLuaNative();

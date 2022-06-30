@@ -68,6 +68,10 @@ public class LuaScriptSuite<T extends Lua> {
                 L.pushJavaClass(StaticClass.class);
                 L.setGlobal("Static");
             }),
+            new ScriptTester("/suite/moduleTest.lua", L -> {
+                L.openLibrary("package");
+                L.setExternalLoader(new ClassPathLoader());
+            }),
     };
 
     public void test() {

@@ -26,6 +26,7 @@ extern jmethodID juaapi_arraynewindex;
 extern jmethodID juaapi_luaify;
 extern jmethodID juaapi_import;
 extern jmethodID juaapi_proxy;
+extern jmethodID juaapi_load;
 
 jclass bindJavaClass(JNIEnv * env, const char * name);
 jmethodID bindJavaStaticMethod(JNIEnv * env, jclass c, const char * name, const char * sig);
@@ -45,5 +46,7 @@ void luaJ_pushclass(JNIEnv * env, lua_State * L, jobject clazz);
 void luaJ_pusharray(JNIEnv * env, lua_State * L, jobject array);
 jobject luaJ_toobject(lua_State * L, int index);
 int luaJ_isobject(lua_State * L, int index);
+
+int luaJ_insertloader(lua_State * L, const char * searchers);
 
 #endif /* JUA_H! */

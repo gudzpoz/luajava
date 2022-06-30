@@ -17,6 +17,15 @@ import java.util.stream.Collectors;
  * lua again.
  */
 public abstract class JuaAPI {
+    public static int load(int id, String module) {
+        AbstractLua L = Jua.get(id);
+        if (L.loadExternal(module) == Lua.LuaError.OK) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
     public static int proxy(int id) {
         Lua L = Jua.get(id);
         int interfaces = L.getTop() - 1;

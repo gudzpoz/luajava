@@ -3,8 +3,7 @@ package party.iroiro.luajava;
 import java.io.*;
 import java.nio.ByteBuffer;
 
-public class ResourceLoader implements ExternalLoader {
-    @Override
+public class ResourceLoader {
     public int load(String path, Lua L) throws IOException {
         try (InputStream stream = ResourceLoader.class.getResourceAsStream(path)) {
             ByteArrayOutputStream output = new ByteArrayOutputStream();

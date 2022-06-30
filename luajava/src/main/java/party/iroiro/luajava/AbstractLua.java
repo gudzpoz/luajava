@@ -7,12 +7,14 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Proxy;
 import java.nio.Buffer;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An implementation that relys on {@link LuaNative} for most of the features independent of Lua versions
  */
 public abstract class AbstractLua implements Lua {
     protected static LuaInstances<AbstractLua> instances = new LuaInstances<>();
+    protected final AtomicReference<ExternalLoader> loader;
 
     public static AbstractLua getInstance(int lid) {
         return instances.get(lid);
@@ -30,9 +32,11 @@ public abstract class AbstractLua implements Lua {
         L = luaNative.luaL_newstate(id);
         mainThread = this;
         subThreads = new LinkedList<>();
+        loader = new AtomicReference<>();
     }
 
     protected AbstractLua(LuaNative luaNative, long L, int id, @NotNull AbstractLua mainThread) {
+        loader = new AtomicReference<>();
         this.C = luaNative;
         this.L = L;
         this.mainThread = mainThread;
@@ -667,6 +671,35 @@ public abstract class AbstractLua implements Lua {
     public void register(String name, JFunction function) {
         push(function);
         setGlobal(name);
+    }
+
+    @Override
+    public void setExternalLoader(ExternalLoader loader) throws IllegalStateException {
+        if (mainThread.loader.getAndSet(loader) == null) {
+            if (C.luaJ_initloader(L) != 0) {
+                mainThread.loader.set(null);
+                throw new IllegalStateException("Probaly the package library is not loaded yet");
+            }
+        }
+    }
+
+    @Override
+    public LuaError loadExternal(String module) {
+        ExternalLoader loader = mainThread.loader.get();
+        if (loader != null) {
+            Buffer buffer = loader.load(module, this);
+            if (buffer != null) {
+                if (buffer.isDirect()) {
+                    return load(buffer, module);
+                } else {
+                    return LuaError.MEMORY;
+                }
+            } else {
+                return LuaError.FILE;
+            }
+        } else {
+            return LuaError.RUNTIME;
+        }
     }
 
     @Override

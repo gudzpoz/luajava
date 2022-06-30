@@ -1,9 +1,8 @@
 package party.iroiro.luajava;
 
-import com.badlogic.gdx.utils.SharedLibraryLoader;
-
-import java.nio.Buffer;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.nio.Buffer;
+import com.badlogic.gdx.utils.SharedLibraryLoader;
 
 /**
  * Lua C API wrappers
@@ -79,16 +78,17 @@ public class LuaJitNatives extends LuaNative {
             #include "lua.hpp"
             #include "jni.h"
 
+            #include "jua.h"
+
             #include "luacomp.h"
 
-            #include "jua.h"
             #include "juaapi.h"
             #include "jualib.h"
             #include "juaamalg.h"
 
             #include "luacustom.h"
          */
-
+    
     private final static AtomicBoolean loaded = new AtomicBoolean(false);
 
     protected LuaJitNatives() throws IllegalStateException {
@@ -3572,6 +3572,22 @@ public class LuaJitNatives extends LuaNative {
         lua_State * L = (lua_State *) ptr;
         
         jlong returnValueReceiver = (jlong) luaJ_newthread((lua_State *) L, (int) lid);
+        return returnValueReceiver;
+    */
+
+
+    /**
+     * A wrapper function
+     *
+     * Append a searcher loading from Java side into <code>package.searchers / loaders</code>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @return see description
+     */
+    protected native int luaJ_initloader(long ptr); /*
+        lua_State * L = (lua_State *) ptr;
+        
+        jint returnValueReceiver = (jint) luaJ_initloader((lua_State *) L);
         return returnValueReceiver;
     */
 

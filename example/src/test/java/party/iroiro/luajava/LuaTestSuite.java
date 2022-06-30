@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -19,8 +20,9 @@ import static party.iroiro.luajava.Lua.LuaError.*;
 import static party.iroiro.luajava.Lua.LuaType.*;
 
 public class LuaTestSuite<T extends Lua> {
-    public LuaTestSuite(T L) {
+    public LuaTestSuite(T L, Supplier<T> constructor) {
         this.L = L;
+        this.constructor = constructor;
     }
 
     public void test() {
@@ -37,8 +39,26 @@ public class LuaTestSuite<T extends Lua> {
         testRunners();
         testThreads();
         testProxy();
+        testExternalLoader();
         testNotSupported();
         testOthers();
+    }
+
+    private void testExternalLoader() {
+        try (T t = constructor.get()) {
+            assertEquals(RUNTIME, t.loadExternal("some.module"));
+            assertThrows(IllegalStateException.class,
+                    () -> t.setExternalLoader((module, L) -> ByteBuffer.allocate(0)));
+            t.openLibrary("package");
+            assertDoesNotThrow(
+                    () -> t.setExternalLoader((module, L) -> ByteBuffer.allocate(0)));
+            assertEquals(MEMORY, t.loadExternal("some.module"));
+            assertDoesNotThrow(
+                    () -> t.setExternalLoader(new ClassPathLoader()));
+            assertEquals(FILE, t.loadExternal("some.module"));
+            assertEquals(OK, t.loadExternal("suite.importTest"));
+            assertEquals(OK, t.pCall(0, Consts.LUA_MULTRET));
+        }
     }
 
     private void testMetatables() {
@@ -554,6 +574,7 @@ public class LuaTestSuite<T extends Lua> {
     }
 
     private final T L;
+    private final Supplier<T> constructor;
     private static final Object[][] DATA = {
             /* { Verifier,
              *   NONE_CONVERTED_TYPE,

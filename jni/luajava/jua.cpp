@@ -31,6 +31,7 @@ jmethodID juaapi_threadnewid    = NULL;
 jmethodID juaapi_luaify         = NULL;
 jmethodID juaapi_import         = NULL;
 jmethodID juaapi_proxy          = NULL;
+jmethodID juaapi_load           = NULL;
 // java.lang.Throwable
 jclass java_lang_throwable_class = NULL;
 jmethodID throwable_getmessage   = NULL;
@@ -145,6 +146,8 @@ int initBindings(JNIEnv * env) {
           "javaImport", "(ILjava/lang/String;)I");
   juaapi_proxy = bindJavaStaticMethod(env, juaapi_class,
           "proxy", "(I)I");
+  juaapi_load = bindJavaStaticMethod(env, juaapi_class,
+          "load", "(ILjava/lang/String;)I");
   if (java_lang_class_class == NULL
       || java_lang_class_forname == NULL
       || java_lang_throwable_class == NULL
@@ -166,7 +169,8 @@ int initBindings(JNIEnv * env) {
       || juaapi_threadnewid == NULL
       || juaapi_luaify == NULL
       || juaapi_import == NULL
-      || juaapi_proxy == NULL) {
+      || juaapi_proxy == NULL
+      || juaapi_load == NULL) {
     return -1;
   } else {
     return 0;
@@ -339,4 +343,22 @@ int luaJ_isobject(lua_State * L, int index) {
 void luaJ_pushfunction(JNIEnv * env, lua_State * L, jobject func) {
   luaJ_pushobject(env, L, func);
   lua_pushcclosure(L, &jfunctionWrapper, 1);
+}
+
+int luaJ_insertloader(lua_State * L, const char * searchers) {
+  lua_getglobal(L, "package");
+  if (lua_isnil(L, -1)) {
+    lua_pop(L, 1);
+    return -1;
+  }
+  lua_getfield(L, -1, searchers);
+  if (lua_istable(L, -1) == 0) {
+    lua_pop(L, 2);
+    return -1;
+  }
+  int next = luaJ_len(L, -1) + 1;
+  lua_pushcfunction(L, &jmoduleLoad);
+  lua_rawseti(L, -2, next);
+  lua_pop(L, 2);
+  return 0;
 }

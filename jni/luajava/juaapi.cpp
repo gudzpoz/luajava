@@ -174,3 +174,14 @@ int jclassSigCall(lua_State * L) {
 int jobjectSigCall(lua_State * L) {
   return jSigCall(L, &jobjectSigInvoke);
 }
+
+int jmoduleLoad(lua_State * L) {
+  JNIEnv * env = getJNIEnv(L);
+  int stateIndex = getStateIndex(L);
+  const char * name = luaL_checkstring(L, 1);
+  jstring moduleName = env->NewStringUTF(name);
+  int ret = env->CallStaticIntMethod(juaapi_class, juaapi_load,
+                                     (jint) stateIndex, moduleName);
+  env->DeleteLocalRef(moduleName);
+  return ret;
+}

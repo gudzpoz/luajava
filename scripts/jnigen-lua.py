@@ -582,6 +582,16 @@ def addExtra(functions):
             ],
         },
     })
+    functions.append({
+        'name': 'luaJ_initloader',
+        'description': 'Append a searcher loading from Java side into <code>package.searchers / loaders</code>',
+        'signature': {
+            'return': 'int',
+            'params': [
+                ['lua_State *', 'L'],
+            ],
+        },
+    })
 
 
 def getWhole(luaVersion, package):
@@ -595,9 +605,10 @@ def getWhole(luaVersion, package):
             #include "lua.hpp"
             #include "jni.h"
 
+            #include "jua.h"
+
             #include "luacomp.h"
 
-            #include "jua.h"
             #include "juaapi.h"
             #include "jualib.h"
             #include "juaamalg.h"
