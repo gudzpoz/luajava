@@ -19,22 +19,57 @@ static int javaRequire(lua_State * L) {
   return pushJ<JAVA_CLASS_META_REGISTRY>(L, (jobject) classInstance);
 }
 
+static int javaMethod(lua_State * L) {
+  if (luaL_testudata(L, 1, JAVA_OBJECT_META_REGISTRY) != NULL) {
+    return jobjectSigCall(L);
+  }
+
+  if (luaL_testudata(L, 1, JAVA_CLASS_META_REGISTRY) != NULL) {
+    return jclassSigCall(L);
+  }
+
+  return 0;
+}
+
 static int javaNew(lua_State * L) {
-  jobject * data = (jobject *) luaL_checkudata(L, 1, JAVA_CLASS_META_REGISTRY);
+  luaL_checkudata(L, 1, JAVA_CLASS_META_REGISTRY);
+  return jclassCall(L);
+}
+
+static int javaLuaify(lua_State * L) {
+  JNIEnv * env = getJNIEnv(L);
+  int stateIndex = getStateIndex(L);
+  return env->CallStaticIntMethod(juaapi_class, juaapi_luaify, (jint) stateIndex);
+}
+
+static int javaImport(lua_State * L) {
+  const char * className = luaL_checkstring(L, 1);
+
+  if (className == NULL) {
+    return 0;
+  }
 
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
-  return env->CallStaticIntMethod(juaapi_class, juaapi_classnew,
-      (jint) stateIndex, *data, lua_gettop(L) - 1);
+
+  jstring str = env->NewStringUTF(className);
+  int ret = env->CallStaticIntMethod(juaapi_class, juaapi_import, (jint) stateIndex,
+                                     str);
+  env->DeleteLocalRef(str);
+  return ret;
 }
 
-static const luaL_Reg javalib[] = {
-  {"require",   javaRequire},
-  {"new",       javaNew},
+static int javaProxy(lua_State * L) {
+  JNIEnv * env = getJNIEnv(L);
+  int stateIndex = getStateIndex(L);
+  return env->CallStaticIntMethod(juaapi_class, juaapi_proxy, (jint) stateIndex);
+}
+
+const luaL_Reg javalib[] = {
+  { "method",    javaMethod },
+  { "new",       javaNew },
+  { "luaify",    javaLuaify },
+  { "import",    javaImport },
+  { "proxy",     javaProxy },
   {NULL, NULL}
 };
-
-int luaopen_jua(lua_State *L) {
-  luaL_register(L, LUA_JAVALIBNAME, javalib);
-  return 1;
-}

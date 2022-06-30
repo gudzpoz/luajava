@@ -1,10 +1,18 @@
 # Modified from https://github.com/libgdx/libgdx/blob/master/.github/workflows/build-publish.yml
 
-name: Build natives
+name: Build and Publish
 
 on:
   workflow_dispatch:
-    branches: [ main ]
+    branches:
+      - main
+      - luas
+  push:
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+    branches:
+      - main
 
 env:
   MACOSX_DEPLOYMENT_TARGET: "10.10"
@@ -31,12 +39,15 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Build natives
         run: |
-          ./gradlew jniGen jnigenBuildMacOsX64 test
+          ./gradlew jniGen jnigenBuild
+      - name: Test
+        run: |
+          ./gradlew check
       - name: Upload macOS/iOS natives
         uses: actions/upload-artifact@v2.1.4
         with:
           name: apple-natives
-          path: libs
+          path: ./*/libs
   most-natives:
     runs-on: ubuntu-20.04
     steps:
@@ -51,6 +62,8 @@ jobs:
         run: |
           sudo apt install -y --force-yes gcc g++ linux-libc-dev libc6-dev
           sudo apt install -y --force-yes libc6-dev-i386 lib32stdc++-9-dev
+          sudo apt install -y --force-yes linux-libc-dev linux-libc-dev-i386-cross
+          sudo apt install -y --force-yes linux-libc-dev-armhf-cross linux-libc-dev-arm64-cross linux-libc-dev-amd64-cross
           sudo apt install -y --force-yes libstdc++-9-dev-i386-cross libstdc++-9-dev-arm64-cross libstdc++-9-dev-armhf-cross
           sudo apt install -y --force-yes gcc-i686-linux-gnu g++-i686-linux-gnu libc6-dev-i386-cross
           sudo apt install -y --force-yes gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross
@@ -68,12 +81,25 @@ jobs:
       - name: Build natives
         run: |
           export export NDK_HOME=$ANDROID_NDK_HOME
-          ./gradlew jniGen jnigenBuildAndroid jnigenBuildLinux jnigenBuildLinux64 jnigenBuildLinuxARM jnigenBuildLinuxARM64 jnigenBuildWindows jnigenBuildWindows64 test
+          ./gradlew jniGen jnigenBuild
+      - name: Test
+        run: |
+          export export NDK_HOME=$ANDROID_NDK_HOME
+          ./gradlew check
+      - name: Jacoco Test Report
+        run: |
+          export export NDK_HOME=$ANDROID_NDK_HOME
+          ./gradlew jacocoTestReport
+      - name: Upload test result
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./lua51/build/reports/jacoco/report.xml,./lua52/build/reports/jacoco/report.xml,./lua53/build/reports/jacoco/report.xml,./lua54/build/reports/jacoco/report.xml,./luajit/build/reports/jacoco/report.xml,./luajava/build/reports/jacoco/report.xml
+          verbose: true
       - name: Upload all output libs
         uses: actions/upload-artifact@v2.1.4
         with:
           name: most-natives
-          path: libs
+          path: ./*/libs
       - name: Cleanup Gradle Cache
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
@@ -100,26 +126,30 @@ jobs:
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-      - name: Download natives-ios artifact
+            ${{ runner.os }}-gradle-
+      - name: JniGen
+        run: |
+          ./gradlew jniGen
       - name: Download apple-natives artifact
         uses: actions/download-artifact@v2
         with:
           name: apple-natives
-          path: libs
       - name: Download most-natives artifact
         uses: actions/download-artifact@v2
         with:
           name: most-natives
-          path: libs
       - name: Pack desktop natives
         run: |
-          ./gradlew jniGen
-          ant -f jni/build.xml pack-natives
+          ant -f lua51/jni/build.xml pack-natives
+          ant -f lua52/jni/build.xml pack-natives
+          ant -f lua53/jni/build.xml pack-natives
+          ant -f lua54/jni/build.xml pack-natives
+          ant -f luajit/jni/build.xml pack-natives
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: natives
-          path: libs
+          path: ./*/libs
       - name: Publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -129,4 +159,17 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.SIGNING_PASSPHRASE }}
           GPG_SECKEY: ${{ secrets.SIGNING_SECRET_KEY }}
         run: |
-          ./gradlew publish
+          ./gradlew build publish
+      - name: Build example
+        run: |
+          ./gradlew :example:shadowJar
+      - name: Upload example
+        uses: actions/upload-artifact@v2.1.4
+        with:
+          name: example
+          path: example/build/libs/example-all.jar
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: example/build/libs/example-all.jar

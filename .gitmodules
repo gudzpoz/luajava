@@ -1,4 +1,18 @@
 [submodule "jni/luajit"]
-	path = jni/luajit
+	path = luajit/jni/luajit
 	url = https://github.com/LuaJIT/LuaJIT.git
 	branch = v2.1
+[submodule "lua51/jni/lua51"]
+	path = lua51/jni/lua51
+	url = https://github.com/gudzpoz/lua51.git
+[submodule "lua52/jni/lua52"]
+	path = lua52/jni/lua52
+	url = https://github.com/lua/lua.git
+	branch = v5-2
+[submodule "lua53/jni/lua53"]
+	path = lua53/jni/lua53
+	url = https://github.com/lua/lua.git
+	branch = v5.3
+[submodule "lua54/jni/lua54"]
+	path = lua54/jni/lua54
+	url = https://github.com/lua/lua.git

@@ -1,12 +1,26 @@
-jacocoTestReport {
-    executionData fileTree(project.rootDir.absolutePath).include('**/build/jacoco/*.exec')
+subprojects {
+    if (project.name != 'example') {
+        apply plugin: 'jacoco'
 
-    reports {
-        xml.enabled true
-        html.enabled true
-        csv.enabled false
-        xml.destination file("${buildDir}/reports/jacoco/report.xml")
+        jacocoTestReport {
+            dependsOn fileTree(buildDir.absolutePath).include('jacoco/*.exec')
+
+            executionData.setFrom(fileTree(project(':').buildDir.absolutePath).include('jacoco/*.exec'))
+
+            reports {
+                xml.enabled true
+                html.enabled true
+                csv.enabled false
+                xml.destination file("${buildDir}/reports/jacoco/report.xml")
+            }
+
+            afterEvaluate {
+                classDirectories.setFrom(files(classDirectories.files.collect {
+                    fileTree(dir: it, exclude: '**/org/springframework/util/**')
+                }))
+            }
+        }
+
+        jacocoTestReport.shouldRunAfter project(':example').tasks.named('test')
     }
 }
-
-check.dependsOn jacocoTestReport

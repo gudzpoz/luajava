@@ -3,6 +3,6 @@
 
 #define LUA_JAVALIBNAME "java"
 
-int luaopen_jua(lua_State *L);
+extern const luaL_Reg javalib[];
 
 #endif /* JUALIB_H! */

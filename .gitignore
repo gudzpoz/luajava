@@ -45,7 +45,6 @@ nb-configuration.xml
 
 .gradle
 gradle-app.setting
-build/
 
 ## OS Specific
 .DS_Store
@@ -71,9 +70,13 @@ luajit/.tags
 *.dll
 
 ## jnigen
-jni/*.xml
-jni/*.mk
-jni/*.cpp
-jni/*.h
-jni/*.c
-libs/*.xml
+**/jni/*.xml
+**/jni/*.mk
+**/jni/*.cpp
+**/jni/*.h
+**/jni/*.c
+**/libs/*.xml
+
+**/jni-headers/
+/scripts/.ipynb_checkpoints/
+/scripts/Untitled.ipynb
