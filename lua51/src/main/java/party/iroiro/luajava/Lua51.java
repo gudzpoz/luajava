@@ -4,9 +4,17 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static party.iroiro.luajava.Lua51Consts.*;
 
+/**
+ * A thin wrapper around a Lua 5.1 Lua state
+ */
 public class Lua51 extends AbstractLua {
     private final static AtomicReference<Lua51Natives> natives = new AtomicReference<>();
 
+    /**
+     * Creates a new Lua state
+     *
+     * @throws UnsatisfiedLinkError if Lua 5.1 natives unavailable
+     */
     public Lua51() throws UnsatisfiedLinkError {
         super(getNatives());
     }
