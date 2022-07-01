@@ -8,13 +8,31 @@ description: LuaJava, a scripting tool for Java
 
 [![Hello World Example](/hello.svg)](./examples/hello-world-mod.md)
 
-This is yet another fork of [the original LuaJava](https://github.com/jasonsantos/luajava).
+[![Build Status](https://github.com/gudzpoz/luajava/actions/workflows/build-natives.yml/badge.svg)](https://github.com/gudzpoz/luajava/actions/workflows/build-natives.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Codecov](https://img.shields.io/codecov/c/github/gudzpoz/luajava?label=Coverage)](https://app.codecov.io/gh/gudzpoz/luajava/)
+[![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/party.iroiro.luajava/luajava?server=https%3A%2F%2Fs01.oss.sonatype.org&label=Nexus&color=pink)](https://s01.oss.sonatype.org/content/repositories/snapshots/party/iroiro/luajava/)
+[![Maven Central](https://img.shields.io/maven-central/v/party.iroiro.luajava/luajava?color=blue&label=Maven%20Central)](https://mvnrepository.com/search?q=party.iroiro.luajava)
+[![Build Status](https://github.com/gudzpoz/luajava/actions/workflows/docs.yml/badge.svg)](https://github.com/gudzpoz/luajava/actions/workflows/docs.yml)
+[![Document Version](https://img.shields.io/github/package-json/v/gudzpoz/luajava?filename=docs%2Fpackage.json&label=Documentation)](https://gudzpoz.github.io/luajava/)
 
-> LuaJava is a scripting tool for Java. The goal of this tool is to allow scripts written in Lua to manipulate components developed in Java. LuaJava allows Java components to be accessed from Lua using the same syntax that is used for accessing Lua's native objects, without any need for declarations or any kind of preprocessing.
->
-> LuaJava also allows Java to implement an interface using Lua. This way any interface can be implemented in Lua and passed as parameter to any method, and when called, the equivalent function will be called in Lua, and it's result passed back to Java.
->
-> LuaJava is available under the same license as Lua 5.1, that is, it can be used at no cost for both academic and commercial purposes.
+<style>
+img + span svg.external-link-icon {
+  opacity: 0;
+}
+</style>
+
+Yet another fork of [the original LuaJava](https://github.com/jasonsantos/luajava):
+
+LuaJava is a scripting tool for Java. The goal of this tool is to allow scripts written in Lua to manipulate components developed in Java. LuaJava allows Java components to be accessed from Lua using the same syntax that is used for accessing Lua's native objects, without any need for declarations or any kind of preprocessing.
+
+LuaJava also allows any Java interface to get implemented in Lua and passed as parameter to any method, and when called, the equivalent function will be called in Lua, the result passed back to Java.
+
+LuaJava is available under the same license as Lua 5.1, that is, it can be used at no cost for both academic and commercial purposes.
+
+::: tip
+Try it out with [a pre-built console](./console.md)!
+:::
 
 ## Supported Lua Versions
 
@@ -36,18 +54,20 @@ I try to keep up with the most recent version of Lua, that is, [the latest offic
 
 ## Platforms
 
-Thanks to [jnigen](https://github.com/libgdx/gdx-jnigen), we have built Lua natives for almost all common platforms, readily available on [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava).
+Thanks to [jnigen](https://github.com/libgdx/gdx-jnigen), we have built Lua natives for almost all common platforms, readily available on [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava). [^android]
 
 <script setup>
 const columns = ['Lua 5.1', 'Lua 5.2', 'Lua 5.3', 'Lua 5.4', 'LuaJIT'];
+const android = 'Android <sup><a href="#fn2">[2]</a></sup>';
 const matrix = {
-  'Linux(x64)':       [2, 2, 2, 2, 2],
-  'Linux(x32)':       [1, 1, 1, 1, 1],
-  'Linux(ARM)':       [1, 1, 1, 1, 1],
-  'Linux(ARM64)':     [1, 1, 1, 1, 1],
-  'Windows':          [1, 1, 1, 1, 1],
+  'Linux (x86_64)':   [2, 2, 2, 2, 2],
+  'Linux (x86)':      [1, 1, 1, 1, 1],
+  'Linux (ARM)':      [1, 1, 1, 1, 1],
+  'Linux (ARM64)':    [1, 1, 1, 1, 1],
+  'Windows (x86)':    [1, 1, 1, 1, 1],
+  'Windows (x86_64)': [1, 1, 1, 1, 1],
   'MacOS':            [2, 2, 2, 2, 2],
-  'Android':          [1, 1, 1, 1, 1],
+  [android]:          [1, 1, 1, 1, 1],
   'iOS':              [1, 1, 1, 1, 0],
 };
 const classes = ['unsupported', 'available', 'tested'];
@@ -98,7 +118,9 @@ ul li {
 <table class="matrix">
 <tr><td></td><th v-for="col in columns" :key="col" v-text="col"></th></tr>
 <tr v-for="(info, platform) in matrix" :key="platform">
-  <th v-text="platform"></th>
+  <th v-html="platform"></th>
   <td v-for="(support, i) in info" :key="columns[i]" :class="classes[support]" :alt="classes[support]"></td>
 </tr>
 </table>
+
+[^android]: Android is available on many platforms and we provide natives for `armeabi-v7a` `arm64-v8a` `x86` `x86_64`.
