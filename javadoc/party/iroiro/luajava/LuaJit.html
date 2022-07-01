@@ -117,6 +117,7 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public class <span class="typeNameLabel">LuaJit</span>
 extends <a href="../../../party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></pre>
+<div class="block">A thin wrapper around a LuaJIT Lua state</div>
 </li>
 </ul>
 </div>
@@ -167,7 +168,9 @@ extends <a href="../../../party/iroiro/luajava/AbstractLua.html" title="class in
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>&nbsp;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../party/iroiro/luajava/LuaJit.html#LuaJit--">LuaJit</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../party/iroiro/luajava/LuaJit.html#LuaJit--">LuaJit</a></span>()</code>
+<div class="block">Creates a new Lua state</div>
+</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected </code></td>
@@ -241,9 +244,10 @@ extends <a href="../../../party/iroiro/luajava/AbstractLua.html" title="class in
 <h4>LuaJit</h4>
 <pre>public&nbsp;LuaJit()
        throws java.lang.UnsatisfiedLinkError</pre>
+<div class="block">Creates a new Lua state</div>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.UnsatisfiedLinkError</code></dd>
+<dd><code>java.lang.UnsatisfiedLinkError</code> - if LuaJIT natives unavailable</dd>
 </dl>
 </li>
 </ul>
