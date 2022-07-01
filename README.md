@@ -9,13 +9,17 @@
 [![Build Status](https://github.com/gudzpoz/luajava/actions/workflows/docs.yml/badge.svg)](https://github.com/gudzpoz/luajava/actions/workflows/docs.yml)
 [![Document Version](https://img.shields.io/github/package-json/v/gudzpoz/luajava?filename=docs%2Fpackage.json&label=Documentation)](https://gudzpoz.github.io/luajava/)
 
-* [About](#about)
-* [Platforms and Versions](#platforms-and-versions)
-  * [Artifacts](#artifacts)
-* [Module `java`](#java-module)
-  * [Example](#examples)
-* [Credits](#credits)
-* [License](#license)
+[![Hello World Example](./docs/.vuepress/public/hello.svg)](https://gudzpoz.github.io/luajava/examples/hello-world-mod.html)
+
+- [LuaJava](#luajava)
+  - [About](#about)
+  - [Platforms and Versions](#platforms-and-versions)
+    - [Artifacts](#artifacts)
+  - [Java module](#java-module)
+    - [Examples](#examples)
+    - [More](#more)
+  - [Credits](#credits)
+  - [License](#license)
 
 ## About ##
 
@@ -31,13 +35,31 @@ Documentation is available at [LuaJava](https://gudzpoz.github.io/luajava/) alon
 
 ## Platforms and Versions ##
 
-Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4 and LuaJIT are supported.
+<div style="display:flex;justify-content:center">
+
+| Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 |   LuaJIT    |
+|:-------:|:-------:|:-------:|:-------:|:-----------:|
+|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.4  | [`4c2441c`] |
+
+</div>
+
+[`4c2441c`]: https://github.com/LuaJIT/LuaJIT/commits/4c2441c16ce3c4e312aaefecc6d40c4fe21de97c
+
+Supported Lua versions: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4 and LuaJIT.
+
+Supported platforms: **Windows**, **Linux**, **MacOS**, **Android**, **iOS**. Compiled against both ARM and x32/x64. LuaJIT is not available on iOS yet.
 
 Compiled natives are available for most common platforms. Check out [LuaJava Platforms](https://gudzpoz.github.io/luajava/#platforms) for a platform matrix.
 
 ### Artifacts
 
 To include LuaJava into your project, you need to include two artifacts, one for the Java bindings, the other for the compiled native binaries.
+
+```groovy
+// Example: LuaJIT with Desktop natives
+implementation 'party.iroiro.luajava:luajit:3.0.0'
+implementation 'party.iroiro.luajava:luajit-platform:3.0.0:natives-desktop'
+```
 
 Different artifacts are provided for different Lua versions and different platforms. Check out [Getting Started](https://gudzpoz.github.io/luajava/getting-started.html) for an overview. Or you may also search in the [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava).
 
@@ -64,6 +86,22 @@ public static void main(String[] args) {
         L.run("java.import('java.lang.System').out:println(message)");
     }
 }
+```
+
+And [a more advanced "Hello World"](https://gudzpoz.github.io/luajava/examples/hello-world-mod.html):
+
+```lua
+print = java.method(java.import('java.lang.System').out,'println','java.lang.Object')
+Ansi = java.import('org.fusesource.jansi.Ansi')
+runnable = {
+  run = function()
+
+    print(Ansi:ansi():render('@|magenta,bold Hello |@'):toString())
+
+  end
+}
+thread = java.import('java.lang.Thread')(java.proxy('java.lang.Runnable', runnable))
+thread:start()
 ```
 
 ### More ###

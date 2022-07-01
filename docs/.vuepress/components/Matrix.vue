@@ -3,7 +3,7 @@
   <div><label v-for="(v, k) in managers"><input type="radio" :value="k" v-model="manager" name="manager"/>{{ k }}</label></div>
   <div><label v-for="(v, k) in luaVersions"><input type="radio" :value="k" v-model="lua" name="lua"/>{{ v }}</label></div>
   <div><label v-for="(v, k) in natives"><input type="radio" :value="k" v-model="platform" name="platform"/>{{ k }}</label></div>
-  <pre :class="managerConfig[manager]"><code v-html="lines(lua, natives[platform], managers[manager])"></code></pre>
+  <pre :class="managerConfig[manager]"><code v-html="lines(lua, platform, managers[manager])"></code></pre>
 </div>
 </template>
 
@@ -11,6 +11,12 @@
 import { ref } from 'vue'
 const groupId = 'party.iroiro.luajava'
 const version = '3.0.0'
+
+const notAvailable = {
+  luajit: {
+    iOS: true,
+  }
+}
 
 const lua = ref('lua51')
 const luaVersions = {
@@ -49,9 +55,14 @@ const managerConfig = {
   Gradle: 'language-groovy',
 }
 
-function lines(lua, natives, line) {
-  return `${line(groupId, lua, version, null)}
-${natives.map(n => line(groupId, lua + '-platform', version, n)).join('\n')}`
+function lines(lua, platform, line) {
+  if (notAvailable[lua] && notAvailable[lua][platform]) {
+    return 'NOT AVAILABLE YET :(';
+  } else {
+    const native = natives[platform]
+    return `${line(groupId, lua, version, null)}
+${native.map(n => line(groupId, lua + '-platform', version, n)).join('\n')}`
+  }
 }
 </script>
 

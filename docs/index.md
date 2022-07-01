@@ -6,6 +6,8 @@ description: LuaJava, a scripting tool for Java
 
 # What is LuaJava?
 
+[![Hello World Example](/hello.svg)](./examples/hello-world-mod.md)
+
 This is yet another fork of [the original LuaJava](https://github.com/jasonsantos/luajava).
 
 > LuaJava is a scripting tool for Java. The goal of this tool is to allow scripts written in Lua to manipulate components developed in Java. LuaJava allows Java components to be accessed from Lua using the same syntax that is used for accessing Lua's native objects, without any need for declarations or any kind of preprocessing.
