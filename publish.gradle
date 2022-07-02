@@ -109,9 +109,6 @@ configure([
             }
 
             repositories {
-                def ref = System.getenv("GITHUB_REF")
-                if (rootProject.version.toString().endsWith('-SNAPSHOT')
-                    || (ref != null && ref.startsWith("refs/tags/"))) {
                     maven {
                         name = 'OSSRH'
                         url = rootProject.version.toString().endsWith('-SNAPSHOT')
@@ -122,7 +119,6 @@ configure([
                             password = System.getenv("MAVEN_PASSWORD")
                         }
                     }
-                }
             }
         }
 
