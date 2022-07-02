@@ -2,7 +2,7 @@ package party.iroiro.luajava;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.util.ClassUtils;
+import party.iroiro.luajava.util.ClassUtils;
 
 import java.lang.reflect.*;
 import java.util.*;

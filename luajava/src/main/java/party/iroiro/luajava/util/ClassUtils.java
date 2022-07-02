@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.springframework.util;
+package party.iroiro.luajava.util;
 
 import org.jetbrains.annotations.Nullable;
 
