@@ -109,22 +109,18 @@ configure([
             }
 
             repositories {
-                maven {
-                    name = 'GitHub'
-                    url = 'https://maven.pkg.github.com/gudzpoz/luajava'
-                    credentials {
-                        username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
-                        password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
-                    }
-                }
-                maven {
-                    name = 'OSSRH'
-                    url = rootProject.version.toString().endsWith('-SNAPSHOT')
-                            ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-                            : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-                    credentials {
-                        username = System.getenv("MAVEN_USERNAME")
-                        password = System.getenv("MAVEN_PASSWORD")
+                def ref = System.getenv("GITHUB_REF")
+                if (rootProject.version.toString().endsWith('-SNAPSHOT')
+                    || (ref != null && ref.startsWith("refs/tags/"))) {
+                    maven {
+                        name = 'OSSRH'
+                        url = rootProject.version.toString().endsWith('-SNAPSHOT')
+                                ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                                : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                        credentials {
+                            username = System.getenv("MAVEN_USERNAME")
+                            password = System.getenv("MAVEN_PASSWORD")
+                        }
                     }
                 }
             }

@@ -16,7 +16,7 @@ subprojects {
 
             afterEvaluate {
                 classDirectories.setFrom(files(classDirectories.files.collect {
-                    fileTree(dir: it, exclude: '**/org/springframework/util/**')
+                    fileTree(dir: it, exclude: '**/party/iroiro/luajava/util/**')
                 }))
             }
         }

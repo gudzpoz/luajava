@@ -16,7 +16,8 @@ The library consists of two parts:
 So you will need both to get LuaJava to work correctly. Basically, using Maven Central:
 
 - The `groupId` is `party.iroiro.luajava`.
-- The Java interface has `artifactId` like `lua5N` (`lua51` `lua52` ...) or `luajit`.
+- The Java interface is `party.iroiro.luajava:luajava`.
+- The Lua specific bridging artifacts are `lua5N` (`lua51` `lua52` ...) or `luajit`.
 - The natives has `artifactId` like `lua5N-platform` (`lua51` `lua52` ...) or `luajit-platform`.
 
 However, there are different native artifacts for different platforms, each with a different `classifier`:
