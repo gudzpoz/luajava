@@ -1,5 +1,5 @@
 group 'party.iroiro.luajava'
-version '3.0.1'
+version '3.0.2-SNAPSHOT'
 
 repositories {
     mavenLocal()
@@ -35,6 +35,6 @@ task allJavadoc(type: Javadoc) {
     classpath = files(subprojects.findAll { it.name != 'example' }.collect {
         it.sourceSets.main.compileClasspath
     })
-    exclude '**/org/springframework/util/**'
+    exclude '**/party/iroiro/luajava/util/**'
     destinationDir = file("${buildDir}/docs/javadoc")
 }

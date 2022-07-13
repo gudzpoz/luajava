@@ -114,10 +114,12 @@ buildLuaTargets(
         addLuaJitTarget('Win32',
                 ['make', 'amalg',
                  'HOST_CC=gcc -m32 -I/usr/i686-linux-gnu/include', 'CFLAGS=-fPIC',
+                 'BUILDMODE=static',
                  'CROSS=i686-w64-mingw32-', 'TARGET_SYS=Windows']),
         addLuaJitTarget('Win64',
                 ['make', 'amalg',
                  'HOST_CC=gcc -m64', 'CFLAGS=-fPIC',
+                 'BUILDMODE=static',
                  'CROSS=x86_64-w64-mingw32-', 'TARGET_SYS=Windows']),
         addLuaJitTarget('MacOsX',
                 ['make', 'amalg', 'TARGET_FLAGS=-arch x86_64',
@@ -154,11 +156,9 @@ jnigen {
     })
     add(Windows, x32, false, {
         linkerConfig(it, 'win32')
-        it.linkerFlags = it.linkerFlags.replace(' -static ', ' ')
     })
     add(Windows, x64, false, {
         linkerConfig(it, 'win64')
-        it.linkerFlags = it.linkerFlags.replace(' -static ', ' ')
     })
     add(Linux, x32, ARM, {
         linkerConfig(it, 'arm')
