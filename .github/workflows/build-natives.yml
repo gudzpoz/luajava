@@ -132,7 +132,6 @@ jobs:
           ./gradlew jniGen
       - name: Test
         run: |
-          export export NDK_HOME=$ANDROID_NDK_HOME
           ./gradlew check
   pack-natives:
     environment: OSSRH
