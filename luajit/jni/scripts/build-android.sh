@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 # https://github.com/mjansson/lua_lib/blob/master/lua/luajit/build-android.sh
+# https://github.com/LuaJIT/LuaJIT/issues/440#issuecomment-438809840
 
 LUAJIT=.
 
@@ -24,12 +25,12 @@ make HOST_CC="gcc -m32 -I/usr/i686-linux-gnu/include" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
      CFLAGS=-fPIC TARGET_FLAGS="$NDKARCH" \
-     TARGET_SYS=Android clean
+     clean
 make HOST_CC="gcc -m32 -I/usr/i686-linux-gnu/include" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
      CFLAGS=-fPIC TARGET_FLAGS="$NDKARCH" \
-     TARGET_SYS=Android amalg
+     amalg
 mkdir -p $BUILD_DIR/armeabi-v7a
 mv $LUAJIT/src/libluajit.a $BUILD_DIR/armeabi-v7a/libluajit.a
 
@@ -42,12 +43,12 @@ make HOST_CC="gcc -m32 -I/usr/i686-linux-gnu/include" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
      CFLAGS=-fPIC TARGET_FLAGS="$NDKARCH" \
-     TARGET_SYS=Android clean
+     clean
 make HOST_CC="gcc -m32 -I/usr/i686-linux-gnu/include" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
      CFLAGS=-fPIC TARGET_FLAGS="$NDKARCH" \
-     TARGET_SYS=Android amalg
+     amalg
 mkdir $BUILD_DIR/x86
 mv $LUAJIT/src/libluajit.a $BUILD_DIR/x86/libluajit.a
 
@@ -62,12 +63,12 @@ make HOST_CC="gcc -m64" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
      CFLAGS=-fPIC TARGET_FLAGS="$NDKARCH" \
-     TARGET_SYS=Android clean
+     clean
 make HOST_CC="gcc -m64" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
      CFLAGS=-fPIC TARGET_FLAGS="$NDKARCH" \
-     TARGET_SYS=Android amalg
+     amalg
 mkdir -p $BUILD_DIR/arm64-v8a
 mv $LUAJIT/src/libluajit.a $BUILD_DIR/arm64-v8a/libluajit.a
 
@@ -80,11 +81,11 @@ make HOST_CC="gcc -m64" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
      CFLAGS=-fPIC TARGET_FLAGS="$NDKARCH" \
-     TARGET_SYS=Android clean
+     clean
 make HOST_CC="gcc -m64" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
      CFLAGS=-fPIC TARGET_FLAGS="$NDKARCH" \
-     TARGET_SYS=Android amalg
+     amalg
 mkdir -p $BUILD_DIR/x86_64
 mv $LUAJIT/src/libluajit.a $BUILD_DIR/x86_64/libluajit.a
