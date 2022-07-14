@@ -31,7 +31,6 @@ const platform = ref('Desktop')
 const natives = {
   Desktop: ['natives-desktop'],
   iOS: ['natives-ios'],
-  Android: ['natives-armeabi-v7a', 'natives-arm64-v8a', 'natives-x86', 'natives-x86_64'],
 }
 
 function tag(tag, content) {
@@ -40,13 +39,17 @@ function tag(tag, content) {
 
 const manager = ref('Gradle')
 const managers = {
-  Maven (groupId, artifactId, version, classifier) {
-    return tag('dependency', Object.entries({ groupId, artifactId, version, classifier })
+  Maven (groupId, artifactId, version, classifier, scope) {
+    const entries = (scope === null
+        ? { groupId, artifactId, version, classifier }
+        : { groupId, artifactId, version, classifier, scope }
+    )
+    return tag('dependency', Object.entries(entries)
                                    .filter(e => e[1]).map(e => `\n    ${tag(e[0], e[1])}`)
                                    .join('') + '\n')
   },
-  Gradle (groupId, artifactId, version, classifier) {
-    return `implementation <span class="token string">'${groupId}:${artifactId}:${version}${classifier ? ':' + classifier : ''}'</span>`
+  Gradle (groupId, artifactId, version, classifier, scope) {
+    return `${ scope === 'runtime' ? 'runtimeOnly' : 'implementation'} <span class="token string">'${groupId}:${artifactId}:${version}${classifier ? ':' + classifier : ''}'</span>`
   },
 }
 
@@ -62,7 +65,7 @@ function lines(lua, platform, line) {
     const native = natives[platform]
     return `${line(groupId, 'luajava', version, null)}
 ${line(groupId, lua, version, null)}
-${native.map(n => line(groupId, lua + '-platform', version, n)).join('\n')}`
+${native.map(n => line(groupId, lua + '-platform', version, n, 'runtime')).join('\n')}`
   }
 }
 </script>
