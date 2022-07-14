@@ -129,11 +129,11 @@ jobs:
           name: most-natives
       - name: JniGen
         run: |
-          gradlew.bat jniGen
+          ./gradlew jniGen
       - name: Test
         run: |
           export export NDK_HOME=$ANDROID_NDK_HOME
-          gradlew.bat check
+          ./gradlew check
   pack-natives:
     environment: OSSRH
     needs:
