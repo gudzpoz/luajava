@@ -7,7 +7,7 @@ assert(out ~= nil)
 assert(java.import('java.lang.NoAClass') == nil)
 
 lang = java.import('java.lang.*')
-print(type(lang) == 'table')
+assert(type(lang) == 'table')
 
 String = lang.String
 assert(String ~= nil)

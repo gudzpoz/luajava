@@ -102,11 +102,43 @@ jobs:
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
+  windows-testing:
+    runs-on: windows-latest
+    needs:
+      - most-natives
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Download most-natives artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: most-natives
+      - name: JniGen
+        run: |
+          ./gradlew jniGen
+      - name: Test
+        run: |
+          ./gradlew check
   pack-natives:
     environment: OSSRH
     needs:
       - apple-natives
       - most-natives
+      - windows-testing
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
