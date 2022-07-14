@@ -1,35 +1,28 @@
 package party.iroiro.luajava.printproxy;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.platform.commons.annotation.Testable;
-import party.iroiro.luajava.*;
+import party.iroiro.luajava.Consts;
+import party.iroiro.luajava.Lua;
+import party.iroiro.luajava.Lua51;
+import party.iroiro.luajava.ResourceLoader;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testable
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PrintProxyTest {
-    private final PrintStream originalOut = System.out;
-    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-
-    @BeforeAll
-    public void startCapture() {
-        outContent.reset();
-        System.setOut(new PrintStream(outContent));
-    }
-
     @Test
     public void testPrintProxy() throws IOException {
+        StringBuilder output = new StringBuilder();
+
         Lua L = new Lua51();
         L.register("print", l -> {
             System.out.println(l.toString(-1));
+            output.append(l.toString(-1)).append('\n');
             return 0;
         });
 
@@ -38,7 +31,8 @@ public class PrintProxyTest {
         L.pCall(0, Consts.LUA_MULTRET);
 
         System.out.println("PROXY TEST :");
-        Printable p = new ObjPrint();
+        output.append("PROXY TEST :").append('\n');
+        Printable p = new ObjPrint(output);
         p.print("TESTE 1");
 
         L.getGlobal("luaPrint");
@@ -48,16 +42,12 @@ public class PrintProxyTest {
         p.print("Teste 2");
 
         L.close();
-    }
 
-    @AfterAll
-    public void endCapture() {
-        System.setOut(originalOut);
         assertEquals(
                 "PROXY TEST :\n" +
                         "Printing from Java1...TESTE 1\n" +
                         "Printing from lua :Teste 2\n",
-                outContent.toString()
+                output.toString()
         );
     }
 }

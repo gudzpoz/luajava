@@ -1,8 +1,8 @@
 function run(this)
-    local o = java.import('java.lang.System')
-    o.out:println('test')
+    assert(stringbuilder ~= nil)
+    stringbuilder:append('test'):append('\n')
     local t = java.import('java.lang.Thread')
-    t:sleep(3)
+    t:sleep(1)
 end
 
 tb={run=run}
