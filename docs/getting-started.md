@@ -22,14 +22,16 @@ So you will need both to get LuaJava to work correctly. Basically, using Maven C
 
 However, there are different native artifacts for different platforms, each with a different `classifier`:
 
-- For desktop platforms, including Linux, Windows and macOS, on x64 or x32 or ARM(32/64), we provide an integrated artifact with classifier `natives-desktop`.
+- For desktop platforms, including Linux, Windows and macOS, on x64 or x32 or ARM(32/64), we provide an integrated
+  artifact with classifier `natives-desktop`.
 - For mobile devices:
-  - iOS: An artifact with classifier `natives-ios`.
-  - Android: Since there are different architectures for Android, you can choose from the following four according to your target devices. (I recommend you to just include all the four though.)
-    - Artifact with classifier `natives-armeabi-v7a`.
-    - Artifact with classifier `natives-arm64-v8a`.
-    - Artifact with classifier `natives-x86`.
-    - Artifact with classifier `natives-x86_64`.
+    - iOS: An artifact with classifier `natives-ios`.
+    - Android: Since there are different architectures for Android, you can choose from the following four according to
+      your target devices. (I recommend you to just include all the four though.)
+        - Artifact with classifier `natives-armeabi-v7a`.
+        - Artifact with classifier `natives-arm64-v8a`.
+        - Artifact with classifier `natives-x86`.
+        - Artifact with classifier `natives-x86_64`.
 
 ### Initializer
 
@@ -46,12 +48,32 @@ to get things work.
 
 ## Android
 
-Configuration for Android can be a little lengthy. Replacing `lua51` in the following code
-with `luajit` or other Lua versions to get corresponding libraries. 
+You can choose between the following two configurations. The former one uses a pre-bundled AAR archive while the latter
+might give a little more flexibility.
+
+### Using bundled AAR files
+
+The AAR archive bundles native binaries for `armeabi-v7a` `arm64-v8a` `x86` and `x86_64`.
+
+```groovy
+ext {
+    // You may replace `lua51` with `luajit` or other Lua versions
+    lua = 'luajit'
+    luaJavaVersion = '3.0.3'
+}
+
+dependencies {
+    // other dependencies
+    implementation "party.iroiro.luajava:${lua}:${luaJavaVersion}"
+    runtimeOnly "party.iroiro.luajava:android:${luaJavaVersion}:${lua}@aar"
+}
+```
+
+### Using a really lengthy configuration
 
 ```groovy
 android {
-    // your other configurations
+    // other configurations
     
     sourceSets {
         main {
@@ -61,6 +83,7 @@ android {
 }
 
 ext {
+    // You may replace `lua51` with `luajit` or other Lua versions
     lua = 'lua51'
     luajavaVersion = '3.0.2'
 }
@@ -68,7 +91,7 @@ ext {
 configurations { natives }
 
 dependencies {
-    // your other dependencies
+    // other dependencies
 
     implementation "party.iroiro.luajava:luajava:${luajavaVersion}"
     implementation "party.iroiro.luajava:${lua}:${luajavaVersion}"
