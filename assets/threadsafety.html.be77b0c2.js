@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-d32f09b8","path":"/threadsafety.html","title":"Thread Safety","lang":"en-US","frontmatter":{},"excerpt":"","headers":[],"git":{"updatedTime":1657875220000},"filePathRelative":"threadsafety.md"}');export{e as data};
