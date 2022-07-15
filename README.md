@@ -39,11 +39,11 @@ Documentation is available at [LuaJava](https://gudzpoz.github.io/luajava/) alon
 
 | Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 |   LuaJIT    |
 |:-------:|:-------:|:-------:|:-------:|:-----------:|
-|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.4  | [`4c2441c`] |
+|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.4  | [`50936d7`] |
 
 </div>
 
-[`4c2441c`]: https://github.com/LuaJIT/LuaJIT/commits/4c2441c16ce3c4e312aaefecc6d40c4fe21de97c
+[`4c2441c`]: https://github.com/LuaJIT/LuaJIT/commits/50936d784474747b4569d988767f1b5bab8bb6d0
 
 Supported Lua versions: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4 and LuaJIT.
 
@@ -57,9 +57,8 @@ To include LuaJava into your project, you need to include two artifacts, one for
 
 ```groovy
 // Example: LuaJIT with Desktop natives
-implementation 'party.iroiro.luajava:luajava:3.0.2'
 implementation 'party.iroiro.luajava:luajit:3.0.2'
-implementation 'party.iroiro.luajava:luajit-platform:3.0.2:natives-desktop'
+runtimeOnly 'party.iroiro.luajava:luajit-platform:3.0.2:natives-desktop'
 ```
 
 Different artifacts are provided for different Lua versions and different platforms. Check out [Getting Started](https://gudzpoz.github.io/luajava/getting-started.html) for an overview. Or you may also search in the [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava).

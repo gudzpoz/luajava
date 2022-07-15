@@ -44,11 +44,11 @@ I try to keep up with the most recent version of Lua, that is, [the latest offic
 
 | Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 |   LuaJIT    |
 |:-------:|:-------:|:-------:|:-------:|:-----------:|
-|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.4  | [`4c2441c`] |
+|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.4  | [`50936d7`] |
 
 </div>
 
-[`4c2441c`]: https://github.com/LuaJIT/LuaJIT/commits/4c2441c16ce3c4e312aaefecc6d40c4fe21de97c
+[`4c2441c`]: https://github.com/LuaJIT/LuaJIT/commits/50936d784474747b4569d988767f1b5bab8bb6d0
 
 [^jit]: LuaJIT no longer creates new releases. See [Project status · Issue #665](https://github.com/LuaJIT/LuaJIT/issues/665#issuecomment-784452583) for an explanation.
 
@@ -123,4 +123,4 @@ ul li {
 </tr>
 </table>
 
-[^android]: Android is available on many platforms and we provide natives for `armeabi-v7a` `arm64-v8a` `x86` `x86_64`.
+[^android]: Android is available on many platforms, and we provide natives for `armeabi-v7a` `arm64-v8a` `x86` `x86_64`.
