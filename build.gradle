@@ -1,18 +1,31 @@
 group 'party.iroiro.luajava'
 version '3.0.3-SNAPSHOT'
 
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.2.1'
+    }
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
 }
 
-subprojects {
-    apply plugin: 'java'
-    java {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-        withSourcesJar()
-        withJavadocJar()
+subprojects { it ->
+    if (it.name != 'android') {
+        apply plugin: 'java'
+        java {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 }
 
@@ -29,10 +42,10 @@ apply from: 'publish.gradle'
 apply from: 'jacoco.gradle'
 
 task allJavadoc(type: Javadoc) {
-    source subprojects.findAll { it.name != 'example' }.collect {
+    source subprojects.findAll {!['example', 'android'].contains(it.name) }.collect {
         it.sourceSets.main.allJava
     }
-    classpath = files(subprojects.findAll { it.name != 'example' }.collect {
+    classpath = files(subprojects.findAll {!['example', 'android'].contains(it.name) }.collect {
         it.sourceSets.main.compileClasspath
     })
     exclude '**/party/iroiro/luajava/util/**'

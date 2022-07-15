@@ -1,0 +1,140 @@
+plugins {
+    id 'com.android.library'
+}
+
+repositories {
+    mavenLocal()
+    google()
+    mavenCentral()
+}
+
+group = rootProject.group
+version = rootProject.version
+
+ext {
+    luaVersions = ['lua51', 'lua52', 'lua53', 'lua54', 'luajit']
+}
+
+android {
+    namespace = project(':').group
+
+    compileSdk 33
+    buildToolsVersion '33.0.0'
+
+    defaultConfig {
+        minSdk 16
+        targetSdk 21
+        versionCode 3
+        versionName "3.0"
+    }
+
+    sourceSets { container ->
+        luaVersions.forEach(ver -> container.create(ver) {
+            manifest.srcFile 'AndroidManifest.xml'
+            jniLibs.srcDirs = ["${ver}-libs"]
+        })
+    }
+
+    flavorDimensions 'lua'
+
+    productFlavors { container ->
+        luaVersions.forEach(ver -> container.create(ver) {
+            dimension 'lua'
+        })
+    }
+
+    buildTypes { container ->
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            matchingFallbacks = 'release'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    publishing {
+        multipleVariants {
+            allVariants()
+        }
+    }
+}
+
+task copyAndroidNatives {
+    doFirst {
+        List<String> platforms = ['armeabi-v7a', 'arm64-v8a', 'x86_64', 'x86']
+        luaVersions.forEach { ver ->
+            platforms.forEach { platform ->
+                String outputDir = "${ver}-libs/${platform}"
+                file(outputDir).mkdirs()
+
+                copy {
+                    from fileTree(project(":${ver}").projectDir.toPath().toAbsolutePath()
+                            .resolve("libs/${platform}"))
+                    into outputDir
+                    include "*.so"
+                }
+            }
+        }
+    }
+}
+
+tasks.whenTaskAdded { packageTask ->
+    if (packageTask.name.contains("merge") && packageTask.name.contains("JniLibFolders")) {
+        packageTask.dependsOn 'copyAndroidNatives'
+    }
+}
+
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+apply from: project(':').file('pom.gradle')
+
+afterEvaluate {
+    publishing {
+        publications {
+            'default'(MavenPublication) { container ->
+                setPom(pom, '')
+                luaVersions.forEach { ver ->
+                    container.artifact("${buildDir}/outputs/aar/android-${ver}-release.aar") {
+                        classifier ver
+                        extension 'aar'
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = 'OSSRH'
+                url = rootProject.version.toString().endsWith('-SNAPSHOT')
+                        ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                        : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                credentials {
+                    username = System.getenv("MAVEN_USERNAME")
+                    password = System.getenv("MAVEN_PASSWORD")
+                }
+            }
+        }
+    }
+
+    signing {
+        useInMemoryPgpKeys(
+                System.getenv("GPG_KEY_ID"),
+                System.getenv("GPG_SECKEY"),
+                System.getenv("GPG_PASSPHRASE"),
+        )
+        sign publishing.publications.default
+    }
+}
+
+tasks.whenTaskAdded { packageTask ->
+    if (packageTask.name.toLowerCase().contains("maven")) {
+        packageTask.dependsOn 'assemble'
+    }
+}

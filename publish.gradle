@@ -10,6 +10,7 @@ configure([
     apply plugin: 'signing'
 
     apply from: project(':').file('javadoc.gradle')
+    apply from: project(':').file('pom.gradle')
 
     java {
         withSourcesJar()
@@ -30,36 +31,8 @@ configure([
                             fromResolutionResult()
                         }
                     }
-                    pom {
-                        name = POM_NAME
-                        if (!POM_DESCRIPTION.isEmpty()) {
-                            description = POM_DESCRIPTION
-                        }
-                        url = POM_URL
 
-                        licenses {
-                            license {
-                                name = POM_LICENCE_NAME
-                                url = POM_LICENCE_URL
-                                distribution = POM_LICENCE_DIST
-                            }
-                        }
-
-                        developers {
-                            developer {
-                                id = POM_DEV_ID
-                                url = POM_DEV_URL
-                                name = POM_DEV_ID
-                                email = POM_DEV_EMAIL
-                            }
-                        }
-
-                        scm {
-                            connection = POM_SCM_CONNECTION
-                            developerConnection = POM_SCM_DEV_CONNECTION
-                            url = POM_SCM_URL
-                        }
-                    }
+                    setPom(pom, '')
                 }
 
                 if (project.tasks.findByName('jnigen')) {
@@ -77,33 +50,7 @@ configure([
                                 artifact "jnigenJarNativesAndroid$arch" {}
                             }
                         }
-                        pom {
-                            name = POM_NAME + ' Native Libraries'
-                            if (!POM_DESCRIPTION.isEmpty()) {
-                                description = POM_DESCRIPTION
-                            }
-                            url = POM_URL
-                            licenses {
-                                license {
-                                    name = POM_LICENCE_NAME
-                                    url = POM_LICENCE_URL
-                                    distribution = POM_LICENCE_DIST
-                                }
-                            }
-                            developers {
-                                developer {
-                                    id = POM_DEV_ID
-                                    url = POM_DEV_URL
-                                    name = POM_DEV_ID
-                                    email = POM_DEV_EMAIL
-                                }
-                            }
-                            scm {
-                                connection = POM_SCM_CONNECTION
-                                developerConnection = POM_SCM_DEV_CONNECTION
-                                url = POM_SCM_URL
-                            }
-                        }
+                        setPom(pom, ' Native Libraries')
                     }
                 }
             }
