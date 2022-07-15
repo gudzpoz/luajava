@@ -18,7 +18,8 @@ ext {
 android {
     namespace = project(':').group
 
-    compileSdk 21
+    compileSdk 33
+    buildToolsVersion '33.0.0'
 
     defaultConfig {
         minSdk 16
@@ -107,6 +108,28 @@ afterEvaluate {
                 }
             }
         }
+
+        repositories {
+            maven {
+                name = 'OSSRH'
+                url = rootProject.version.toString().endsWith('-SNAPSHOT')
+                        ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                        : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                credentials {
+                    username = System.getenv("MAVEN_USERNAME")
+                    password = System.getenv("MAVEN_PASSWORD")
+                }
+            }
+        }
+    }
+
+    signing {
+        useInMemoryPgpKeys(
+                System.getenv("GPG_KEY_ID"),
+                System.getenv("GPG_SECKEY"),
+                System.getenv("GPG_PASSPHRASE"),
+        )
+        sign publishing.publications.default
     }
 }
 
