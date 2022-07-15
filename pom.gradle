@@ -1,0 +1,36 @@
+import org.gradle.api.publish.maven.internal.publication.DefaultMavenPom
+
+def setPom(DefaultMavenPom pom, String extra) {
+    pom.name.set(POM_NAME + extra)
+    if (!POM_DESCRIPTION.isEmpty()) {
+        pom.description.set(POM_DESCRIPTION)
+    }
+    pom.url.set(POM_URL)
+
+    pom.licenses {
+        license {
+            name = POM_LICENCE_NAME
+            url = POM_LICENCE_URL
+            distribution = POM_LICENCE_DIST
+        }
+    }
+
+    pom.developers {
+        developer {
+            id = POM_DEV_ID
+            url = POM_DEV_URL
+            name = POM_DEV_ID
+            email = POM_DEV_EMAIL
+        }
+    }
+
+    pom.scm {
+        connection = POM_SCM_CONNECTION
+        developerConnection = POM_SCM_DEV_CONNECTION
+        url = POM_SCM_URL
+    }
+}
+
+ext {
+    setPom = this.&setPom
+}
