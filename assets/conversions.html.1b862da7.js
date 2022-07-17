@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-63fde456","path":"/conversions.html","title":"Type Conversions","lang":"en-US","frontmatter":{},"excerpt":"","headers":[{"level":2,"title":"Java to Lua","slug":"java-to-lua","children":[]},{"level":2,"title":"Lua to Java","slug":"lua-to-java","children":[]}],"git":{"updatedTime":1658063163000},"filePathRelative":"conversions.md"}');export{e as data};
