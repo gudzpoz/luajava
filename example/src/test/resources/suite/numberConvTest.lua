@@ -65,3 +65,10 @@ assert(numbers.i == 33)
 
 numbers.big = 4096
 assert(numbers.big:intValue() == 1024)
+
+Integer = java.import('java.lang.Integer')
+Double = java.import('java.lang.Double')
+-- new Integer(1024).equals(new Double(1024))
+assert(not Integer(1024):equals(1024))
+-- new Double(1024).equals(new Double(1024))
+assert(Double(1024):equals(1024))

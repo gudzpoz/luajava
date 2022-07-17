@@ -115,7 +115,7 @@ int initBindings(JNIEnv * env) {
 
   juaapi_class = bindJavaClass(env, "party/iroiro/luajava/JuaAPI");
   juaapi_classnew = bindJavaStaticMethod(env, juaapi_class,
-          "classNew", "(ILjava/lang/Class;I)I");
+          "classNew", "(ILjava/lang/Object;I)I");
   juaapi_classindex = bindJavaStaticMethod(env, juaapi_class,
           "classIndex", "(ILjava/lang/Class;Ljava/lang/String;)I");
   juaapi_classinvoke = bindJavaStaticMethod(env, juaapi_class,

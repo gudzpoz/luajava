@@ -72,6 +72,7 @@ public class LuaScriptSuite<T extends Lua> {
                 L.openLibrary("package");
                 L.setExternalLoader(new ClassPathLoader());
             }),
+            new ScriptTester("/suite/apiTest.lua", L -> {}),
     };
 
     public void test() {

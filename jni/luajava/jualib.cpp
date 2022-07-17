@@ -32,8 +32,13 @@ static int javaMethod(lua_State * L) {
 }
 
 static int javaNew(lua_State * L) {
-  luaL_checkudata(L, 1, JAVA_CLASS_META_REGISTRY);
-  return jclassCall(L);
+  if (luaL_testudata(L, 1, JAVA_CLASS_META_REGISTRY) != NULL
+    || luaL_testudata(L, 1, JAVA_OBJECT_META_REGISTRY) != NULL) {
+    return jclassCall(L);
+  } else {
+    return luaL_error(L, "bad argument #1 to 'java.new': %s or %s expected",
+      JAVA_CLASS_META_REGISTRY, JAVA_OBJECT_META_REGISTRY);
+  }
 }
 
 static int javaLuaify(lua_State * L) {

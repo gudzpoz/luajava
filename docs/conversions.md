@@ -62,6 +62,10 @@ When calling Java methods from Lua, we `SEMI`-convert the return value. Currentl
 1. ***nil*** is converted to `null`.
 2. ***boolean*** converted to `boolean` or the boxed `Boolean`.
 3. ***integer*** / ***number*** to any of `char` `byte` `short` `int` `long` `float` `double` or their boxed alternative.
+
+  Trying to convert a number into an `Object` will always yield a boxed `Double`.
+  So pay attention when you use `Object::equals` for example.
+
 4. ***string*** to `String`.
 5. ***table*** to `Map<Object, Object>`, converted recursively.
 6. ***jclass*** to `Class<?>`.

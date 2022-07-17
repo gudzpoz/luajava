@@ -31,20 +31,34 @@ public abstract class JuaAPI {
         int interfaces = L.getTop() - 1;
         LinkedList<Class<?>> classes = new LinkedList<>();
         for (int i = 1; i <= interfaces; i++) {
-            try {
-                Class<?> c = ClassUtils.forName(L.toString(i), null);
-                if (c.isInterface()) {
-                    classes.add(c);
-                } else {
-                    return 0;
-                }
-            } catch (ClassNotFoundException e) {
+            Class<?> c = looseGetClass(L, i);
+            if (c != null && c.isInterface()) {
+                classes.add(c);
+            } else {
                 return 0;
             }
         }
         Object o = L.createProxy(classes.toArray(new Class[0]), Lua.Conversion.SEMI);
         L.push(o, Lua.Conversion.NONE);
         return 1;
+    }
+
+    private static @Nullable Class<?> looseGetClass(Lua L, int i) {
+        if (L.isUserdata(i)) {
+            Object o = L.toJavaObject(i);
+            return o instanceof Class ? ((Class<?>) o) : null;
+        } else {
+            String name = L.toString(i);
+            if (name != null) {
+                try {
+                    return ClassUtils.forName(name, null);
+                } catch (ClassNotFoundException e) {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
     }
 
     public static int javaImport(int id, String className) {
@@ -174,7 +188,13 @@ public abstract class JuaAPI {
         return fieldNewIndex(index, obj.getClass(), obj, name);
     }
 
-    public static int classNew(int index, Class<?> clazz, int paramCount) {
+    public static int classNew(int index, Object oClazz, int paramCount) {
+        Class<?> clazz;
+        if (oClazz instanceof Class) {
+            clazz = ((Class<?>) oClazz);
+        } else {
+            return 0;
+        }
         Lua L = Jua.get(index);
         Object[] objects = new Object[paramCount];
         Constructor<?> constructor = matchMethod(L, clazz.getConstructors(), null, objects);
@@ -399,6 +419,8 @@ public abstract class JuaAPI {
                 return (char) L.toNumber(index);
             } else if (Boolean.class == clazz) {
                 return L.toNumber(index) != 0;
+            } else if (clazz == Object.class) {
+                return L.toNumber(index);
             }
         } else if (type == Lua.LuaType.USERDATA) {
             Object object = L.toJavaObject(index);
