@@ -34,3 +34,8 @@ assert(java.method(integer, 'toString', '')() == '400')
 I = java.import('java.lang.Integer')
 assert(I:parseInt('1024') == 1024)
 assert(java.method(I, 'parseInt', 'java.lang.String')('1024') == 1024)
+
+assert(java.method(I, 'new', 'int')(1024):equals(I(1024)))
+assert(java.method(I, 'new', 'int')({}) == nil)
+assert(java.method(I, 'new', 'double')(1024) == nil)
+assert(java.method(I(1024), 'new', 'int')(1024) == nil)

@@ -199,15 +199,19 @@ public abstract class JuaAPI {
         Object[] objects = new Object[paramCount];
         Constructor<?> constructor = matchMethod(L, clazz.getConstructors(), null, objects);
         if (constructor != null) {
-            try {
-                Object obj = constructor.newInstance(objects);
-                L.pushJavaObject(obj);
-                return 1;
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                return 0;
-            }
+            return construct(L, objects, constructor);
         }
         return 0;
+    }
+
+    private static int construct(Lua L, Object[] objects, Constructor<?> constructor) {
+        try {
+            Object obj = constructor.newInstance(objects);
+            L.pushJavaObject(obj);
+            return 1;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            return 0;
+        }
     }
 
     public static int classIndex(int index, Class<?> clazz, String name) {
@@ -291,6 +295,18 @@ public abstract class JuaAPI {
     public static int methodInvoke(int index, Class<?> clazz, Object obj, String name,
                                    String notSignature, int paramCount) {
         Lua L = Jua.get(index);
+        if ("new".equals(name)) {
+            if (obj == null) {
+                Constructor<?> constructor = matchMethod(clazz, notSignature);
+                if (constructor != null) {
+                    Object[] objects = new Object[paramCount];
+                    if (matchMethod(L, new Constructor[]{constructor}, null, objects) != null) {
+                        return construct(L, objects, constructor);
+                    }
+                }
+            }
+            return 0;
+        }
         Method method = matchMethod(clazz, name, notSignature);
         if (method != null) {
             Object[] objects = new Object[paramCount];
@@ -375,6 +391,16 @@ public abstract class JuaAPI {
             }
         }
         return null;
+    }
+
+    @Nullable
+    private static Constructor<?> matchMethod(Class<?> clazz, String notSignature) {
+        Class<?>[] classes = getClasses(notSignature);
+        try {
+            return clazz.getConstructor(classes);
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
     }
 
     @Nullable

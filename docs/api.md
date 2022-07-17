@@ -174,7 +174,7 @@ Finds a method of the `jobject` or `jclass` matching the name and signature. See
 
     - `jobject`: (***jobject*** | ***jclass***) The object.
 
-    - `method`: (***string***) The method name.
+    - `method`: (***string***) The method name. Use `new` to refer to the constructor.
 
     - `signature`: (optional) (***string***) Comma separated argument type list. If not supplied, treated as an empty one.
 
@@ -184,7 +184,8 @@ Finds a method of the `jobject` or `jclass` matching the name and signature. See
 
 ```lua {3-5}
 AtomicInteger = java.import('java.util.concurrent.atomic.AtomicInteger')
-integer = AtomicInteger(100)
+Constructor = java.method(AtomicInteger, 'new', 'int')
+integer = Constructor(100)
 compareAndSet = java.method(integer, 'compareAndSet', 'int,int')
 compareAndSet(100, 200)
 compareAndSet(200, 400)
