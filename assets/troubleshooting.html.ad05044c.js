@@ -1,4 +1,4 @@
-import{_ as e,o as t,c as a,d as o}from"./app.bee8cd97.js";const r={},i=o(`<h1 id="troubleshooting" tabindex="-1"><a class="header-anchor" href="#troubleshooting" aria-hidden="true">#</a> Troubleshooting</h1><h2 id="jvm-crashed" tabindex="-1"><a class="header-anchor" href="#jvm-crashed" aria-hidden="true">#</a> JVM Crashed</h2><p>The crash is often followed by the following error message:</p><div class="language-text ext-text"><pre class="language-text"><code>#
+import{_ as e,o as t,c as a,d as o}from"./app.9e9976ce.js";const r={},i=o(`<h1 id="troubleshooting" tabindex="-1"><a class="header-anchor" href="#troubleshooting" aria-hidden="true">#</a> Troubleshooting</h1><h2 id="jvm-crashed" tabindex="-1"><a class="header-anchor" href="#jvm-crashed" aria-hidden="true">#</a> JVM Crashed</h2><p>The crash is often followed by the following error message:</p><div class="language-text ext-text"><pre class="language-text"><code>#
 # A fatal error has been detected by the Java Runtime Environment:
 #
 #  SIGSEGV (0xb) at pc=0x0000...
