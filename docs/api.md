@@ -255,6 +255,18 @@ By the nature of this procedure, we do not prioritize any of the method.
 For example, if you are calling `java.lang.Math.max`, which can be `Math.max(int, int)`, `Math.max(double, double)`, etc., then nobody knows which will ever get called.
 :::
 
+::: warning
+We do not support varargs. You will need to combine `java.method` and `java.array` to make that happen.
+
+For `Object... object` however, things are easier:
+
+```lua
+String = java.import('java.lang.String')
+-- We automatically convert lua tables into Object[]
+assert(String:format('>>> %s', { 'content' }) == '>>> content')
+```
+:::
+
 #### With `java.method`
 
 To help with precisely calling a specific method, we provide [`java.method`](#method-jobject-method-signature-function), to which you may specify the signature of the method that you intend to call.

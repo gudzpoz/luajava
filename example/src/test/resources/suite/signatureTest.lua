@@ -39,3 +39,14 @@ assert(java.method(I, 'new', 'int')(1024):equals(I(1024)))
 assert(java.method(I, 'new', 'int')({}) == nil)
 assert(java.method(I, 'new', 'double')(1024) == nil)
 assert(java.method(I(1024), 'new', 'int')(1024) == nil)
+
+-- Varargs
+function assertThrows(fun)
+  ok, _ = pcall(fun)
+  assert(not ok)
+end
+assertThrows(function() String:format() end)
+format = java.method(String, 'format', 'java.lang.String,java.lang.Object[]')
+assert(format('%s', { 'content' }) == 'content')
+assert(String:format('>>> %s', { 'content' }) == '>>> content')
+

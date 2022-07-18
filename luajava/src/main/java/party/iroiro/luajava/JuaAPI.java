@@ -536,6 +536,26 @@ public abstract class JuaAPI {
         }
     }
 
+    @SuppressWarnings("unused") // Until we finally support varargs
+    private static Object[] transformVarArgs(Executable executable, Object[] objects) {
+        if (executable.isVarArgs()) {
+            int count = executable.getParameterCount();
+            Object[] transformed = new Object[count];
+            
+            Class<?>[] types = executable.getParameterTypes();
+            Class<?> component = types[types.length - 1].getComponentType();
+            // TODO: Handle primitive types
+            Object[] args = (Object[]) Array.newInstance(component, objects.length - count + 1);
+            
+            System.arraycopy(objects, 0, transformed, 0, count - 1);
+            System.arraycopy(objects, count - 1, args, 0, args.length);
+            transformed[count - 1] = args;
+            return transformed;
+        } else {
+            return objects;
+        }
+    }
+
     /**
      * Tries to fetch field from an object
      * <p>
