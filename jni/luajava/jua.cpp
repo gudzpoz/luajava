@@ -24,6 +24,7 @@ jmethodID juaapi_objectindex    = NULL;
 jmethodID juaapi_objectinvoke   = NULL;
 jmethodID juaapi_objsiginvoke   = NULL;
 jmethodID juaapi_objectnewindex = NULL;
+jmethodID juaapi_arraynew       = NULL;
 jmethodID juaapi_arraylen       = NULL;
 jmethodID juaapi_arrayindex     = NULL;
 jmethodID juaapi_arraynewindex  = NULL;
@@ -132,6 +133,8 @@ int initBindings(JNIEnv * env) {
           "objectInvoke", "(ILjava/lang/Object;Ljava/lang/String;Ljava/lang/String;I)I");
   juaapi_objectnewindex = bindJavaStaticMethod(env, juaapi_class,
           "objectNewIndex", "(ILjava/lang/Object;Ljava/lang/String;)I");
+  juaapi_arraynew = bindJavaStaticMethod(env, juaapi_class,
+          "arrayNew", "(ILjava/lang/Object;I)I");
   juaapi_arraylen = bindJavaStaticMethod(env, juaapi_class,
           "arrayLength", "(Ljava/lang/Object;)I");
   juaapi_arrayindex = bindJavaStaticMethod(env, juaapi_class,
@@ -163,6 +166,7 @@ int initBindings(JNIEnv * env) {
       || juaapi_objectinvoke == NULL
       || juaapi_objsiginvoke == NULL
       || juaapi_objectnewindex == NULL
+      || juaapi_arraynew == NULL
       || juaapi_arraylen == NULL
       || juaapi_arrayindex == NULL
       || juaapi_arraynewindex == NULL

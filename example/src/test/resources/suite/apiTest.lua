@@ -7,7 +7,7 @@ end
  Module `java`
   ]]--
 assert(java ~= nil)
-methods = { 'import', 'new', 'proxy', 'luaify', 'method' }
+methods = { 'import', 'new', 'proxy', 'luaify', 'method', 'array' }
 for i = 1, #methods do
     assert(type(java[methods[i]]) == 'function')
 end
@@ -64,4 +64,23 @@ assert(java.proxy('', run) == nil)
 assert(java.proxy('', {}) == nil)
 assert(java.proxy({}, {}) == nil)
 
-
+--[[
+  java.array
+  ]]--
+assert(java.array() == nil)
+assert(java.array(1) == nil)
+assert(java.array(1, 2) == nil)
+assert(java.array(Integer(1), 2) == nil)
+assert(java.array(Integer) == nil)
+assert(java.array(java.import('java.lang.Void').TYPE, 1, 1, 1) == nil)
+i = java.import('int')
+array = java.array(i, 2)
+assert(#array == 2)
+array = java.array(i.class, 2)
+assert(#array == 2)
+array = java.array(i, 2, 2)
+assert(#array == 2)
+assert(#array[1] == 2)
+assert(#array[2] == 2)
+assert(java.array(i, 2, 3, {}, 4) == nil)
+assert(java.array(i, 2, 3, -4) == nil)

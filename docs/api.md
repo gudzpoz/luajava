@@ -66,11 +66,12 @@ Lua tables usually start the index from 1, while Java arrays from 0.
 
 | Functions    | Signature                   | Returns           | Description                                            |
 |--------------|-----------------------------|-------------------|--------------------------------------------------------|
-| **`import`** | `(string)`                  | `jclass \| table` | Import a Java class or package                         |
+| **`import`** | `(string)`                  | `jclass \         | table`                                                 | Import a Java class or package                         |
 | **`new`**    | `(jclass, ...)`             | `jobject`         | Call the constructor of the given Java type            |
 | **`proxy`**  | `(string, ..., table)`      | `jobject`         | Create an object with all calls proxied to a Lua table |
 | **`luaify`** | `(jobject)`                 | `any`             | Convert an object to Lua types if possible             |
 | **`method`** | `(jobject, string, string)` | `function`        | Find a method                                          |
+| **`array`**  | `(jclass, dim1, ...)`       | `jarray`          | Create an array with specified dimensions              |
 
 ### `import (name)` <Badge>function</Badge>
 
@@ -192,11 +193,38 @@ compareAndSet(200, 400)
 assert(integer:get() == 400)
 ```
 
+### `array (jclass, dim1, ...)` <Badge>function</Badge>
+
+Creates a Java array.
+
+- **Parameters:**
+
+  - `jclass`: (***jclass*** | ***jobject***) The component type. One may pass a `jclass` or a `jobject` of `Class<?>`. 
+
+  - `dim1`: (***number***) The size of the first dimension.
+
+  - `dim2`: (optional) (***number***) The size of the second dimension.
+
+  - `dimN`: (optional) (***number***) The size of the N-th dimension.
+
+- **Returns:**
+
+  - (***jarray***) `new "jclass"[dim1][dim2]...[dimN]`
+
+  - (***nil***) If types mismatch or some dimensions are negative.
+
+```lua
+int = java.import('int')
+arr = java.array(int, 2, 16)
+assert(#arr == 2)
+assert(#arr[1] == 16)
+```
+
 ## Proxied Method Calls
 
-Java allows method overloading, which means we cannot know which method you are calling until you supply us the parameters. Method finding and parameter supplying is integrated in Java.
+Java allows method overloading, which means we cannot know which method you are calling until you supply the parameters. Method finding and parameter supplying is integrated in Java.
 
-However, for calls in Lua, the two step can get separated:
+However, for calls in Lua, the two steps can get separated:
 
 ```lua
 obj:method(param1)
@@ -207,7 +235,7 @@ m(obj, param1)
 
 To proxy calls to Java, we treat all missing fields, such as `obj.method`, `obj.notAField`, `obj.whatever` as a possible method call. The real resolution starts only after you supply the parameters.
 
-The side-effect of this is that a missing field is never `nil` but always a possible `function` call, so don't depend on this.
+The side effect of this is that a missing field is never `nil` but always a possible `function` call, so don't depend on this.
 
 ```lua
 assert(type(jobject.notAField) == 'function')

@@ -70,11 +70,31 @@ static int javaProxy(lua_State * L) {
   return env->CallStaticIntMethod(juaapi_class, juaapi_proxy, (jint) stateIndex);
 }
 
+static int javaArray(lua_State * L) {
+  if (luaL_testudata(L, 1, JAVA_CLASS_META_REGISTRY) != NULL
+    || luaL_testudata(L, 1, JAVA_OBJECT_META_REGISTRY) != NULL) {
+    JNIEnv * env = getJNIEnv(L);
+    int stateIndex = getStateIndex(L);
+    int top = lua_gettop(L);
+    jobject * data = (jobject *) lua_touserdata(L, 1);
+    if (top == 2) {
+      return env->CallStaticIntMethod(juaapi_class, juaapi_arraynew,
+        (jint) stateIndex, *data, (jint) lua_tointeger(L, 2));
+    }
+    if (top > 2) {
+      return env->CallStaticIntMethod(juaapi_class, juaapi_arraynew,
+        (jint) stateIndex, *data, (jint) (1 - top));
+    }
+  }
+  return 0;
+}
+
 const luaL_Reg javalib[] = {
   { "method",    javaMethod },
   { "new",       javaNew },
   { "luaify",    javaLuaify },
   { "import",    javaImport },
   { "proxy",     javaProxy },
+  { "array",     javaArray },
   {NULL, NULL}
 };

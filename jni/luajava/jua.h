@@ -20,6 +20,7 @@ extern jmethodID juaapi_objectindex;
 extern jmethodID juaapi_objectinvoke;
 extern jmethodID juaapi_objsiginvoke;
 extern jmethodID juaapi_objectnewindex;
+extern jmethodID juaapi_arraynew;
 extern jmethodID juaapi_arraylen;
 extern jmethodID juaapi_arrayindex;
 extern jmethodID juaapi_arraynewindex;

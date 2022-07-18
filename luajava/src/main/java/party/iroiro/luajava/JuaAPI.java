@@ -354,6 +354,48 @@ public abstract class JuaAPI {
     }
 
     /**
+     * Pushes a created array onto the stack
+     *
+     * <p>
+     * Use negative <code>size</code> to indicate that we should create a multi-dimensional array,
+     * with the dimensions read from the stack.
+     * </p>
+     *
+     * @param index  the lua state index
+     * @param oClass the class
+     * @param size   the array size
+     * @return the number of values pushed onto the stack
+     */
+    @SuppressWarnings("unused")
+    public static int arrayNew(int index, Object oClass, int size) {
+        Class<?> clazz;
+        if (oClass instanceof Class && oClass != Void.TYPE) {
+            clazz = ((Class<?>) oClass);
+        } else {
+            return 0;
+        }
+        Lua L = Jua.get(index);
+        if (size >= 0) {
+            L.pushJavaArray(Array.newInstance(clazz, size));
+        } else {
+            int depth = -size;
+            int[] sizes = new int[depth];
+            for (int i = size; i <= -1; i++) {
+                if (!L.isNumber(i)) {
+                    return 0;
+                }
+                int current = (int) L.toNumber(i);
+                if (current < 0) {
+                    return 0;
+                }
+                sizes[i - size] = current;
+            }
+            L.pushJavaArray(Array.newInstance(clazz, sizes));
+        }
+        return 1;
+    }
+
+    /**
      * Gets an element of an array
      *
      * @param index the lua state index
