@@ -228,7 +228,7 @@ public interface Lua extends AutoCloseable {
      * Get the element at the specified stack position, converted to {@link List}
      *
      * <p>
-     * The element may be a Lua table or a Java {@link Map}, or else, it returns null.
+     * The element may be a Lua table or a Java {@link List}, or else, it returns null.
      * </p>
      *
      * @param index the stack position of the element

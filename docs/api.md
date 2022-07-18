@@ -59,7 +59,7 @@ For a `jarray` `array`:
 - `array[i] = value` assigns to `array[i - 1]`.
 
 ::: tip
-Lua tables usually starts the index from 1, while Java array from 0.
+Lua tables usually start the index from 1, while Java arrays from 0.
 :::
 
 ## `java` <Badge>module</Badge>
