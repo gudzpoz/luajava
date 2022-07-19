@@ -14,6 +14,14 @@ public class LuaScriptSuite<T extends Lua> {
 
     public LuaScriptSuite(T L) {
         this.L = L;
+        L.openLibrary("string");
+        L.openLibrary("debug");
+        assertEquals(OK, L.run("function assertThrows(message, fun, ...)\n" +
+                               "  ok, msg = pcall(fun, ...)\n" +
+                               "  assert(not ok, debug.traceback('No error while expecting \"' .. message .. '\"'))\n" +
+                               "  assert(type(msg) == 'string', debug.traceback('Expecting error message on top of the stack'))\n" +
+                               "  assert(string.find(msg, message) ~= nil, debug.traceback('Expecting \"' .. message .. '\": Received \"' .. msg .. '\"'))\n" +
+                               "end"), L.toString(-1));
     }
 
     public static final ScriptTester[] TESTERS = {
@@ -78,12 +86,12 @@ public class LuaScriptSuite<T extends Lua> {
     public void test() {
         L.openLibrary("coroutine");
         for (ScriptTester tester : TESTERS) {
-            assertDoesNotThrow(() -> tester.test(L));
+            assertDoesNotThrow(() -> tester.test(L), tester.file);
         }
     }
 
     public static class ScriptTester {
-        private final String file;
+        public final String file;
         private final Consumer<Lua> init;
 
         public ScriptTester(String file, Consumer<Lua> init) {

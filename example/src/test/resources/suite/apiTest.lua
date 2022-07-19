@@ -1,8 +1,3 @@
-function assertThrows(fun)
-    local success, _ = pcall(fun, {})
-    assert(not success)
-end
-
 --[[
  Module `java`
   ]]--
@@ -27,9 +22,9 @@ assert(type(lang.String) == 'userdata')
 assert(type(lang.Integer) == 'userdata')
 assert(Integer(1024):equals(lang.Integer(1024)) == true)
 -- Throws: Type: not string
-assertThrows(function() java.import() end)
-assertThrows(function() java.import(nil) end)
-assertThrows(function() java.import({}) end)
+assertThrows('', java.import)
+assertThrows('', java.import, nil)
+assertThrows('', java.import, {})
 -- Nil: Type: convertible to string
 assert(java.import(100) == nil)
 
@@ -38,10 +33,10 @@ assert(java.import(100) == nil)
   ]]--
 assert(type(java.new(Integer, 10)) == 'userdata')
 -- Throws: Type: Not jobject nor jclass
-assertThrows(function() java.new(nil) end)
-assertThrows(function() java.new('java.lang.String') end)
-assertThrows(function() java.new({}) end)
-assertThrows(function() java.new(100) end)
+assertThrows('', java.new, nil)
+assertThrows('', java.new, 'java.lang.String')
+assertThrows('', java.new, {})
+assertThrows('', java.new, 100)
 -- Nil: Type: jobject, but is not Class<?>
 assert(java.new(Integer(1024)) == nil)
 assert(java.new(Integer(1024):getClass(), 1024):equals(Integer(1024)))
@@ -67,11 +62,11 @@ assert(java.proxy({}, {}) == nil)
 --[[
   java.array
   ]]--
-assert(java.array() == nil)
-assert(java.array(1) == nil)
-assert(java.array(1, 2) == nil)
+assertThrows('', java.array)
+assertThrows('', java.array, 1)
+assertThrows('', java.array, 1, 2)
 assert(java.array(Integer(1), 2) == nil)
-assert(java.array(Integer) == nil)
+assertThrows('', java.array, Integer)
 assert(java.array(java.import('java.lang.Void').TYPE, 1, 1, 1) == nil)
 i = java.import('int')
 array = java.array(i, 2)

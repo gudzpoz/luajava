@@ -40,9 +40,9 @@ public class JuaApiLuaTest {
 
             adoptTest(L);
 
-            assertError(L, "t:nonexistentMethod()", "No matching method found");
-            assertError(L, "t:privateMethod()", "No matching method found");
-            assertError(L, "t:staticMethod({a = 1})", "No matching method found");
+            assertError(L, "t:nonexistentMethod()", "no matching method found");
+            assertError(L, "t:privateMethod()", "no matching method found");
+            assertError(L, "t:staticMethod({a = 1})", "no matching method found");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

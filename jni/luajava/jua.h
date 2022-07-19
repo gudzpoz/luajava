@@ -50,4 +50,12 @@ int luaJ_isobject(lua_State * L, int index);
 
 int luaJ_insertloader(lua_State * L, const char * searchers);
 
+inline int checkOrError (lua_State * L, jint ret) {
+  if (ret >= 0) {
+    return (int) ret;
+  } else {
+    return lua_error(L);
+  }
+}
+
 #endif /* JUA_H! */

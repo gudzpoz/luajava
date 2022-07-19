@@ -466,6 +466,7 @@ public abstract class JuaAPI {
         Object[] objects = new Object[paramCount];
         Method method = matchMethod(L, clazz.getMethods(), name, objects);
         if (method == null) {
+            L.push("no matching method found");
             return -1;
         } else {
             return methodInvoke(L, method, obj, objects);
