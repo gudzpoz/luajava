@@ -2,6 +2,9 @@ package party.iroiro.luajava;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import party.iroiro.luajava.value.ImmutableLuaValue;
+import party.iroiro.luajava.value.LuaValue;
+import party.iroiro.luajava.value.RefLuaValue;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Proxy;
@@ -65,6 +68,15 @@ public abstract class AbstractLua implements Lua {
         checkStack(1);
         if (object == null) {
             pushNil();
+        } else if (object instanceof LuaValue) {
+            LuaValue value = (LuaValue) object;
+            if (value.state() == this) {
+                value.push();
+            } else if (value.state().getMainState() == mainThread) {
+                value.push(this);
+            } else {
+                pushJavaObject(value);
+            }
         } else if (degree == Lua.Conversion.NONE) {
             pushJavaObjectOrArray(object);
         } else {
@@ -754,4 +766,65 @@ public abstract class AbstractLua implements Lua {
     public abstract LuaError convertError(int code);
 
     public abstract LuaType convertType(int code);
+
+    @Override
+    public LuaValue get(String globalName) {
+        getGlobal(globalName);
+        return get();
+    }
+
+    @Override
+    public @Nullable LuaValue[] execute(String command) {
+        if (load(command) == LuaError.OK) {
+            try (LuaValue function = get()) {
+                return function.call();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public LuaValue get() {
+        LuaType type = type(-1);
+        switch (Objects.requireNonNull(type)) {
+            case NIL:
+            case NONE:
+                pop(1);
+                return fromNull();
+            case BOOLEAN:
+                boolean b = toBoolean(-1);
+                pop(1);
+                return from(b);
+            case NUMBER:
+                double n = toNumber(-1);
+                pop(1);
+                return from(n);
+            case STRING:
+                String s = toString(-1);
+                pop(1);
+                return from(s);
+            default:
+                return new RefLuaValue(this, type);
+        }
+    }
+
+    @Override
+    public LuaValue fromNull() {
+        return ImmutableLuaValue.NIL(this);
+    }
+
+    @Override
+    public LuaValue from(boolean b) {
+        return b ? ImmutableLuaValue.TRUE(this) : ImmutableLuaValue.FALSE(this);
+    }
+
+    @Override
+    public LuaValue from(double n) {
+        return ImmutableLuaValue.NUMBER(this, n);
+    }
+
+    @Override
+    public LuaValue from(String s) {
+        return ImmutableLuaValue.STRING(this, s);
+    }
 }

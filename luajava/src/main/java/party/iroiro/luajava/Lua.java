@@ -2,6 +2,7 @@ package party.iroiro.luajava;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import party.iroiro.luajava.value.LuaValue;
 
 import java.nio.Buffer;
 import java.util.*;
@@ -1027,6 +1028,49 @@ public interface Lua extends AutoCloseable {
      */
     @Override
     void close();
+
+    /**
+     * Pops the value on top of the stack and return a LuaValue referring to it
+     * @return a reference to the value
+     */
+    LuaValue get();
+
+    /**
+     * Gets a references to a global object
+     * @param globalName the global name
+     * @return a reference to the value
+     */
+    LuaValue get(String globalName);
+
+    /**
+     * Executes a command
+     * @param command the command
+     * @return the return values
+     */
+    @Nullable LuaValue[] execute(String command);
+
+    /**
+     * @return a nil Lua value
+     */
+    LuaValue fromNull();
+
+    /**
+     * @param b the boolean
+     * @return a boolean Lua value
+     */
+    LuaValue from(boolean b);
+
+    /**
+     * @param n the number
+     * @return a number Lua value
+     */
+    LuaValue from(double n);
+
+    /**
+     * @param s the string
+     * @return a string Lua value
+     */
+    LuaValue from(String s);
 
     /**
      * Controls the degree of conversion from Java to Lua
