@@ -29,6 +29,7 @@ public class JuaApiLuaTest {
             L.register("juafun", l -> 0);
             L.push(array, Lua.Conversion.NONE);
             L.setGlobal("arr");
+            LuaScriptSuite.addAssertThrows(L);
             ResourceLoader loader = new ResourceLoader();
             loader.load("/tests/juaApiTest.lua", L);
             assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));

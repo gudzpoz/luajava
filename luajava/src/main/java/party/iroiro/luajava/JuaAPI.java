@@ -24,7 +24,7 @@ public abstract class JuaAPI {
      *
      * @param id     see {@link AbstractLua#getInstance(int)}
      * @param module the module name
-     * @return 1 if {@link Lua.LuaError#OK}
+     * @return always 1
      */
     public static int load(int id, String module) {
         AbstractLua L = Jua.get(id);
@@ -216,7 +216,8 @@ public abstract class JuaAPI {
         if (obj instanceof JFunction) {
             return ((JFunction) obj).__call(L);
         } else {
-            return 0;
+            L.push("error invoking object (expecting a JFunction)");
+            return -1;
         }
     }
 
@@ -260,18 +261,20 @@ public abstract class JuaAPI {
     @SuppressWarnings("unused")
     public static int classNew(int index, Object oClazz, int paramCount) {
         Class<?> clazz;
+        Lua L = Jua.get(index);
         if (oClazz instanceof Class) {
             clazz = ((Class<?>) oClazz);
         } else {
-            return 0;
+            L.push("bad argument #1 to java.new (expecting Class<?>)");
+            return -1;
         }
-        Lua L = Jua.get(index);
         Object[] objects = new Object[paramCount];
         Constructor<?> constructor = matchMethod(L, clazz.getConstructors(), null, objects);
         if (constructor != null) {
             return construct(L, objects, constructor);
         }
-        return 0;
+        L.push("no matching constructor found");
+        return -1;
     }
 
     /**
@@ -287,8 +290,12 @@ public abstract class JuaAPI {
             Object obj = constructor.newInstance(objects);
             L.pushJavaObject(obj);
             return 1;
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            return 0;
+        } catch (InstantiationException | IllegalAccessException e) {
+            L.push(e.toString());
+            return -1;
+        } catch (InvocationTargetException e) {
+            L.push(e.getCause().toString());
+            return -1;
         }
     }
 

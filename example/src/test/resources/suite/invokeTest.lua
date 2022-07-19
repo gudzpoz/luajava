@@ -1,11 +1,11 @@
 assert(Private ~= nil)
-assert(Private() == nil)
+assertThrows('no matching constructor found', Private)
 assert(Abstract ~= nil)
-assert(Abstract() == nil)
+assertThrows('java.lang.InstantiationException', Abstract)
 assert(Throws ~= nil)
-assert(Throws() == nil)
+assertThrows('java.lang.Exception', Throws)
 
-assert(Throws('no match') == nil)
+assertThrows('no matching constructor found', Throws, 'no match')
 assert(type(Throws.class) == 'userdata')
 
 assert(Abstract:returnsNull() == nil)

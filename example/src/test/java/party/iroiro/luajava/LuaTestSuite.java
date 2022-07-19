@@ -46,6 +46,7 @@ public class LuaTestSuite<T extends Lua> {
 
     private void testExternalLoader() {
         try (T t = constructor.get()) {
+            LuaScriptSuite.addAssertThrows(t);
             assertEquals(RUNTIME, t.loadExternal("some.module"));
             assertThrows(IllegalStateException.class,
                     () -> t.setExternalLoader((module, L) -> ByteBuffer.allocate(0)));
@@ -57,7 +58,7 @@ public class LuaTestSuite<T extends Lua> {
                     () -> t.setExternalLoader(new ClassPathLoader()));
             assertEquals(FILE, t.loadExternal("some.module"));
             assertEquals(OK, t.loadExternal("suite.importTest"));
-            assertEquals(OK, t.pCall(0, Consts.LUA_MULTRET));
+            assertEquals(OK, t.pCall(0, Consts.LUA_MULTRET), L.toString(-1));
         }
     }
 

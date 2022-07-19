@@ -28,8 +28,9 @@ public class ClassPathLoaderTest {
             assertTrue(buffer.isDirect());
             assertEquals(0, buffer.position());
             assertNotEquals(0, buffer.limit());
+            LuaScriptSuite.addAssertThrows(L);
             assertEquals(OK, L.load(buffer, "suite.importTest"));
-            assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET));
+            assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET), L.toString(-1));
 
             ByteBuffer b = ByteBuffer.allocate(3);
             ClassPathLoader.BufferOutputStream out = new ClassPathLoader.BufferOutputStream(b);

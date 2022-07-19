@@ -42,12 +42,12 @@ assertThrows('bad argument #1 to \'java.new\': __jclass__ or __jobject__ expecte
 assertThrows('bad argument #1 to \'java.new\': __jclass__ or __jobject__ expected', java.new, {})
 assertThrows('bad argument #1 to \'java.new\': __jclass__ or __jobject__ expected', java.new, 100)
 -- Nil: Type: jobject, but is not Class<?>
-assert(java.new(Integer(1024)) == nil)
+assertThrows('bad argument #1', java.new, Integer(1024))
 assert(java.new(Integer(1024):getClass(), 1024):equals(Integer(1024)))
 -- Nil: Construction exceptions
-assert(java.new(Integer, 1, 1, 1) == nil)
-assert(java.new(Integer) == nil)
-assert(java.new(Integer, '') == nil)
+assertThrows('no matching constructor found', java.new, Integer, 1, 1, 1)
+assertThrows('no matching constructor found', java.new, Integer)
+assertThrows('java.lang.NumberFormatException', java.new, Integer, '')
 
 --[[
   java.proxy

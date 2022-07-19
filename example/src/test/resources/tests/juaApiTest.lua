@@ -5,7 +5,7 @@ t = java.import('party.iroiro.luajava.JuaApiLuaTest')
 assert(type(java.new(java.import('java.lang.Object'))) == 'userdata')
 i = java.new(java.import('java.lang.Integer'), '1024')
 assert(type(i) == 'userdata')
-assert(java.new(t, 'no', 'match') == nil)
+assertThrows('no matching constructor found', java.new, t, 'no', 'match')
 
 -- classIndex
 assert(t.staticField == 1024)
