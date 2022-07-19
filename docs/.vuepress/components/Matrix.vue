@@ -10,7 +10,7 @@
 <script setup>
 import { ref } from 'vue'
 const groupId = 'party.iroiro.luajava'
-const version = '3.0.2'
+const version = '3.1.0'
 
 const notAvailable = {
   luajit: {

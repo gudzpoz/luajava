@@ -57,8 +57,8 @@ To include LuaJava into your project, you need to include two artifacts, one for
 
 ```groovy
 // Example: LuaJIT with Desktop natives
-implementation 'party.iroiro.luajava:luajit:3.0.2'
-runtimeOnly 'party.iroiro.luajava:luajit-platform:3.0.2:natives-desktop'
+implementation 'party.iroiro.luajava:luajit:3.1.0'
+runtimeOnly 'party.iroiro.luajava:luajit-platform:3.1.0:natives-desktop'
 ```
 
 Different artifacts are provided for different Lua versions and different platforms. Check out [Getting Started](https://gudzpoz.github.io/luajava/getting-started.html) for an overview. Or you may also search in the [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava).
@@ -72,6 +72,7 @@ Different artifacts are provided for different Lua versions and different platfo
 - `proxy`: Create a Java object, calls to whose method will be proxied to Lua functions
 - `luaify`: Convert Java values to Lua values
 - `method`: Provide an alternative way to call Java methods
+- `array`: Create a Java array.
 
 ### Examples
 
@@ -82,7 +83,7 @@ This example will push `message` variable to Lua with value `Hello World from Lu
 public static void main(String[] args) {
     try (Lua L = new Lua51()) {
         L.push("Hello World from LuaJava");
-        L.setglobal("message");
+        L.setGlobal("message");
         L.run("java.import('java.lang.System').out:println(message)");
     }
 }
