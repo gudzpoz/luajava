@@ -496,8 +496,11 @@ public abstract class JuaAPI {
                         return construct(L, objects, constructor);
                     }
                 }
+                L.push("no matching constructor found");
+                return -1;
             }
-            return 0;
+            L.push("bad argument to constructor (Class<?> expected, got Object)");
+            return -1;
         }
         Method method = matchMethod(clazz, name, notSignature);
         if (method != null) {
@@ -506,7 +509,8 @@ public abstract class JuaAPI {
                 return methodInvoke(L, method, obj, objects);
             }
         }
-        return 0;
+        L.push("no matching method found");
+        return -1;
     }
 
     /**
