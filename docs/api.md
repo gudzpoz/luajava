@@ -13,7 +13,7 @@ We provide three extra `userdata` types that correspond three Java concepts. We 
 For a `jclass` `clazz`:
 
 - `clazz.memberVar` returns the public static member named `memberVar`.
-- `clazz.memberVar = value` assigns to the public static member if possible.
+- `clazz.memberVar = value` assigns to the public static member. If exceptions occur, a Lua error is generated.
 - `clazz:memberMethod(...)` calls the public static member method `memberMethod`. See [Proxied Method Calls](#proxied-method-calls) for more info.
 - `class(...)` calls the corresponding constructor. See [`java.new`](#new-jclass-function).
 - `clazz.class` returns a `jobject`, wrapping an instance of `java.lang.Class<clazz>`.
@@ -41,7 +41,7 @@ The latter one is just a `jobject`, i.e., `java.lang.String.class` in Java.
 For a `jobject` `object`:
 
 - `object.memberVar` returns the public member named `memberVar`.
-- `object.memberVar = value` assigns to the public static member if possible.
+- `object.memberVar = value` assigns to the public static member. If exceptions occur, a Lua error is generated.
 - `object:memberMethod(...)` calls the public member method `memberMethod`. See [Proxied Method Calls](#proxied-method-calls) for more info.
 
 ```lua
@@ -55,8 +55,8 @@ print(i:toString())
 
 For a `jarray` `array`:
 
-- `array[i]` returns `array[i - 1]`.
-- `array[i] = value` assigns to `array[i - 1]`.
+- `array[i]` returns `array[i - 1]`. Unlike Lua tables, we raise Lua errors if the index goes out of bounds.
+- `array[i] = value` assigns to `array[i - 1]`. If exceptions occur, a Lua error is generated.
 
 ::: tip
 Lua tables usually start the index from 1, while Java arrays from 0.
@@ -90,7 +90,7 @@ Import a Java class or package.
 
     - (***table***) If `name` is a package name, appended with `.*`, return a Lua table, including all classes directly under the package.
 
-    - (***nil***) If not found.
+- Generates a Lua error if class not found.
 
 ```lua
 lang = java.import('java.lang.*')
@@ -114,7 +114,7 @@ Call the constructor of the given Java type.
 
     - (***jobject***) The created object.
 
-    - (***nil***) If exceptions occur or unable to locate a matching constructor.
+- Generates a Lua error if exceptions occur or unable to locate a matching constructor.
 
 Examples:
 
@@ -141,7 +141,7 @@ Creates a Java object implementing the specified interfaces, proxying calls to t
 
     - (***jobject***) The created object.
 
-    - (***nil***) If exceptions occur or unable to find the interfaces.
+- Generates a Lua error if exceptions occur or unable to find the interfaces.
 
 ```lua
 button = java.new(java.import('java.awt.Button'), 'Execute')
@@ -211,7 +211,7 @@ Creates a Java array.
 
   - (***jarray***) `new "jclass"[dim1][dim2]...[dimN]`
 
-  - (***nil***) If types mismatch or some dimensions are negative.
+- Generates a Lua error if types mismatch or some dimensions are negative.
 
 ```lua
 int = java.import('int')
@@ -242,6 +242,8 @@ assert(type(jobject.notAField) == 'function')
 ```
 
 ### Method resolution
+
+In either case, if no method matches, a Lua error is raised.
 
 #### With `jobject:method(...)`
 
