@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"party.iroiro.luajava"}]
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"party.iroiro.luajava"},{"l":"party.iroiro.luajava.value"}]

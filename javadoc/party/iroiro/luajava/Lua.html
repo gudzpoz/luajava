@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6,"i16":6,"i17":6,"i18":6,"i19":6,"i20":6,"i21":6,"i22":6,"i23":6,"i24":6,"i25":6,"i26":6,"i27":6,"i28":6,"i29":6,"i30":6,"i31":6,"i32":6,"i33":6,"i34":6,"i35":6,"i36":6,"i37":6,"i38":6,"i39":6,"i40":6,"i41":6,"i42":6,"i43":6,"i44":6,"i45":6,"i46":6,"i47":6,"i48":6,"i49":6,"i50":6,"i51":6,"i52":6,"i53":6,"i54":6,"i55":6,"i56":6,"i57":6,"i58":6,"i59":6,"i60":6,"i61":6,"i62":6,"i63":6,"i64":6,"i65":6,"i66":6,"i67":6,"i68":6,"i69":6,"i70":6,"i71":6,"i72":6,"i73":6,"i74":6,"i75":6,"i76":6,"i77":6,"i78":6,"i79":6,"i80":6,"i81":6,"i82":6,"i83":6,"i84":6,"i85":6,"i86":6,"i87":6,"i88":6,"i89":6};
+var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6,"i16":6,"i17":6,"i18":6,"i19":6,"i20":6,"i21":6,"i22":6,"i23":6,"i24":6,"i25":6,"i26":6,"i27":6,"i28":6,"i29":6,"i30":6,"i31":6,"i32":6,"i33":6,"i34":6,"i35":6,"i36":6,"i37":6,"i38":6,"i39":6,"i40":6,"i41":6,"i42":6,"i43":6,"i44":6,"i45":6,"i46":6,"i47":6,"i48":6,"i49":6,"i50":6,"i51":6,"i52":6,"i53":6,"i54":6,"i55":6,"i56":6,"i57":6,"i58":6,"i59":6,"i60":6,"i61":6,"i62":6,"i63":6,"i64":6,"i65":6,"i66":6,"i67":6,"i68":6,"i69":6,"i70":6,"i71":6,"i72":6,"i73":6,"i74":6,"i75":6,"i76":6,"i77":6,"i78":6,"i79":6,"i80":6,"i81":6,"i82":6,"i83":6,"i84":6,"i85":6,"i86":6,"i87":6,"i88":6,"i89":6,"i90":6,"i91":6,"i92":6,"i93":6,"i94":6,"i95":6,"i96":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -50,6 +50,7 @@ loadScripts(document, 'script');</script>
 <!--   -->
 </a>
 <ul class="navList" title="Navigation">
+<li><a href="../../../index.html">Overview</a></li>
 <li><a href="package-summary.html">Package</a></li>
 <li class="navBarCell1Rev">Class</li>
 <li><a href="package-tree.html">Tree</a></li>
@@ -244,6 +245,47 @@ extends java.lang.AutoCloseable</pre>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
+<td class="colFirst"><code>@Nullable <a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a>[]</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#execute(java.lang.String)">execute</a></span>&#8203;(java.lang.String&nbsp;command)</code></th>
+<td class="colLast">
+<div class="block">Executes a command</div>
+</td>
+</tr>
+<tr id="i8" class="altColor">
+<td class="colFirst"><code><a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#from(boolean)">from</a></span>&#8203;(boolean&nbsp;b)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i9" class="rowColor">
+<td class="colFirst"><code><a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#from(double)">from</a></span>&#8203;(double&nbsp;n)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i10" class="altColor">
+<td class="colFirst"><code><a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#from(java.lang.String)">from</a></span>&#8203;(java.lang.String&nbsp;s)</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i11" class="rowColor">
+<td class="colFirst"><code><a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#fromNull()">fromNull</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr id="i12" class="altColor">
+<td class="colFirst"><code><a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#get()">get</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Pops the value on top of the stack and return a LuaValue referring to it</div>
+</td>
+</tr>
+<tr id="i13" class="rowColor">
+<td class="colFirst"><code><a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#get(java.lang.String)">get</a></span>&#8203;(java.lang.String&nbsp;globalName)</code></th>
+<td class="colLast">
+<div class="block">Gets a references to a global object</div>
+</td>
+</tr>
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getField(int,java.lang.String)">getField</a></span>&#8203;(int&nbsp;index,
         java.lang.String&nbsp;key)</code></th>
@@ -251,29 +293,29 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Pushes onto the stack the value t[key]</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getGlobal(java.lang.String)">getGlobal</a></span>&#8203;(java.lang.String&nbsp;name)</code></th>
 <td class="colLast">
 <div class="block">Pushes onto the stack the value of the global <code>name</code></div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getId()">getId</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code><a href="LuaNative.html" title="class in party.iroiro.luajava">LuaNative</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLuaNative()">getLuaNative</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code><a href="Lua.html" title="interface in party.iroiro.luajava">Lua</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMainState()">getMainState</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMetaField(int,java.lang.String)">getMetaField</a></span>&#8203;(int&nbsp;index,
             java.lang.String&nbsp;field)</code></th>
@@ -281,124 +323,124 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Pushes onto the stack the field <code>field</code> from the metatable of the object at index <code>index</code></div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMetatable(int)">getMetatable</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Pushes onto the stack the metatable of the value at the given acceptable index</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code>long</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPointer()">getPointer</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i22" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRegisteredMetatable(java.lang.String)">getRegisteredMetatable</a></span>&#8203;(java.lang.String&nbsp;typeName)</code></th>
 <td class="colLast">
 <div class="block">Pushes onto the stack the metatable associated with name tname in the registry</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i23" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTable(int)">getTable</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Pushes onto the stack the value t[k]</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i24" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTop()">getTop</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Returns the index of the top element in the stack</div>
 </td>
 </tr>
-<tr id="i18" class="altColor">
+<tr id="i25" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#insert(int)">insert</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Moves the top element into the given valid index, shifting up the elements above this index</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
+<tr id="i26" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isBoolean(int)">isBoolean</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Returns true if the value at the given index is a boolean, and false otherwise</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i27" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isFunction(int)">isFunction</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Returns true if the value at the given index is a function (either C or Lua), and false otherwise</div>
 </td>
 </tr>
-<tr id="i21" class="rowColor">
+<tr id="i28" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isJavaObject(int)">isJavaObject</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Checks if the element is a Java object</div>
 </td>
 </tr>
-<tr id="i22" class="altColor">
+<tr id="i29" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isNil(int)">isNil</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Returns true if the value at the given index is nil, and false otherwise</div>
 </td>
 </tr>
-<tr id="i23" class="rowColor">
+<tr id="i30" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isNone(int)">isNone</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Returns true if the given index is not valid, and false otherwise</div>
 </td>
 </tr>
-<tr id="i24" class="altColor">
+<tr id="i31" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isNoneOrNil(int)">isNoneOrNil</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Returns true if the given index is not valid or if the value at this index is nil, and false otherwise</div>
 </td>
 </tr>
-<tr id="i25" class="rowColor">
+<tr id="i32" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isNumber(int)">isNumber</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Returns true if the value is a number or a string convertible to a number, and false otherwise</div>
 </td>
 </tr>
-<tr id="i26" class="altColor">
+<tr id="i33" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isString(int)">isString</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Returns true if the value at the given index is a string or a number</div>
 </td>
 </tr>
-<tr id="i27" class="rowColor">
+<tr id="i34" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isTable(int)">isTable</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Returns true if the value at the given index is a table, and false otherwise.</div>
 </td>
 </tr>
-<tr id="i28" class="altColor">
+<tr id="i35" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isThread(int)">isThread</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Returns true if the value at the given index is a thread, and false otherwise.</div>
 </td>
 </tr>
-<tr id="i29" class="rowColor">
+<tr id="i36" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#isUserdata(int)">isUserdata</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Returns true if the value at the given index is userdata (either full or light), and false otherwise.</div>
 </td>
 </tr>
-<tr id="i30" class="altColor">
+<tr id="i37" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#lessThan(int,int)">lessThan</a></span>&#8203;(int&nbsp;i1,
         int&nbsp;i2)</code></th>
@@ -406,14 +448,14 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Returns true if the value at acceptable index i1 is smaller than the value at i2</div>
 </td>
 </tr>
-<tr id="i31" class="rowColor">
+<tr id="i38" class="altColor">
 <td class="colFirst"><code><a href="Lua.LuaError.html" title="enum in party.iroiro.luajava">Lua.LuaError</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#load(java.lang.String)">load</a></span>&#8203;(java.lang.String&nbsp;script)</code></th>
 <td class="colLast">
 <div class="block">Loads a string as a Lua chunk</div>
 </td>
 </tr>
-<tr id="i32" class="altColor">
+<tr id="i39" class="rowColor">
 <td class="colFirst"><code><a href="Lua.LuaError.html" title="enum in party.iroiro.luajava">Lua.LuaError</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#load(java.nio.Buffer,java.lang.String)">load</a></span>&#8203;(java.nio.Buffer&nbsp;buffer,
     java.lang.String&nbsp;name)</code></th>
@@ -421,49 +463,49 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Loads a buffer as a Lua chunk</div>
 </td>
 </tr>
-<tr id="i33" class="rowColor">
+<tr id="i40" class="altColor">
 <td class="colFirst"><code><a href="Lua.LuaError.html" title="enum in party.iroiro.luajava">Lua.LuaError</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#loadExternal(java.lang.String)">loadExternal</a></span>&#8203;(java.lang.String&nbsp;module)</code></th>
 <td class="colLast">
 <div class="block">Loads a chunk from a <a href="ExternalLoader.html" title="interface in party.iroiro.luajava"><code>ExternalLoader</code></a> set by <a href="#setExternalLoader(party.iroiro.luajava.ExternalLoader)"><code>setExternalLoader(ExternalLoader)</code></a></div>
 </td>
 </tr>
-<tr id="i34" class="altColor">
+<tr id="i41" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#newRegisteredMetatable(java.lang.String)">newRegisteredMetatable</a></span>&#8203;(java.lang.String&nbsp;typeName)</code></th>
 <td class="colLast">
 <div class="block">Creates a new table to be used as a metatable for userdata, adds it to the registry</div>
 </td>
 </tr>
-<tr id="i35" class="rowColor">
+<tr id="i42" class="altColor">
 <td class="colFirst"><code><a href="Lua.html" title="interface in party.iroiro.luajava">Lua</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#newThread()">newThread</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Creates a new thread, pushes it on the stack</div>
 </td>
 </tr>
-<tr id="i36" class="altColor">
+<tr id="i43" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#next(int)">next</a></span>&#8203;(int&nbsp;n)</code></th>
 <td class="colLast">
 <div class="block">Pops a key from the stack, and pushes a key-value pair from the table at the given index</div>
 </td>
 </tr>
-<tr id="i37" class="rowColor">
+<tr id="i44" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#openLibraries()">openLibraries</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Opens all standard Lua libraries into the given state</div>
 </td>
 </tr>
-<tr id="i38" class="altColor">
+<tr id="i45" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#openLibrary(java.lang.String)">openLibrary</a></span>&#8203;(java.lang.String&nbsp;name)</code></th>
 <td class="colLast">
 <div class="block">Opens a specific library into the given state</div>
 </td>
 </tr>
-<tr id="i39" class="rowColor">
+<tr id="i46" class="altColor">
 <td class="colFirst"><code><a href="Lua.LuaError.html" title="enum in party.iroiro.luajava">Lua.LuaError</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#pCall(int,int)">pCall</a></span>&#8203;(int&nbsp;nArgs,
      int&nbsp;nResults)</code></th>
@@ -471,63 +513,63 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Calls a function in protected mode</div>
 </td>
 </tr>
-<tr id="i40" class="altColor">
+<tr id="i47" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#pop(int)">pop</a></span>&#8203;(int&nbsp;n)</code></th>
 <td class="colLast">
 <div class="block">Pops n elements from the stack</div>
 </td>
 </tr>
-<tr id="i41" class="rowColor">
+<tr id="i48" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#push(boolean)">push</a></span>&#8203;(boolean&nbsp;bool)</code></th>
 <td class="colLast">
 <div class="block">Pushes a boolean value onto the stack</div>
 </td>
 </tr>
-<tr id="i42" class="altColor">
+<tr id="i49" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#push(int)">push</a></span>&#8203;(int&nbsp;integer)</code></th>
 <td class="colLast">
 <div class="block">Pushes a number onto the stack</div>
 </td>
 </tr>
-<tr id="i43" class="rowColor">
+<tr id="i50" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#push(java.lang.Number)">push</a></span>&#8203;(@NotNull java.lang.Number&nbsp;number)</code></th>
 <td class="colLast">
 <div class="block">Pushes a number onto the stack</div>
 </td>
 </tr>
-<tr id="i44" class="altColor">
+<tr id="i51" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#push(java.lang.String)">push</a></span>&#8203;(@NotNull java.lang.String&nbsp;string)</code></th>
 <td class="colLast">
 <div class="block">Pushes a string onto the stack.</div>
 </td>
 </tr>
-<tr id="i45" class="rowColor">
+<tr id="i52" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#push(java.util.Collection)">push</a></span>&#8203;(@NotNull java.util.Collection&lt;?&gt;&nbsp;collection)</code></th>
 <td class="colLast">
 <div class="block">Push the element onto the stack, converted to lua tables (index starting from 1)</div>
 </td>
 </tr>
-<tr id="i46" class="altColor">
+<tr id="i53" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#push(java.util.Map)">push</a></span>&#8203;(@NotNull java.util.Map&lt;?,&#8203;?&gt;&nbsp;map)</code></th>
 <td class="colLast">
 <div class="block">Push the element onto the stack, converted to lua tables</div>
 </td>
 </tr>
-<tr id="i47" class="rowColor">
+<tr id="i54" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#push(party.iroiro.luajava.JFunction)">push</a></span>&#8203;(@NotNull <a href="JFunction.html" title="interface in party.iroiro.luajava">JFunction</a>&nbsp;function)</code></th>
 <td class="colLast">
 <div class="block">Push the function onto the stack, converted to a callable element</div>
 </td>
 </tr>
-<tr id="i48" class="altColor">
+<tr id="i55" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#push(java.lang.Object,party.iroiro.luajava.Lua.Conversion)">push</a></span>&#8203;(@Nullable java.lang.Object&nbsp;object,
     <a href="Lua.Conversion.html" title="enum in party.iroiro.luajava">Lua.Conversion</a>&nbsp;degree)</code></th>
@@ -535,49 +577,49 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Push an object onto the stack, converting according to <a href="Lua.Conversion.html" title="enum in party.iroiro.luajava"><code>Lua.Conversion</code></a>.</div>
 </td>
 </tr>
-<tr id="i49" class="rowColor">
+<tr id="i56" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#pushArray(java.lang.Object)">pushArray</a></span>&#8203;(@NotNull java.lang.Object&nbsp;array)</code></th>
 <td class="colLast">
 <div class="block">Push an array onto the stack, converted to luatable</div>
 </td>
 </tr>
-<tr id="i50" class="altColor">
+<tr id="i57" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#pushJavaArray(java.lang.Object)">pushJavaArray</a></span>&#8203;(@NotNull java.lang.Object&nbsp;array)</code></th>
 <td class="colLast">
 <div class="block">Push the element onto the stack, converted as is to Java arrays</div>
 </td>
 </tr>
-<tr id="i51" class="rowColor">
+<tr id="i58" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#pushJavaClass(java.lang.Class)">pushJavaClass</a></span>&#8203;(@NotNull java.lang.Class&lt;?&gt;&nbsp;clazz)</code></th>
 <td class="colLast">
 <div class="block">Push a class onto the stack, which may be used with `java.new` on the lua side</div>
 </td>
 </tr>
-<tr id="i52" class="altColor">
+<tr id="i59" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#pushJavaObject(java.lang.Object)">pushJavaObject</a></span>&#8203;(@NotNull java.lang.Object&nbsp;object)</code></th>
 <td class="colLast">
 <div class="block">Push the element onto the stack, converted as is to Java objects</div>
 </td>
 </tr>
-<tr id="i53" class="rowColor">
+<tr id="i60" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#pushNil()">pushNil</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Pushes a <code>nil</code> value onto the stack</div>
 </td>
 </tr>
-<tr id="i54" class="altColor">
+<tr id="i61" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#pushValue(int)">pushValue</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Pushes a copy of the element at the given valid index onto the stack</div>
 </td>
 </tr>
-<tr id="i55" class="rowColor">
+<tr id="i62" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#rawEqual(int,int)">rawEqual</a></span>&#8203;(int&nbsp;i1,
         int&nbsp;i2)</code></th>
@@ -585,14 +627,14 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Returns true if the two values in acceptable indices i1 and i2 are primitively equal</div>
 </td>
 </tr>
-<tr id="i56" class="altColor">
+<tr id="i63" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#rawGet(int)">rawGet</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Similar to <a href="#getTable(int)"><code>getTable(int)</code></a>, but does a raw access (i.e., without metamethods)</div>
 </td>
 </tr>
-<tr id="i57" class="rowColor">
+<tr id="i64" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#rawGetI(int,int)">rawGetI</a></span>&#8203;(int&nbsp;index,
        int&nbsp;n)</code></th>
@@ -600,21 +642,21 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Pushes onto the stack the value t[n], where t is the value at the given valid index</div>
 </td>
 </tr>
-<tr id="i58" class="altColor">
+<tr id="i65" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#rawLength(int)">rawLength</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Returns the raw "length" of the value at the given index</div>
 </td>
 </tr>
-<tr id="i59" class="rowColor">
+<tr id="i66" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#rawSet(int)">rawSet</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Similar to <a href="#setTable(int)"><code>setTable(int)</code></a>, but does a raw assignment (i.e., without metamethods)</div>
 </td>
 </tr>
-<tr id="i60" class="altColor">
+<tr id="i67" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#rawSetI(int,int)">rawSetI</a></span>&#8203;(int&nbsp;index,
        int&nbsp;n)</code></th>
@@ -622,28 +664,28 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Does the equivalent of t[n] = v</div>
 </td>
 </tr>
-<tr id="i61" class="rowColor">
+<tr id="i68" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#ref()">ref</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Calls <a href="#ref(int)"><code>ref(int)</code></a> with the pseudo-index <code>LUA_REGISTRYINDEX</code></div>
 </td>
 </tr>
-<tr id="i62" class="altColor">
+<tr id="i69" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#ref(int)">ref</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Creates and returns a reference, in the table at index <code>index</code></div>
 </td>
 </tr>
-<tr id="i63" class="rowColor">
+<tr id="i70" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#refGet(int)">refGet</a></span>&#8203;(int&nbsp;ref)</code></th>
 <td class="colLast">
 <div class="block">Calls <a href="#rawGetI(int,int)"><code>rawGetI(int, int)</code></a> with the pseudo-index <code>LUA_REGISTRYINDEX</code> and the given <code>ref</code></div>
 </td>
 </tr>
-<tr id="i64" class="altColor">
+<tr id="i71" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#register(java.lang.String,party.iroiro.luajava.JFunction)">register</a></span>&#8203;(java.lang.String&nbsp;name,
         <a href="JFunction.html" title="interface in party.iroiro.luajava">JFunction</a>&nbsp;function)</code></th>
@@ -651,35 +693,35 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Registers the function to a global name</div>
 </td>
 </tr>
-<tr id="i65" class="rowColor">
+<tr id="i72" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#remove(int)">remove</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Removes the element at the given valid index</div>
 </td>
 </tr>
-<tr id="i66" class="altColor">
+<tr id="i73" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#replace(int)">replace</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Moves the top element into the given position (and pops it)</div>
 </td>
 </tr>
-<tr id="i67" class="rowColor">
+<tr id="i74" class="altColor">
 <td class="colFirst"><code><a href="Lua.LuaError.html" title="enum in party.iroiro.luajava">Lua.LuaError</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#resume(int)">resume</a></span>&#8203;(int&nbsp;nArgs)</code></th>
 <td class="colLast">
 <div class="block">Starts and resumes a coroutine in a given thread</div>
 </td>
 </tr>
-<tr id="i68" class="altColor">
+<tr id="i75" class="rowColor">
 <td class="colFirst"><code><a href="Lua.LuaError.html" title="enum in party.iroiro.luajava">Lua.LuaError</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#run(java.lang.String)">run</a></span>&#8203;(java.lang.String&nbsp;script)</code></th>
 <td class="colLast">
 <div class="block">Loads and runs the given string</div>
 </td>
 </tr>
-<tr id="i69" class="rowColor">
+<tr id="i76" class="altColor">
 <td class="colFirst"><code><a href="Lua.LuaError.html" title="enum in party.iroiro.luajava">Lua.LuaError</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#run(java.nio.Buffer,java.lang.String)">run</a></span>&#8203;(java.nio.Buffer&nbsp;buffer,
    java.lang.String&nbsp;name)</code></th>
@@ -687,14 +729,14 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Loads and runa a buffer</div>
 </td>
 </tr>
-<tr id="i70" class="altColor">
+<tr id="i77" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setExternalLoader(party.iroiro.luajava.ExternalLoader)">setExternalLoader</a></span>&#8203;(<a href="ExternalLoader.html" title="interface in party.iroiro.luajava">ExternalLoader</a>&nbsp;loader)</code></th>
 <td class="colLast">
 <div class="block">Sets a <a href="ExternalLoader.html" title="interface in party.iroiro.luajava"><code>ExternalLoader</code></a> for the main state</div>
 </td>
 </tr>
-<tr id="i71" class="rowColor">
+<tr id="i78" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setField(int,java.lang.String)">setField</a></span>&#8203;(int&nbsp;index,
         java.lang.String&nbsp;key)</code></th>
@@ -702,77 +744,77 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Does the equivalent to t[key] = v</div>
 </td>
 </tr>
-<tr id="i72" class="altColor">
+<tr id="i79" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setGlobal(java.lang.String)">setGlobal</a></span>&#8203;(java.lang.String&nbsp;name)</code></th>
 <td class="colLast">
 <div class="block">Pops a value from the stack and sets it as the new value of global <code>name</code></div>
 </td>
 </tr>
-<tr id="i73" class="rowColor">
+<tr id="i80" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setMetatable(int)">setMetatable</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Pops a table from the stack and sets it as the new metatable for the value at the given acceptable index</div>
 </td>
 </tr>
-<tr id="i74" class="altColor">
+<tr id="i81" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setTable(int)">setTable</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Does the equivalent to t[k] = v</div>
 </td>
 </tr>
-<tr id="i75" class="rowColor">
+<tr id="i82" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setTop(int)">setTop</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Accepts any index, or 0, and sets the stack top to this index</div>
 </td>
 </tr>
-<tr id="i76" class="altColor">
+<tr id="i83" class="rowColor">
 <td class="colFirst"><code><a href="Lua.LuaError.html" title="enum in party.iroiro.luajava">Lua.LuaError</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#status()">status</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Returns the status of the thread</div>
 </td>
 </tr>
-<tr id="i77" class="rowColor">
+<tr id="i84" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toBoolean(int)">toBoolean</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Converts the Lua value at the given acceptable index to a boolean value</div>
 </td>
 </tr>
-<tr id="i78" class="altColor">
+<tr id="i85" class="rowColor">
 <td class="colFirst"><code>@Nullable java.lang.Object</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toJavaObject(int)">toJavaObject</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Get the element at the specified stack position, if the element is a Java object / array / class</div>
 </td>
 </tr>
-<tr id="i79" class="rowColor">
+<tr id="i86" class="altColor">
 <td class="colFirst"><code>@Nullable java.util.List&lt;?&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toList(int)">toList</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Get the element at the specified stack position, converted to <code>List</code></div>
 </td>
 </tr>
-<tr id="i80" class="altColor">
+<tr id="i87" class="rowColor">
 <td class="colFirst"><code>@Nullable java.util.Map&lt;?,&#8203;?&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toMap(int)">toMap</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Get the element at the specified stack position, converted to a <code>Map</code></div>
 </td>
 </tr>
-<tr id="i81" class="rowColor">
+<tr id="i88" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toNumber(int)">toNumber</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Converts the Lua value at the given acceptable index to a number</div>
 </td>
 </tr>
-<tr id="i82" class="altColor">
+<tr id="i89" class="rowColor">
 <td class="colFirst"><code>@Nullable java.lang.Object</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toObject(int)">toObject</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
@@ -790,7 +832,7 @@ extends java.lang.AutoCloseable</pre>
  </div>
 </td>
 </tr>
-<tr id="i83" class="rowColor">
+<tr id="i90" class="altColor">
 <td class="colFirst"><code>@Nullable java.lang.Object</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toObject(int,java.lang.Class)">toObject</a></span>&#8203;(int&nbsp;index,
         java.lang.Class&lt;?&gt;&nbsp;type)</code></th>
@@ -798,26 +840,26 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Converts a value at the stack index</div>
 </td>
 </tr>
-<tr id="i84" class="altColor">
+<tr id="i91" class="rowColor">
 <td class="colFirst"><code>@Nullable java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toString(int)">toString</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">
 <div class="block">Converts the Lua value at the given acceptable index to a string</div>
 </td>
 </tr>
-<tr id="i85" class="rowColor">
+<tr id="i92" class="altColor">
 <td class="colFirst"><code>@Nullable <a href="Lua.LuaType.html" title="enum in party.iroiro.luajava">Lua.LuaType</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#type(int)">type</a></span>&#8203;(int&nbsp;index)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i86" class="altColor">
+<tr id="i93" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#unref(int)">unref</a></span>&#8203;(int&nbsp;ref)</code></th>
 <td class="colLast">
 <div class="block">Calls <a href="#unRef(int,int)"><code>unRef(int, int)</code></a> with the pseudo-index <code>LUA_REGISTRYINDEX</code> and the given <code>ref</code></div>
 </td>
 </tr>
-<tr id="i87" class="rowColor">
+<tr id="i94" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#unRef(int,int)">unRef</a></span>&#8203;(int&nbsp;index,
      int&nbsp;ref)</code></th>
@@ -825,7 +867,7 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Releases reference ref from the table at index <code>index</code></div>
 </td>
 </tr>
-<tr id="i88" class="altColor">
+<tr id="i95" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#xMove(party.iroiro.luajava.Lua,int)">xMove</a></span>&#8203;(<a href="Lua.html" title="interface in party.iroiro.luajava">Lua</a>&nbsp;other,
      int&nbsp;n)</code></th>
@@ -833,7 +875,7 @@ extends java.lang.AutoCloseable</pre>
 <div class="block">Exchange values between different threads of the same global state</div>
 </td>
 </tr>
-<tr id="i89" class="rowColor">
+<tr id="i96" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#yield(int)">yield</a></span>&#8203;(int&nbsp;n)</code></th>
 <td class="colLast">
@@ -2557,7 +2599,7 @@ extends java.lang.AutoCloseable</pre>
 <a id="close()">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>close</h4>
 <pre class="methodSignature">void&nbsp;close()</pre>
@@ -2569,6 +2611,111 @@ extends java.lang.AutoCloseable</pre>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code>close</code>&nbsp;in interface&nbsp;<code>java.lang.AutoCloseable</code></dd>
+</dl>
+</li>
+</ul>
+<a id="get()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>get</h4>
+<pre class="methodSignature"><a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a>&nbsp;get()</pre>
+<div class="block">Pops the value on top of the stack and return a LuaValue referring to it</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a reference to the value</dd>
+</dl>
+</li>
+</ul>
+<a id="get(java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>get</h4>
+<pre class="methodSignature"><a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a>&nbsp;get&#8203;(java.lang.String&nbsp;globalName)</pre>
+<div class="block">Gets a references to a global object</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>globalName</code> - the global name</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a reference to the value</dd>
+</dl>
+</li>
+</ul>
+<a id="execute(java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>execute</h4>
+<pre class="methodSignature">@Nullable
+@Nullable <a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a>[]&nbsp;execute&#8203;(java.lang.String&nbsp;command)</pre>
+<div class="block">Executes a command</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>command</code> - the command</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the return values</dd>
+</dl>
+</li>
+</ul>
+<a id="fromNull()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>fromNull</h4>
+<pre class="methodSignature"><a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a>&nbsp;fromNull()</pre>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a nil Lua value</dd>
+</dl>
+</li>
+</ul>
+<a id="from(boolean)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>from</h4>
+<pre class="methodSignature"><a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a>&nbsp;from&#8203;(boolean&nbsp;b)</pre>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>b</code> - the boolean</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a boolean Lua value</dd>
+</dl>
+</li>
+</ul>
+<a id="from(double)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>from</h4>
+<pre class="methodSignature"><a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a>&nbsp;from&#8203;(double&nbsp;n)</pre>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>n</code> - the number</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a number Lua value</dd>
+</dl>
+</li>
+</ul>
+<a id="from(java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>from</h4>
+<pre class="methodSignature"><a href="value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a>&nbsp;from&#8203;(java.lang.String&nbsp;s)</pre>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>s</code> - the string</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a string Lua value</dd>
 </dl>
 </li>
 </ul>
@@ -2592,6 +2739,7 @@ extends java.lang.AutoCloseable</pre>
 <!--   -->
 </a>
 <ul class="navList" title="Navigation">
+<li><a href="../../../index.html">Overview</a></li>
 <li><a href="package-summary.html">Package</a></li>
 <li class="navBarCell1Rev">Class</li>
 <li><a href="package-tree.html">Tree</a></li>
