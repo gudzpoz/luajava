@@ -51,6 +51,10 @@ inline int jIndex(lua_State * L, const char * reg, jmethodID methodID, lua_CFunc
   return jIndex(L, reg, methodID, func, true);
 }
 
+int jarrayInvoke(lua_State * L) {
+  return jInvoke(L, JAVA_ARRAY_META_REGISTRY, juaapi_objectinvoke);
+}
+
 int jclassInvoke(lua_State * L) {
   return jInvoke(L, JAVA_CLASS_META_REGISTRY, juaapi_classinvoke);
 }
@@ -105,17 +109,18 @@ inline int jarrayJIndex(lua_State * L, jmethodID func, bool ret) {
   int i = (int) luaL_checknumber(L, 2);
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
-  // TODO: Simplify
   int retVal = checkOrError(L, env->CallStaticIntMethod(juaapi_class, func, (jint) stateIndex, *data, i));
-  if (ret) {
-    return retVal;
-  } else {
-    return checkOrError(L, env->CallStaticIntMethod(juaapi_class, func, (jint) stateIndex, *data, i));
-  }
+  return ret ? retVal : 0;
 }
 
 int jarrayIndex(lua_State * L) {
-  return jarrayJIndex(L, juaapi_arrayindex, true);
+  if (lua_isnumber(L, 2)) {
+    return jarrayJIndex(L, juaapi_arrayindex, true);
+  }
+  if (lua_isstring(L, 2)) {
+    return jIndex(L, JAVA_ARRAY_META_REGISTRY, juaapi_objectindex, &jarrayInvoke);
+  }
+  return luaL_error(L, "bad argument #2 to __index (expecting number or string)");
 }
 
 int jarrayNewIndex(lua_State * L) {

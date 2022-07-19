@@ -57,6 +57,7 @@ For a `jarray` `array`:
 
 - `array[i]` returns `array[i - 1]`. Unlike Lua tables, we raise Lua errors if the index goes out of bounds.
 - `array[i] = value` assigns to `array[i - 1]`. If exceptions occur, a Lua error is generated.
+- `array:memberMethod(...)` calls the public member method `memberMethod` (of `java.lang.Object` of course), for example, `array:getClass()`.
 
 ::: tip
 Lua tables usually start the index from 1, while Java arrays from 0.
