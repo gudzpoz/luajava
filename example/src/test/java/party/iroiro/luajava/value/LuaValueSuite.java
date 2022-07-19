@@ -121,6 +121,21 @@ public class LuaValueSuite<T extends Lua> {
             L.pushNil();
             K.pushNil();
             assertThrows(IllegalArgumentException.class, () -> L.get().get(K.get()));
+            K.pushNil();
+            assertThrows(UnsupportedOperationException.class, () -> K.get().push(L));
+
+            K.pushNil();
+            LuaValue nil = K.get();
+            L.push(nil, Lua.Conversion.NONE);
+            assertTrue(L.isUserdata(-1));
+            L.pop(1);
+            Lua J = L.newThread();
+            J.pushNil();
+            L.push(J.get(), Lua.Conversion.NONE);
+            assertTrue(L.isNil(-1));
+            L.push(L.get(), Lua.Conversion.NONE);
+            assertTrue(L.isNil(-1));
+            L.pop(1);
         }
         L.createTable(0, 0);
         try (LuaValue value = L.get()) {

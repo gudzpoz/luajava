@@ -239,6 +239,7 @@ public abstract class AbstractLua implements Lua {
         }
         switch (type) {
             case NIL:
+            case NONE:
                 return null;
             case BOOLEAN:
                 return toBoolean(index);
@@ -251,7 +252,8 @@ public abstract class AbstractLua implements Lua {
             case USERDATA:
                 return toJavaObject(index);
         }
-        return null;
+        pushValue(index);
+        return get();
     }
 
     @Override
@@ -308,9 +310,7 @@ public abstract class AbstractLua implements Lua {
             while (C.lua_next(L, -2) != 0) {
                 Object k = toObject(-2);
                 Object v = toObject(-1);
-                if (k != null && v != null) {
-                    map.put(k, v);
-                }
+                map.put(k, v);
                 pop(1);
             }
             return map;

@@ -119,7 +119,13 @@ abstract class AbstractLuaValue implements LuaValue {
 
     @Override
     public void push(Lua K) {
-        push();
-        L.xMove(K, 1);
+        if (K == L) {
+            push();
+        } else if (K.getMainState() == L.getMainState()) {
+            push();
+            L.xMove(K, 1);
+        } else {
+            throw new UnsupportedOperationException("Unable to move values between threads that do not share a main state");
+        }
     }
 }

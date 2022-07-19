@@ -1,6 +1,7 @@
 package party.iroiro.luajava;
 
 import org.junit.jupiter.api.Test;
+import party.iroiro.luajava.value.LuaValue;
 
 import java.math.BigInteger;
 import java.util.Map;
@@ -30,7 +31,8 @@ public class FromTest {
 
             assertEquals(Lua.LuaError.OK, L.run("a = function () print('a') end"));
             L.getGlobal("a");
-            assertNull(L.toObject(-1));
+            //noinspection resource
+            assertInstanceOf(LuaValue.class, L.toObject(-1));
 
             assertEquals(Lua.LuaError.OK, L.run("b = {[a] = 'value'}"));
             L.getGlobal("b");
@@ -38,7 +40,9 @@ public class FromTest {
             assertInstanceOf(Map.class, map);
             System.out.println(map);
             //noinspection unchecked
-            assertEquals(0, ((Map<Object, Object>) Objects.requireNonNull(map)).size());
+            assertEquals(1, ((Map<Object, Object>) Objects.requireNonNull(map)).size());
+            //noinspection rawtypes,resource
+            assertInstanceOf(LuaValue.class, ((Map) map).keySet().iterator().next());
 
             L.pushNil();
             assertNull(L.toObject(-1, Class.class));

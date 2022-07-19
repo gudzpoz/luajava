@@ -3,6 +3,7 @@ package party.iroiro.luajava;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import party.iroiro.luajava.util.ClassUtils;
+import party.iroiro.luajava.value.LuaValue;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -706,6 +707,10 @@ public abstract class JuaAPI {
     public static Object convertFromLua(Lua L, Class<?> clazz, int index)
             throws IllegalArgumentException {
         Lua.LuaType type = L.type(index);
+        if (clazz == LuaValue.class) {
+            L.pushValue(index);
+            return L.get();
+        }
         if (type == Lua.LuaType.NIL) {
             if (clazz.isPrimitive()) {
                 throw new IllegalArgumentException("Primitive not accepting null values");
@@ -741,6 +746,10 @@ public abstract class JuaAPI {
             } else if (clazz.isAssignableFrom(Map.class)) {
                 return L.toMap(index);
             }
+        }
+        if (clazz.isAssignableFrom(LuaValue.class)) {
+            L.pushValue(index);
+            return L.get();
         }
         throw new IllegalArgumentException("Unable to convert to " + clazz.getName());
     }

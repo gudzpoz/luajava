@@ -1,11 +1,14 @@
 package party.iroiro.luajava;
 
+import party.iroiro.luajava.value.LuaValue;
+
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -296,7 +299,8 @@ public class LuaTestSuite<T extends Lua> {
 
         luaNative.lua_pushlightuserdata(L.getPointer(), 0);
         assertEquals(LIGHTUSERDATA, L.type(-1));
-        assertNull(L.toObject(-1));
+        //noinspection resource
+        assertInstanceOf(LuaValue.class, L.toObject(-1));
         assertNull(L.toObject(-1, Void.class));
         assertNull(L.toObject(-1, Integer.class));
         L.pop(1);
@@ -360,7 +364,7 @@ public class LuaTestSuite<T extends Lua> {
         L.push(false);
         luaNative.lua_pushlightuserdata(L.getPointer(), 3);
         L.setTable(-3);
-        assertTrue(Objects.requireNonNull(L.toMap(-1)).isEmpty());
+        assertEquals(3, Objects.requireNonNull(L.toMap(-1)).size());
         L.pop(3);
     }
 
@@ -530,6 +534,15 @@ public class LuaTestSuite<T extends Lua> {
         });
         L.setGlobal("l2jConvTest");
         assertEquals(OK, L.run("assert(1024 == l2jConvTest())"));
+        ConcurrentSkipListSet<Object> set = new ConcurrentSkipListSet<>();
+        L.push(set, Lua.Conversion.NONE);
+        try (LuaValue v = L.get()) {
+            assertSame(set, v.toJavaObject());
+            v.push();
+            assertSame(set, ((LuaValue) Objects.requireNonNull(JuaAPI
+                    .convertFromLua(L, LuaValue.class, -1))).toJavaObject());
+            L.pop(1);
+        }
 
         for (Object[] data : DATA) {
             Lua.Conversion[] conversions = {Lua.Conversion.NONE, SEMI, FULL};
@@ -620,7 +633,7 @@ public class LuaTestSuite<T extends Lua> {
                     USERDATA, STRING, STRING, "", "String"
             },
             {
-                    V(((o, o2) -> o == null || o2 == null || o.equals(o2))),
+                    V(((o, o2) -> o == null || o2 == null || o.equals(o2) || o2 instanceof LuaValue)),
                     USERDATA, FUNCTION, FUNCTION,
                     (JFunction) l -> 0, (JFunction) l -> 1,
             },

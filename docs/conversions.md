@@ -8,16 +8,17 @@ When pushing a Java value onto the Lua stack, you can choose from doing a `FULL`
 
 | Java Types                    | [`NONE`](#lua-conversion-none) | [`SEMI`](#lua-conversion-semi) | [`FULL`](#lua-conversion-full) | Conversion (if ever)               |
 |:------------------------------|:------------------------------:|:------------------------------:|:------------------------------:|------------------------------------|
-| `null`                        |       :white_check_mark:       |       :white_check_mark:       |       :white_check_mark:       | Lua `nil`                          |
-| `Boolean`                     |                                |       :white_check_mark:       |       :white_check_mark:       | Lua booleans                       |
-| `Character`                   |                                |       :white_check_mark:       |       :white_check_mark:       | `lua_Integer` or `lua_Number`      |
-| Boxed numerics (`Integer`...) |                                |       :white_check_mark:       |       :white_check_mark:       | `lua_Integer` or `lua_Number`      |
-| `String`                      |                                |       :white_check_mark:       |       :white_check_mark:       | Lua strings                        |
-| `JFunction`                   |                                |       :white_check_mark:       |       :white_check_mark:       | A Lua closure                      |
-| Java arrays                   |                                |                                |       :white_check_mark:       | Lua tables (index starting from 1) |
-| `Collections<?>`              |                                |                                |       :white_check_mark:       | Lua tables (index starting from 1) |
-| `Map<?, ?>`                   |                                |                                |       :white_check_mark:       | Lua tables                         |
-| `Class<?>`                    |                                |                                |       :white_check_mark:       | `jclass`                           |
+| `null`                        | :white_check_mark:             | :white_check_mark:             | :white_check_mark:             | Lua `nil`                          |
+| `LuaValue`                    | :orange_square:                | :orange_square:                | :orange_square:                | Converted if sharing main state    |
+| `Boolean`                     |                                | :white_check_mark:             | :white_check_mark:             | Lua booleans                       |
+| `Character`                   |                                | :white_check_mark:             | :white_check_mark:             | `lua_Integer` or `lua_Number`      |
+| Boxed numerics (`Integer`...) |                                | :white_check_mark:             | :white_check_mark:             | `lua_Integer` or `lua_Number`      |
+| `String`                      |                                | :white_check_mark:             | :white_check_mark:             | Lua strings                        |
+| `JFunction`                   |                                | :white_check_mark:             | :white_check_mark:             | A Lua closure                      |
+| Java arrays                   |                                |                                | :white_check_mark:             | Lua tables (index starting from 1) |
+| `Collections<?>`              |                                |                                | :white_check_mark:             | Lua tables (index starting from 1) |
+| `Map<?, ?>`                   |                                |                                | :white_check_mark:             | Lua tables                         |
+| `Class<?>`                    |                                |                                | :white_check_mark:             | `jclass`                           |
 | Others                        |                                |                                |                                | Proxied to the Java side           |
 | Example: `BigInteger`         |                                |                                |                                | Proxied to the Java side           |
 | Example: `AtomicInteger`      |                                |                                |                                | Proxied to the Java side           |
@@ -70,7 +71,8 @@ When calling Java methods from Lua, we `SEMI`-convert the return value. Currentl
 5. ***table*** to `Map<Object, Object>`, `List<Object&gt;` or `Object[]` , converted recursively. (`Map<Object, Object>` is preferred.)
 6. ***jclass*** to `Class<?>`.
 7. ***jobject*** to the underlying Java object.
-8. Other types are not converted and are `null` on the Java side.
+8. Any type can get wrapped into a `LuaValue`.
+9. If all the above is not applicable, the result is `null` on the Java side.
 
 ::: warning
 Currently, you cannot convert a C closure back to a `JFunction`, even if the closure simply wraps around `JFunction`.

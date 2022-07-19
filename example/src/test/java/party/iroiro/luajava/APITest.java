@@ -27,8 +27,8 @@ public class APITest {
         ResourceLoader loader = new ResourceLoader();
         loader.load("/tests/apiTest.lua", L);
         assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
-        assertEquals(Lua.LuaError.RUNTIME, L.run("System.out:println(instance.testPrivate)"));
-        assertEquals(Lua.LuaError.RUNTIME, L.run("System.out:println(instance.testFriendly)"));
+        assertEquals(OK, L.run("System.out:println(instance.testPrivate)"));
+        assertEquals(OK, L.run("System.out:println(instance.testFriendly)"));
         assertEquals(Lua.LuaError.RUNTIME, L.run("APITest:assert(false)"));
 
         byte[] bytes = "System.out:println('OK')".getBytes(StandardCharsets.UTF_8);
