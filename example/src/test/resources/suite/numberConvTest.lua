@@ -60,10 +60,10 @@ numbers.BOOL = 1
 assert(numbers.BOOL == true)
 
 -- Incorrect access
-numbers.i = false
+assertThrows('java.lang.IllegalArgumentException', function() numbers.i = false end)
 assert(numbers.i == 33)
 
-numbers.big = 4096
+assertThrows('java.lang.IllegalArgumentException', function() numbers.big = 4096 end)
 assert(numbers.big:intValue() == 1024)
 
 Integer = java.import('java.lang.Integer')

@@ -21,8 +21,8 @@ assert(type(t.privateField) == 'function')
 
 -- classNewIndex
 t.staticField = 100
-t.nonexistentField = 100
-t.privateField = 100
+assertThrows('java.lang.NoSuchFieldException: nonexistentField', function() t.nonexistentField = 100 end)
+assertThrows('java.lang.NoSuchFieldException: privateField', function() t.privateField = 100 end)
 
 -- classInvoke
 assert(t:staticMethod() == nil)
@@ -44,8 +44,8 @@ assert(type(t.t.p) == 'function')
 
 -- objectNewIndex
 t.t.s = 100
-t.t.nonexistentField = 100
-t.t.p = 100
+assertThrows('java.lang.NoSuchFieldException: nonexistentField', function() t.t.nonexistentField = 100 end)
+assertThrows('java.lang.NoSuchFieldException: p', function() t.t.p = 100 end)
 
 -- objectInvoke
 assert(t.t:method() == nil)
@@ -55,13 +55,13 @@ assert(juafun() == nil)
 -- arrayIndex
 assert(arr[1] == 1)
 assert(arr[4] == 4)
-assert(arr[6] == nil)
+assertThrows('java.lang.ArrayIndexOutOfBoundsException', function() print(arr[6]) end)
 
 -- not arrayIndex: t.array converts from java arrays to lua tables by default
 -- TODO: Maybe conversions should be explicit. Probably should introduce java.toTable
 assert(t.array[1] == 1)
 assert(t.array[4] == 4)
-assert(t.array[6] == nil)
+assertThrows('java.lang.ArrayIndexOutOfBoundsException', function() print(t.array[6]) end)
 
 -- arrayNewIndex
 -- TODO: Implement the array system, which is not done yet

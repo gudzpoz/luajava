@@ -2,20 +2,20 @@ assert(others ~= nil)
 
 assert(others.i == 1)
 assert(others.s == "2")
-others.i = "2"
-others.s = 1
+assertThrows('java.lang.IllegalArgumentException', function() others.i = "2" end)
+assertThrows('java.lang.IllegalArgumentException', function() others.s = 1 end)
 assert(others.i == 1)
 assert(others.s == "2")
 assert(type(myuserdata) == 'userdata')
-others.s = others.big
+assertThrows('java.lang.IllegalArgumentException', function() others.s = others.big end)
 assert(others.s == "2")
-others.s = myuserdata
+assertThrows('java.lang.IllegalArgumentException', function() others.s = myuserdata end)
 assert(others.s == "2")
-others.s = {1, 2, 3}
+assertThrows('java.lang.IllegalArgumentException', function() others.s = {1, 2, 3} end)
 assert(others.s == "2")
 others.s = java.import('java.lang.String')('Hello')
 assert(others.s == "Hello")
-others.i = nil
+assertThrows('java.lang.IllegalArgumentException', function() others.i = nil end)
 others.s = nil
 assert(others.i == 1)
 assert(others.s == nil)
@@ -31,7 +31,7 @@ assert(others.array1 ~= nil)
 assert(#(others.array1) == 3)
 
 assert(others.array2 == nil)
-others.array2 = {1, 2, 3}
+assertThrows('java.lang.IllegalArgumentException', function() others.array2 = {1, 2, 3} end)
 assert(others.array2 == nil)
 
 assert(others.map == nil)

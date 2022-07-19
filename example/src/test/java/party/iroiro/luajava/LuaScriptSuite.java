@@ -61,8 +61,8 @@ public class LuaScriptSuite<T extends Lua> {
             new ScriptTester("/suite/arrayTest.lua", L -> {
                 L.pushJavaArray(new int[] {1, 2, 3, 4, 5});
                 L.setGlobal("arr");
-                assertEquals(0, JuaAPI.arrayNewIndex(L.getId(), null, 0));
-                assertEquals(0, JuaAPI.arrayLength(""));
+                assertEquals(-1, JuaAPI.arrayNewIndex(L.getId(), null, 0));
+                assertEquals(-1, JuaAPI.arrayLength(""));
             }),
             new ScriptTester("/suite/invokeTest.lua", L -> {
                 //noinspection ConstantConditions

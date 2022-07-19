@@ -379,12 +379,13 @@ public abstract class JuaAPI {
     @SuppressWarnings("unused")
     public static int arrayNew(int index, Object oClass, int size) {
         Class<?> clazz;
+        Lua L = Jua.get(index);
         if (oClass instanceof Class && oClass != Void.TYPE) {
             clazz = ((Class<?>) oClass);
         } else {
-            return 0;
+            L.push("bad argument #1 to 'java.array' (expecting Class<?>)");
+            return -1;
         }
-        Lua L = Jua.get(index);
         if (size >= 0) {
             L.pushJavaArray(Array.newInstance(clazz, size));
         } else {
@@ -392,11 +393,13 @@ public abstract class JuaAPI {
             int[] sizes = new int[depth];
             for (int i = size; i <= -1; i++) {
                 if (!L.isNumber(i)) {
-                    return 0;
+                    L.push("bad argument #" + (i - size + 2) + " to 'java.array' (expecting number)");
+                    return -1;
                 }
                 int current = (int) L.toNumber(i);
                 if (current < 0) {
-                    return 0;
+                    L.push("bad argument #" + (i - size + 2) + " to 'java.array' (expecting non negative)");
+                    return -1;
                 }
                 sizes[i - size] = current;
             }
@@ -415,12 +418,14 @@ public abstract class JuaAPI {
      */
     @SuppressWarnings("unused")
     public static int arrayIndex(int index, Object obj, int i) {
+        Lua L = Jua.get(index);
         try {
             Object e = Array.get(obj, i - 1);
-            Jua.get(index).push(e, Lua.Conversion.SEMI);
+            L.push(e, Lua.Conversion.SEMI);
             return 1;
         } catch (Exception e) {
-            return 0;
+            L.push(e.toString());
+            return -1;
         }
     }
 
@@ -433,12 +438,14 @@ public abstract class JuaAPI {
      * @return the number of values pushed onto the stack
      */
     public static int arrayNewIndex(int index, Object obj, int i) {
+        Lua L = Jua.get(index);
         try {
-            Lua L = Jua.get(index);
             Array.set(obj, i - 1, L.toObject(L.getTop(), obj.getClass().getComponentType()));
-        } catch (Exception ignored) {
+            return 0;
+        } catch (Exception e) {
+            L.push(e.toString());
+            return -1;
         }
-        return 0;
     }
 
     /**
@@ -449,7 +456,7 @@ public abstract class JuaAPI {
         try {
             return Array.getLength(obj);
         } catch (Exception e) {
-            return 0;
+            return -1;
         }
     }
 
@@ -551,7 +558,7 @@ public abstract class JuaAPI {
         }
     }
 
-    @SuppressWarnings("unused") // Until we finally support varargs
+    /* TODO: Until we finally support varargs
     private static Object[] transformVarArgs(Executable executable, Object[] objects) {
         if (executable.isVarArgs()) {
             int count = executable.getParameterCount();
@@ -570,6 +577,7 @@ public abstract class JuaAPI {
             return objects;
         }
     }
+    */
 
     /**
      * Tries to fetch field from an object
@@ -606,15 +614,17 @@ public abstract class JuaAPI {
      * @return 0
      */
     private static int fieldNewIndex(int index, Class<?> clazz, Object object, String name) {
+        Lua L = Jua.get(index);
         try {
             Field field = clazz.getField(name);
-            Lua L = Jua.get(index);
             Class<?> type = field.getType();
             Object o = convertFromLua(L, type, 3);
             field.set(object, o);
-        } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException ignored) {
+            return 0;
+        } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
+            L.push(e.toString());
+            return -1;
         }
-        return 0;
     }
 
     /**
