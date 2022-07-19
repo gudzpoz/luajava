@@ -24,15 +24,15 @@ public abstract class JuaAPI {
      *
      * @param id     see {@link AbstractLua#getInstance(int)}
      * @param module the module name
-     * @return 1 if {@link Lua.LuaError#OK}
+     * @return always 1
      */
     public static int load(int id, String module) {
         AbstractLua L = Jua.get(id);
-        if (L.loadExternal(module) == Lua.LuaError.OK) {
-            return 1;
-        } else {
-            return 0;
+        Lua.LuaError error = L.loadExternal(module);
+        if (error != Lua.LuaError.OK) {
+            L.push("error " + error + " loading module '" + module + '\'');
         }
+        return 1;
     }
 
     /**
@@ -54,7 +54,8 @@ public abstract class JuaAPI {
             if (c != null && c.isInterface()) {
                 classes.add(c);
             } else {
-                return 0;
+                L.push("bad argument #" + i + " to 'java.proxy' (expecting an interface)");
+                return -1;
             }
         }
         Object o = L.createProxy(classes.toArray(new Class[0]), Lua.Conversion.SEMI);
@@ -108,7 +109,8 @@ public abstract class JuaAPI {
                 if (name != null) {
                     return javaImport(l.getId(), packageName + name);
                 } else {
-                    return 0;
+                    L.push("bad argument #1 to 'java.import' (expecting string)");
+                    return -1;
                 }
             });
             L.setField(-2, "__index");
@@ -119,7 +121,8 @@ public abstract class JuaAPI {
                 L.pushJavaClass(ClassUtils.forName(className, null));
                 return 1;
             } catch (ClassNotFoundException e) {
-                return 0;
+                L.push(e.toString());
+                return -1;
             }
         }
     }
@@ -213,7 +216,8 @@ public abstract class JuaAPI {
         if (obj instanceof JFunction) {
             return ((JFunction) obj).__call(L);
         } else {
-            return 0;
+            L.push("error invoking object (expecting a JFunction)");
+            return -1;
         }
     }
 
@@ -257,18 +261,20 @@ public abstract class JuaAPI {
     @SuppressWarnings("unused")
     public static int classNew(int index, Object oClazz, int paramCount) {
         Class<?> clazz;
+        Lua L = Jua.get(index);
         if (oClazz instanceof Class) {
             clazz = ((Class<?>) oClazz);
         } else {
-            return 0;
+            L.push("bad argument #1 to java.new (expecting Class<?>)");
+            return -1;
         }
-        Lua L = Jua.get(index);
         Object[] objects = new Object[paramCount];
         Constructor<?> constructor = matchMethod(L, clazz.getConstructors(), null, objects);
         if (constructor != null) {
             return construct(L, objects, constructor);
         }
-        return 0;
+        L.push("no matching constructor found");
+        return -1;
     }
 
     /**
@@ -284,8 +290,12 @@ public abstract class JuaAPI {
             Object obj = constructor.newInstance(objects);
             L.pushJavaObject(obj);
             return 1;
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            return 0;
+        } catch (InstantiationException | IllegalAccessException e) {
+            L.push(e.toString());
+            return -1;
+        } catch (InvocationTargetException e) {
+            L.push(e.getCause().toString());
+            return -1;
         }
     }
 
@@ -369,12 +379,13 @@ public abstract class JuaAPI {
     @SuppressWarnings("unused")
     public static int arrayNew(int index, Object oClass, int size) {
         Class<?> clazz;
+        Lua L = Jua.get(index);
         if (oClass instanceof Class && oClass != Void.TYPE) {
             clazz = ((Class<?>) oClass);
         } else {
-            return 0;
+            L.push("bad argument #1 to 'java.array' (expecting Class<?>)");
+            return -1;
         }
-        Lua L = Jua.get(index);
         if (size >= 0) {
             L.pushJavaArray(Array.newInstance(clazz, size));
         } else {
@@ -382,11 +393,13 @@ public abstract class JuaAPI {
             int[] sizes = new int[depth];
             for (int i = size; i <= -1; i++) {
                 if (!L.isNumber(i)) {
-                    return 0;
+                    L.push("bad argument #" + (i - size + 2) + " to 'java.array' (expecting number)");
+                    return -1;
                 }
                 int current = (int) L.toNumber(i);
                 if (current < 0) {
-                    return 0;
+                    L.push("bad argument #" + (i - size + 2) + " to 'java.array' (expecting non negative)");
+                    return -1;
                 }
                 sizes[i - size] = current;
             }
@@ -405,12 +418,14 @@ public abstract class JuaAPI {
      */
     @SuppressWarnings("unused")
     public static int arrayIndex(int index, Object obj, int i) {
+        Lua L = Jua.get(index);
         try {
             Object e = Array.get(obj, i - 1);
-            Jua.get(index).push(e, Lua.Conversion.SEMI);
+            L.push(e, Lua.Conversion.SEMI);
             return 1;
         } catch (Exception e) {
-            return 0;
+            L.push(e.toString());
+            return -1;
         }
     }
 
@@ -423,12 +438,14 @@ public abstract class JuaAPI {
      * @return the number of values pushed onto the stack
      */
     public static int arrayNewIndex(int index, Object obj, int i) {
+        Lua L = Jua.get(index);
         try {
-            Lua L = Jua.get(index);
             Array.set(obj, i - 1, L.toObject(L.getTop(), obj.getClass().getComponentType()));
-        } catch (Exception ignored) {
+            return 0;
+        } catch (Exception e) {
+            L.push(e.toString());
+            return -1;
         }
-        return 0;
     }
 
     /**
@@ -439,7 +456,7 @@ public abstract class JuaAPI {
         try {
             return Array.getLength(obj);
         } catch (Exception e) {
-            return 0;
+            return -1;
         }
     }
 
@@ -466,6 +483,7 @@ public abstract class JuaAPI {
         Object[] objects = new Object[paramCount];
         Method method = matchMethod(L, clazz.getMethods(), name, objects);
         if (method == null) {
+            L.push("no matching method found");
             return -1;
         } else {
             return methodInvoke(L, method, obj, objects);
@@ -495,8 +513,11 @@ public abstract class JuaAPI {
                         return construct(L, objects, constructor);
                     }
                 }
+                L.push("no matching constructor found");
+                return -1;
             }
-            return 0;
+            L.push("bad argument to constructor (Class<?> expected, got Object)");
+            return -1;
         }
         Method method = matchMethod(clazz, name, notSignature);
         if (method != null) {
@@ -505,7 +526,8 @@ public abstract class JuaAPI {
                 return methodInvoke(L, method, obj, objects);
             }
         }
-        return 0;
+        L.push("no matching method found");
+        return -1;
     }
 
     /**
@@ -536,7 +558,7 @@ public abstract class JuaAPI {
         }
     }
 
-    @SuppressWarnings("unused") // Until we finally support varargs
+    /* TODO: Until we finally support varargs
     private static Object[] transformVarArgs(Executable executable, Object[] objects) {
         if (executable.isVarArgs()) {
             int count = executable.getParameterCount();
@@ -555,6 +577,7 @@ public abstract class JuaAPI {
             return objects;
         }
     }
+    */
 
     /**
      * Tries to fetch field from an object
@@ -591,15 +614,17 @@ public abstract class JuaAPI {
      * @return 0
      */
     private static int fieldNewIndex(int index, Class<?> clazz, Object object, String name) {
+        Lua L = Jua.get(index);
         try {
             Field field = clazz.getField(name);
-            Lua L = Jua.get(index);
             Class<?> type = field.getType();
             Object o = convertFromLua(L, type, 3);
             field.set(object, o);
-        } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException ignored) {
+            return 0;
+        } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
+            L.push(e.toString());
+            return -1;
         }
-        return 0;
     }
 
     /**

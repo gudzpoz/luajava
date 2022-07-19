@@ -4,16 +4,30 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static party.iroiro.luajava.Lua.LuaError.OK;
 
 public class LuaScriptSuite<T extends Lua> {
+    private static final String LUA_ASSERT_THROWS = "function assertThrows(message, fun, ...)\n" +
+                                                   "  ok, msg = pcall(fun, ...)\n" +
+                                                   "  assert(not ok, debug.traceback('No error while expecting \"' .. message .. '\"'))\n" +
+                                                   "  assert(type(msg) == 'string', debug.traceback('Expecting error message on top of the stack'))\n" +
+                                                   "  assert(string.find(msg, message) ~= nil, debug.traceback('Expecting \"' .. message .. '\": Received \"' .. msg .. '\"'))\n" +
+                                                   "end";
     private final T L;
 
     public LuaScriptSuite(T L) {
         this.L = L;
+        addAssertThrows(L);
+    }
+
+    public static void addAssertThrows(Lua L) {
+        L.openLibrary("string");
+        L.openLibrary("debug");
+        assertEquals(OK, L.run(LUA_ASSERT_THROWS), L.toString(-1));
     }
 
     public static final ScriptTester[] TESTERS = {
@@ -47,12 +61,13 @@ public class LuaScriptSuite<T extends Lua> {
             new ScriptTester("/suite/arrayTest.lua", L -> {
                 L.pushJavaArray(new int[] {1, 2, 3, 4, 5});
                 L.setGlobal("arr");
-                assertEquals(0, JuaAPI.arrayNewIndex(L.getId(), null, 0));
-                assertEquals(0, JuaAPI.arrayLength(""));
+                assertEquals(-1, JuaAPI.arrayNewIndex(L.getId(), null, 0));
+                assertEquals(-1, JuaAPI.arrayLength(""));
             }),
             new ScriptTester("/suite/invokeTest.lua", L -> {
                 //noinspection ConstantConditions
-                assertEquals(0, JuaAPI.objectInvoke(L.getId(), null, null, 0));
+                assertEquals(-1, JuaAPI.objectInvoke(L.getId(), null, null, 0));
+                assertTrue(Objects.requireNonNull(L.toString(-1)).contains("expecting a JFunction"));
                 L.pushJavaClass(AbstractClass.class);
                 L.setGlobal("Abstract");
                 L.pushJavaClass(PrivateClass.class);
@@ -78,12 +93,12 @@ public class LuaScriptSuite<T extends Lua> {
     public void test() {
         L.openLibrary("coroutine");
         for (ScriptTester tester : TESTERS) {
-            assertDoesNotThrow(() -> tester.test(L));
+            assertDoesNotThrow(() -> tester.test(L), tester.file);
         }
     }
 
     public static class ScriptTester {
-        private final String file;
+        public final String file;
         private final Consumer<Lua> init;
 
         public ScriptTester(String file, Consumer<Lua> init) {

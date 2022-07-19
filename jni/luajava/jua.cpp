@@ -5,9 +5,9 @@
 #include "juaapi.h"
 
 // For template usage
-const char JAVA_CLASS_META_REGISTRY[] = "__JavaClassMetatable";
-const char JAVA_OBJECT_META_REGISTRY[] = "__JavaObjectMetatable";
-const char JAVA_ARRAY_META_REGISTRY[] =  "__JavaArrayMetatable";
+const char JAVA_CLASS_META_REGISTRY[] = "__jclass__";
+const char JAVA_OBJECT_META_REGISTRY[] = "__jobject__";
+const char JAVA_ARRAY_META_REGISTRY[] =  "__jarray__";
 
 // Bindings
 // java.lang.Class, Class::forName

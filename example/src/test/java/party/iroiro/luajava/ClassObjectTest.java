@@ -14,8 +14,7 @@ public class ClassObjectTest {
     @Test
     public void classObjectTest() {
         try (Lua L = new Lua51()) {
-            assertEquals(OK, L.run("t = java.import('java.lang.NoSystem')"));
-            assertEquals(OK, L.run("assert(t == nil)"));
+            assertEquals(RUNTIME, L.run("t = java.import('java.lang.NoSystem')"));
 
             assertEquals(OK, L.run("t = java.import('party.iroiro.luajava.ClassObjectTest')"));
             L.getGlobal("t");

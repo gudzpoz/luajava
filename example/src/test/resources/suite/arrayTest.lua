@@ -11,6 +11,6 @@ for i = 1, 5 do
 end
 assert(#arr == 5)
 
-assert(arr[6] == nil)
-arr[5] = 's'
+assertThrows('java.lang.ArrayIndexOutOfBoundsException', function() print(arr[6]) end)
+assertThrows('java.lang.IllegalArgumentException', function() arr[5] = 's' end)
 assert(arr[5] == 5 + 100)

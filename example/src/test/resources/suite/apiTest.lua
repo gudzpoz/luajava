@@ -1,8 +1,3 @@
-function assertThrows(fun)
-    local success, _ = pcall(fun, {})
-    assert(not success)
-end
-
 --[[
  Module `java`
   ]]--
@@ -17,9 +12,12 @@ end
   ]]--
 Integer = java.import('java.lang.Integer')
 assert(type(Integer) == 'userdata')
-assert(java.import('java.lang.NonExistentClass') == nil)
-assert(java.import('java lang Integer') == nil)
-assert(java.import('java&&&&&&&&&&&&/') == nil)
+assertThrows('java.lang.ClassNotFoundException: java.lang.NonExistentClass',
+             java.import, 'java.lang.NonExistentClass')
+assertThrows('java.lang.ClassNotFoundException: java lang Integer',
+             java.import, 'java lang Integer')
+assertThrows('java.lang.ClassNotFoundException: java&&&&&&&&&&&&/',
+             java.import, 'java&&&&&&&&&&&&/')
 -- java.import(package)
 lang = java.import('java.lang.*')
 assert(type(lang) == 'table')
@@ -27,28 +25,29 @@ assert(type(lang.String) == 'userdata')
 assert(type(lang.Integer) == 'userdata')
 assert(Integer(1024):equals(lang.Integer(1024)) == true)
 -- Throws: Type: not string
-assertThrows(function() java.import() end)
-assertThrows(function() java.import(nil) end)
-assertThrows(function() java.import({}) end)
+assertThrows('bad argument #1 to', java.import)
+assertThrows('bad argument #1 to', java.import, nil)
+assertThrows('bad argument #1 to', java.import, {})
 -- Nil: Type: convertible to string
-assert(java.import(100) == nil)
+assertThrows('java.lang.ClassNotFoundException: 100',
+             java.import, 100)
 
 --[[
   java.new
   ]]--
 assert(type(java.new(Integer, 10)) == 'userdata')
 -- Throws: Type: Not jobject nor jclass
-assertThrows(function() java.new(nil) end)
-assertThrows(function() java.new('java.lang.String') end)
-assertThrows(function() java.new({}) end)
-assertThrows(function() java.new(100) end)
+assertThrows('bad argument #1 to \'java.new\': __jclass__ or __jobject__ expected', java.new, nil)
+assertThrows('bad argument #1 to \'java.new\': __jclass__ or __jobject__ expected', java.new, 'java.lang.String')
+assertThrows('bad argument #1 to \'java.new\': __jclass__ or __jobject__ expected', java.new, {})
+assertThrows('bad argument #1 to \'java.new\': __jclass__ or __jobject__ expected', java.new, 100)
 -- Nil: Type: jobject, but is not Class<?>
-assert(java.new(Integer(1024)) == nil)
+assertThrows('bad argument #1', java.new, Integer(1024))
 assert(java.new(Integer(1024):getClass(), 1024):equals(Integer(1024)))
 -- Nil: Construction exceptions
-assert(java.new(Integer, 1, 1, 1) == nil)
-assert(java.new(Integer) == nil)
-assert(java.new(Integer, '') == nil)
+assertThrows('no matching constructor found', java.new, Integer, 1, 1, 1)
+assertThrows('no matching constructor found', java.new, Integer)
+assertThrows('java.lang.NumberFormatException', java.new, Integer, '')
 
 --[[
   java.proxy
@@ -58,21 +57,21 @@ run = { run = function() end }
 assert(java.proxy(Runnable, run) ~= nil)
 assert(java.proxy(Runnable.class, run) ~= nil)
 assert(java.proxy('java.lang.Runnable', run) ~= nil)
-assert(java.proxy(Integer, run) == nil)
-assert(java.proxy(Integer(10), run) == nil)
-assert(java.proxy('', run) == nil)
-assert(java.proxy('', {}) == nil)
-assert(java.proxy({}, {}) == nil)
+assertThrows('bad argument #1 to', java.proxy, Integer, run)
+assertThrows('bad argument #1 to', java.proxy, Integer(10), run)
+assertThrows('(expecting an interface)', java.proxy, '', run)
+assertThrows('(expecting an interface)', java.proxy, '', {})
+assertThrows('(expecting an interface)', java.proxy, {}, {})
 
 --[[
   java.array
   ]]--
-assert(java.array() == nil)
-assert(java.array(1) == nil)
-assert(java.array(1, 2) == nil)
-assert(java.array(Integer(1), 2) == nil)
-assert(java.array(Integer) == nil)
-assert(java.array(java.import('java.lang.Void').TYPE, 1, 1, 1) == nil)
+assertThrows('bad argument #1 to \'java.array\':', java.array)
+assertThrows('bad argument #1 to \'java.array\':', java.array, 1)
+assertThrows('bad argument #1 to \'java.array\':', java.array, 1, 2)
+assertThrows('bad argument #1 to \'java.array\'', java.array, Integer(1), 2)
+assertThrows('bad argument #2 to \'java.array\':', java.array, Integer)
+assertThrows('bad argument #1 to \'java.array\'', java.array, java.import('java.lang.Void').TYPE, 1, 1, 1)
 i = java.import('int')
 array = java.array(i, 2)
 assert(#array == 2)
@@ -82,5 +81,5 @@ array = java.array(i, 2, 2)
 assert(#array == 2)
 assert(#array[1] == 2)
 assert(#array[2] == 2)
-assert(java.array(i, 2, 3, {}, 4) == nil)
-assert(java.array(i, 2, 3, -4) == nil)
+assertThrows('bad argument #4', java.array, i, 2, 3, {}, 4)
+assertThrows('bad argument #3', java.array, i, 2, -3, -4)

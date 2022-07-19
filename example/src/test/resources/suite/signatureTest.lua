@@ -17,14 +17,14 @@ compareAndSet(200, 400)
 assert(integer:get() == 400)
 
 compareAndSet = java.method(integer, 'compareAndSet', 'double,double')
-compareAndSet(400, 800)
+assertThrows('no matching method found', compareAndSet, 400, 800)
 assert(integer:get() == 400)
 compareAndSet = java.method(integer, 'compareAndSet', 'int,java.lang.NoSuchClass')
-compareAndSet(400, 800)
+assertThrows('no matching method found', compareAndSet, 400, 800)
 assert(integer:get() == 400)
 
 compareAndSet = java.method(integer, 'compareAndSet', 'int,int')
-compareAndSet({ 400 }, { 800 })
+assertThrows('no matching method found', compareAndSet, { 400 }, { 800 })
 assert(integer:get() == 400)
 
 assert(java.method(integer, 'toString')() == '400')
@@ -36,16 +36,13 @@ assert(I:parseInt('1024') == 1024)
 assert(java.method(I, 'parseInt', 'java.lang.String')('1024') == 1024)
 
 assert(java.method(I, 'new', 'int')(1024):equals(I(1024)))
-assert(java.method(I, 'new', 'int')({}) == nil)
-assert(java.method(I, 'new', 'double')(1024) == nil)
-assert(java.method(I(1024), 'new', 'int')(1024) == nil)
+assertThrows('no matching constructor found', java.method(I, 'new', 'int'), {})
+assertThrows('no matching constructor found', java.method(I, 'new', 'double'), 1024)
+assertThrows('bad argument to constructor',
+             java.method(I(1024), 'new', 'int'), 1024)
 
 -- Varargs
-function assertThrows(fun)
-  ok, _ = pcall(fun)
-  assert(not ok)
-end
-assertThrows(function() String:format() end)
+assertThrows('no matching method found', String.format, String)
 format = java.method(String, 'format', 'java.lang.String,java.lang.Object[]')
 assert(format('%s', { 'content' }) == 'content')
 assert(String:format('>>> %s', { 'content' }) == '>>> content')

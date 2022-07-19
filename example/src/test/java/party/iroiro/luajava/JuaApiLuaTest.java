@@ -29,6 +29,7 @@ public class JuaApiLuaTest {
             L.register("juafun", l -> 0);
             L.push(array, Lua.Conversion.NONE);
             L.setGlobal("arr");
+            LuaScriptSuite.addAssertThrows(L);
             ResourceLoader loader = new ResourceLoader();
             loader.load("/tests/juaApiTest.lua", L);
             assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
@@ -40,9 +41,9 @@ public class JuaApiLuaTest {
 
             adoptTest(L);
 
-            assertError(L, "t:nonexistentMethod()", "No matching method found");
-            assertError(L, "t:privateMethod()", "No matching method found");
-            assertError(L, "t:staticMethod({a = 1})", "No matching method found");
+            assertError(L, "t:nonexistentMethod()", "no matching method found");
+            assertError(L, "t:privateMethod()", "no matching method found");
+            assertError(L, "t:staticMethod({a = 1})", "no matching method found");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

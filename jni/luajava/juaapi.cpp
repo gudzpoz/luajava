@@ -3,8 +3,6 @@
 
 #include "jua.h"
 
-#include <cstdio>
-
 inline int jInvokeObject(lua_State * L, jmethodID methodID,
                          jobject data, const char * name, int params) {
   JNIEnv * env = getJNIEnv(L);
@@ -19,11 +17,7 @@ inline int jInvokeObject(lua_State * L, jmethodID methodID,
                                    (jint) stateIndex, data, str, params);
     env->DeleteLocalRef(str);
   }
-  if (ret == -1) {
-    return luaL_error(L, "No matching method found");
-  } else {
-    return ret;
-  }
+  return checkOrError(L, ret);
 }
 
 inline int jInvoke(lua_State * L, const char * reg, jmethodID methodID) {
@@ -40,6 +34,9 @@ inline int jIndex(lua_State * L, const char * reg, jmethodID methodID, lua_CFunc
   jstring str = env->NewStringUTF(name);
   jint retVal = env->CallStaticIntMethod(juaapi_class, methodID, (jint) stateIndex, *data, str);
   env->DeleteLocalRef(str);
+  if (retVal == -1) {
+    return lua_error(L);
+  }
   if ((retVal & 0x1) != 0 && ret) {
     return 1;
   } else if ((retVal & 0x2) != 0 && ret) {
@@ -66,8 +63,8 @@ int jclassCall(lua_State * L) {
   jobject * data = (jobject *) lua_touserdata(L, 1);
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
-  return env->CallStaticIntMethod(juaapi_class, juaapi_classnew,
-                                  (jint) stateIndex, *data, lua_gettop(L) - 1);
+  return checkOrError(L, env->CallStaticIntMethod(juaapi_class, juaapi_classnew,
+    (jint) stateIndex, *data, lua_gettop(L) - 1));
 }
 
 int jclassNewIndex(lua_State * L) {
@@ -108,12 +105,12 @@ inline int jarrayJIndex(lua_State * L, jmethodID func, bool ret) {
   int i = (int) luaL_checknumber(L, 2);
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
-  int retVal = (int) env->CallStaticIntMethod(juaapi_class, func, (jint) stateIndex, *data, i);
+  // TODO: Simplify
+  int retVal = checkOrError(L, env->CallStaticIntMethod(juaapi_class, func, (jint) stateIndex, *data, i));
   if (ret) {
     return retVal;
   } else {
-    env->CallStaticIntMethod(juaapi_class, func, (jint) stateIndex, *data, i);
-    return 0;
+    return checkOrError(L, env->CallStaticIntMethod(juaapi_class, func, (jint) stateIndex, *data, i));
   }
 }
 
@@ -156,7 +153,7 @@ inline int jSigInvoke(lua_State * L, const char * reg, jmethodID methodID) {
     env->DeleteLocalRef(signatureS);
   }
   env->DeleteLocalRef(nameS);
-  return ret;
+  return checkOrError(L, ret);
 }
 
 int jclassSigInvoke(lua_State * L) {
@@ -183,5 +180,5 @@ int jmoduleLoad(lua_State * L) {
   int ret = env->CallStaticIntMethod(juaapi_class, juaapi_load,
                                      (jint) stateIndex, moduleName);
   env->DeleteLocalRef(moduleName);
-  return ret;
+  return checkOrError(L, ret);
 }
