@@ -28,11 +28,11 @@ public abstract class JuaAPI {
      */
     public static int load(int id, String module) {
         AbstractLua L = Jua.get(id);
-        if (L.loadExternal(module) == Lua.LuaError.OK) {
-            return 1;
-        } else {
-            return 0;
+        Lua.LuaError error = L.loadExternal(module);
+        if (error != Lua.LuaError.OK) {
+            L.push("error " + error + " loading module '" + module + '\'');
         }
+        return 1;
     }
 
     /**
@@ -54,7 +54,8 @@ public abstract class JuaAPI {
             if (c != null && c.isInterface()) {
                 classes.add(c);
             } else {
-                return 0;
+                L.push("bad argument #" + i + " to 'java.proxy' (expecting an interface)");
+                return -1;
             }
         }
         Object o = L.createProxy(classes.toArray(new Class[0]), Lua.Conversion.SEMI);
@@ -108,7 +109,8 @@ public abstract class JuaAPI {
                 if (name != null) {
                     return javaImport(l.getId(), packageName + name);
                 } else {
-                    return 0;
+                    L.push("bad argument #1 to 'java.import' (expecting string)");
+                    return -1;
                 }
             });
             L.setField(-2, "__index");
@@ -119,7 +121,8 @@ public abstract class JuaAPI {
                 L.pushJavaClass(ClassUtils.forName(className, null));
                 return 1;
             } catch (ClassNotFoundException e) {
-                return 0;
+                L.push(e.toString());
+                return -1;
             }
         }
     }

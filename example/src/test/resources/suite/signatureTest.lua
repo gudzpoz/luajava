@@ -42,7 +42,7 @@ assertThrows('bad argument to constructor',
              java.method(I(1024), 'new', 'int'), 1024)
 
 -- Varargs
-assertThrows('', String.format, String)
+assertThrows('no matching method found', String.format, String)
 format = java.method(String, 'format', 'java.lang.String,java.lang.Object[]')
 assert(format('%s', { 'content' }) == 'content')
 assert(String:format('>>> %s', { 'content' }) == '>>> content')

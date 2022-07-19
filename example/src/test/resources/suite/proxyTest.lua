@@ -1,5 +1,7 @@
-assert(java.proxy('java.lang.AbsolutelyNotAClass', {}) == nil)
-assert(java.proxy('java.lang.String', {}) == nil)
+assertThrows('bad argument #1 to \'java.proxy\'',
+             java.proxy, 'java.lang.AbsolutelyNotAClass', {})
+assertThrows('bad argument #1 to \'java.proxy\'',
+             java.proxy, 'java.lang.String', {})
 t = {
     value = 1,
     run = function(this)
