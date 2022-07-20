@@ -45,6 +45,7 @@ export default defineUserConfig({
       {
         text: 'Examples',
         children: [
+          '/examples/java.md',
           '/examples/hello-world.md',
           '/examples/hello-world-mod.md',
           '/examples/awt.md',

@@ -1,9 +1,3 @@
----
-lang: en-US
-title: Examples
-description: Examples
----
-
 # Hello World
 
 ```java

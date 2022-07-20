@@ -17,6 +17,28 @@ No, we are not talking about Lua threads but OS threads.
 
 The short answer is, **no**, we do not guarantee thread safety. But you may safely access the Lua state across threads with a bit of external synchronization.
 
+## Different main states
+
+You do not need to worry if you use multiple Lua main states, each dedicated to one OS thread.
+
+```java
+Lua L = new LuaJit();
+Lua J = new LuaJit();
+// No synchronization needed at all
+new Thread(new Worker(L)).start();
+new Thread(new Worker(J)).start();
+```
+
+## Same main state
+
+```java
+Lua mainState = new LuaJit();
+Lua subThread = mainState.newThread();
+// Now we might need some synchronization
+new Thread(new Worker(mainState)).start();
+new Thread(new Worker(subThread)).start();
+```
+
 From Java's perspective, there are two kinds of operations that might change the Lua state:
 
 1. Directly manipulating the Lua state by calling any of the member methods of `party.iroiro.luajava.Lua`. (You never know what might trigger a Lua GC, so just assume all methods may change the state.)
