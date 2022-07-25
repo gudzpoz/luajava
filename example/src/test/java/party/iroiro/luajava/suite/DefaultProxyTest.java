@@ -74,7 +74,7 @@ public class DefaultProxyTest {
         assertTrue(proxy.equals(proxy));
         // noinspection SimplifiableAssertion,EqualsBetweenInconvertibleTypes
         assertFalse(proxy.equals(L));
-        assertEquals("LuaProxy:interface party.iroiro.luajava.suite.DefaultProxyTest$DefaultRunnable,[]@"
+        assertEquals("LuaProxy[interface party.iroiro.luajava.suite.DefaultProxyTest$DefaultRunnable]@"
                      + Integer.toHexString(proxy.hashCode()), proxy.toString());
         LuaException exception = assertThrows(LuaException.class, proxy::equals);
         assertTrue(exception.getMessage().startsWith("method not implemented: "));
@@ -92,19 +92,33 @@ public class DefaultProxyTest {
 
         hierarchyTest();
         simpleIterTest();
+        exceptionTest();
+    }
+
+    private void exceptionTest() {
+        L.run("return {}");
+        assertEquals("java.lang.String is not an interface",
+                assertThrows(IllegalArgumentException.class,
+                        () -> L.createProxy(new Class[]{String.class}, Lua.Conversion.SEMI)).getMessage()
+        );
+        L.run("return {}");
+        L.push(L.createProxy(new Class[]{A.class}, Lua.Conversion.SEMI), Lua.Conversion.NONE);
+        L.setGlobal("aa");
+        assertEquals(OK, L.run("return aa:a() + 1"), L.toString(-1));
+        assertEquals(2., L.toNumber(-1));
     }
 
     private void simpleIterTest() {
         L.run("i = 10");
         assertEquals(OK, L.run("return {\n" +
-              "  next = function()\n" +
-              "    i = i - 1\n" +
-              "    return i\n" +
-              "  end,\n" +
-              "  hasNext = function()\n" +
-              "    return i > 0\n" +
-              "  end\n" +
-              "}"));
+                               "  next = function()\n" +
+                               "    i = i - 1\n" +
+                               "    return i\n" +
+                               "  end,\n" +
+                               "  hasNext = function()\n" +
+                               "    return i > 0\n" +
+                               "  end\n" +
+                               "}"));
         Iterator<?> iter = (Iterator<?>)
                 L.createProxy(new Class[]{Iterator.class}, Lua.Conversion.SEMI);
         Set<Double> iset = new HashSet<>();
@@ -114,6 +128,12 @@ public class DefaultProxyTest {
             }
         });
         assertEquals(10, iset.size(), Arrays.toString(iset.toArray()));
+
+        L.createTable(0, 0);
+        assertEquals("Expecting a table and interfaces",
+                assertThrows(IllegalArgumentException.class,
+                        () -> L.createProxy(new Class[0], Lua.Conversion.SEMI))
+                        .getMessage());
     }
 
     private void hierarchyTest() {
@@ -123,10 +143,25 @@ public class DefaultProxyTest {
         }, Lua.Conversion.SEMI);
         assertEquals(4, ((C) proxy).c());
         assertEquals(3, ((B) proxy).b());
+
+        L.createTable(0, 0);
+        Object dup = L.createProxy(new Class[]{
+                A.class, D.class,
+        }, Lua.Conversion.SEMI);
+        Set<Integer> s = new HashSet<>();
+        s.add(1);
+        s.add(2);
+        assertTrue(s.contains(((A) dup).dup()));
+        assertTrue(s.contains(((D) dup).dup()));
     }
 
-    interface A {
+    /* {@code public} is required */
+    public interface A {
         default int a() {
+            return 1;
+        }
+
+        default int dup() {
             return 1;
         }
     }
@@ -134,6 +169,12 @@ public class DefaultProxyTest {
     interface B {
         default int b() {
             return ((A) this).a() + 2;
+        }
+    }
+
+    interface D {
+        default int dup() {
+            return 2;
         }
     }
 

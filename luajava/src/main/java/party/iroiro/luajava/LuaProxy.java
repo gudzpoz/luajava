@@ -19,16 +19,13 @@ public class LuaProxy implements InvocationHandler {
     private final int ref;
     private final Lua L;
     private final Lua.Conversion degree;
-    private final Class<?> mainInterface;
-    private final Class<?>[] extraInterfaces;
+    private final Class<?>[] interfaces;
 
-    LuaProxy(int ref, Lua L, Lua.Conversion degree,
-             Class<?> mainInterface, Class<?>[] extraInterfaces) {
+    LuaProxy(int ref, Lua L, Lua.Conversion degree, Class<?>[] interfaces) {
         this.ref = ref;
         this.L = L;
         this.degree = degree;
-        this.mainInterface = mainInterface;
-        this.extraInterfaces = Arrays.copyOf(extraInterfaces, extraInterfaces.length);
+        this.interfaces = Arrays.copyOf(interfaces, interfaces.length);
     }
 
     @Override
@@ -90,8 +87,7 @@ public class LuaProxy implements InvocationHandler {
             return o == objects[0];
         }
         if (methodEquals(method, String.class, "toString")) {
-            return "LuaProxy:" + mainInterface + ","
-                   + Arrays.toString(extraInterfaces) + "@" + Integer.toHexString(hashCode());
+            return "LuaProxy" + Arrays.toString(interfaces) + "@" + Integer.toHexString(hashCode());
         }
         throw new LuaException("method not implemented: " + method);
     }

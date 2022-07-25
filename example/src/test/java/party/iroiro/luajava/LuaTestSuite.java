@@ -80,7 +80,7 @@ public class LuaTestSuite<T extends Lua> {
     public static final AtomicInteger proxyIntegerTest = new AtomicInteger(0);
     private void testProxy() {
         L.push(true);
-        assertNull(L.createProxy(new Class[0], Lua.Conversion.NONE));
+        assertThrows(IllegalArgumentException.class, () -> L.createProxy(new Class[0], Lua.Conversion.NONE));
         assertEquals(OK, L.run("proxyMap = { run = function()\n" +
                 "java.import('party.iroiro.luajava.LuaTestSuite').proxyIntegerTest:set(-1024)\n" +
                 "end" +

@@ -666,18 +666,17 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public Object createProxy(Class<?>[] interfaces, Conversion degree) {
+    public Object createProxy(Class<?>[] interfaces, Conversion degree)
+            throws IllegalArgumentException {
         if (isTable(-1) && interfaces.length >= 1) {
             return Proxy.newProxyInstance(
                     Jua.class.getClassLoader(),
                     interfaces,
-                    new LuaProxy(ref(), this, degree,
-                            interfaces[0], Arrays.copyOfRange(interfaces, 1, interfaces.length))
+                    new LuaProxy(ref(), this, degree, interfaces)
             );
-        } else {
-            pop(1);
-            return null;
         }
+        pop(1);
+        throw new IllegalArgumentException("Expecting a table and interfaces");
     }
 
     @Override

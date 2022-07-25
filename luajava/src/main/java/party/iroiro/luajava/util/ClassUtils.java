@@ -278,7 +278,6 @@ public abstract class ClassUtils {
         }
         return collection.toArray(EMPTY_CLASS_ARRAY);
     }
-
     /*
      * Licensed under the Apache License, Version 2.0 (the "License");
      * you may not use this file except in compliance with the License.
@@ -312,8 +311,9 @@ public abstract class ClassUtils {
 
                 result = MethodHandles.Lookup.class.getDeclaredConstructor(Class.class);
 
-                if (!result.isAccessible())
+                if (!result.isAccessible()) {
                     result.setAccessible(true);
+                }
             }
         } catch (Throwable ignore) {
             // Can no longer access the above in JDK 9
@@ -341,8 +341,8 @@ public abstract class ClassUtils {
         if (CACHED_LOOKUP_CONSTRUCTOR == null) {
             // Java 9 version for Java 8 distribution (jOOQ Open Source Edition)
             //noinspection JavaReflectionMemberAccess
-            Method privateLookupIn =
-                    MethodHandles.class.getMethod("privateLookupIn", Class.class, MethodHandles.Lookup.class);
+            Method privateLookupIn = MethodHandles.class.getMethod(
+                    "privateLookupIn", Class.class, MethodHandles.Lookup.class);
             MethodHandles.Lookup lookup = (MethodHandles.Lookup)
                     privateLookupIn.invoke(null, interfaceClass, MethodHandles.lookup());
             proxyLookup = lookup.in(interfaceClass);

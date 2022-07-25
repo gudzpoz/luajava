@@ -960,8 +960,9 @@ public interface Lua extends AutoCloseable {
      * @param interfaces the interfaces to implement
      * @param degree     the conversion degree when passing parameters and return values
      * @return a proxy object, calls to which are proxied to the underlying Lua table
+     * @throws IllegalArgumentException if not all classes are interfaces
      */
-    Object createProxy(Class<?>[] interfaces, Conversion degree);
+    Object createProxy(Class<?>[] interfaces, Conversion degree) throws IllegalArgumentException;
 
     /**
      * Registers the function to a global name
