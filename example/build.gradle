@@ -13,8 +13,11 @@ ext {
     jlineVersion = '3.21.0'
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
 
 dependencies {
     implementation project(':luajava')
@@ -42,6 +45,12 @@ dependencies {
 
 test {
     useJUnitPlatform()
+
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    })
+
+    jvmArgs ["--illegal-access=debug"]
 
     jacoco {
         destinationFile = project(':').buildDir.toPath().resolve('jacoco/test.exec').toFile()

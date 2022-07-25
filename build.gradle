@@ -21,8 +21,10 @@ subprojects { it ->
     if (it.name != 'android') {
         apply plugin: 'java'
         java {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(8)
+            }
+
             withSourcesJar()
             withJavadocJar()
         }
@@ -42,10 +44,10 @@ apply from: 'publish.gradle'
 apply from: 'jacoco.gradle'
 
 task allJavadoc(type: Javadoc) {
-    source subprojects.findAll {!['example', 'android'].contains(it.name) }.collect {
+    source subprojects.findAll { !['example', 'android'].contains(it.name) }.collect {
         it.sourceSets.main.allJava
     }
-    classpath = files(subprojects.findAll {!['example', 'android'].contains(it.name) }.collect {
+    classpath = files(subprojects.findAll { !['example', 'android'].contains(it.name) }.collect {
         it.sourceSets.main.compileClasspath
     })
     exclude '**/party/iroiro/luajava/util/**'
