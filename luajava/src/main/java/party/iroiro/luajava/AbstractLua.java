@@ -667,11 +667,12 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public Object createProxy(Class<?>[] interfaces, Conversion degree) {
-        if (isTable(-1)) {
+        if (isTable(-1) && interfaces.length >= 1) {
             return Proxy.newProxyInstance(
                     Jua.class.getClassLoader(),
                     interfaces,
-                    new LuaProxy(ref(), this, degree)
+                    new LuaProxy(ref(), this, degree,
+                            interfaces[0], Arrays.copyOfRange(interfaces, 1, interfaces.length))
             );
         } else {
             pop(1);

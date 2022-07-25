@@ -1,5 +1,6 @@
 package party.iroiro.luajava;
 
+import party.iroiro.luajava.suite.DefaultProxyTest;
 import party.iroiro.luajava.value.LuaValue;
 
 import java.lang.reflect.Array;
@@ -89,6 +90,8 @@ public class LuaTestSuite<T extends Lua> {
         proxyIntegerTest.set(0);
         ((Runnable) proxy).run();
         assertEquals(-1024, proxyIntegerTest.get());
+
+        new DefaultProxyTest(L).test();
     }
 
     private void testOthers() {

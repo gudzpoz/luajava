@@ -23,7 +23,10 @@ import org.jetbrains.annotations.Nullable;
 import java.io.Closeable;
 import java.io.Externalizable;
 import java.io.Serializable;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -38,22 +41,34 @@ import java.util.*;
  */
 public abstract class ClassUtils {
 
-    /** Suffix for array class names: {@code "[]"}. */
+    /**
+     * Suffix for array class names: {@code "[]"}.
+     */
     public static final String ARRAY_SUFFIX = "[]";
 
-    /** Prefix for internal array class names: {@code "["}. */
+    /**
+     * Prefix for internal array class names: {@code "["}.
+     */
     private static final String INTERNAL_ARRAY_PREFIX = "[";
 
-    /** Prefix for internal non-primitive array class names: {@code "[L"}. */
+    /**
+     * Prefix for internal non-primitive array class names: {@code "[L"}.
+     */
     private static final String NON_PRIMITIVE_ARRAY_PREFIX = "[L";
 
-    /** A reusable empty class array constant. */
+    /**
+     * A reusable empty class array constant.
+     */
     private static final Class<?>[] EMPTY_CLASS_ARRAY = {};
 
-    /** The package separator character: {@code '.'}. */
+    /**
+     * The package separator character: {@code '.'}.
+     */
     private static final char PACKAGE_SEPARATOR = '.';
 
-    /** The nested class separator character: {@code '$'}. */
+    /**
+     * The nested class separator character: {@code '$'}.
+     */
     private static final char NESTED_CLASS_SEPARATOR = '$';
 
     /**
@@ -131,6 +146,7 @@ public abstract class ClassUtils {
      * for example, for class path resource loading (but not necessarily for
      * {@code Class.forName}, which accepts a {@code null} ClassLoader
      * reference as well).
+     *
      * @return the default ClassLoader (only {@code null} if even the system
      * ClassLoader isn't accessible)
      * @see Thread#getContextClassLoader()
@@ -141,8 +157,7 @@ public abstract class ClassUtils {
         ClassLoader cl = null;
         try {
             cl = Thread.currentThread().getContextClassLoader();
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             // Cannot access thread context ClassLoader - falling back...
         }
         if (cl == null) {
@@ -152,8 +167,7 @@ public abstract class ClassUtils {
                 // getClassLoader() returning null indicates the bootstrap ClassLoader
                 try {
                     cl = ClassLoader.getSystemClassLoader();
-                }
-                catch (Throwable ex) {
+                } catch (Throwable ex) {
                     // Cannot access system ClassLoader - oh well, maybe the caller can live with null...
                 }
             }
@@ -166,12 +180,13 @@ public abstract class ClassUtils {
      * for primitives (e.g. "int") and array class names (e.g. "String[]").
      * Furthermore, it is also capable of resolving nested class names in Java source
      * style (e.g. "java.lang.Thread.State" instead of "java.lang.Thread$State").
-     * @param name the name of the Class
+     *
+     * @param name        the name of the Class
      * @param classLoader the class loader to use
-     * (which may be {@code null}, which indicates the default class loader)
+     *                    (which may be {@code null}, which indicates the default class loader)
      * @return a class instance for the supplied name
      * @throws ClassNotFoundException if the class was not found
-     * @throws LinkageError if the class file could not be loaded
+     * @throws LinkageError           if the class file could not be loaded
      * @see Class#forName(String, boolean, ClassLoader)
      */
     public static Class<?> forName(String name, @Nullable ClassLoader classLoader)
@@ -211,16 +226,14 @@ public abstract class ClassUtils {
         }
         try {
             return Class.forName(name, false, clToUse);
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             int lastDotIndex = name.lastIndexOf(PACKAGE_SEPARATOR);
             if (lastDotIndex != -1) {
                 String nestedClassName =
                         name.substring(0, lastDotIndex) + NESTED_CLASS_SEPARATOR + name.substring(lastDotIndex + 1);
                 try {
                     return Class.forName(nestedClassName, false, clToUse);
-                }
-                catch (ClassNotFoundException ex2) {
+                } catch (ClassNotFoundException ex2) {
                     // Swallow - let original exception get through
                 }
             }
@@ -234,6 +247,7 @@ public abstract class ClassUtils {
      * <p>Also supports the JVM's internal class names for primitive arrays.
      * Does <i>not</i> support the "[]" suffix notation for primitive arrays;
      * this is only supported by {@link #forName(String, ClassLoader)}.
+     *
      * @param name the name of the potentially primitive class
      * @return the primitive class, or {@code null} if the name does not denote
      * a primitive class or primitive array class
@@ -253,6 +267,7 @@ public abstract class ClassUtils {
     /**
      * Copy the given {@code Collection} into a {@code Class} array.
      * <p>The {@code Collection} must contain {@code Class} elements only.
+     *
      * @param collection the {@code Collection} to copy
      * @return the {@code Class} array
      * @since 3.1
@@ -262,5 +277,81 @@ public abstract class ClassUtils {
             return EMPTY_CLASS_ARRAY;
         }
         return collection.toArray(EMPTY_CLASS_ARRAY);
+    }
+
+    /*
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     *
+     * See https://github.com/jOOQ/jOOR/blob/main/jOOR-java-8/src/main/java/org/joor/Reflect.java
+     */
+
+    private static final Constructor<MethodHandles.Lookup> CACHED_LOOKUP_CONSTRUCTOR;
+
+    static {
+        Constructor<MethodHandles.Lookup> result;
+
+        try {
+            try {
+                //noinspection JavaReflectionMemberAccess
+                Optional.class.getMethod("stream");
+                result = null;
+            } catch (NoSuchMethodException e) {
+                // [jOOQ/jOOR#57] [jOOQ/jOOQ#9157]
+                // A JDK 9 guard that prevents "Illegal reflective access operation"
+                // warnings when running the below on JDK 9+
+
+                result = MethodHandles.Lookup.class.getDeclaredConstructor(Class.class);
+
+                if (!result.isAccessible())
+                    result.setAccessible(true);
+            }
+        } catch (Throwable ignore) {
+            // Can no longer access the above in JDK 9
+            result = null;
+        }
+
+        CACHED_LOOKUP_CONSTRUCTOR = result;
+    }
+
+    /**
+     * Invokes a default method from an interface
+     *
+     * @param interfaceClass the interface
+     * @param o              the {@code this} object
+     * @param method         the method
+     * @param parameters     the parameters
+     * @return the return result
+     * @throws Throwable arbitrary exceptions
+     */
+    public static Object invokeDefault(Class<?> interfaceClass, Object o,
+                                       Method method, Object[] parameters) throws Throwable {
+        MethodHandles.Lookup proxyLookup;
+
+        // Java 9 version
+        if (CACHED_LOOKUP_CONSTRUCTOR == null) {
+            // Java 9 version for Java 8 distribution (jOOQ Open Source Edition)
+            //noinspection JavaReflectionMemberAccess
+            Method privateLookupIn =
+                    MethodHandles.class.getMethod("privateLookupIn", Class.class, MethodHandles.Lookup.class);
+            MethodHandles.Lookup lookup = (MethodHandles.Lookup)
+                    privateLookupIn.invoke(null, interfaceClass, MethodHandles.lookup());
+            proxyLookup = lookup.in(interfaceClass);
+        } else {
+            proxyLookup = CACHED_LOOKUP_CONSTRUCTOR.newInstance(interfaceClass);
+        }
+
+        return proxyLookup.unreflectSpecial(method, interfaceClass)
+                .bindTo(o)
+                .invokeWithArguments(parameters);
     }
 }
