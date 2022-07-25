@@ -6,9 +6,11 @@ import party.iroiro.luajava.LuaProxy;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static party.iroiro.luajava.Lua.LuaError.OK;
 
 public class DefaultProxyTest {
     public interface DefaultRunnable extends Callable<Integer> {
@@ -89,6 +91,29 @@ public class DefaultProxyTest {
         assertEquals(3., proxy.luaError(3));
 
         hierarchyTest();
+        simpleIterTest();
+    }
+
+    private void simpleIterTest() {
+        L.run("i = 10");
+        assertEquals(OK, L.run("return {\n" +
+              "  next = function()\n" +
+              "    i = i - 1\n" +
+              "    return i\n" +
+              "  end,\n" +
+              "  hasNext = function()\n" +
+              "    return i > 0\n" +
+              "  end\n" +
+              "}"));
+        Iterator<?> iter = (Iterator<?>)
+                L.createProxy(new Class[]{Iterator.class}, Lua.Conversion.SEMI);
+        Set<Double> iset = new HashSet<>();
+        iter.forEachRemaining(i -> {
+            if (i instanceof Double) {
+                assertTrue(iset.add((Double) i));
+            }
+        });
+        assertEquals(10, iset.size(), Arrays.toString(iset.toArray()));
     }
 
     private void hierarchyTest() {
