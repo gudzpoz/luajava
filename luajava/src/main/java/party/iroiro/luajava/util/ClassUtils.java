@@ -283,10 +283,15 @@ public abstract class ClassUtils {
     static {
         LookupProvider provider;
         try {
-            Class.forName("org.objectweb.asm.ClassReader");
-            provider = (LookupProvider)
-                    Class.forName("party.iroiro.luajava.util.AsmLookupProvider")
-                            .getConstructor().newInstance();
+            String lookup = System.getProperty("luajava_lookup");
+            if (lookup == null || "asm".equals(lookup)) {
+                Class.forName("org.objectweb.asm.ClassReader");
+                provider = (LookupProvider)
+                        Class.forName("party.iroiro.luajava.util.AsmLookupProvider")
+                                .getConstructor().newInstance();
+            } else {
+                provider = new NastyLookupProvider();
+            }
         } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException |
                  NoSuchMethodException e) {
             provider = new NastyLookupProvider();

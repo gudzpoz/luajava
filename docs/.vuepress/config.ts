@@ -38,6 +38,7 @@ export default defineUserConfig({
         children: [
           '/api.md',
           '/conversions.md',
+          '/proxy.md',
           '/threadsafety.md',
           '/troubleshooting.md',
         ]

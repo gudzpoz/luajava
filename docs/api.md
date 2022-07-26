@@ -129,6 +129,7 @@ str = java.new(String, 'This is the content of the String')
 ### `proxy (jclass, ..., table)` <Badge>function</Badge>
 
 Creates a Java object implementing the specified interfaces, proxying calls to the underlying Lua table.
+See also [Proxy Caveats](./proxy.md).
 
 - **Parameters:**
 

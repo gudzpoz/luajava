@@ -12,7 +12,7 @@ print = java.method(java.import('java.lang.System').out,'println','java.lang.Obj
 Ansi = java.import('org.fusesource.jansi.Ansi')
 runnable = {
   run = function()
-    print(Ansi:ansi():render('@|magenta,bold Hello |@'):toString())
+    print(Ansi:ansi():render('@|magenta,bold Hello World |@'))
   end
 }
 thread = java.import('java.lang.Thread')(java.proxy('java.lang.Runnable', runnable))
