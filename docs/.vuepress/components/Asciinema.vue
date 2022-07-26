@@ -1,6 +1,6 @@
 <script setup>
 import 'asciinema-player/dist/bundle/asciinema-player.css'
-import { ref, onMounted, defineProps } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const cinema = ref(null)
 const props = defineProps(['file'])

@@ -2,6 +2,7 @@ package party.iroiro.luajava;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import party.iroiro.luajava.util.ClassUtils;
 import party.iroiro.luajava.value.ImmutableLuaValue;
 import party.iroiro.luajava.value.LuaValue;
 import party.iroiro.luajava.value.RefLuaValue;
@@ -666,17 +667,23 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public Object createProxy(Class<?>[] interfaces, Conversion degree) {
-        if (isTable(-1)) {
-            return Proxy.newProxyInstance(
-                    Jua.class.getClassLoader(),
-                    interfaces,
-                    new LuaProxy(ref(), this, degree)
-            );
-        } else {
-            pop(1);
-            return null;
+    public Object createProxy(Class<?>[] interfaces, Conversion degree)
+            throws IllegalArgumentException {
+        if (isTable(-1) && interfaces.length >= 1) {
+            try {
+                return Proxy.newProxyInstance(
+                        ClassUtils.getLookupLoader(),
+                        Arrays.stream(interfaces)
+                                .map(ClassUtils::wrap)
+                                .toArray(Class[]::new),
+                        new LuaProxy(ref(), this, degree, interfaces)
+                );
+            } catch (IncompatibleClassChangeError e) {
+                throw new IllegalArgumentException(e);
+            }
         }
+        pop(1);
+        throw new IllegalArgumentException("Expecting a table and interfaces");
     }
 
     @Override

@@ -13,8 +13,11 @@ ext {
     jlineVersion = '3.21.0'
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
 
 dependencies {
     implementation project(':luajava')
@@ -34,6 +37,7 @@ dependencies {
     implementation "org.jline:jline-terminal:$jlineVersion"
     implementation "org.jline:jline-builtins:$jlineVersion"
     implementation "org.jline:jline-terminal-jansi:$jlineVersion"
+    runtimeOnly 'org.ow2.asm:asm:9.3'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
@@ -42,6 +46,12 @@ dependencies {
 
 test {
     useJUnitPlatform()
+
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    })
+
+    jvmArgs ["--illegal-access=debug"]
 
     jacoco {
         destinationFile = project(':').buildDir.toPath().resolve('jacoco/test.exec').toFile()

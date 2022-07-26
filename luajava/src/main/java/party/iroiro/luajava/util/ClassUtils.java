@@ -24,6 +24,8 @@ import java.io.Closeable;
 import java.io.Externalizable;
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -38,22 +40,34 @@ import java.util.*;
  */
 public abstract class ClassUtils {
 
-    /** Suffix for array class names: {@code "[]"}. */
+    /**
+     * Suffix for array class names: {@code "[]"}.
+     */
     public static final String ARRAY_SUFFIX = "[]";
 
-    /** Prefix for internal array class names: {@code "["}. */
+    /**
+     * Prefix for internal array class names: {@code "["}.
+     */
     private static final String INTERNAL_ARRAY_PREFIX = "[";
 
-    /** Prefix for internal non-primitive array class names: {@code "[L"}. */
+    /**
+     * Prefix for internal non-primitive array class names: {@code "[L"}.
+     */
     private static final String NON_PRIMITIVE_ARRAY_PREFIX = "[L";
 
-    /** A reusable empty class array constant. */
+    /**
+     * A reusable empty class array constant.
+     */
     private static final Class<?>[] EMPTY_CLASS_ARRAY = {};
 
-    /** The package separator character: {@code '.'}. */
+    /**
+     * The package separator character: {@code '.'}.
+     */
     private static final char PACKAGE_SEPARATOR = '.';
 
-    /** The nested class separator character: {@code '$'}. */
+    /**
+     * The nested class separator character: {@code '$'}.
+     */
     private static final char NESTED_CLASS_SEPARATOR = '$';
 
     /**
@@ -131,6 +145,7 @@ public abstract class ClassUtils {
      * for example, for class path resource loading (but not necessarily for
      * {@code Class.forName}, which accepts a {@code null} ClassLoader
      * reference as well).
+     *
      * @return the default ClassLoader (only {@code null} if even the system
      * ClassLoader isn't accessible)
      * @see Thread#getContextClassLoader()
@@ -141,8 +156,7 @@ public abstract class ClassUtils {
         ClassLoader cl = null;
         try {
             cl = Thread.currentThread().getContextClassLoader();
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             // Cannot access thread context ClassLoader - falling back...
         }
         if (cl == null) {
@@ -152,8 +166,7 @@ public abstract class ClassUtils {
                 // getClassLoader() returning null indicates the bootstrap ClassLoader
                 try {
                     cl = ClassLoader.getSystemClassLoader();
-                }
-                catch (Throwable ex) {
+                } catch (Throwable ex) {
                     // Cannot access system ClassLoader - oh well, maybe the caller can live with null...
                 }
             }
@@ -166,12 +179,13 @@ public abstract class ClassUtils {
      * for primitives (e.g. "int") and array class names (e.g. "String[]").
      * Furthermore, it is also capable of resolving nested class names in Java source
      * style (e.g. "java.lang.Thread.State" instead of "java.lang.Thread$State").
-     * @param name the name of the Class
+     *
+     * @param name        the name of the Class
      * @param classLoader the class loader to use
-     * (which may be {@code null}, which indicates the default class loader)
+     *                    (which may be {@code null}, which indicates the default class loader)
      * @return a class instance for the supplied name
      * @throws ClassNotFoundException if the class was not found
-     * @throws LinkageError if the class file could not be loaded
+     * @throws LinkageError           if the class file could not be loaded
      * @see Class#forName(String, boolean, ClassLoader)
      */
     public static Class<?> forName(String name, @Nullable ClassLoader classLoader)
@@ -211,16 +225,14 @@ public abstract class ClassUtils {
         }
         try {
             return Class.forName(name, false, clToUse);
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             int lastDotIndex = name.lastIndexOf(PACKAGE_SEPARATOR);
             if (lastDotIndex != -1) {
                 String nestedClassName =
                         name.substring(0, lastDotIndex) + NESTED_CLASS_SEPARATOR + name.substring(lastDotIndex + 1);
                 try {
                     return Class.forName(nestedClassName, false, clToUse);
-                }
-                catch (ClassNotFoundException ex2) {
+                } catch (ClassNotFoundException ex2) {
                     // Swallow - let original exception get through
                 }
             }
@@ -234,6 +246,7 @@ public abstract class ClassUtils {
      * <p>Also supports the JVM's internal class names for primitive arrays.
      * Does <i>not</i> support the "[]" suffix notation for primitive arrays;
      * this is only supported by {@link #forName(String, ClassLoader)}.
+     *
      * @param name the name of the potentially primitive class
      * @return the primitive class, or {@code null} if the name does not denote
      * a primitive class or primitive array class
@@ -253,6 +266,7 @@ public abstract class ClassUtils {
     /**
      * Copy the given {@code Collection} into a {@code Class} array.
      * <p>The {@code Collection} must contain {@code Class} elements only.
+     *
      * @param collection the {@code Collection} to copy
      * @return the {@code Class} array
      * @since 3.1
@@ -262,5 +276,51 @@ public abstract class ClassUtils {
             return EMPTY_CLASS_ARRAY;
         }
         return collection.toArray(EMPTY_CLASS_ARRAY);
+    }
+
+    public final static LookupProvider lookupProvider;
+
+    static {
+        LookupProvider provider;
+        try {
+            String lookup = System.getProperty("luajava_lookup");
+            if (lookup == null || "asm".equals(lookup)) {
+                Class.forName("org.objectweb.asm.ClassReader");
+                provider = (LookupProvider)
+                        Class.forName("party.iroiro.luajava.util.AsmLookupProvider")
+                                .getConstructor().newInstance();
+            } else {
+                provider = new NastyLookupProvider();
+            }
+        } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException |
+                 NoSuchMethodException e) {
+            provider = new NastyLookupProvider();
+        }
+
+        lookupProvider = provider;
+    }
+
+    /**
+     * Invokes a default method from an interface
+     *
+     * @param o          the {@code this} object
+     * @param method     the method
+     * @param parameters the parameters
+     * @return the return result
+     * @throws Throwable arbitrary exceptions
+     */
+    public static Object invokeDefault(Object o, Method method, Object[] parameters) throws Throwable {
+        return lookupProvider
+                .lookup(method)
+                .bindTo(o)
+                .invokeWithArguments(parameters);
+    }
+
+    public static Class<?> wrap(Class<?> iClass) {
+        return lookupProvider.wrap(iClass);
+    }
+
+    public static ClassLoader getLookupLoader() {
+        return lookupProvider.getLoader();
     }
 }
