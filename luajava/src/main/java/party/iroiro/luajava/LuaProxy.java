@@ -25,7 +25,7 @@ public class LuaProxy implements InvocationHandler {
         this.ref = ref;
         this.L = L;
         this.degree = degree;
-        this.interfaces = Arrays.copyOf(interfaces, interfaces.length);
+        this.interfaces = interfaces;
     }
 
     @Override
@@ -74,7 +74,7 @@ public class LuaProxy implements InvocationHandler {
 
     private Object callDefaultMethod(Object o, Method method, Object[] objects) throws Throwable {
         if (method.isDefault()) {
-            return ClassUtils.invokeDefault(method.getDeclaringClass(), o, method, objects);
+            return ClassUtils.invokeDefault(o, method, objects);
         }
         return callObjectDefault(o, method, objects);
     }

@@ -11,10 +11,17 @@ repositories {
 group = rootProject.group
 version = rootProject.version
 
+java {
+    registerFeature('proxy') {
+        usingSourceSet(sourceSets.main)
+    }
+}
+
 dependencies {
     implementation 'com.badlogicgames.gdx:gdx-jnigen-loader:2.3.1'
     implementation 'com.google.errorprone:error_prone_annotations:2.14.0'
     implementation 'org.jetbrains:annotations:23.0.0'
+    proxyImplementation 'org.ow2.asm:asm:9.3'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     testImplementation 'org.mockito:mockito-core:4.6.1'

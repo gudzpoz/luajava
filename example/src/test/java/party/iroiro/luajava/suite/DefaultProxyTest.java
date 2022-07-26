@@ -6,7 +6,10 @@ import party.iroiro.luajava.LuaProxy;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -97,9 +100,10 @@ public class DefaultProxyTest {
 
     private void exceptionTest() {
         L.run("return {}");
-        assertEquals("java.lang.String is not an interface",
+        assertTrue(
                 assertThrows(IllegalArgumentException.class,
-                        () -> L.createProxy(new Class[]{String.class}, Lua.Conversion.SEMI)).getMessage()
+                        () -> L.createProxy(new Class[]{String.class}, Lua.Conversion.SEMI))
+                        .getMessage().contains("can not implement java.lang.String")
         );
         L.run("return {}");
         L.push(L.createProxy(new Class[]{A.class}, Lua.Conversion.SEMI), Lua.Conversion.NONE);
@@ -166,19 +170,13 @@ public class DefaultProxyTest {
         }
     }
 
-    interface B {
-        default int b() {
-            return ((A) this).a() + 2;
-        }
-    }
-
-    interface D {
+    public interface D {
         default int dup() {
             return 2;
         }
     }
 
-    interface C extends A {
+    public interface C extends A {
         default int c() {
             return a() + 3;
         }
