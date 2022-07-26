@@ -2933,7 +2933,8 @@ public&nbsp;@Nullable <a href="Lua.LuaType.html" title="enum in party.iroiro.lua
 <li class="blockList">
 <h4>createProxy</h4>
 <pre class="methodSignature">public&nbsp;java.lang.Object&nbsp;createProxy&#8203;(java.lang.Class&lt;?&gt;[]&nbsp;interfaces,
-                                    <a href="Lua.Conversion.html" title="enum in party.iroiro.luajava">Lua.Conversion</a>&nbsp;degree)</pre>
+                                    <a href="Lua.Conversion.html" title="enum in party.iroiro.luajava">Lua.Conversion</a>&nbsp;degree)
+                             throws java.lang.IllegalArgumentException</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="Lua.html#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion)">Lua</a></code></span></div>
 <div class="block">Creates a proxy object, implementing all the specified interfaces, with a Lua table on top of the stack
 
@@ -2948,6 +2949,8 @@ public&nbsp;@Nullable <a href="Lua.LuaType.html" title="enum in party.iroiro.lua
 <dd><code>degree</code> - the conversion degree when passing parameters and return values</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a proxy object, calls to which are proxied to the underlying Lua table</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.IllegalArgumentException</code> - if not all classes are interfaces</dd>
 </dl>
 </li>
 </ul>

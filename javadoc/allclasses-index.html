@@ -26,8 +26,8 @@
     catch(err) {
     }
 //-->
-var data = {"i0":2,"i1":2,"i2":2,"i3":2,"i4":1,"i5":2,"i6":1,"i7":2,"i8":2,"i9":1,"i10":4,"i11":4,"i12":4,"i13":2,"i14":2,"i15":2,"i16":2,"i17":2,"i18":2,"i19":2,"i20":2,"i21":2,"i22":2,"i23":2,"i24":2,"i25":2,"i26":2,"i27":2,"i28":2,"i29":2,"i30":1,"i31":2};
-var tabs = {65535:["t0","All Classes"],1:["t1","Interface Summary"],2:["t2","Class Summary"],4:["t3","Enum Summary"]};
+var data = {"i0":2,"i1":2,"i2":2,"i3":2,"i4":1,"i5":2,"i6":1,"i7":2,"i8":2,"i9":1,"i10":4,"i11":4,"i12":4,"i13":2,"i14":2,"i15":2,"i16":2,"i17":2,"i18":2,"i19":2,"i20":2,"i21":2,"i22":2,"i23":2,"i24":2,"i25":8,"i26":2,"i27":2,"i28":2,"i29":2,"i30":2,"i31":1,"i32":2};
+var tabs = {65535:["t0","All Classes"],1:["t1","Interface Summary"],2:["t2","Class Summary"],4:["t3","Enum Summary"],8:["t4","Exception Summary"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -104,7 +104,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <ul class="blockList">
 <li class="blockList">
 <table class="typeSummary">
-<caption><span id="t0" class="activeTableTab"><span>All Classes</span><span class="tabEnd">&nbsp;</span></span><span id="t1" class="tableTab"><span><a href="javascript:show(1);">Interface Summary</a></span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Class Summary</a></span><span class="tabEnd">&nbsp;</span></span><span id="t3" class="tableTab"><span><a href="javascript:show(4);">Enum Summary</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Classes</span><span class="tabEnd">&nbsp;</span></span><span id="t1" class="tableTab"><span><a href="javascript:show(1);">Interface Summary</a></span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Class Summary</a></span><span class="tabEnd">&nbsp;</span></span><span id="t3" class="tableTab"><span><a href="javascript:show(4);">Enum Summary</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Exception Summary</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Class</th>
 <th class="colLast" scope="col">Description</th>
@@ -254,42 +254,48 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </th>
 </tr>
 <tr id="i25" class="rowColor">
+<td class="colFirst"><a href="party/iroiro/luajava/LuaException.html" title="class in party.iroiro.luajava">LuaException</a></td>
+<th class="colLast" scope="row">
+<div class="block">A wrapper around a Lua error message</div>
+</th>
+</tr>
+<tr id="i26" class="altColor">
 <td class="colFirst"><a href="party/iroiro/luajava/LuaJit.html" title="class in party.iroiro.luajava">LuaJit</a></td>
 <th class="colLast" scope="row">
 <div class="block">A thin wrapper around a LuaJIT Lua state</div>
 </th>
 </tr>
-<tr id="i26" class="altColor">
+<tr id="i27" class="rowColor">
 <td class="colFirst"><a href="party/iroiro/luajava/LuaJitConsts.html" title="class in party.iroiro.luajava">LuaJitConsts</a></td>
 <th class="colLast" scope="row">
 <div class="block">Generated with <code>generate-consts.awk</code>:</div>
 </th>
 </tr>
-<tr id="i27" class="rowColor">
+<tr id="i28" class="altColor">
 <td class="colFirst"><a href="party/iroiro/luajava/LuaJitNatives.html" title="class in party.iroiro.luajava">LuaJitNatives</a></td>
 <th class="colLast" scope="row">
 <div class="block">Lua C API wrappers</div>
 </th>
 </tr>
-<tr id="i28" class="altColor">
+<tr id="i29" class="rowColor">
 <td class="colFirst"><a href="party/iroiro/luajava/LuaNative.html" title="class in party.iroiro.luajava">LuaNative</a></td>
 <th class="colLast" scope="row">
 <div class="block">Generated from the common parts of <code>Lua5.[1..4]</code></div>
 </th>
 </tr>
-<tr id="i29" class="rowColor">
+<tr id="i30" class="altColor">
 <td class="colFirst"><a href="party/iroiro/luajava/LuaProxy.html" title="class in party.iroiro.luajava">LuaProxy</a></td>
 <th class="colLast" scope="row">
 <div class="block">Class that implements the InvocationHandler interface.</div>
 </th>
 </tr>
-<tr id="i30" class="altColor">
+<tr id="i31" class="rowColor">
 <td class="colFirst"><a href="party/iroiro/luajava/value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a></td>
 <th class="colLast" scope="row">
 <div class="block">A simple wrapper of references to Lua values</div>
 </th>
 </tr>
-<tr id="i31" class="rowColor">
+<tr id="i32" class="altColor">
 <td class="colFirst"><a href="party/iroiro/luajava/value/RefLuaValue.html" title="class in party.iroiro.luajava.value">RefLuaValue</a></td>
 <th class="colLast" scope="row">&nbsp;</th>
 </tr>

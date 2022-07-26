@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-cbc2c742","path":"/examples/modules.html","title":"Classpath Modules","lang":"en-US","frontmatter":{},"excerpt":"","headers":[],"git":{"updatedTime":1658823806000},"filePathRelative":"examples/modules.md"}');export{e as data};
