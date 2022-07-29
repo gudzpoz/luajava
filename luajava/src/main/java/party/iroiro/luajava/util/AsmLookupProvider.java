@@ -79,8 +79,10 @@ public class AsmLookupProvider implements LookupProvider {
         }
         try {
             return fallback.lookup(method);
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException ex) {
-            throw new IllegalAccessException(ex.toString());
+        } catch (Throwable ex) {
+            IllegalAccessException exception = new IllegalAccessException(ex.getMessage());
+            exception.initCause(ex);
+            throw exception;
         }
     }
 

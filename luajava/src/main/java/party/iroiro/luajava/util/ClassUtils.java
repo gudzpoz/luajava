@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.Closeable;
 import java.io.Externalizable;
 import java.io.Serializable;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -289,8 +290,14 @@ public abstract class ClassUtils {
      * @throws Throwable arbitrary exceptions
      */
     public static Object invokeDefault(Object o, Method method, Object[] parameters) throws Throwable {
-        return lookupProvider
-                .lookup(method)
+        MethodHandle lookup;
+        try {
+            lookup = lookupProvider
+                    .lookup(method);
+        } catch (Throwable e) {
+            throw new UnsupportedOperationException(e);
+        }
+        return lookup
                 .bindTo(o)
                 .invokeWithArguments(parameters);
     }

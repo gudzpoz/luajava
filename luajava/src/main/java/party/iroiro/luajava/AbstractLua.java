@@ -678,7 +678,7 @@ public abstract class AbstractLua implements Lua {
                                 .toArray(Class[]::new),
                         new LuaProxy(ref(), this, degree, interfaces)
                 );
-            } catch (IncompatibleClassChangeError e) {
+            } catch (Throwable e) {
                 throw new IllegalArgumentException(e);
             }
         }

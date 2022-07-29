@@ -162,3 +162,15 @@ java.lang.UnsupportedOperationException: remove
 ::::
 
 :::::
+
+### Android
+
+Android, on the other hand, does not allow loading `.class` data dynamically,
+and thus the above approach is not yet viable. To add more to this, support for Java 8, let alone Java 9, is limited on Android and varies between API version...
+
+In short, I cannot get it working on my own phone. Good luck to anyone trying to do so.
+
+::: tip
+We are trying to generate `.dex` data directly while minimizing external dependencies, which might take quite a while to finish though.
+Feel free to contribute if you have better ideas!
+:::

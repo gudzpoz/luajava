@@ -19,21 +19,23 @@ package party.iroiro.luajava.util;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Optional;
 
 public class NastyLookupProvider implements LookupProvider {
     private final Constructor<MethodHandles.Lookup> CACHED_LOOKUP_CONSTRUCTOR;
+    private final boolean accessible;
 
     public NastyLookupProvider() {
         Constructor<MethodHandles.Lookup> result;
+        boolean isAccessible;
 
         try {
             try {
                 //noinspection JavaReflectionMemberAccess
-                Optional.class.getMethod("stream");
+                MethodHandles.class.getMethod(
+                        "privateLookupIn", Class.class, MethodHandles.Lookup.class);
                 result = null;
+                isAccessible = true;
             } catch (NoSuchMethodException e) {
                 // [jOOQ/jOOR#57] [jOOQ/jOOQ#9157]
                 // A JDK 9 guard that prevents "Illegal reflective access operation"
@@ -44,13 +46,17 @@ public class NastyLookupProvider implements LookupProvider {
                 if (!result.isAccessible()) {
                     result.setAccessible(true);
                 }
+
+                isAccessible = true;
             }
         } catch (Throwable ignore) {
             // Can no longer access the above in JDK 9
             result = null;
+            isAccessible = false;
         }
 
         CACHED_LOOKUP_CONSTRUCTOR = result;
+        accessible = isAccessible;
     }
 
     @Override
@@ -58,12 +64,14 @@ public class NastyLookupProvider implements LookupProvider {
         return interfaceClass;
     }
 
-    public MethodHandle lookup(Method method)
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+    public MethodHandle lookup(Method method) throws Throwable {
         MethodHandles.Lookup proxyLookup;
 
-        // Java 9 version
-        if (CACHED_LOOKUP_CONSTRUCTOR == null) {
+        if (!accessible) {
+            // Android? Who knows.
+            proxyLookup = MethodHandles.lookup();
+        } else if (CACHED_LOOKUP_CONSTRUCTOR == null) {
+            // Java 9 version
             // Java 9 version for Java 8 distribution (jOOQ Open Source Edition)
             //noinspection JavaReflectionMemberAccess
             Method privateLookupIn = MethodHandles.class.getMethod(
@@ -72,6 +80,7 @@ public class NastyLookupProvider implements LookupProvider {
                     privateLookupIn.invoke(null, method.getDeclaringClass(), MethodHandles.lookup());
             proxyLookup = lookup.in(method.getDeclaringClass());
         } else {
+            // Java 8 maybe
             proxyLookup = CACHED_LOOKUP_CONSTRUCTOR.newInstance(method.getDeclaringClass());
         }
 

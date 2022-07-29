@@ -73,7 +73,7 @@ public class LuaTestSuite<T extends Lua> {
                     () -> t.setExternalLoader(new ClassPathLoader()));
             assertEquals(FILE, t.loadExternal("some.module"));
             assertEquals(OK, t.loadExternal("suite.importTest"));
-            assertEquals(OK, t.pCall(0, Consts.LUA_MULTRET), L.toString(-1));
+            assertEquals(OK, t.pCall(0, Consts.LUA_MULTRET), t.toString(-1));
         }
     }
 
