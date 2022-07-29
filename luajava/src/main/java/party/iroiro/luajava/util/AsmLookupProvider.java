@@ -2,7 +2,6 @@ package party.iroiro.luajava.util;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
@@ -18,6 +17,28 @@ public class AsmLookupProvider implements LookupProvider {
 
     private final NastyLookupProvider fallback = new NastyLookupProvider();
 
+    private final boolean supported;
+
+    AsmLookupProvider() {
+        boolean isSupported;
+        try {
+            lookupExtender("party.iroiro.luajava.util.SampleExtender$Test",
+                    "java.lang.Runnable");
+            isSupported = true;
+        } catch (Throwable e) {
+            isSupported = false;
+        }
+        supported = isSupported;
+    }
+
+    private Class<?> lookupExtender(String name, String iName) throws Throwable {
+        loader.add(name, SampleExtender.generateClass(
+                name.replace('.', '/'), iName.replace('.', '/')));
+        Class<?> extender = loader.findClass(name);
+        extenders.put(iName, extender);
+        return extender;
+    }
+
     private Class<?> lookupExtender(Class<?> iClass) throws ClassNotFoundException {
         try {
             String iName = iClass.getName();
@@ -32,12 +53,8 @@ public class AsmLookupProvider implements LookupProvider {
             } else {
                 name = iName + "LuaJavaImpl$" + counter.getAndIncrement();
             }
-            loader.add(name, SampleExtender.generateClass(
-                    name.replace('.', '/'), iName.replace('.', '/')));
-            extender = loader.findClass(name);
-            extenders.put(iName, extender);
-            return extender;
-        } catch (IOException e) {
+            return lookupExtender(name, iName);
+        } catch (Throwable e) {
             throw new ClassNotFoundException(e.toString());
         }
     }
@@ -52,25 +69,29 @@ public class AsmLookupProvider implements LookupProvider {
     }
 
     public MethodHandle lookup(Method method) throws IllegalAccessException {
-        try {
-            Class<?> extender = lookupExtender(method.getDeclaringClass());
-            return fromExtender(extender)
-                    .unreflectSpecial(method, extender);
-        } catch (ClassNotFoundException e) {
+        if (supported) {
             try {
-                return fallback.lookup(method);
-            } catch (NoSuchMethodException | InvocationTargetException | InstantiationException ex) {
-                throw new IllegalAccessException(ex.toString());
+                Class<?> extender = lookupExtender(method.getDeclaringClass());
+                return fromExtender(extender)
+                        .unreflectSpecial(method, extender);
+            } catch (ClassNotFoundException ignored) {
             }
+        }
+        try {
+            return fallback.lookup(method);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException ex) {
+            throw new IllegalAccessException(ex.toString());
         }
     }
 
     public @Nullable Class<?> wrap(Class<?> iClass) {
-        try {
-            return lookupExtender(iClass);
-        } catch (ClassNotFoundException e) {
-            return fallback.wrap(iClass);
+        if (supported) {
+            try {
+                return lookupExtender(iClass);
+            } catch (ClassNotFoundException ignored) {
+            }
         }
+        return fallback.wrap(iClass);
     }
 
     public ClassLoader getLoader() {

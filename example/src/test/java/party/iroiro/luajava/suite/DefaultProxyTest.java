@@ -103,7 +103,7 @@ public class DefaultProxyTest {
         assertTrue(
                 assertThrows(IllegalArgumentException.class,
                         () -> L.createProxy(new Class[]{String.class}, Lua.Conversion.SEMI))
-                        .getMessage().contains("can not implement java.lang.String")
+                        .getMessage().contains("java.lang.String")
         );
         L.run("return {}");
         L.push(L.createProxy(new Class[]{A.class}, Lua.Conversion.SEMI), Lua.Conversion.NONE);

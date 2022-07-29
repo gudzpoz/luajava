@@ -31,6 +31,7 @@ public class LuaTestSuite<T extends Lua> {
 
     public void test() {
         L.openLibraries();
+        LuaScriptSuite.addAssertThrows(L);
         testException();
         testExternalLoader();
         testJavaToLuaConversions();
