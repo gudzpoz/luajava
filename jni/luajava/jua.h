@@ -28,6 +28,7 @@ extern jmethodID juaapi_luaify;
 extern jmethodID juaapi_import;
 extern jmethodID juaapi_proxy;
 extern jmethodID juaapi_load;
+extern jmethodID throwable_tostring;
 
 jclass bindJavaClass(JNIEnv * env, const char * name);
 jmethodID bindJavaStaticMethod(JNIEnv * env, jclass c, const char * name, const char * sig);
@@ -50,12 +51,23 @@ int luaJ_isobject(lua_State * L, int index);
 
 int luaJ_insertloader(lua_State * L, const char * searchers);
 
-inline int checkOrError (lua_State * L, jint ret) {
-  if (ret >= 0) {
-    return (int) ret;
-  } else {
-    return lua_error(L);
+inline int checkOrError (JNIEnv * env, lua_State * L, jint ret) {
+  jthrowable e = env->ExceptionOccurred();
+  if (e == NULL) {
+    if (ret >= 0) {
+      return (int) ret;
+    } else {
+      return lua_error(L);
+    }
   }
+  env->ExceptionClear();
+  jstring message = (jstring) env->CallObjectMethod(e, throwable_tostring);
+  env->DeleteLocalRef(e);
+  const char * str = env->GetStringUTFChars(message, NULL);
+  lua_pushstring(L, str);
+  env->ReleaseStringUTFChars(message, str);
+  env->DeleteLocalRef((jobject) message);
+  return lua_error(L);
 }
 
 #endif /* JUA_H! */

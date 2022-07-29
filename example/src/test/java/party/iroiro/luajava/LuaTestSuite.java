@@ -31,21 +31,31 @@ public class LuaTestSuite<T extends Lua> {
 
     public void test() {
         L.openLibraries();
-        testOverflow();
+        testException();
+        testExternalLoader();
         testJavaToLuaConversions();
         testLuaToJavaConversions();
-        testPushChecks();
-        testTableOperations();
         testMeasurements();
-        testStackOperations();
-        testRef();
         testMetatables();
-        testRunners();
-        testThreads();
-        testProxy();
-        testExternalLoader();
         testNotSupported();
         testOthers();
+        testOverflow();
+        testProxy();
+        testPushChecks();
+        testRef();
+        testRunners();
+        testStackOperations();
+        testTableOperations();
+        testThreads();
+    }
+
+    private void testException() {
+        L.push(L -> {
+            throw new RuntimeException("Unexpected exception");
+        });
+        assertNull(L.get().call());
+        assertEquals("java.lang.RuntimeException: Unexpected exception", L.toString(-1));
+        L.pop(1);
     }
 
     private void testExternalLoader() {
