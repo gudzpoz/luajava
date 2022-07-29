@@ -14,7 +14,7 @@ HOST_OS=linux
 NDK=$ANDROID_NDK_HOME
 TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/$HOST_OS-x86_64
 NDKB=$TOOLCHAIN/bin
-NDKAPI=16
+NDKAPI=19
 
 echo "########## Building armv7-a ##########"
 TARGET=armv7a-linux-androideabi
