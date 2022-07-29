@@ -94,15 +94,15 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Build natives
         run: |
-          export export NDK_HOME=$ANDROID_NDK_HOME
+          export NDK_HOME=$ANDROID_NDK_LATEST_HOME
           ./gradlew jniGen jnigenBuild
       - name: Test
         run: |
-          export export NDK_HOME=$ANDROID_NDK_HOME
+          export NDK_HOME=$ANDROID_NDK_LATEST_HOME
           ./gradlew check
       - name: Jacoco Test Report
         run: |
-          export export NDK_HOME=$ANDROID_NDK_HOME
+          export NDK_HOME=$ANDROID_NDK_LATEST_HOME
           ./gradlew jacocoTestReport
       - name: Upload test result
         uses: codecov/codecov-action@v2

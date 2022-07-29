@@ -11,7 +11,7 @@ mkdir -p $BUILD_DIR
 rm *.a 1>/dev/null 2>/dev/null
 
 HOST_OS=linux
-NDK=$ANDROID_NDK_HOME
+NDK="${ANDROID_NDK_HOME:-$ANDROID_NDK_LATEST_HOME}"
 TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/$HOST_OS-x86_64
 NDKB=$TOOLCHAIN/bin
 NDKAPI=19

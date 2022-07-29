@@ -5,7 +5,7 @@
 [submodule "lua51/jni/lua51"]
 	path = lua51/jni/lua51
 	url = https://github.com/gudzpoz/lua51.git
-	branch = main
+	branch = v5.1
 [submodule "lua52/jni/lua52"]
 	path = lua52/jni/lua52
 	url = https://github.com/lua/lua.git
