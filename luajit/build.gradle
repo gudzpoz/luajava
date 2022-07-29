@@ -174,7 +174,7 @@ jnigen {
     add(Android) {
         androidABIs = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64']
         androidApplicationMk = [
-                'APP_PLATFORM := android-16'
+                'APP_PLATFORM := android-19'
         ]
         linkerFlags += " -L${projectDir}/jni/luajit/lib/android/\$(TARGET_ARCH_ABI) -lluajit "
     }
