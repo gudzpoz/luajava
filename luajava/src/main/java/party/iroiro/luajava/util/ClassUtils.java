@@ -24,7 +24,6 @@ import java.io.Closeable;
 import java.io.Externalizable;
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -278,27 +277,7 @@ public abstract class ClassUtils {
         return collection.toArray(EMPTY_CLASS_ARRAY);
     }
 
-    public final static LookupProvider lookupProvider;
-
-    static {
-        LookupProvider provider;
-        try {
-            String lookup = System.getProperty("luajava_lookup");
-            if (lookup == null || "asm".equals(lookup)) {
-                Class.forName("org.objectweb.asm.ClassReader");
-                provider = (LookupProvider)
-                        Class.forName("party.iroiro.luajava.util.AsmLookupProvider")
-                                .getConstructor().newInstance();
-            } else {
-                provider = new NastyLookupProvider();
-            }
-        } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException |
-                 NoSuchMethodException e) {
-            provider = new NastyLookupProvider();
-        }
-
-        lookupProvider = provider;
-    }
+    public final static LookupProvider lookupProvider = new AsmLookupProvider();
 
     /**
      * Invokes a default method from an interface
