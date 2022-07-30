@@ -8,6 +8,7 @@
 const char JAVA_CLASS_META_REGISTRY[] = "__jclass__";
 const char JAVA_OBJECT_META_REGISTRY[] = "__jobject__";
 const char JAVA_ARRAY_META_REGISTRY[] =  "__jarray__";
+const char JAVA_PACKAGE_META_REGISTRY[] =  "__jpackage__";
 
 // Bindings
 // java.lang.Class, Class::forName
@@ -222,6 +223,58 @@ void initMetaRegistry(lua_State * L) {
     lua_pushcfunction(L, &jarrayNewIndex);
     lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
   }
+
+  if (luaL_newmetatable(L, JAVA_PACKAGE_META_REGISTRY) == 1) {
+    /* Lua:
+     *   - self: A table, with self[1] pre-filled with an integer,
+     *           self[2] pre-filled with a package / class name,
+     *           Used cache results.
+     *   - name: the inner package / class name
+     */
+     // TODO: Maybe compile Lua code into C code for better performance for non-JIT Lua
+    luaL_dostring(L, R"PACKAGE(
+return function(self, name)
+  if type(self) ~= 'table' then
+    error("bad argument #1 to 'java.import.?': expecting a table")
+  end
+  if type(name) ~= 'string' then
+    error("bad argument #2 to 'java.import.?': expecting a valid string")
+  end
+
+  local value = rawget(self, name)
+  if value ~= nil then
+    return value
+  else
+    local depth = rawget(self, 1)
+    local current = rawget(self, 2)
+    local meta = getmetatable(self)
+    local v = nil
+    if depth == 1 then
+      v = rawget(meta, '__import')(current .. name)
+    else
+      v = {
+        [1]  = depth - 1,
+        [2] = current .. name .. '.'
+      }
+      setmetatable(v, meta)
+    end
+    rawset(self, name, v)
+    return v
+  end
+end
+    )PACKAGE");
+    lua_setfield(L, -2, LUA_METAFIELD_INDEX);
+    lua_pushcfunction(L, &javaImport);
+    lua_setfield(L, -2, "__import");
+    /* jclassNewIndex will always produces an error:
+     * we prevent direct writes to table fields
+     */
+    lua_pushcfunction(L, &jclassNewIndex);
+    lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
+    lua_pushcfunction(L, &jclassNewIndex);
+    lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
+  }
+
   lua_pop(L, 1);
 }
 

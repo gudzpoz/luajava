@@ -101,30 +101,12 @@ public abstract class JuaAPI {
     @SuppressWarnings("unused")
     public static int javaImport(int id, String className) {
         Lua L = Jua.get(id);
-        if (className.endsWith(".*")) {
-            L.createTable(0, 0);
-            L.createTable(0, 1);
-            String packageName = className.substring(0, className.length() - 1);
-            L.push(l -> {
-                String name = l.toString(-1);
-                if (name != null) {
-                    return javaImport(l.getId(), packageName + name);
-                } else {
-                    L.push("bad argument #1 to 'java.import' (expecting string)");
-                    return -1;
-                }
-            });
-            L.setField(-2, "__index");
-            L.setMetatable(-2);
+        try {
+            L.pushJavaClass(ClassUtils.forName(className, null));
             return 1;
-        } else {
-            try {
-                L.pushJavaClass(ClassUtils.forName(className, null));
-                return 1;
-            } catch (ClassNotFoundException e) {
-                L.push(e.toString());
-                return -1;
-            }
+        } catch (ClassNotFoundException e) {
+            L.push(e.toString());
+            return -1;
         }
     }
 

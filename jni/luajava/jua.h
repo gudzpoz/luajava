@@ -9,6 +9,7 @@
 extern const char JAVA_CLASS_META_REGISTRY[];
 extern const char JAVA_OBJECT_META_REGISTRY[];
 extern const char JAVA_ARRAY_META_REGISTRY[];
+extern const char JAVA_PACKAGE_META_REGISTRY[];
 
 extern jclass    juaapi_class;
 extern jmethodID juaapi_classnew;
