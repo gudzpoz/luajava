@@ -39,6 +39,38 @@ jclass java_lang_throwable_class = NULL;
 jmethodID throwable_getmessage   = NULL;
 jmethodID throwable_tostring     = NULL;
 
+static const char * RETURN_IMPORT_WRAPPER = (
+    "return function(self, name)\n"
+    "  if type(self) ~= 'table' then\n"
+    "    error(\"bad argument #1 to 'java.import.?': expecting a table\")\n"
+    "  end\n"
+    "  if type(name) ~= 'string' then\n"
+    "    error(\"bad argument #2 to 'java.import.?': expecting a valid string\")\n"
+    "  end\n"
+    "\n"
+    "  local value = rawget(self, name)\n"
+    "  if value ~= nil then\n"
+    "    return value\n"
+    "  else\n"
+    "    local depth = rawget(self, 1)\n"
+    "    local current = rawget(self, 2)\n"
+    "    local meta = getmetatable(self)\n"
+    "    local v = nil\n"
+    "    if depth == 1 then\n"
+    "      v = rawget(meta, '__import')(current .. name)\n"
+    "    else\n"
+    "      v = {\n"
+    "        [1]  = depth - 1,\n"
+    "        [2] = current .. name .. '.'\n"
+    "      }\n"
+    "      setmetatable(v, meta)\n"
+    "    end\n"
+    "    rawset(self, name, v)\n"
+    "    return v\n"
+    "  end\n"
+    "end\n"
+);
+
 int updateJNIEnv(JNIEnv * env);
 
 /**
@@ -232,37 +264,7 @@ void initMetaRegistry(lua_State * L) {
      *   - name: the inner package / class name
      */
      // TODO: Maybe compile Lua code into C code for better performance for non-JIT Lua
-    luaL_dostring(L, R"PACKAGE(
-return function(self, name)
-  if type(self) ~= 'table' then
-    error("bad argument #1 to 'java.import.?': expecting a table")
-  end
-  if type(name) ~= 'string' then
-    error("bad argument #2 to 'java.import.?': expecting a valid string")
-  end
-
-  local value = rawget(self, name)
-  if value ~= nil then
-    return value
-  else
-    local depth = rawget(self, 1)
-    local current = rawget(self, 2)
-    local meta = getmetatable(self)
-    local v = nil
-    if depth == 1 then
-      v = rawget(meta, '__import')(current .. name)
-    else
-      v = {
-        [1]  = depth - 1,
-        [2] = current .. name .. '.'
-      }
-      setmetatable(v, meta)
-    end
-    rawset(self, name, v)
-    return v
-  end
-end
-    )PACKAGE");
+    luaL_dostring(L, RETURN_IMPORT_WRAPPER);
     lua_setfield(L, -2, LUA_METAFIELD_INDEX);
     lua_pushcfunction(L, &javaImport);
     lua_setfield(L, -2, "__import");
