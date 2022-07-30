@@ -8,6 +8,7 @@
 const char JAVA_CLASS_META_REGISTRY[] = "__jclass__";
 const char JAVA_OBJECT_META_REGISTRY[] = "__jobject__";
 const char JAVA_ARRAY_META_REGISTRY[] =  "__jarray__";
+const char JAVA_PACKAGE_META_REGISTRY[] =  "__jpackage__";
 
 // Bindings
 // java.lang.Class, Class::forName
@@ -37,6 +38,38 @@ jmethodID juaapi_load           = NULL;
 jclass java_lang_throwable_class = NULL;
 jmethodID throwable_getmessage   = NULL;
 jmethodID throwable_tostring     = NULL;
+
+static const char * RETURN_IMPORT_WRAPPER = (
+    "return function(self, name)\n"
+    "  if type(self) ~= 'table' then\n"
+    "    error(\"bad argument #1 to 'java.import.?': expecting a table\")\n"
+    "  end\n"
+    "  if type(name) ~= 'string' then\n"
+    "    error(\"bad argument #2 to 'java.import.?': expecting a valid string\")\n"
+    "  end\n"
+    "\n"
+    "  local value = rawget(self, name)\n"
+    "  if value ~= nil then\n"
+    "    return value\n"
+    "  else\n"
+    "    local depth = rawget(self, 1)\n"
+    "    local current = rawget(self, 2)\n"
+    "    local meta = getmetatable(self)\n"
+    "    local v = nil\n"
+    "    if depth == 1 then\n"
+    "      v = rawget(meta, '__import')(current .. name)\n"
+    "    else\n"
+    "      v = {\n"
+    "        [1]  = depth - 1,\n"
+    "        [2] = current .. name .. '.'\n"
+    "      }\n"
+    "      setmetatable(v, meta)\n"
+    "    end\n"
+    "    rawset(self, name, v)\n"
+    "    return v\n"
+    "  end\n"
+    "end\n"
+);
 
 int updateJNIEnv(JNIEnv * env);
 
@@ -222,6 +255,28 @@ void initMetaRegistry(lua_State * L) {
     lua_pushcfunction(L, &jarrayNewIndex);
     lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
   }
+
+  if (luaL_newmetatable(L, JAVA_PACKAGE_META_REGISTRY) == 1) {
+    /* Lua:
+     *   - self: A table, with self[1] pre-filled with an integer,
+     *           self[2] pre-filled with a package / class name,
+     *           Used cache results.
+     *   - name: the inner package / class name
+     */
+     // TODO: Maybe compile Lua code into C code for better performance for non-JIT Lua
+    luaL_dostring(L, RETURN_IMPORT_WRAPPER);
+    lua_setfield(L, -2, LUA_METAFIELD_INDEX);
+    lua_pushcfunction(L, &javaImport);
+    lua_setfield(L, -2, "__import");
+    /* jclassNewIndex will always produces an error:
+     * we prevent direct writes to table fields
+     */
+    lua_pushcfunction(L, &jclassNewIndex);
+    lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
+    lua_pushcfunction(L, &jclassNewIndex);
+    lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
+  }
+
   lua_pop(L, 1);
 }
 

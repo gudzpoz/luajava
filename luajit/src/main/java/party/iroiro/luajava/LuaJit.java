@@ -13,9 +13,9 @@ public class LuaJit extends AbstractLua {
     /**
      * Creates a new Lua state
      *
-     * @throws UnsatisfiedLinkError if LuaJIT natives unavailable
+     * @throws LinkageError if LuaJIT natives unavailable
      */
-    public LuaJit() throws UnsatisfiedLinkError {
+    public LuaJit() throws LinkageError {
         super(getNatives());
     }
 
@@ -23,13 +23,13 @@ public class LuaJit extends AbstractLua {
         super(main.getLuaNative(), L, id, main);
     }
 
-    private static LuaNative getNatives() throws UnsatisfiedLinkError {
+    private static LuaNative getNatives() throws LinkageError {
         synchronized (natives) {
             if (natives.get() == null) {
                 try {
                     natives.set(new LuaJitNatives());
                 } catch (IllegalStateException e) {
-                    throw new UnsatisfiedLinkError("Unable to find natives or init");
+                    throw new LinkageError("Unable to find natives or init", e);
                 }
             }
             return natives.get();

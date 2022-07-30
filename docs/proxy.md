@@ -26,6 +26,11 @@ r = java.proxy('java.lang.Runnable', {
 
 However, there are a few thing that you might want to take note of.
 
+::: tip TL;DR
+1. Use `public` interfaces.
+2. Currently, calling `default` functions is not supported on Android, and you will need to implement those methods yourself.
+:::
+
 ## Access Levels
 
 All interfaces implemented should be visible to all classes (i.e., `public`), although things might work for package-private interfaces depending on JVM security settings.

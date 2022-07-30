@@ -15,7 +15,9 @@ For a `jclass` `clazz`:
 - `clazz.memberVar` returns the public static member named `memberVar`.
 - `clazz.memberVar = value` assigns to the public static member. If exceptions occur, a Lua error is generated.
 - `clazz:memberMethod(...)` calls the public static member method `memberMethod`. See [Proxied Method Calls](#proxied-method-calls) for more info.
-- `class(...)` calls the corresponding constructor. See [`java.new`](#new-jclass-function).
+- `class(...)`:
+  - For an interface, this expects a table as the parameter and creates a proxy for it. See [`java.proxy`](#proxy-jclass-table-function).
+  - Otherwise, it calls the corresponding constructor. See [`java.new`](#new-jclass-function).
 - `clazz.class` returns a `jobject`, wrapping an instance of `java.lang.Class<clazz>`.
 
 ```lua Example
@@ -83,19 +85,27 @@ Import a Java class or package.
     - `name`: (***string***) Either of the following
       * The full name, including the package part, of the class.
 
-      * A package name, appended with `.*`.
+      * Any string, appended with possibly multiple `.*`.
 
 - **Returns:**
 
     - (***jclass***) If `name` is the name of a class, return a `jclass` of the class.
 
-    - (***table***) If `name` is a package name, appended with `.*`, return a Lua table, including all classes directly under the package.
+    - (***table***) If `name` is a string appended with `.*`, return a Lua table,
+      which looks up classes directly under a package or inner classes inside a class when indexed.
+      See the following example for details.
 
 - Generates a Lua error if class not found.
 
 ```lua
 lang = java.import('java.lang.*')
 print(lang.System:currentTimeMillis())
+
+R = java.import('android.R.*')
+print(R.id.input)
+
+j = java.import('java.*.*')
+print(j.lang.System:currentMillis())
 
 System = java.import('java.lang.System')
 print(System:currentTimeMillis())

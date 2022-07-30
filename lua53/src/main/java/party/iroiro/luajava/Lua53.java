@@ -13,9 +13,9 @@ public class Lua53 extends AbstractLua {
     /**
      * Creates a new Lua state
      *
-     * @throws UnsatisfiedLinkError if Lua 5.3 natives unavailable
+     * @throws LinkageError if Lua 5.3 natives unavailable
      */
-    public Lua53() throws UnsatisfiedLinkError {
+    public Lua53() throws LinkageError {
         super(getNatives());
     }
 
@@ -23,13 +23,13 @@ public class Lua53 extends AbstractLua {
         super(main.getLuaNative(), L, id, main);
     }
 
-    private static LuaNative getNatives() throws UnsatisfiedLinkError {
+    private static LuaNative getNatives() throws LinkageError {
         synchronized (natives) {
             if (natives.get() == null) {
                 try {
                     natives.set(new Lua53Natives());
                 } catch (IllegalStateException e) {
-                    throw new UnsatisfiedLinkError("Unable to find natives or init");
+                    throw new LinkageError("Unable to find natives or init", e);
                 }
             }
             return natives.get();
