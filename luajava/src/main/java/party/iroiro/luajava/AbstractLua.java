@@ -186,7 +186,7 @@ public abstract class AbstractLua implements Lua {
                 C.lua_rawseti(L, -2, i + 1);
             }
         } else {
-            throw new IllegalArgumentException("Not a array");
+            throw new IllegalArgumentException("Not an array");
         }
     }
 
@@ -697,7 +697,7 @@ public abstract class AbstractLua implements Lua {
         if (mainThread.loader.getAndSet(loader) == null) {
             if (C.luaJ_initloader(L) != 0) {
                 mainThread.loader.set(null);
-                throw new IllegalStateException("Probaly the package library is not loaded yet");
+                throw new IllegalStateException("Probably the package library is not loaded yet");
             }
         }
     }
