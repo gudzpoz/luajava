@@ -14,4 +14,7 @@ String = lang.String
 assert(String ~= nil)
 assert(type(String) == 'userdata')
 
-assertThrows('bad argument #1 to \'java.import\'', function() print(lang[nil]) end)
+assertThrows("bad argument #2 to",
+             function() print(lang[nil]) end)
+assertThrows("java.lang.ClassNotFoundException: java.lang.",
+             function() print(lang['']) end)

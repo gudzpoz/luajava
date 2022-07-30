@@ -83,19 +83,27 @@ Import a Java class or package.
     - `name`: (***string***) Either of the following
       * The full name, including the package part, of the class.
 
-      * A package name, appended with `.*`.
+      * Any string, appended with possibly multiple `.*`.
 
 - **Returns:**
 
     - (***jclass***) If `name` is the name of a class, return a `jclass` of the class.
 
-    - (***table***) If `name` is a package name, appended with `.*`, return a Lua table, including all classes directly under the package.
+    - (***table***) If `name` is a string appended with `.*`, return a Lua table,
+      which looks up classes directly under a package or inner classes inside a class when indexed.
+      See the following example for details.
 
 - Generates a Lua error if class not found.
 
 ```lua
 lang = java.import('java.lang.*')
 print(lang.System:currentTimeMillis())
+
+R = java.import('android.R.*')
+print(R.id.input)
+
+j = java.import('java.*.*')
+print(j.lang.System:currentMillis())
 
 System = java.import('java.lang.System')
 print(System:currentTimeMillis())
