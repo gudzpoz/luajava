@@ -15,7 +15,9 @@ For a `jclass` `clazz`:
 - `clazz.memberVar` returns the public static member named `memberVar`.
 - `clazz.memberVar = value` assigns to the public static member. If exceptions occur, a Lua error is generated.
 - `clazz:memberMethod(...)` calls the public static member method `memberMethod`. See [Proxied Method Calls](#proxied-method-calls) for more info.
-- `class(...)` calls the corresponding constructor. See [`java.new`](#new-jclass-function).
+- `class(...)`:
+  - For an interface, this expects a table as the parameter and creates a proxy for it. See [`java.proxy`](#proxy-jclass-table-function).
+  - Otherwise, it calls the corresponding constructor. See [`java.new`](#new-jclass-function).
 - `clazz.class` returns a `jobject`, wrapping an instance of `java.lang.Class<clazz>`.
 
 ```lua Example

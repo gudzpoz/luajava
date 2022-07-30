@@ -25,3 +25,8 @@ iterImpl = {
 
 iter = java.proxy('java.util.Iterator', iterImpl)
 assertThrows('java.lang.UnsupportedOperationException', iter.remove, iter)
+
+iter2 = java.import('java.util.Iterator')(iterImpl)
+assertThrows('java.lang.UnsupportedOperationException', iter2.remove, iter2)
+
+assertThrows('Expecting a table and interfaces', java.import('java.util.Iterator'), 1024)

@@ -251,6 +251,15 @@ public abstract class JuaAPI {
             L.push("bad argument #1 to java.new (expecting Class<?>)");
             return -1;
         }
+        if (clazz.isInterface()) {
+            try {
+                L.pushJavaObject(L.createProxy(new Class[]{clazz}, Lua.Conversion.SEMI));
+                return 1;
+            } catch (IllegalArgumentException e) {
+                L.push(e.toString());
+                return -1;
+            }
+        }
         Object[] objects = new Object[paramCount];
         Constructor<?> constructor = matchMethod(L, clazz.getConstructors(), null, objects);
         if (constructor != null) {
