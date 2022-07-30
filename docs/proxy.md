@@ -28,7 +28,7 @@ However, there are a few thing that you might want to take note of.
 
 ::: tip TL;DR
 1. Use `public` interfaces.
-2. Add [ASM](https://search.maven.org/artifact/org.ow2.asm/asm) to your classpath / runtime dependencies to rid `illegal reflective access` warnings.
+2. Currently, calling `default` functions is not supported on Android, and you will need to implement those methods yourself.
 :::
 
 ## Access Levels
@@ -39,7 +39,9 @@ All interfaces implemented should be visible to all classes (i.e., `public`), al
 
 ### Illegal reflective access
 
-Java 8 brings default methods in interfaces. However, the official reflection API is not adjusted accordingly, making it a real pain to reflectively call the default methods from a proxy.
+Java 8 brings about default methods in interfaces.
+However, the official reflection API is not adjusted accordingly,
+making it a real pain to reflectively call the default methods from a proxy.
 
 ::: tip
 If you are interested, there is an article on this: [Correct Reflective Access to Interface Default Methods in Java 8, 9, 10](https://blog.jooq.org/correct-reflective-access-to-interface-default-methods-in-java-8-9-10/). And you might want to check out the workarounds used by Spring: [DefaultMethodInvokingMethodInterceptor.java](https://github.com/spring-projects/spring-data-commons/blob/6a23723f07669e5d4031b3378b3af40e0d15eb82/src/main/java/org/springframework/data/projection/DefaultMethodInvokingMethodInterceptor.java).
@@ -57,7 +59,7 @@ WARNING: All illegal access operations will be denied in a future release
 
 ### Workaround
 
-A way to workaround this is to introduce some intermediate interfaces:
+A way to work around this is to introduce some intermediate interfaces:
 
 ```
 Original hierarchy:
@@ -80,22 +82,9 @@ New hierarchy:
         \- the actually implemented interface2 bridge -> has access
 ```
 
-We programmatically generate the intermediate interfaces, injecting some static methods to look up the interfaces and let the final proxy object implement the intermediate interfaces instead. By doing so, we finally obtain "legal reflective access".
-
-The above requires the use of [the ASM library](https://asm.ow2.io) to dynamically create interfaces, which is too heavyweight for this library. You will need to enable it by manually adding the ASM dependency.
-
-- To introduce the ASM workaround:
-  1. Add ASM to your runtime dependencies:
-     ```groovy
-     runtimeOnly 'org.ow2.asm:asm:9.3'
-     ```
-  2. Ensure that the `luajava_lookup` system property is either not set or set to `asm`.
-- To use the default approach, either:
-  - Remove ASM from the classpath / dependencies.
-  - Or set the `luajava_lookup` system property to some other value:
-     ```java
-     System.setProperty("luajava_lookup", "no");
-     ```
+We programmatically generate the intermediate interfaces, injecting some static methods
+to look up the interfaces and let the final proxy object implement the intermediate interfaces instead.
+By doing so, we finally obtain "legal reflective access".
 
 ::::: tip Try things out
 The [interactive console](./console.md) bundles the ASM library with it. You don't need to enable the ASM workaround:
@@ -178,3 +167,15 @@ java.lang.UnsupportedOperationException: remove
 ::::
 
 :::::
+
+### Android
+
+Android, on the other hand, does not allow loading `.class` data dynamically,
+and thus the above approach is not yet viable. To add more to this, support for Java 8, let alone Java 9, is limited on Android and varies between API version...
+
+In short, I cannot get it working on my own phone. Good luck to anyone trying to do so.
+
+::: tip
+We are trying to generate `.dex` data directly while minimizing external dependencies, which might take quite a while to finish though.
+Feel free to contribute if you have better ideas!
+:::

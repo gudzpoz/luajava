@@ -17,7 +17,7 @@ inline int jInvokeObject(lua_State * L, jmethodID methodID,
                                    (jint) stateIndex, data, str, params);
     env->DeleteLocalRef(str);
   }
-  return checkOrError(L, ret);
+  return checkOrError(env, L, ret);
 }
 
 inline int jInvoke(lua_State * L, const char * reg, jmethodID methodID) {
@@ -35,7 +35,7 @@ inline int jIndex(lua_State * L, const char * reg, jmethodID methodID, lua_CFunc
   jint retVal = env->CallStaticIntMethod(juaapi_class, methodID, (jint) stateIndex, *data, str);
   env->DeleteLocalRef(str);
   if (retVal == -1) {
-    return lua_error(L);
+    return checkOrError(env, L, -1);
   }
   if ((retVal & 0x1) != 0 && ret) {
     return 1;
@@ -67,7 +67,7 @@ int jclassCall(lua_State * L) {
   jobject * data = (jobject *) lua_touserdata(L, 1);
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
-  return checkOrError(L, env->CallStaticIntMethod(juaapi_class, juaapi_classnew,
+  return checkOrError(env, L, env->CallStaticIntMethod(juaapi_class, juaapi_classnew,
     (jint) stateIndex, *data, lua_gettop(L) - 1));
 }
 
@@ -109,7 +109,8 @@ inline int jarrayJIndex(lua_State * L, jmethodID func, bool ret) {
   int i = (int) luaL_checknumber(L, 2);
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
-  int retVal = checkOrError(L, env->CallStaticIntMethod(juaapi_class, func, (jint) stateIndex, *data, i));
+  int retVal = checkOrError(env, L,
+    env->CallStaticIntMethod(juaapi_class, func, (jint) stateIndex, *data, i));
   return ret ? retVal : 0;
 }
 
@@ -158,7 +159,7 @@ inline int jSigInvoke(lua_State * L, const char * reg, jmethodID methodID) {
     env->DeleteLocalRef(signatureS);
   }
   env->DeleteLocalRef(nameS);
-  return checkOrError(L, ret);
+  return checkOrError(env, L, ret);
 }
 
 int jclassSigInvoke(lua_State * L) {
@@ -185,5 +186,5 @@ int jmoduleLoad(lua_State * L) {
   int ret = env->CallStaticIntMethod(juaapi_class, juaapi_load,
                                      (jint) stateIndex, moduleName);
   env->DeleteLocalRef(moduleName);
-  return checkOrError(L, ret);
+  return checkOrError(env, L, ret);
 }
