@@ -104,6 +104,11 @@ static int javaArray(lua_State * L) {
     JAVA_CLASS_META_REGISTRY, JAVA_OBJECT_META_REGISTRY);
 }
 
+static int javaCatched(lua_State * L) {
+  lua_getglobal(L, GLOBAL_THROWABLE);
+  return 1;
+}
+
 const luaL_Reg javalib[] = {
   { "method",    javaMethod },
   { "new",       javaNew },
@@ -111,5 +116,6 @@ const luaL_Reg javalib[] = {
   { "import",    javaImport },
   { "proxy",     javaProxy },
   { "array",     javaArray },
+  { "catched",   javaCatched },
   {NULL, NULL}
 };

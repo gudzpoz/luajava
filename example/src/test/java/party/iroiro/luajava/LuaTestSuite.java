@@ -51,11 +51,27 @@ public class LuaTestSuite<T extends Lua> {
     }
 
     private void testException() {
+        L.push(new Object(), SEMI);
+        L.setGlobal(Lua.GLOBAL_THROWABLE);
+        assertNull(L.getJavaError());
+        String message = "Unexpected exception";
         L.push(L -> {
-            throw new RuntimeException("Unexpected exception");
+            throw new RuntimeException(message);
         });
         assertNull(L.get().call());
-        assertEquals("java.lang.RuntimeException: Unexpected exception", L.toString(-1));
+        String expected = "java.lang.RuntimeException: " + message;
+        assertEquals(expected, L.toString(-1));
+        L.pop(1);
+        assertInstanceOf(RuntimeException.class, L.getJavaError());
+        assertEquals(message, Objects.requireNonNull(L.getJavaError()).getMessage());
+        L.run("java.import('java.lang.String')");
+        assertNull(L.getJavaError());
+
+        assertEquals(-1, L.error(new RuntimeException(message)));
+        assertEquals(expected, L.toString(-1));
+        assertInstanceOf(RuntimeException.class, L.getJavaError());
+        L.error((Throwable) null);
+        assertNull(L.getJavaError());
         L.pop(1);
     }
 

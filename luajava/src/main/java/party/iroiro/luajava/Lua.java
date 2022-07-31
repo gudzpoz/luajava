@@ -11,6 +11,8 @@ import java.util.*;
  * A {@code lua_State *} wrapper, representing a Lua thread
  */
 public interface Lua extends AutoCloseable {
+    String GLOBAL_THROWABLE = "__jthrowable__";
+
     /**
      * Ensures that there are at least {@code extra} free stack slots in the Lua stack
      *
@@ -995,6 +997,7 @@ public interface Lua extends AutoCloseable {
 
     /**
      * Loads a chunk from a {@link ExternalLoader} set by {@link #setExternalLoader(ExternalLoader)}
+     *
      * @param module the module
      * @return the return code from {@link #load(Buffer, String)}
      */
@@ -1021,6 +1024,27 @@ public interface Lua extends AutoCloseable {
     int getId();
 
     /**
+     * Fetches the most recent Java {@link Throwable} passed to Lua
+     *
+     * @return value of the Lua glboal {@link #GLOBAL_THROWABLE}
+     */
+    @Nullable Throwable getJavaError();
+
+    /**
+     * Sets the Lua global {@link #GLOBAL_THROWABLE} to the throwable
+     *
+     * <p>
+     * If the exception is {@code null}, it clears the global exception and pushes nothing.
+     * Otherwise, it sets the Lua global {@link #GLOBAL_THROWABLE} to the throwable,
+     * and pushes {@link Throwable#toString()} onto the stack.
+     * </p>
+     *
+     * @param e the exception
+     * @return 0 if e is null, -1 otherwise
+     */
+    int error(@Nullable Throwable e);
+
+    /**
      * Closes the thread
      *
      * <p>
@@ -1032,12 +1056,14 @@ public interface Lua extends AutoCloseable {
 
     /**
      * Pops the value on top of the stack and return a LuaValue referring to it
+     *
      * @return a reference to the value
      */
     LuaValue get();
 
     /**
      * Gets a references to a global object
+     *
      * @param globalName the global name
      * @return a reference to the value
      */
@@ -1045,6 +1071,7 @@ public interface Lua extends AutoCloseable {
 
     /**
      * Executes a command
+     *
      * @param command the command
      * @return the return values
      */

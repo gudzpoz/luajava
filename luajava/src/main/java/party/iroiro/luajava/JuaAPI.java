@@ -105,8 +105,7 @@ public abstract class JuaAPI {
             L.pushJavaClass(ClassUtils.forName(className, null));
             return 1;
         } catch (ClassNotFoundException e) {
-            L.push(e.toString());
-            return -1;
+            return L.error(e);
         }
     }
 
@@ -256,8 +255,7 @@ public abstract class JuaAPI {
                 L.pushJavaObject(L.createProxy(new Class[]{clazz}, Lua.Conversion.SEMI));
                 return 1;
             } catch (IllegalArgumentException e) {
-                L.push(e.toString());
-                return -1;
+                return L.error(e);
             }
         }
         Object[] objects = new Object[paramCount];
@@ -283,11 +281,9 @@ public abstract class JuaAPI {
             L.pushJavaObject(obj);
             return 1;
         } catch (InstantiationException | IllegalAccessException e) {
-            L.push(e.toString());
-            return -1;
+            return L.error(e);
         } catch (InvocationTargetException e) {
-            L.push(e.getCause().toString());
-            return -1;
+            return L.error(e.getCause());
         }
     }
 
@@ -416,8 +412,7 @@ public abstract class JuaAPI {
             L.push(e, Lua.Conversion.SEMI);
             return 1;
         } catch (Exception e) {
-            L.push(e.toString());
-            return -1;
+            return L.error(e);
         }
     }
 
@@ -435,8 +430,7 @@ public abstract class JuaAPI {
             Array.set(obj, i - 1, L.toObject(L.getTop(), obj.getClass().getComponentType()));
             return 0;
         } catch (Exception e) {
-            L.push(e.toString());
-            return -1;
+            return L.error(e);
         }
     }
 
@@ -536,11 +530,9 @@ public abstract class JuaAPI {
         try {
             ret = method.invoke(obj, objects);
         } catch (IllegalAccessException e) {
-            L.push(e.toString());
-            return -1;
+            return L.error(e);
         } catch (InvocationTargetException e) {
-            L.push(e.getCause().toString());
-            return -1;
+            return L.error(e.getCause());
         }
         if (ret == null) {
             return 0;
@@ -614,8 +606,7 @@ public abstract class JuaAPI {
             field.set(object, o);
             return 0;
         } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
-            L.push(e.toString());
-            return -1;
+            return L.error(e);
         }
     }
 

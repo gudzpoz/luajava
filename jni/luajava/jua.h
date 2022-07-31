@@ -5,6 +5,7 @@
 #include "jni.h"
 
 #define JAVA_STATE_INDEX "__JavaJuaStateIndex"
+#define GLOBAL_THROWABLE "__jthrowable__"
 
 extern const char JAVA_CLASS_META_REGISTRY[];
 extern const char JAVA_OBJECT_META_REGISTRY[];
@@ -56,6 +57,8 @@ inline int checkOrError (JNIEnv * env, lua_State * L, jint ret) {
   jthrowable e = env->ExceptionOccurred();
   if (e == NULL) {
     if (ret >= 0) {
+      lua_pushnil(L);
+      lua_setglobal(L, GLOBAL_THROWABLE);
       return (int) ret;
     } else {
       return lua_error(L);
@@ -63,11 +66,14 @@ inline int checkOrError (JNIEnv * env, lua_State * L, jint ret) {
   }
   env->ExceptionClear();
   jstring message = (jstring) env->CallObjectMethod(e, throwable_tostring);
-  env->DeleteLocalRef(e);
   const char * str = env->GetStringUTFChars(message, NULL);
   lua_pushstring(L, str);
   env->ReleaseStringUTFChars(message, str);
   env->DeleteLocalRef((jobject) message);
+  luaJ_pushobject(env, L, (jobject) e);
+  lua_setglobal(L, GLOBAL_THROWABLE);
+  // https://stackoverflow.com/q/33481144/17780636
+  // env->DeleteLocalRef(e);
   return lua_error(L);
 }
 

@@ -742,6 +742,31 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
+    public @Nullable Throwable getJavaError() {
+        getGlobal(GLOBAL_THROWABLE);
+        Object o = toJavaObject(-1);
+        pop(1);
+        if (o instanceof Throwable) {
+            return (Throwable) o;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public int error(@Nullable Throwable e) {
+        if (e == null) {
+            pushNil();
+            setGlobal(GLOBAL_THROWABLE);
+            return 0;
+        }
+        pushJavaObject(e);
+        setGlobal(GLOBAL_THROWABLE);
+        push(e.toString());
+        return -1;
+    }
+
+    @Override
     public void close() {
         synchronized (mainThread) {
             if (mainThread == this) {
