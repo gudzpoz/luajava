@@ -11,7 +11,6 @@ import party.iroiro.luajava.value.RefLuaValue;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.Buffer;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -807,14 +806,11 @@ public abstract class AbstractLua implements Lua {
                 customSignature.toString()
         ) == -1) {
             Throwable javaError = getJavaError();
-            if (javaError == null) {
-                UndeclaredThrowableException exception = new UndeclaredThrowableException(new LuaException(toString(-1)));
-                pop(1);
-                throw exception;
-            } else {
-                pop(1);
-                throw javaError;
-            }
+            pop(1);
+            throw Objects.requireNonNull(javaError);
+        }
+        if (method.getReturnType() == Void.TYPE) {
+            return null;
         }
         Object ret = toJavaObject(-1);
         pop(1);

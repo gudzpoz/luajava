@@ -92,17 +92,21 @@ int initBoxingBindings(JNIEnv * env) {
     return -1;
   }
 
-  byte_constructor    = bindJavaMethod(env, java_lang_byte_class,
+  boolean_constructor   = bindJavaMethod(env, java_lang_boolean_class,
+          "<init>", "(Z)V");
+  character_constructor = bindJavaMethod(env, java_lang_character_class,
+          "<init>", "(C)V");
+  byte_constructor      = bindJavaMethod(env, java_lang_byte_class,
           "<init>", "(B)V");
-  double_constructor  = bindJavaMethod(env, java_lang_double_class,
+  double_constructor    = bindJavaMethod(env, java_lang_double_class,
           "<init>", "(D)V");
-  float_constructor   = bindJavaMethod(env, java_lang_float_class,
+  float_constructor     = bindJavaMethod(env, java_lang_float_class,
           "<init>", "(F)V");
-  integer_constructor = bindJavaMethod(env, java_lang_integer_class,
+  integer_constructor   = bindJavaMethod(env, java_lang_integer_class,
           "<init>", "(I)V");
-  long_constructor    = bindJavaMethod(env, java_lang_long_class,
+  long_constructor      = bindJavaMethod(env, java_lang_long_class,
           "<init>", "(J)V");
-  short_constructor   = bindJavaMethod(env, java_lang_short_class,
+  short_constructor     = bindJavaMethod(env, java_lang_short_class,
           "<init>", "(S)V");
 
   if (byte_constructor       == NULL
@@ -126,24 +130,34 @@ jvalue convertFromJobject(JNIEnv * env, jobject obj, char target) {
   switch (target) {
     case 'V': // Void
       value.l = NULL;
+      break;
     case 'Z': // Boolean
       value.z = env->CallBooleanMethod(obj, boolean_boolvalue);
+      break;
     case 'C': // Character
       value.c = env->CallCharMethod(obj, character_charvalue);
+      break;
     case 'B': // Number: Byte
       value.b = env->CallByteMethod(obj, number_bytevalue);
+      break;
     case 'D': // Number: Double
       value.d = env->CallDoubleMethod(obj, number_doublevalue);
+      break;
     case 'F': // Number: Float
       value.f = env->CallFloatMethod(obj, number_floatvalue);
+      break;
     case 'I': // Number: Integer
       value.i = env->CallIntMethod(obj, number_intvalue);
+      break;
     case 'J': // Number: Long
       value.j = env->CallLongMethod(obj, number_longvalue);
+      break;
     case 'S': // Number: Short
       value.s = env->CallShortMethod(obj, number_shortvalue);
+      break;
     default:
       value.l = obj;
+      break;
   }
   return value;
 }

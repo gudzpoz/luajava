@@ -1,6 +1,5 @@
 package party.iroiro.luajava;
 
-import party.iroiro.luajava.suite.DefaultProxyTest;
 import party.iroiro.luajava.value.LuaValue;
 
 import java.lang.reflect.Array;
@@ -23,7 +22,7 @@ import static party.iroiro.luajava.Lua.Conversion.SEMI;
 import static party.iroiro.luajava.Lua.LuaError.*;
 import static party.iroiro.luajava.Lua.LuaType.*;
 
-public class LuaTestSuite<T extends Lua> {
+public class LuaTestSuite<T extends AbstractLua> {
     public LuaTestSuite(T L, Supplier<T> constructor) {
         this.L = L;
         this.constructor = constructor;

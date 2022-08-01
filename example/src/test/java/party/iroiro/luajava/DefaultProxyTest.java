@@ -1,8 +1,7 @@
-package party.iroiro.luajava.suite;
+package party.iroiro.luajava;
 
-import party.iroiro.luajava.Lua;
-import party.iroiro.luajava.LuaException;
-import party.iroiro.luajava.LuaProxy;
+import party.iroiro.luajava.suite.B;
+import party.iroiro.luajava.suite.InvokeSpecialConversionTest;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -16,6 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static party.iroiro.luajava.Lua.LuaError.OK;
 
 public class DefaultProxyTest {
+    private interface PrivateNullable {
+        default void test(Object obj) {
+            if (obj == null) {
+                throw new NullPointerException("Passed a null value");
+            }
+        }
+    }
+
     public interface DefaultRunnable extends Callable<Integer> {
         @Override
         default Integer call() {
@@ -33,9 +40,9 @@ public class DefaultProxyTest {
         int luaError(int i);
     }
 
-    private final Lua L;
+    private final AbstractLua L;
 
-    public DefaultProxyTest(Lua L) {
+    public DefaultProxyTest(AbstractLua L) {
         this.L = L;
     }
 
@@ -77,7 +84,7 @@ public class DefaultProxyTest {
         assertTrue(proxy.equals(proxy));
         // noinspection SimplifiableAssertion,EqualsBetweenInconvertibleTypes
         assertFalse(proxy.equals(L));
-        assertEquals("LuaProxy[interface party.iroiro.luajava.suite.DefaultProxyTest$DefaultRunnable]@"
+        assertEquals("LuaProxy[interface party.iroiro.luajava.DefaultProxyTest$DefaultRunnable]@"
                      + Integer.toHexString(proxy.hashCode()), proxy.toString());
         LuaException exception = assertThrows(LuaException.class, proxy::equals);
         assertTrue(exception.getMessage().startsWith("method not implemented: "));
@@ -96,6 +103,64 @@ public class DefaultProxyTest {
         hierarchyTest();
         simpleIterTest();
         exceptionTest();
+
+        defaultMethodTest();
+    }
+
+    private void defaultMethodTest() {
+        Iterator<Object> iterator = new Iterator<Object>() {
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public Object next() {
+                return null;
+            }
+
+            @Override
+            public void remove() {
+            }
+        };
+        L.push(iterator, Lua.Conversion.SEMI);
+
+        assertThrows(UnsupportedOperationException.class, () -> L.invokeSpecial(iterator,
+                Iterator.class.getDeclaredMethod("remove"),
+                new Object[0]
+        ));
+
+        L.error((Throwable) null);
+        L.run("i = 10");
+        L.run("return {\n" +
+              "  next = function()\n" +
+              "    i = i - 1\n" +
+              "    return i\n" +
+              "  end,\n" +
+              "  hasNext = function()\n" +
+              "    return i > 0\n" +
+              "  end" +
+              "}");
+        Iterator<?> iter = (Iterator<?>) L.createProxy(new Class[]{Iterator.class}, Lua.Conversion.SEMI);
+        Set<Double> set = new HashSet<>();
+        iter.forEachRemaining(i -> {
+            assertInstanceOf(Double.class, i);
+            set.add(((Double) i));
+        });
+        assertEquals(10, set.size());
+        for (int i = 0; i < 10; i++) {
+            assertTrue(set.contains((double) i));
+        }
+
+        L.run("return {}");
+        PrivateNullable priv = (PrivateNullable) L.createProxy(new Class[]{PrivateNullable.class}, Lua.Conversion.SEMI);
+        assertEquals(
+                "Passed a null value",
+                assertThrows(NullPointerException.class, () -> priv.test(null)).getMessage()
+        );
+        assertDoesNotThrow(() -> priv.test(new Object()));
+
+        new InvokeSpecialConversionTest(L).test();
     }
 
     private void exceptionTest() {
