@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import static org.junit.jupiter.api.Assertions.*;
 import static party.iroiro.luajava.Lua.LuaError.OK;
 
-public class LuaScriptSuite<T extends Lua> {
+public class LuaScriptSuite<T extends AbstractLua> {
     private static final String LUA_ASSERT_THROWS = "function assertThrows(message, fun, ...)\n" +
                                                    "  ok, msg = pcall(fun, ...)\n" +
                                                    "  assert(not ok, debug.traceback('No error while expecting \"' .. message .. '\"'))\n" +
@@ -99,14 +99,14 @@ public class LuaScriptSuite<T extends Lua> {
 
     public static class ScriptTester {
         public final String file;
-        private final Consumer<Lua> init;
+        private final Consumer<AbstractLua> init;
 
-        public ScriptTester(String file, Consumer<Lua> init) {
+        public ScriptTester(String file, Consumer<AbstractLua> init) {
             this.file = file;
             this.init = init;
         }
 
-        public void test(Lua L) throws IOException {
+        public void test(AbstractLua L) throws IOException {
             init.accept(L);
             ResourceLoader loader = new ResourceLoader();
             loader.load(file, L);

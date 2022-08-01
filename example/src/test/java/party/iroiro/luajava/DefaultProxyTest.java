@@ -239,6 +239,9 @@ public class DefaultProxyTest {
         default int dup() {
             return 2;
         }
+
+        @SuppressWarnings("unused")
+        default void noReturn() {}
     }
 
     public interface C extends A {
