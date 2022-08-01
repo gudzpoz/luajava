@@ -12,7 +12,12 @@ We provide three extra `userdata` types that correspond three Java concepts. We 
 
 For a `jclass` `clazz`:
 
-- `clazz.memberVar` returns the public static member named `memberVar`.
+- `clazz.memberVar` performs the following in sequence:
+    1. It looks for a field named `memberVar`. It returns the public static member if it finds it.
+       - If you have an inner class also named `memberVar`, you would have to manually `java.import` it.
+    2. It then looks for an inner class named `memberVar`, and returns that if it is available.
+       - If you have a method also named `memberVar`, you need to use `java.method` to look that up.
+    4. Otherwise, it prepares for a method call. See `clazz:memberMethod(...)` below.
 - `clazz.memberVar = value` assigns to the public static member. If exceptions occur, a Lua error is generated.
 - `clazz:memberMethod(...)` calls the public static member method `memberMethod`. See [Proxied Method Calls](#proxied-method-calls) for more info.
 - `class(...)`:

@@ -173,11 +173,11 @@ public abstract class JuaAPI {
      * @param object the object
      * @param name   the name of the field
      * @return 1 if a field is found, 2 otherwise
-     * @see #fieldIndex(int, Class, Object, String)
+     * @see #fieldIndex(Lua, Class, Object, String)
      */
     @SuppressWarnings("unused")
     public static int objectIndex(int index, @NotNull Object object, String name) {
-        return fieldIndex(index, object.getClass(), object, name);
+        return fieldIndex(Jua.get(index), object.getClass(), object, name);
     }
 
     /**
@@ -333,12 +333,22 @@ public abstract class JuaAPI {
      */
     @SuppressWarnings("unused")
     public static int classIndex(int index, Class<?> clazz, String name) {
+        Lua L = Jua.get(index);
         if (name.equals("class")) {
-            Lua L = Jua.get(index);
             L.pushJavaObject(clazz);
             return 1;
         } else {
-            return fieldIndex(index, clazz, null, name);
+            int i = fieldIndex(L, clazz, null, name);
+            if (i == 1) {
+                return 1;
+            } else {
+                try {
+                    L.pushJavaClass(ClassUtils.forName(clazz.getName() + '$' + name, null));
+                    return 1;
+                } catch (ClassNotFoundException e) {
+                    return i;
+                }
+            }
         }
     }
 
@@ -631,18 +641,16 @@ public abstract class JuaAPI {
      * When a matching field is found, it is pushed to the corresponding lua stack
      * </p>
      *
-     * @param index  the index of {@link Jua} state
+     * @param L      the {@link Lua} state
      * @param clazz  the {@link Class}
      * @param object the object
      * @param name   the name of the field / method
      * @return 1 if a field is found, 2 otherwise
      */
-    public static int fieldIndex(int index, Class<?> clazz, @Nullable Object object, String name) {
-        Lua L;
+    public static int fieldIndex(Lua L, Class<?> clazz, @Nullable Object object, String name) {
         try {
             Field field = clazz.getField(name);
             Object obj = field.get(object);
-            L = Jua.get(index);
             L.push(obj, Lua.Conversion.SEMI);
             return 1;
         } catch (NoSuchFieldException | IllegalAccessException | NullPointerException ignored) {
