@@ -1,1 +1,0 @@
-const e=JSON.parse('{"key":"v-5e731ae4","path":"/proxy.html","title":"Proxy Caveats","lang":"en-US","frontmatter":{},"excerpt":"","headers":[{"level":2,"title":"Default Methods","slug":"default-methods","children":[]}],"git":{"updatedTime":1659356953000},"filePathRelative":"proxy.md"}');export{e as data};
