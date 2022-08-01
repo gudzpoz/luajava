@@ -421,3 +421,9 @@ int luaJ_insertloader(lua_State * L, const char * searchers) {
   lua_pop(L, 2);
   return 0;
 }
+
+int luaJ_invokespecial(JNIEnv * env, lua_State * L,
+                       jclass clazz, const char * method, const char * sig,
+                       jobject obj, const char * params) {
+  return 0;
+}

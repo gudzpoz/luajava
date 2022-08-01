@@ -136,7 +136,8 @@ paramTypedDescriptions = {
     'array': {'jobject': 'the Java array'},
     'b': {'int': 'boolean'},
     'buffer': {'unsigned char *': 'the buffer (expecting direct)'},
-    'clazz': {'jobject': 'the Java class'},
+    'clazz': {'jobject': 'the Java class',
+              'jclass': 'the Java class'},
     'ctx': {'int *': 'the context storage'},
     'data': {'int': 'data'},
     'e': {'const char *': 'field name'},
@@ -163,6 +164,7 @@ paramTypedDescriptions = {
     'lid': {'int': 'the id of the Lua state, '
             + 'to be used to identify between Java and Lua'},
     'lvl': {'int': 'the running level'},
+    'method': {'const char *': 'the method name'},
     'msgh': {'int': 'stack position of message handler'},
     'msg': {'const char *': 'a message'},
     'n': {'int': 'the number of elements',
@@ -185,9 +187,11 @@ paramTypedDescriptions = {
     'p': {'const char *': 'the replaced sequence',
           'void *': 'the pointer',
           'const void *': 'the lightuserdata'},
+    'params': {'const char *': 'encoded parameter types'},
     'ref': {'int': 'the reference'},
     'r': {'const char *': 'the replacing string'},
     's': {'const char *': 'the string'},
+    'sig': {'const char *': 'the method signature used in {@code GetMethodID}'},
     'size': {'size_t': 'size', 'int': 'size'},
     'stat': {'int': '(I have no idea)'},
     'str': {'const char *': 'string'},
@@ -247,6 +251,7 @@ returnTypes = {
     'const lua_Number *': 'long',
     'size_t *': 'long',
     'jobject': 'Object',
+    'jclass': 'Class',
 }
 
 
@@ -336,7 +341,7 @@ def formatJavadoc(luaVersion, f):
                                   + '\n</code></pre>' if 'apii' in f else '') + '\n' +
         '     *\n' + javadocQuote('<pre><code>\n' + f['pre']
                                   + '\n</code></pre>' if 'pre' in f else '') + '\n' +
-        '     *\n' + javadocQuote(f['description']) + '\n' +
+        '     *\n' + javadocQuote(f['description'] if ('<p>' in f['description']) else ('<p>\n' + f['description'] + '\n</p>')) + '\n' +
         '     *\n' + javadocSignature(f['signature'], f) + '\n' +
         '     */\n' + javaSignature(f) + ' /*\n' + jniGen(f) + '\n    */\n'
     ))
@@ -592,11 +597,27 @@ def addExtra(functions):
             ],
         },
     })
+    functions.append({
+        'name': 'luaJ_invokespecial',
+        'description': 'Runs {@code CallNonvirtual<type>MethodA}. See AbstractLua for usages.\nParameters should be boxed and pushed on stack.',
+        'signature': {
+            'return': 'int',
+            'params': [
+                ['JNIEnv *', 'env'],
+                ['lua_State *', 'L'],
+                ['jclass', 'clazz'],
+                ['const char *', 'method'],
+                ['const char *', 'sig'],
+                ['jobject', 'obj'],
+                ['const char *', 'params'],
+            ],
+        },
+    })
 
 
 def getWhole(luaVersion, package):
     functions, errors = generate(luaVersion, transformIntoFunctionInfo)
-    inner = '@SuppressWarnings("unused")\n'
+    inner = '@SuppressWarnings({"unused", "rawtypes"})\n'
     className = 'Lua' + luaVersion.replace('.', '') + 'Natives'
     inner += 'public class ' + className + ' extends LuaNative {\n'
     inner += """        /*JNI
@@ -665,6 +686,7 @@ def getWhole(luaVersion, package):
         'package ' + package + ';\n\n' +
         'import java.util.concurrent.atomic.AtomicBoolean;\n' +
         'import java.nio.Buffer;\n' +
+        '\n' +
         'import com.badlogic.gdx.utils.SharedLibraryLoader;\n\n' +
         '/**\n' +
         ' * Lua C API wrappers\n' +

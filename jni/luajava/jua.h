@@ -53,6 +53,10 @@ int luaJ_isobject(lua_State * L, int index);
 
 int luaJ_insertloader(lua_State * L, const char * searchers);
 
+int luaJ_invokespecial(JNIEnv * env, lua_State * L,
+                       jclass clazz, const char * method, const char * sig,
+                       jobject obj, const char * params);
+
 inline int checkOrError (JNIEnv * env, lua_State * L, jint ret) {
   jthrowable e = env->ExceptionOccurred();
   if (e == NULL) {

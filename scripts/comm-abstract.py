@@ -73,6 +73,6 @@ import java.nio.Buffer;
 @SuppressWarnings("unused")
 public abstract class LuaNative {
 """)
-for line in sorted(map(lambda method: method['line'], common), key=lambda s: s.lower()):
+for line in sorted(map(lambda method: method['line'], common), key=lambda s: s.replace('_', '').lower()):
     print('    %s\n' % (line.replace('native', 'abstract'),))
 print('}')
