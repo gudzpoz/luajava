@@ -23,9 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.Closeable;
 import java.io.Externalizable;
 import java.io.Serializable;
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -276,37 +274,5 @@ public abstract class ClassUtils {
             return EMPTY_CLASS_ARRAY;
         }
         return collection.toArray(EMPTY_CLASS_ARRAY);
-    }
-
-    public final static LookupProvider lookupProvider = new AsmLookupProvider();
-
-    /**
-     * Invokes a default method from an interface
-     *
-     * @param o          the {@code this} object
-     * @param method     the method
-     * @param parameters the parameters
-     * @return the return result
-     * @throws Throwable arbitrary exceptions
-     */
-    public static Object invokeDefault(Object o, Method method, Object[] parameters) throws Throwable {
-        MethodHandle lookup;
-        try {
-            lookup = lookupProvider
-                    .lookup(method);
-        } catch (Throwable e) {
-            throw new UnsupportedOperationException(e);
-        }
-        return lookup
-                .bindTo(o)
-                .invokeWithArguments(parameters);
-    }
-
-    public static Class<?> wrap(Class<?> iClass) {
-        return lookupProvider.wrap(iClass);
-    }
-
-    public static ClassLoader getLookupLoader() {
-        return lookupProvider.getLoader();
     }
 }
