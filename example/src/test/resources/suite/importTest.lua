@@ -9,6 +9,10 @@ assertThrows('java.lang.ClassNotFoundException: java.lang.NoAClass',
 
 lang = java.import('java.lang.*')
 assert(type(lang) == 'table')
+assert(type(lang.reflect) == 'table')
+assert(type(lang.reflect.Method) == 'userdata')
+-- Cached
+assert(lang.reflect.Method == lang.reflect.Method)
 
 String = lang.String
 assert(String ~= nil)
@@ -16,5 +20,3 @@ assert(type(String) == 'userdata')
 
 assertThrows("bad argument #2 to",
              function() print(lang[nil]) end)
-assertThrows("java.lang.ClassNotFoundException: java.lang.",
-             function() print(lang['']) end)
