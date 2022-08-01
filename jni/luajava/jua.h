@@ -36,6 +36,7 @@ jclass bindJavaClass(JNIEnv * env, const char * name);
 jmethodID bindJavaStaticMethod(JNIEnv * env, jclass c, const char * name, const char * sig);
 jmethodID bindJavaMethod(JNIEnv * env, jclass c, const char * name, const char * sig);
 int initBindings(JNIEnv * env);
+int initBoxingBindings(JNIEnv * env);
 
 void initMetaRegistry(lua_State * L);
 
@@ -57,16 +58,10 @@ int luaJ_invokespecial(JNIEnv * env, lua_State * L,
                        jclass clazz, const char * method, const char * sig,
                        jobject obj, const char * params);
 
-inline int checkOrError (JNIEnv * env, lua_State * L, jint ret) {
+inline bool checkIfError (JNIEnv * env, lua_State * L) {
   jthrowable e = env->ExceptionOccurred();
   if (e == NULL) {
-    if (ret >= 0) {
-      lua_pushnil(L);
-      lua_setglobal(L, GLOBAL_THROWABLE);
-      return (int) ret;
-    } else {
-      return lua_error(L);
-    }
+    return false;
   }
   env->ExceptionClear();
   jstring message = (jstring) env->CallObjectMethod(e, throwable_tostring);
@@ -78,6 +73,15 @@ inline int checkOrError (JNIEnv * env, lua_State * L, jint ret) {
   lua_setglobal(L, GLOBAL_THROWABLE);
   // https://stackoverflow.com/q/33481144/17780636
   // env->DeleteLocalRef(e);
+  return true;
+}
+
+inline int checkOrError (JNIEnv * env, lua_State * L, jint ret) {
+  if (!checkIfError(env, L) && ret >= 0) {
+    lua_pushnil(L);
+    lua_setglobal(L, GLOBAL_THROWABLE);
+    return (int) ret;
+  }
   return lua_error(L);
 }
 

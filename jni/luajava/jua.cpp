@@ -137,6 +137,10 @@ int initBindings(JNIEnv * env) {
     return -1;
   }
 
+  if (initBoxingBindings(env) != 0) {
+    return -1;
+  }
+
   java_lang_class_class = bindJavaClass(env, "java/lang/Class");
   java_lang_class_forname = bindJavaStaticMethod(env, java_lang_class_class,
           "forName", "(Ljava/lang/String;)Ljava/lang/Class;");
@@ -419,11 +423,5 @@ int luaJ_insertloader(lua_State * L, const char * searchers) {
   lua_pushcfunction(L, &jmoduleLoad);
   lua_rawseti(L, -2, next);
   lua_pop(L, 2);
-  return 0;
-}
-
-int luaJ_invokespecial(JNIEnv * env, lua_State * L,
-                       jclass clazz, const char * method, const char * sig,
-                       jobject obj, const char * params) {
   return 0;
 }
