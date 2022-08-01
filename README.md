@@ -124,3 +124,4 @@ Code under [./example](./example) is licensed under [GNU General Public License
 Version 3](https://www.gnu.org/licenses/gpl-3.0.txt).
 
 Other parts are licensed under [the MIT license](https://opensource.org/licenses/MIT).
+The project includes code from other projects, whose licenses may be found at [./LICENSE](./LICENSE).
