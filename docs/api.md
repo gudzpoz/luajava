@@ -189,6 +189,9 @@ Finds a method of the `jobject` or `jclass` matching the name and signature. See
 
     - `method`: (***string***) The method name. Use `new` to refer to the constructor.
 
+      For proxy object, it is possible to explicitly call the default methods in the interfaces.
+      Use `complete.interface.name:methodName` to refer to the method. See the examples below.
+
     - `signature`: (optional) (***string***) Comma separated argument type list. If not supplied, treated as an empty one.
 
 - **Returns:**
@@ -203,6 +206,13 @@ compareAndSet = java.method(integer, 'compareAndSet', 'int,int')
 compareAndSet(100, 200)
 compareAndSet(200, 400)
 assert(integer:get() == 400)
+
+iter = java.proxy('java.util.Iterator', {
+  remove = function(this)
+    java.method(iter, 'java.util.Iterator:remove')()
+  end
+})
+-- iter:remove() -- This throws an exception
 ```
 
 ### `array (jclass, dim1, ...)` <Badge>function</Badge>

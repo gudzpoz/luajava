@@ -2,6 +2,7 @@ package party.iroiro.luajava;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.nio.Buffer;
+
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 
 /**
@@ -86,7 +87,7 @@ import com.badlogic.gdx.utils.SharedLibraryLoader;
  * <li><code>lua_yieldk</code></li>
  * </ul>
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "rawtypes"})
 public class Lua54Natives extends LuaNative {
         /*JNI
             #include "luacustomamalg.h"
@@ -4379,7 +4380,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Open a library indivisually, alternative to <code>luaL_openlibs</code>
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param lib library name
@@ -4394,7 +4397,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * See <code>lua_compare</code>
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param index1 the stack position of the first element
@@ -4413,7 +4418,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Wrapper of <code>lua_(obj)len</code>
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
@@ -4430,7 +4437,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Load a direct buffer
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param buffer the buffer (expecting direct)
@@ -4449,7 +4458,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Run a direct buffer
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param buffer the buffer (expecting direct)
@@ -4468,7 +4479,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Protected call
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param nargs the number of arguments that you pushed onto the stack
@@ -4486,7 +4499,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Resume a coroutine
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param nargs the number of arguments that you pushed onto the stack
@@ -4503,7 +4518,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Push a Java object
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param obj the Java object
@@ -4518,7 +4535,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Push a Java class
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param clazz the Java class
@@ -4533,7 +4552,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Push a Java array
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param array the Java array
@@ -4548,7 +4569,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Push a JFunction
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param func the function object
@@ -4563,7 +4586,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Is a Java object (including object, array or class)
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
@@ -4580,7 +4605,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Convert to Java object if it is one
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
@@ -4597,7 +4624,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Create a new thread
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param lid the id of the Lua state, to be used to identify between Java and Lua
@@ -4614,7 +4643,9 @@ public class Lua54Natives extends LuaNative {
     /**
      * A wrapper function
      *
+     * <p>
      * Append a searcher loading from Java side into <code>package.searchers / loaders</code>
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
@@ -4623,6 +4654,30 @@ public class Lua54Natives extends LuaNative {
         lua_State * L = (lua_State *) ptr;
         
         jint returnValueReceiver = (jint) luaJ_initloader((lua_State *) L);
+        return returnValueReceiver;
+    */
+
+
+    /**
+     * A wrapper function
+     *
+     * <p>
+     * Runs {@code CallNonvirtual<type>MethodA}. See AbstractLua for usages.
+     * Parameters should be boxed and pushed on stack.
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param clazz the Java class
+     * @param method the method name
+     * @param sig the method signature used in {@code GetMethodID}
+     * @param obj the Java object
+     * @param params encoded parameter types
+     * @return see description
+     */
+    protected native int luaJ_invokespecial(long ptr, Class clazz, String method, String sig, Object obj, String params); /*
+        lua_State * L = (lua_State *) ptr;
+        
+        jint returnValueReceiver = (jint) luaJ_invokespecial((JNIEnv *) env, (lua_State *) L, (jclass) clazz, (const char *) method, (const char *) sig, (jobject) obj, (const char *) params);
         return returnValueReceiver;
     */
 

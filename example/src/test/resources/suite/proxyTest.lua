@@ -31,3 +31,44 @@ assertThrows('java.lang.UnsupportedOperationException', iter2.remove, iter2)
 assert(java.catched():toString() == 'java.lang.UnsupportedOperationException: remove')
 
 assertThrows('Expecting a table and interfaces', java.import('java.util.Iterator'), 1024)
+
+called = false
+B = java.proxy('party.iroiro.luajava.suite.B', 'party.iroiro.luajava.DefaultProxyTest.A', {
+  b = function(this)
+    called = true
+    return java.method(B, 'party.iroiro.luajava.suite.B:b')()
+  end
+})
+assert(not called)
+assert(B:b() == 3)
+assert(called)
+
+called = false
+iter = java.proxy('java.util.Iterator', 'java.lang.Runnable', {
+  hasNext = function(this)
+    return false
+  end,
+  next = function(this)
+    return nil
+  end,
+  remove = function(this)
+    called = true
+  end,
+  run = function(this)
+    java.method(iter, 'java.util.Iterator:remove')()
+  end
+})
+assert(not called)
+iter:remove()
+assert(called)
+assertThrows('java.lang.UnsupportedOperationException', iter.run, iter)
+
+obj = java.proxy('party.iroiro.luajava.DefaultProxyTest.D', {
+  noReturn = function()
+    assert(java.method(iter, 'party.iroiro.luajava.DefaultProxyTest.D:noReturn')() == nil)
+  end
+})
+obj:noReturn()
+
+assertThrows('java.lang.ClassNotFoundException: party.iroiro.luajava.DefaultProxyTest.NoSuchClass',
+             java.method(iter, 'party.iroiro.luajava.DefaultProxyTest.NoSuchClass:noReturn'))

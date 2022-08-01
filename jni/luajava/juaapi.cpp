@@ -130,10 +130,11 @@ int jarrayNewIndex(lua_State * L) {
 
 // c = jobject('methodName', 'signature') --> returns a closure
 inline int jSigCall(lua_State * L, lua_CFunction func) {
-  if (lua_gettop(L) == 3) {
+  int top = lua_gettop(L);
+  if (top == 3) {
     lua_pushcclosure(L, func, 3);
     return 1;
-  } else if (lua_gettop(L) == 2) {
+  } else if (top == 2) {
     lua_pushcclosure(L, func, 2);
     return 1;
   } else {

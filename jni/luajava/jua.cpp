@@ -137,6 +137,10 @@ int initBindings(JNIEnv * env) {
     return -1;
   }
 
+  if (initBoxingBindings(env) != 0) {
+    return -1;
+  }
+
   java_lang_class_class = bindJavaClass(env, "java/lang/Class");
   java_lang_class_forname = bindJavaStaticMethod(env, java_lang_class_class,
           "forName", "(Ljava/lang/String;)Ljava/lang/Class;");

@@ -3,11 +3,13 @@ package party.iroiro.luajava;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import party.iroiro.luajava.util.ClassUtils;
+import party.iroiro.luajava.util.Type;
 import party.iroiro.luajava.value.ImmutableLuaValue;
 import party.iroiro.luajava.value.LuaValue;
 import party.iroiro.luajava.value.RefLuaValue;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.Buffer;
 import java.util.*;
@@ -17,6 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * An implementation that relys on {@link LuaNative} for most of the features independent of Lua versions
  */
 public abstract class AbstractLua implements Lua {
+    private final static Object[] EMPTY = new Object[0];
     protected static LuaInstances<AbstractLua> instances = new LuaInstances<>();
     protected final AtomicReference<ExternalLoader> loader;
 
@@ -672,10 +675,8 @@ public abstract class AbstractLua implements Lua {
         if (isTable(-1) && interfaces.length >= 1) {
             try {
                 return Proxy.newProxyInstance(
-                        ClassUtils.getLookupLoader(),
-                        Arrays.stream(interfaces)
-                                .map(ClassUtils::wrap)
-                                .toArray(Class[]::new),
+                        ClassUtils.getDefaultClassLoader(),
+                        interfaces,
                         new LuaProxy(ref(), this, degree, interfaces)
                 );
             } catch (Throwable e) {
@@ -764,6 +765,64 @@ public abstract class AbstractLua implements Lua {
         setGlobal(GLOBAL_THROWABLE);
         push(e.toString());
         return -1;
+    }
+
+    /**
+     * Calls a method on an object, equivalent to <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html#jvms-6.5.invokespecial">invokespecial</a>
+     *
+     * <p>
+     * Internally it uses {@link LuaNative#luaJ_invokespecial(long, Class, String, String, Object, String)} which then uses
+     * {@code CallNonvirtual<Type>MethodA} functions to avoid tons of restrictions imposed by the JVM.
+     * </p>
+     *
+     * @param object the {@code this} object
+     * @param method the method
+     * @param params the parameters
+     * @return the return value
+     * @throws Throwable whenever the method call throw exceptions
+     */
+    protected @Nullable Object invokeSpecial(Object object, Method method, @Nullable Object[] params) throws Throwable {
+        if (params == null) {
+            params = EMPTY;
+        }
+        for (int i = params.length - 1; i >= 0; i--) {
+            if (params[i] == null) {
+                pushNil();
+            } else {
+                pushJavaObject(params[i]);
+            }
+        }
+        StringBuilder customSignature = new StringBuilder(params.length + 1);
+        for (Class<?> type : method.getParameterTypes()) {
+            appendCustomDescriptor(type, customSignature);
+        }
+        appendCustomDescriptor(method.getReturnType(), customSignature);
+        if (C.luaJ_invokespecial(
+                L,
+                method.getDeclaringClass(),
+                method.getName(),
+                Type.getMethodDescriptor(method),
+                object,
+                customSignature.toString()
+        ) == -1) {
+            Throwable javaError = getJavaError();
+            pop(1);
+            throw Objects.requireNonNull(javaError);
+        }
+        if (method.getReturnType() == Void.TYPE) {
+            return null;
+        }
+        Object ret = toJavaObject(-1);
+        pop(1);
+        return ret;
+    }
+
+    private void appendCustomDescriptor(Class<?> type, StringBuilder customSignature) {
+        if (type.isPrimitive()) {
+            customSignature.append(Type.getPrimitiveDescriptor(type));
+        } else {
+            customSignature.append("_");
+        }
     }
 
     @Override

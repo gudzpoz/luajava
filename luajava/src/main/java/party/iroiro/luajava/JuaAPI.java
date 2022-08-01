@@ -216,7 +216,19 @@ public abstract class JuaAPI {
     @SuppressWarnings("unused")
     public static int objectInvoke(int index, Object obj, String name,
                                    String notSignature, int paramCount) {
-        return methodInvoke(index, obj.getClass(), obj, name, notSignature, paramCount);
+        int colon = name.indexOf(':');
+        if (colon == -1) {
+            return methodInvoke(index, obj.getClass(), obj, name, notSignature, paramCount);
+        } else {
+            String iClass = name.substring(0, colon);
+            String method = name.substring(colon + 1);
+            try {
+                return methodInvoke(index, ClassUtils.forName(iClass, null), obj, method,
+                        notSignature, paramCount);
+            } catch (ClassNotFoundException e) {
+                return Jua.get(index).error(e);
+            }
+        }
     }
 
     /**
@@ -489,7 +501,7 @@ public abstract class JuaAPI {
      */
     public static int methodInvoke(int index, Class<?> clazz, @Nullable Object obj,
                                    String name, String notSignature, int paramCount) {
-        Lua L = Jua.get(index);
+        AbstractLua L = Jua.get(index);
         if ("new".equals(name)) {
             if (obj == null) {
                 Constructor<?> constructor = matchMethod(clazz, notSignature);
@@ -509,11 +521,39 @@ public abstract class JuaAPI {
         if (method != null) {
             Object[] objects = new Object[paramCount];
             if (matchMethod(L, new Method[]{method}, name, objects) != null) {
-                return methodInvoke(L, method, obj, objects);
+                if (clazz.isInterface()) {
+                    return specialInvoke(L, method, obj, objects);
+                } else {
+                    return methodInvoke(L, method, obj, objects);
+                }
             }
         }
         L.push("no matching method found");
         return -1;
+    }
+
+    /**
+     * Invokes a method and pushes the result onto the stack
+     *
+     * @param L       the lua state
+     * @param method  the method
+     * @param obj     the object
+     * @param objects the parameters
+     * @return the number of values pushed onto the stack
+     */
+    private static int specialInvoke(AbstractLua L, Method method, @Nullable Object obj, Object[] objects) {
+        Object ret;
+        try {
+            ret = L.invokeSpecial(obj, method, objects);
+        } catch (Throwable e) {
+            return L.error(e);
+        }
+        if (ret == null) {
+            return 0;
+        } else {
+            L.push(ret, Lua.Conversion.SEMI);
+            return 1;
+        }
     }
 
     /**

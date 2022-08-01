@@ -480,6 +480,35 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
+     * Append a searcher loading from Java side into <code>package.searchers / loaders</code>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @return see description
+     */
+    protected abstract int luaJ_initloader(long ptr);
+
+    /**
+     * A wrapper function
+     *
+     * <p>
+     * Runs {@code CallNonvirtual<type>MethodA}. See AbstractLua for usages.
+     * Parameters should be boxed and pushed on stack.
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param clazz the Java class
+     * @param method the method name
+     * @param sig the method signature used in {@code GetMethodID}
+     * @param obj the Java object
+     * @param params encoded parameter types
+     * @return see description
+     */
+    @SuppressWarnings("rawtypes")
+    protected abstract int luaJ_invokespecial(long ptr, Class clazz, String method, String sig, Object obj, String params);
+
+    /**
+     * A wrapper function
+     *
      * Is a Java object (including object, array or class)
      *
      * @param ptr the <code>lua_State*</code> pointer
@@ -1796,6 +1825,27 @@ public abstract class LuaNative {
     protected abstract void luaJ_pushstring(long ptr, String s);
 
     /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_rawget"><code>lua_rawget</code></a>
+     *
+     * <pre><code>
+     * [-1, +1, -]
+     * </code></pre>
+     *
+     * <pre><code>
+     * void lua_rawget (lua_State *L, int index);
+     * </code></pre>
+     *
+     * <p>
+     * Similar to <a href="https://www.lua.org/manual/5.1/manual.html#lua_gettable"><code>lua_gettable</code></a>, but does a raw access
+     * (i.e., without metamethods).
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     */
+    protected abstract void luaJ_rawget(long ptr, int index);
+
+    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_rawgeti"><code>lua_rawgeti</code></a>
      *
      * <pre><code>
@@ -1818,27 +1868,6 @@ public abstract class LuaNative {
      * @param n the number of elements
      */
     protected abstract void luaJ_rawgeti(long ptr, int index, int n);
-
-    /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_rawget"><code>lua_rawget</code></a>
-     *
-     * <pre><code>
-     * [-1, +1, -]
-     * </code></pre>
-     *
-     * <pre><code>
-     * void lua_rawget (lua_State *L, int index);
-     * </code></pre>
-     *
-     * <p>
-     * Similar to <a href="https://www.lua.org/manual/5.1/manual.html#lua_gettable"><code>lua_gettable</code></a>, but does a raw access
-     * (i.e., without metamethods).
-     * </p>
-     *
-     * @param ptr the <code>lua_State*</code> pointer
-     * @param index the stack position of the element
-     */
-    protected abstract void luaJ_rawget(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_setmetatable"><code>lua_setmetatable</code></a>
@@ -2140,6 +2169,35 @@ public abstract class LuaNative {
     protected abstract void lua_rawset(long ptr, int index);
 
     /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_rawseti"><code>lua_rawseti</code></a>
+     *
+     * <pre><code>
+     * [-1, +0, m]
+     * </code></pre>
+     *
+     * <pre><code>
+     * void lua_rawseti (lua_State *L, int index, int n);
+     * </code></pre>
+     *
+     * <p>
+     * Does the equivalent of <code>t[n] = v</code>,
+     * where <code>t</code> is the value at the given valid index
+     * and <code>v</code> is the value at the top of the stack.
+     * </p>
+     *
+     * <p>
+     * This function pops the value from the stack.
+     * The assignment is raw;
+     * that is, it does not invoke metamethods.
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @param n the number of elements
+     */
+    protected abstract void lua_rawseti(long ptr, int index, int n);
+
+    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_remove"><code>lua_remove</code></a>
      *
      * <pre><code>
@@ -2318,43 +2376,4 @@ public abstract class LuaNative {
      * @param n the number of elements
      */
     protected abstract void lua_xmove(long from, long to, int n);
-
-    /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_rawseti"><code>lua_rawseti</code></a>
-     *
-     * <pre><code>
-     * [-1, +0, m]
-     * </code></pre>
-     *
-     * <pre><code>
-     * void lua_rawseti (lua_State *L, int index, int n);
-     * </code></pre>
-     *
-     * <p>
-     * Does the equivalent of <code>t[n] = v</code>,
-     * where <code>t</code> is the value at the given valid index
-     * and <code>v</code> is the value at the top of the stack.
-     * </p>
-     *
-     * <p>
-     * This function pops the value from the stack.
-     * The assignment is raw;
-     * that is, it does not invoke metamethods.
-     * </p>
-     *
-     * @param ptr the <code>lua_State*</code> pointer
-     * @param index the stack position of the element
-     * @param n the number of elements
-     */
-    protected abstract void lua_rawseti(long ptr, int index, int n);
-
-    /**
-     * A wrapper function
-     *
-     * Append a searcher loading from Java side into <code>package.searchers / loaders</code>
-     *
-     * @param ptr the <code>lua_State*</code> pointer
-     * @return see description
-     */
-    protected abstract int luaJ_initloader(long ptr);
 }

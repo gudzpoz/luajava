@@ -1,7 +1,5 @@
 package party.iroiro.luajava;
 
-import party.iroiro.luajava.util.ClassUtils;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -17,11 +15,11 @@ import java.util.Arrays;
  */
 public class LuaProxy implements InvocationHandler {
     private final int ref;
-    private final Lua L;
+    private final AbstractLua L;
     private final Lua.Conversion degree;
     private final Class<?>[] interfaces;
 
-    LuaProxy(int ref, Lua L, Lua.Conversion degree, Class<?>[] interfaces) {
+    LuaProxy(int ref, AbstractLua L, Lua.Conversion degree, Class<?>[] interfaces) {
         this.ref = ref;
         this.L = L;
         this.degree = degree;
@@ -74,7 +72,7 @@ public class LuaProxy implements InvocationHandler {
 
     private Object callDefaultMethod(Object o, Method method, Object[] objects) throws Throwable {
         if (method.isDefault()) {
-            return ClassUtils.invokeDefault(o, method, objects);
+            return L.invokeSpecial(o, method, objects);
         }
         return callObjectDefault(o, method, objects);
     }
