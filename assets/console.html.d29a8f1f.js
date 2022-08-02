@@ -1,1 +1,0 @@
-const e=JSON.parse('{"key":"v-49c05f5b","path":"/console.html","title":"Interactive Console","lang":"en-US","frontmatter":{},"excerpt":"","headers":[],"git":{"updatedTime":1659374030000},"filePathRelative":"console.md"}');export{e as data};

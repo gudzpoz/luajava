@@ -241,7 +241,7 @@ extends java.lang.AutoCloseable</pre>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion)">createProxy</a></span>&#8203;(java.lang.Class&lt;?&gt;[]&nbsp;interfaces,
            <a href="Lua.Conversion.html" title="enum in party.iroiro.luajava">Lua.Conversion</a>&nbsp;degree)</code></th>
 <td class="colLast">
-<div class="block">Creates a proxy object, implementing all the specified interfaces, with a Lua table on top of the stack</div>
+<div class="block">Creates a proxy object, implementing all the specified interfaces, with a Lua table / function on top of the stack</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
@@ -2529,10 +2529,15 @@ extends java.lang.AutoCloseable</pre>
 <pre class="methodSignature">java.lang.Object&nbsp;createProxy&#8203;(java.lang.Class&lt;?&gt;[]&nbsp;interfaces,
                              <a href="Lua.Conversion.html" title="enum in party.iroiro.luajava">Lua.Conversion</a>&nbsp;degree)
                       throws java.lang.IllegalArgumentException</pre>
-<div class="block">Creates a proxy object, implementing all the specified interfaces, with a Lua table on top of the stack
+<div class="block">Creates a proxy object, implementing all the specified interfaces, with a Lua table / function on top of the stack
 
  <p>
  This method pops the value on top on the stack and creates reference to it with <a href="#ref()"><code>ref()</code></a>.
+ </p>
+
+ <p>
+ When invoking methods, the created Java object, instead of the backing Lua table, is passed
+ as the first parameter to the Lua function.
  </p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

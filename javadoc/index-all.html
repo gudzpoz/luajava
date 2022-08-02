@@ -234,7 +234,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/Lua.html#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion)">createProxy(Class&lt;?&gt;[], Lua.Conversion)</a></span> - Method in interface party.iroiro.luajava.<a href="party/iroiro/luajava/Lua.html" title="interface in party.iroiro.luajava">Lua</a></dt>
 <dd>
-<div class="block">Creates a proxy object, implementing all the specified interfaces, with a Lua table on top of the stack</div>
+<div class="block">Creates a proxy object, implementing all the specified interfaces, with a Lua table / function on top of the stack</div>
 </dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#createTable(int,int)">createTable(int, int)</a></span> - Method in class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
 <dd>&nbsp;</dd>
@@ -5368,6 +5368,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/Lua.html#unRef(int,int)">unRef(int, int)</a></span> - Method in interface party.iroiro.luajava.<a href="party/iroiro/luajava/Lua.html" title="interface in party.iroiro.luajava">Lua</a></dt>
 <dd>
 <div class="block">Releases reference ref from the table at index <code>index</code></div>
+</dd>
+<dt><span class="memberNameLink"><a href="party/iroiro/luajava/JuaAPI.html#unwrap(int,java.lang.Object)">unwrap(int, Object)</a></span> - Static method in class party.iroiro.luajava.<a href="party/iroiro/luajava/JuaAPI.html" title="class in party.iroiro.luajava">JuaAPI</a></dt>
+<dd>
+<div class="block">Pushes on stack the backing Lua table for a proxy</div>
 </dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/Lua.LuaType.html#USERDATA">USERDATA</a></span> - party.iroiro.luajava.<a href="party/iroiro/luajava/Lua.LuaType.html" title="enum in party.iroiro.luajava">Lua.LuaType</a></dt>
 <dd>&nbsp;</dd>
