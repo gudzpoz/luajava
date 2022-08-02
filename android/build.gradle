@@ -24,8 +24,8 @@ android {
     defaultConfig {
         minSdk 16
         targetSdk 21
-        versionCode 3
-        versionName "3.0"
+        versionCode 1
+        versionName '3.1'
     }
 
     sourceSets { container ->
@@ -96,6 +96,12 @@ apply plugin: 'signing'
 apply from: project(':').file('pom.gradle')
 
 afterEvaluate {
+    generateLua51ReleaseBuildConfig.enabled = false
+    generateLua52ReleaseBuildConfig.enabled = false
+    generateLua53ReleaseBuildConfig.enabled = false
+    generateLua54ReleaseBuildConfig.enabled = false
+    generateLuajitReleaseBuildConfig.enabled = false
+
     publishing {
         publications {
             'default'(MavenPublication) { container ->
