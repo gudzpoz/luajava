@@ -13,10 +13,11 @@ assert(t.value == 1)
 runnable:run()
 assert(t.value == 2)
 
+i = 10
 iterImpl = {
   next = function()
     i = i - 1
-    return i
+    return i + 1
   end,
   hasNext = function()
     return i > 0
@@ -25,6 +26,9 @@ iterImpl = {
 
 iter = java.proxy('java.util.Iterator', iterImpl)
 assertThrows('java.lang.UnsupportedOperationException', iter.remove, iter)
+res = {}
+iter:forEachRemaining(function(this, e) res[e] = true end)
+assert(#res == 10)
 
 iter2 = java.import('java.util.Iterator')(iterImpl)
 assertThrows('java.lang.UnsupportedOperationException', iter2.remove, iter2)
@@ -72,3 +76,8 @@ obj:noReturn()
 
 assertThrows('java.lang.ClassNotFoundException: party.iroiro.luajava.DefaultProxyTest.NoSuchClass',
              java.method(iter, 'party.iroiro.luajava.DefaultProxyTest.NoSuchClass:noReturn'))
+
+Collections = java.import('java.util.Collections')
+assert(2 == Collections:binarySearch({1, 2, 3, 4, 5}, 3))
+assert(1 == Collections:binarySearch({1, 2, 3, 4, 5}, 2, function(this, a, b) return a - b end))
+assert(3 == Collections:binarySearch({5, 4, 3, 2, 1}, 2, function(this, a, b) return b - a end))

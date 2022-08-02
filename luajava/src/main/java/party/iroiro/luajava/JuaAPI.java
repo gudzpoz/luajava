@@ -759,10 +759,6 @@ public abstract class JuaAPI {
     public static Object convertFromLua(Lua L, Class<?> clazz, int index)
             throws IllegalArgumentException {
         Lua.LuaType type = L.type(index);
-        if (clazz == LuaValue.class) {
-            L.pushValue(index);
-            return L.get();
-        }
         if (type == Lua.LuaType.NIL) {
             if (clazz.isPrimitive()) {
                 throw new IllegalArgumentException("Primitive not accepting null values");
@@ -797,6 +793,18 @@ public abstract class JuaAPI {
                 return Objects.requireNonNull(L.toList(index)).toArray(new Object[0]);
             } else if (clazz.isAssignableFrom(Map.class)) {
                 return L.toMap(index);
+            } else if (clazz.isInterface() && !clazz.isAnnotation()) {
+                L.pushValue(index);
+                return L.createProxy(new Class[]{clazz}, Lua.Conversion.SEMI);
+            }
+        } else if (type == Lua.LuaType.FUNCTION) {
+            String descriptor = ClassUtils.getLuaFunctionalDescriptor(clazz);
+            if (descriptor != null) {
+                L.pushValue(index);
+                L.createTable(0, 1);
+                L.insert(L.getTop() - 1);
+                L.setField(-2, descriptor);
+                return L.createProxy(new Class[]{clazz}, Lua.Conversion.SEMI);
             }
         }
         if (clazz.isAssignableFrom(LuaValue.class)) {

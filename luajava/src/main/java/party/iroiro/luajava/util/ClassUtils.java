@@ -24,6 +24,8 @@ import java.io.Closeable;
 import java.io.Externalizable;
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -274,5 +276,46 @@ public abstract class ClassUtils {
             return EMPTY_CLASS_ARRAY;
         }
         return collection.toArray(EMPTY_CLASS_ARRAY);
+    }
+
+    private final static Set<String> OBJECT_METHODS;
+
+    static {
+        Set<String> methods = new HashSet<>();
+        Collections.addAll(methods, "equals", "hashCode", "toString");
+        OBJECT_METHODS = Collections.unmodifiableSet(methods);
+    }
+
+    /**
+     * Returns the method name if the class is considered a functional interface in a wilder sense
+     *
+     * @param clazz an interface
+     * @return {@code null} if not applicable
+     */
+    public static @Nullable String getLuaFunctionalDescriptor(Class<?> clazz) {
+        if (clazz.isInterface() && !clazz.isAnnotation()) {
+            Queue<Class<?>> searchQueue = new ArrayDeque<>(1);
+            String name = null;
+            searchQueue.add(clazz);
+            while (!searchQueue.isEmpty()) {
+                Class<?> aClass = searchQueue.poll();
+                for (Method m : aClass.getDeclaredMethods()) {
+                    if (Modifier.isAbstract(m.getModifiers())) {
+                        String mName = m.getName();
+                        if (OBJECT_METHODS.contains(mName)) {
+                            continue;
+                        }
+                        if (name == null) {
+                            name = mName;
+                        } else if (!name.equals(mName)) {
+                            return null;
+                        }
+                    }
+                }
+                Collections.addAll(searchQueue, aClass.getInterfaces());
+            }
+            return name;
+        }
+        return null;
     }
 }

@@ -144,6 +144,8 @@ public class LuaScriptSuite<T extends AbstractLua> {
         public Object[] array1 = null;
         public int[] array2 = null;
         public Map<Object, Object> map = null;
+        public FunctionalInterface annotation;
+        public Runnable intf;
     }
 
     public static abstract class AbstractClass {

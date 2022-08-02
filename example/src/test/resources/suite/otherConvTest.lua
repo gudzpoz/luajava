@@ -21,6 +21,8 @@ assert(others.i == 1)
 assert(others.s == nil)
 
 assert(others.collection == nil)
+assertThrows('java.lang.IllegalArgumentException', function() others.collection = function() end end)
+assert(others.collection == nil)
 others.collection = {1, 2, 3}
 assert(others.collection ~= nil)
 assert(others.collection:size() == 3)
@@ -37,3 +39,14 @@ assert(others.array2 == nil)
 assert(others.map == nil)
 others.map = {1, 2, 3}
 assert(others.map ~= nil)
+
+assert(others.annotation == nil)
+assertThrows('java.lang.IllegalArgumentException', function() others.annotation = {} end)
+assert(others.annotation == nil)
+
+b = false
+assert(others.intf == nil)
+others.intf = { run = function() b = true end }
+assert(others.intf ~= nil)
+others.intf:run()
+assert(b)
