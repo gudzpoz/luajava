@@ -36,39 +36,21 @@ frame:show()
 -- Listeners
 --
 
-executeCallback = {
-  actionPerformed = function(this, ev)
-    print("execute")
-    pcall(loadstring(console:getText()))
-  end
-}
+executeButton:addActionListener(function(this, ev)
+  print("execute")
+  pcall(loadstring(console:getText()))
+end)
 
-jproxy = java.proxy("java.awt.event.ActionListener", executeCallback)
+clearButton:addActionListener(function (this, ev)
+  print("clear");
+  console:setText("");
+end)
 
-executeButton:addActionListener(jproxy)
-
-clearCallback = {
-  actionPerformed = function (this, ev)
-    print("clear");
-    console:setText("");
-  end
-}
-
-jproxy = java.proxy("java.awt.event.ActionListener", clearCallback)
-clearButton:addActionListener(jproxy)
-
-exitCallback = {
-  actionPerformed = function (this, ev)
-    print("exit")
-    frame:setVisible(false)
-    frame:dispose()
-  end
-}
-
-
-jproxyb = java.proxy("java.awt.event.ActionListener", exitCallback)
-
-exitButton:addActionListener(jproxyb)
+exitButton:addActionListener(function (this, ev)
+  print("exit")
+  frame:setVisible(false)
+  frame:dispose()
+end)
 
 closeCallback = {
   windowClosing = function (this, ev)
@@ -114,39 +96,21 @@ frame:show()
 -- Listeners
 --
 
-executeCallback = {
-  actionPerformed = function(this, ev)
-    print("execute")
-    pcall(load(console:getText()))
-  end
-}
+executeButton:addActionListener(function(this, ev)
+  print("execute")
+  pcall(load(console:getText()))
+end)
 
-jproxy = java.proxy("java.awt.event.ActionListener", executeCallback)
+clearButton:addActionListener(function (this, ev)
+  print("clear");
+  console:setText("");
+end)
 
-executeButton:addActionListener(jproxy)
-
-clearCallback = {
-  actionPerformed = function (this, ev)
-    print("clear");
-    console:setText("");
-  end
-}
-
-jproxy = java.proxy("java.awt.event.ActionListener", clearCallback)
-clearButton:addActionListener(jproxy)
-
-exitCallback = {
-  actionPerformed = function (this, ev)
-    print("exit")
-    frame:setVisible(false)
-    frame:dispose()
-  end
-}
-
-
-jproxyb = java.proxy("java.awt.event.ActionListener", exitCallback)
-
-exitButton:addActionListener(jproxyb)
+exitButton:addActionListener(function (this, ev)
+  print("exit")
+  frame:setVisible(false)
+  frame:dispose()
+end)
 
 closeCallback = {
   windowClosing = function (this, ev)

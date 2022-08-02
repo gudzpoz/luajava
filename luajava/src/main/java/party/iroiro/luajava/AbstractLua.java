@@ -694,19 +694,34 @@ public abstract class AbstractLua implements Lua {
     @Override
     public Object createProxy(Class<?>[] interfaces, Conversion degree)
             throws IllegalArgumentException {
-        if (isTable(-1) && interfaces.length >= 1) {
-            try {
-                return Proxy.newProxyInstance(
-                        ClassUtils.getDefaultClassLoader(),
-                        interfaces,
-                        new LuaProxy(ref(), this, degree, interfaces)
-                );
-            } catch (Throwable e) {
-                throw new IllegalArgumentException(e);
+        if (interfaces.length >= 1) {
+            switch (Objects.requireNonNull(type(-1))) {
+                case FUNCTION:
+                    String name = ClassUtils.getLuaFunctionalDescriptor(interfaces);
+                    if (name == null) {
+                        pop(1);
+                        throw new IllegalArgumentException("Unable to merge interfaces into a functional one");
+                    }
+                    createTable(0, 1);
+                    insert(getTop() - 1);
+                    setField(-2, name);
+                    // Fall through
+                case TABLE:
+                    try {
+                        return Proxy.newProxyInstance(
+                                ClassUtils.getDefaultClassLoader(),
+                                interfaces,
+                                new LuaProxy(ref(), this, degree, interfaces)
+                        );
+                    } catch (Throwable e) {
+                        throw new IllegalArgumentException(e);
+                    }
+                default:
+                    break;
             }
         }
         pop(1);
-        throw new IllegalArgumentException("Expecting a table and interfaces");
+        throw new IllegalArgumentException("Expecting a table / function and interfaces");
     }
 
     @Override
@@ -803,7 +818,8 @@ public abstract class AbstractLua implements Lua {
      * @return the return value
      * @throws Throwable whenever the method call throw exceptions
      */
-    protected @Nullable Object invokeSpecial(Object object, Method method, @Nullable Object[] params) throws Throwable {
+    protected @Nullable Object invokeSpecial(Object object, Method method, @Nullable Object[] params) throws
+            Throwable {
         if (params == null) {
             params = EMPTY;
         }

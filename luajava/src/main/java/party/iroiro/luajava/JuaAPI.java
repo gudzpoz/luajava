@@ -39,6 +39,34 @@ import java.util.stream.Collectors;
  */
 public abstract class JuaAPI {
     /**
+     * Pushes on stack the backing Lua table for a proxy
+     *
+     * @param id  the Lua state id
+     * @param obj the proxy object
+     * @return -1 on failure, 1 if successfully pushed
+     */
+    @SuppressWarnings("unused")
+    public static int unwrap(int id, Object obj) {
+        Lua L = Jua.get(id);
+        try {
+            InvocationHandler handler = Proxy.getInvocationHandler(obj);
+            if (handler instanceof LuaProxy) {
+                LuaProxy proxy = (LuaProxy) handler;
+                if (proxy.L.mainThread == L.getMainState()) {
+                    L.refGet(proxy.ref);
+                    return 1;
+                }
+                L.push("Proxied table is on different states");
+            } else {
+                L.push("No a LuaProxy backed object");
+            }
+            return -1;
+        } catch (IllegalArgumentException | SecurityException e) {
+            return L.error(e);
+        }
+    }
+
+    /**
      * Loads a Lua chunck according with {@link Lua#loadExternal(String)}
      *
      * <p>

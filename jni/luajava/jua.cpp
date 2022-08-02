@@ -33,6 +33,7 @@ jmethodID juaapi_threadnewid    = NULL;
 jmethodID juaapi_luaify         = NULL;
 jmethodID juaapi_import         = NULL;
 jmethodID juaapi_proxy          = NULL;
+jmethodID juaapi_unwrap         = NULL;
 jmethodID juaapi_load           = NULL;
 // java.lang.Throwable
 jclass java_lang_throwable_class = NULL;
@@ -189,6 +190,8 @@ int initBindings(JNIEnv * env) {
           "javaImport", "(ILjava/lang/String;)I");
   juaapi_proxy = bindJavaStaticMethod(env, juaapi_class,
           "proxy", "(I)I");
+  juaapi_unwrap = bindJavaStaticMethod(env, juaapi_class,
+          "unwrap", "(ILjava/lang/Object;)I");
   juaapi_load = bindJavaStaticMethod(env, juaapi_class,
           "load", "(ILjava/lang/String;)I");
   if (java_lang_class_class == NULL

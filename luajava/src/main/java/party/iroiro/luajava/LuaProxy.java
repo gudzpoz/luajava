@@ -36,8 +36,8 @@ import java.util.Arrays;
  * @author Thiago Ponte
  */
 public class LuaProxy implements InvocationHandler {
-    private final int ref;
-    private final AbstractLua L;
+    final int ref;
+    final AbstractLua L;
     private final Lua.Conversion degree;
     private final Class<?>[] interfaces;
 
@@ -58,7 +58,7 @@ public class LuaProxy implements InvocationHandler {
                 L.setTop(top);
                 return callDefaultMethod(object, method, objects);
             }
-            L.refGet(ref);
+            L.pushJavaObject(object);
 
             int nResults = method.getReturnType() == Void.TYPE ? 0 : 1;
 

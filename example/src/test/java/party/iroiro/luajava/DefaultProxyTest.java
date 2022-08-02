@@ -199,7 +199,7 @@ public class DefaultProxyTest {
         assertEquals(10, iset.size(), Arrays.toString(iset.toArray()));
 
         L.createTable(0, 0);
-        assertEquals("Expecting a table and interfaces",
+        assertEquals("Expecting a table / function and interfaces",
                 assertThrows(IllegalArgumentException.class,
                         () -> L.createProxy(new Class[0], Lua.Conversion.SEMI))
                         .getMessage());

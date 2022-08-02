@@ -5,13 +5,33 @@ assertThrows('bad argument #1 to \'java.proxy\'',
 t = {
     value = 1,
     run = function(this)
-        this.value = 2
+        java.unwrap(this).value = 2
     end
 }
 runnable = java.proxy('java.lang.Runnable', t)
 assert(t.value == 1)
 runnable:run()
 assert(t.value == 2)
+assertThrows('bad argument #1 to', java.unwrap, function() end)
+assertThrows('java.lang.IllegalArgumentException', java.unwrap, java.import('java.lang.Runnable').class)
+
+Proxy = java.import('java.lang.reflect.Proxy')
+interfaces = java.array(java.import('java.lang.Class'), 1)
+interfaces[1] = java.import('java.lang.Runnable')
+myProxyInstance = Proxy:newProxyInstance(
+  Proxy.class:getClassLoader(),
+  interfaces,
+  function() end
+)
+assertThrows('No a LuaProxy backed object', java.unwrap, myProxyInstance)
+
+Lua54 = java.import('party.iroiro.luajava.Lua54')
+Lua = java.import('party.iroiro.luajava.Lua')
+L = Lua54()
+L:createTable(0, 0)
+p = L:createProxy(interfaces, Lua.Conversion.SEMI)
+assertThrows('Proxied table is on different states', java.unwrap, p)
+L:close()
 
 i = 10
 iterImpl = {
@@ -34,7 +54,7 @@ iter2 = java.import('java.util.Iterator')(iterImpl)
 assertThrows('java.lang.UnsupportedOperationException', iter2.remove, iter2)
 assert(java.catched():toString() == 'java.lang.UnsupportedOperationException: remove')
 
-assertThrows('Expecting a table and interfaces', java.import('java.util.Iterator'), 1024)
+assertThrows('Expecting a table / function and interfaces', java.import('java.util.Iterator'), 1024)
 
 called = false
 B = java.proxy('party.iroiro.luajava.suite.B', 'party.iroiro.luajava.DefaultProxyTest.A', {

@@ -64,15 +64,28 @@ When calling Java methods from Lua, we `SEMI`-convert the return value. Currentl
 2. ***boolean*** converted to `boolean` or the boxed `Boolean`.
 3. ***integer*** / ***number*** to any of `boolean` `char` `byte` `short` `int` `long` `float` `double` or their boxed alternative. (`Double` is preferred.)
 
-  Trying to convert a number into an `Object` will always yield a boxed `Double`.
-  So pay attention when you use `Object::equals` for example.
+   Trying to convert a number into an `Object` will always yield a boxed `Double`.
+   So pay attention when you use `Object::equals` for example.
 
 4. ***string*** to `String`.
-5. ***table*** to `Map<Object, Object>`, `List<Object&gt;` or `Object[]` , converted recursively. (`Map<Object, Object>` is preferred.)
+5. ***table*** to `Map<Object, Object>`, `List<Object&gt;`, `Object[]`, (converted recursively with `Map<Object, Object>` preferred) or any interfaces.
+
+   To convert tables into any interface,
+   we call [`party.iroiro.luajava.Lua#createProxy`](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion))
+   with [`party.iroiro.luajava.Lua.Conversion#SEMI`](./javadoc/party/iroiro/luajava/Lua.Conversion.html#SEMI).
+
 6. ***jclass*** to `Class<?>`.
 7. ***jobject*** to the underlying Java object.
-8. Any type can get wrapped into a `LuaValue`.
-9. If all the above is not applicable, the result is `null` on the Java side.
+8. ***function*** to a [functional interface](https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.8).
+
+   Actually, if the abstract methods in the target interfaces are all of the same name, the library also does the wrapping for you.
+
+   The wrapping is done by creating an intermediate Lua table and then calling
+   [`party.iroiro.luajava.Lua#createProxy`](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion))
+   with [`party.iroiro.luajava.Lua.Conversion#SEMI`](./javadoc/party/iroiro/luajava/Lua.Conversion.html#SEMI).
+
+9. Any type can get wrapped into a `LuaValue`.
+10. If all the above is not applicable, the result is `null` on the Java side.
 
 ::: warning
 Currently, you cannot convert a C closure back to a `JFunction`, even if the closure simply wraps around `JFunction`.

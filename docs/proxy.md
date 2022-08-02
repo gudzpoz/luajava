@@ -1,8 +1,11 @@
 # Proxy Caveats
 
-Both [the Java API](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class[],party.iroiro.luajava.Lua.Conversion)) and [the Lua API](./api.md#proxy-jclass-table-function) provide a way to create Java proxies that delegate calls to an underlying Lua table.
+Both [the Java API](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class[],party.iroiro.luajava.Lua.Conversion))
+and [the Lua API](./api.md#proxy-jclass-table-function) provide a way
+to create Java proxies that delegate calls to an underlying Lua table.
 
-The Lua table is passed as the first parameter to the member functions in Lua.
+The created Java object is passed as the first parameter to the member functions in Lua.
+If you want to get the backing Lua table, use [`java.unwrap`](./api.md#unwrap-jobject-function).
 
 :::: code-group
 ::: code-group-item Java API
@@ -19,7 +22,7 @@ Runnable r = (Runnable) L.createProxy(new Class[] {Runnable.class}, Lua.Conversi
 ```lua
 r = java.proxy('java.lang.Runnable', {
   run = function(this)
-    assert(type(this) == table)
+    assert(type(java.unwrap(this)) == table)
     print('Hello')
   end
 })

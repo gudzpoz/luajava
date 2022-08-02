@@ -29,6 +29,7 @@ extern jmethodID juaapi_arraynewindex;
 extern jmethodID juaapi_luaify;
 extern jmethodID juaapi_import;
 extern jmethodID juaapi_proxy;
+extern jmethodID juaapi_unwrap;
 extern jmethodID juaapi_load;
 extern jmethodID throwable_tostring;
 

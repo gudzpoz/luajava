@@ -975,10 +975,15 @@ public interface Lua extends AutoCloseable {
     void error(String message);
 
     /**
-     * Creates a proxy object, implementing all the specified interfaces, with a Lua table on top of the stack
+     * Creates a proxy object, implementing all the specified interfaces, with a Lua table / function on top of the stack
      *
      * <p>
      * This method pops the value on top on the stack and creates reference to it with {@link #ref()}.
+     * </p>
+     *
+     * <p>
+     * When invoking methods, the created Java object, instead of the backing Lua table, is passed
+     * as the first parameter to the Lua function.
      * </p>
      *
      * @param interfaces the interfaces to implement

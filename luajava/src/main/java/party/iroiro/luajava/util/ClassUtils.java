@@ -289,14 +289,16 @@ public abstract class ClassUtils {
     /**
      * Returns the method name if the class is considered a functional interface in a wilder sense
      *
-     * @param clazz an interface
+     * @param classes interfaces
      * @return {@code null} if not applicable
      */
-    public static @Nullable String getLuaFunctionalDescriptor(Class<?> clazz) {
-        if (clazz.isInterface() && !clazz.isAnnotation()) {
+    public static @Nullable String getLuaFunctionalDescriptor(Class<?>... classes) {
+        if (Arrays.stream(classes).allMatch(c ->
+                c.isInterface() && !c.isAnnotation()
+        )) {
             Queue<Class<?>> searchQueue = new ArrayDeque<>(1);
             String name = null;
-            searchQueue.add(clazz);
+            Collections.addAll(searchQueue, classes);
             while (!searchQueue.isEmpty()) {
                 Class<?> aClass = searchQueue.poll();
                 for (Method m : aClass.getDeclaredMethods()) {

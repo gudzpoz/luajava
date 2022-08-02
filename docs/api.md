@@ -72,14 +72,57 @@ Lua tables usually start the index from 1, while Java arrays from 0.
 
 ## `java` <Badge>module</Badge>
 
-| Functions    | Signature                   | Returns           | Description                                            |
-|--------------|-----------------------------|-------------------|--------------------------------------------------------|
-| **`import`** | `(string)`                  | `jclass \         | table`                                                 | Import a Java class or package                         |
-| **`new`**    | `(jclass, ...)`             | `jobject`         | Call the constructor of the given Java type            |
-| **`proxy`**  | `(string, ..., table)`      | `jobject`         | Create an object with all calls proxied to a Lua table |
-| **`luaify`** | `(jobject)`                 | `any`             | Convert an object to Lua types if possible             |
-| **`method`** | `(jobject, string, string)` | `function`        | Find a method                                          |
-| **`array`**  | `(jclass, dim1, ...)`       | `jarray`          | Create an array with specified dimensions              |
+| Functions     | Signature                   | Returns           | Description                                            |
+|---------------|-----------------------------|-------------------|--------------------------------------------------------|
+| **`array`**   | `(jclass, dim1, ...)`       | `jarray`          | Create an array with specified dimensions              |
+| **`catched`** | `()`                        | `jobject`         | Return the latest captured Java `Throwable`            |
+| **`import`**  | `(string)`                  | `jclass \| table` | Import a Java class or package                         |
+| **`luaify`**  | `(jobject)`                 | `any`             | Convert an object to Lua types if possible             |
+| **`method`**  | `(jobject, string, string)` | `function`        | Find a method                                          |
+| **`new`**     | `(jclass, ...)`             | `jobject`         | Call the constructor of the given Java type            |
+| **`proxy`**   | `(string, ..., table)`      | `jobject`         | Create an object with all calls proxied to a Lua table |
+| **`unwrap`**  | `(jobject)`                 | `table`           | Return the backing table of a proxy object             |
+
+### `array (jclass, dim1, ...)` <Badge>function</Badge>
+
+Creates a Java array.
+
+- **Parameters:**
+
+  - `jclass`: (***jclass*** | ***jobject***) The component type. One may pass a `jclass` or a `jobject` of `Class<?>`. 
+
+  - `dim1`: (***number***) The size of the first dimension.
+
+  - `dim2`: (optional) (***number***) The size of the second dimension.
+
+  - `dimN`: (optional) (***number***) The size of the N-th dimension.
+
+- **Returns:**
+
+  - (***jarray***) `new "jclass"[dim1][dim2]...[dimN]`
+
+- Generates a Lua error if types mismatch or some dimensions are negative.
+
+```lua
+int = java.import('int')
+arr = java.array(int, 2, 16)
+assert(#arr == 2)
+assert(#arr[1] == 16)
+```
+
+### `catched ()` <Badge>function</Badge>
+
+Return the latest captured Java `java.lang.Throwable` during a Java method call.
+
+- **Parameters:**
+
+    - ***none***
+
+- **Returns:**
+
+    - (***jobject***) If some recent Java method call threw a `java.lang.Throwable`.
+
+    - (***nil***) No `Throwable` was thrown, or they were cleared.
 
 ### `import (name)` <Badge>function</Badge>
 
@@ -117,61 +160,6 @@ print(j.lang.System:currentTimeMillis())
 
 System = java.import('java.lang.System')
 print(System:currentTimeMillis())
-```
-
-### `new (jclass, ...)` <Badge>function</Badge>
-
-Call the constructor of the given Java type.
-
-- **Parameters:**
-
-    - `jclass`: (***jclass*** | ***jobject***) The class. One may pass a `jclass` or a `jobject` of `Class<?>`.
-
-    - `...`: (***any***) Extra parameters are passed to the constructor. See also [Type Conversions](./conversions) to find out how we locate a matching method.
-
-- **Returns:**
-
-    - (***jobject***) The created object.
-
-- Generates a Lua error if exceptions occur or unable to locate a matching constructor.
-
-Examples:
-
-```lua
-String = java.import('java.lang.String')
-
---         new String ("This is the content of the String")
-str = java.new(String, 'This is the content of the String')
-```
-
-### `proxy (jclass, ..., table)` <Badge>function</Badge>
-
-Creates a Java object implementing the specified interfaces, proxying calls to the underlying Lua table.
-See also [Proxy Caveats](./proxy.md).
-
-- **Parameters:**
-
-    - `jclass1`: (***jclass*** | ***string*** | ***jobject***) The first interface. One may pass a `jclass` or a `string` or a `jobject` of `Class<?>`.
-    - `jclass2`: (***jclass*** | ***string*** | ***jobject***) The second interface.
-    - `jclassN`: (***jclass*** | ***string*** | ***jobject***) The N-th interface.
-
-    - `table`: (***table***) The table implementing the all the methods in the interfaces.
-
-- **Returns:**
-
-    - (***jobject***) The created object.
-
-- Generates a Lua error if exceptions occur or unable to find the interfaces.
-
-```lua
-button = java.new(java.import('java.awt.Button'), 'Execute')
-callback = {}
-function callback:actionPerformed(ev)
-  -- do something
-end
-
-buttonProxy = java.proxy('java.awt.ActionListener', callback)
-button:addActionListener(buttonProxy)
 ```
 
 ### `luaify (jobject)` <Badge>function</Badge>
@@ -223,32 +211,81 @@ iter = java.proxy('java.util.Iterator', {
 -- iter:remove() -- This throws an exception
 ```
 
-### `array (jclass, dim1, ...)` <Badge>function</Badge>
+### `new (jclass, ...)` <Badge>function</Badge>
 
-Creates a Java array.
+Call the constructor of the given Java type.
 
 - **Parameters:**
 
-  - `jclass`: (***jclass*** | ***jobject***) The component type. One may pass a `jclass` or a `jobject` of `Class<?>`. 
+    - `jclass`: (***jclass*** | ***jobject***) The class. One may pass a `jclass` or a `jobject` of `Class<?>`.
 
-  - `dim1`: (***number***) The size of the first dimension.
-
-  - `dim2`: (optional) (***number***) The size of the second dimension.
-
-  - `dimN`: (optional) (***number***) The size of the N-th dimension.
+    - `...`: (***any***) Extra parameters are passed to the constructor. See also [Type Conversions](./conversions) to find out how we locate a matching method.
 
 - **Returns:**
 
-  - (***jarray***) `new "jclass"[dim1][dim2]...[dimN]`
+    - (***jobject***) The created object.
 
-- Generates a Lua error if types mismatch or some dimensions are negative.
+- Generates a Lua error if exceptions occur or unable to locate a matching constructor.
+
+Examples:
 
 ```lua
-int = java.import('int')
-arr = java.array(int, 2, 16)
-assert(#arr == 2)
-assert(#arr[1] == 16)
+String = java.import('java.lang.String')
+
+--         new String ("This is the content of the String")
+str = java.new(String, 'This is the content of the String')
 ```
+
+### `proxy (jclass, ..., table)` <Badge>function</Badge>
+
+Creates a Java object implementing the specified interfaces, proxying calls to the underlying Lua table.
+See also [Proxy Caveats](./proxy.md).
+
+- **Parameters:**
+
+    - `jclass1`: (***jclass*** | ***string*** | ***jobject***) The first interface. One may pass a `jclass` or a `string` or a `jobject` of `Class<?>`.
+    - `jclass2`: (***jclass*** | ***string*** | ***jobject***) The second interface.
+    - `jclassN`: (***jclass*** | ***string*** | ***jobject***) The N-th interface.
+
+    - `table`: (***table*** | ***function***)
+
+        - This parameter can be a table implementing the all the methods in the interfaces.
+
+        - Or, if the interfaces sum up to a [functional interface](https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.8) of wider sense
+          (that is, we allow different signatures as long as they share the same name),
+          an intermediate table will be created and back the actual proxy automatically.
+
+- **Returns:**
+
+    - (***jobject***) The created object.
+
+- Generates a Lua error if exceptions occur or unable to find the interfaces.
+
+```lua
+button = java.new(java.import('java.awt.Button'), 'Execute')
+callback = {}
+function callback:actionPerformed(ev)
+  -- do something
+end
+
+buttonProxy = java.proxy('java.awt.ActionListener', callback)
+button:addActionListener(buttonProxy)
+```
+
+### `unwrap (jobject)` <Badge>function</Badge>
+
+Return the backing table of a proxy object.
+See also [Proxy Caveats](./proxy.md).
+
+- **Parameters:**
+
+    - `jobject`: (***jobject***) The proxy object created with [`java.proxy`](#proxy-jclass-table-function) or [`party.iroiro.luajava.Lua#createProxy`](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion))
+
+- **Returns:**
+
+    - (***jobject***) The backing Lua table of the Lua proxy.
+
+- Generates a Lua error if the object is not a Lua proxy object, or belongs to another irrelevant Lua state.
 
 ## Proxied Method Calls
 
@@ -301,7 +338,8 @@ assert(String:format('>>> %s', { 'content' }) == '>>> content')
 
 #### With `java.method`
 
-To help with precisely calling a specific method, we provide [`java.method`](#method-jobject-method-signature-function), to which you may specify the signature of the method that you intend to call.
+To help with precisely calling a specific method, we provide [`java.method`](#method-jobject-method-signature-function),
+to which you may specify the signature of the method that you intend to call.
 
 ::: tip
 Take the above `java.lang.Math.max` as an example. You may call `Math.max(int, int)` with the following:
@@ -320,3 +358,26 @@ max = java.method(Math, 'max', 'double,double')
 assert(max(1.2, 2.3) == 2.3)
 ```
 :::
+
+If you would like to access an overridden default method from a proxy object,
+you may also use 
+
+```lua
+iter1 = java.proxy('java.util.Iterator', {})
+-- Calls the default method
+iter1:remove()
+
+-- What if we want to access the default method from a overridden one?
+iterImpl = {
+  remove = function(this)
+    -- Calls the default method from java.util.Iterator.
+    java.method(this, 'java.util.Iterator:remove', '')()
+    -- Equivalent to the following in Java
+    --     Iterator.super.remove();
+  end
+}
+
+iter = java.proxy('java.util.Iterator', iterImpl)
+-- Calls the implemented `remove`, which then calls the default one
+iter:remove()
+```

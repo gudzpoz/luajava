@@ -83,6 +83,15 @@ static int javaProxy(lua_State * L) {
   return checkOrError(env, L, env->CallStaticIntMethod(juaapi_class, juaapi_proxy, (jint) stateIndex));
 }
 
+static int javaUnwrap(lua_State * L) {
+  jobject * data = (jobject *) luaL_checkudata(L, 1, JAVA_OBJECT_META_REGISTRY);
+
+  JNIEnv * env = getJNIEnv(L);
+  int stateIndex = getStateIndex(L);
+
+  return checkOrError(env, L, env->CallStaticIntMethod(juaapi_class, juaapi_unwrap, (jint) stateIndex, *data));
+}
+
 static int javaArray(lua_State * L) {
   if (luaL_testudata(L, 1, JAVA_CLASS_META_REGISTRY) != NULL
     || luaL_testudata(L, 1, JAVA_OBJECT_META_REGISTRY) != NULL) {
@@ -114,6 +123,7 @@ const luaL_Reg javalib[] = {
   { "new",       javaNew },
   { "luaify",    javaLuaify },
   { "import",    javaImport },
+  { "unwrap",    javaUnwrap },
   { "proxy",     javaProxy },
   { "array",     javaArray },
   { "catched",   javaCatched },
