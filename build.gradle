@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:4.2.2'
     }
 }
 
@@ -18,7 +18,7 @@ repositories {
 }
 
 subprojects { it ->
-    if (it.name != 'android') {
+    if (!['android', 'android-test'].contains(it.name)) {
         apply plugin: 'java'
         java {
             toolchain {
@@ -44,10 +44,12 @@ apply from: 'publish.gradle'
 apply from: 'jacoco.gradle'
 
 task allJavadoc(type: Javadoc) {
-    source subprojects.findAll { !['example', 'android'].contains(it.name) }.collect {
+    source subprojects.findAll { !['example', 'android', 'android-test'].contains(it.name) }
+            .collect {
         it.sourceSets.main.allJava
     }
-    classpath = files(subprojects.findAll { !['example', 'android'].contains(it.name) }.collect {
+    classpath = files(subprojects.findAll { !['example', 'android', 'android-test'].contains(it.name) }
+            .collect {
         it.sourceSets.main.compileClasspath
     })
     exclude '**/party/iroiro/luajava/util/**'

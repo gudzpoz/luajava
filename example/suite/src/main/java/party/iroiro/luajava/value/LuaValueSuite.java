@@ -7,9 +7,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
 import static party.iroiro.luajava.Lua.LuaType.*;
 
 public class LuaValueSuite<T extends Lua> {
@@ -163,9 +161,32 @@ public class LuaValueSuite<T extends Lua> {
         assertNotEquals(L.from(1), L.from(2));
         assertNotEquals(K.from(1), new Object());
 
-        AbstractLuaValue mock = mock(AbstractLuaValue.class);
-        when(mock.type()).thenReturn(NUMBER);
-        when(mock.state()).thenReturn(L);
+        AbstractLuaValue mock = new AbstractLuaValue(L, NUMBER) {
+            @Override
+            public void push() {
+
+            }
+
+            @Override
+            public Object toJavaObject() {
+                return null;
+            }
+
+            @Override
+            public void close() {
+
+            }
+
+            @Override
+            public Lua.LuaType type() {
+                return NUMBER;
+            }
+
+            @Override
+            public Lua state() {
+                return L;
+            }
+        };
         assertNotEquals(L.from(1), mock);
 
         L.push(Collections.emptyList());
@@ -176,9 +197,32 @@ public class LuaValueSuite<T extends Lua> {
                 assertEquals(l, j);
                 assertNotEquals(j, k);
                 assertNotEquals(l, L.from(1));
-                AbstractLuaValue mock1 = mock(AbstractLuaValue.class);
-                when(mock1.type()).thenReturn(TABLE);
-                when(mock1.state()).thenReturn(L);
+                AbstractLuaValue mock1 = new AbstractLuaValue(L, TABLE) {
+                    @Override
+                    public void push() {
+
+                    }
+
+                    @Override
+                    public Object toJavaObject() {
+                        return null;
+                    }
+
+                    @Override
+                    public void close() {
+
+                    }
+
+                    @Override
+                    public Lua.LuaType type() {
+                        return TABLE;
+                    }
+
+                    @Override
+                    public Lua state() {
+                        return L;
+                    }
+                };
                 assertNotEquals(l, mock1);
                 assertEquals(l, l);
             }

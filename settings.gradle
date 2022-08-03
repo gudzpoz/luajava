@@ -1,9 +1,11 @@
 rootProject.name = 'luajava-root'
-include 'luajava'
-include 'example'
-include 'lua51'
-include 'lua52'
-include 'lua53'
-include 'lua54'
-include 'luajit'
-include 'android'
+include ':luajava',
+        ':lua51',
+        ':lua52',
+        ':lua53',
+        ':lua54',
+        ':luajit',
+        ':example',
+        ':example:suite',
+        ':android',
+        ':android:android-test'

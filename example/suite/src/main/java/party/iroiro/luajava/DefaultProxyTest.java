@@ -1,22 +1,22 @@
 package party.iroiro.luajava;
 
+import party.iroiro.luajava.interfaces.LuaTestConsumer;
 import party.iroiro.luajava.suite.B;
 import party.iroiro.luajava.suite.InvokeSpecialConversionTest;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 import static party.iroiro.luajava.Lua.LuaError.OK;
 
 public class DefaultProxyTest {
     private interface PrivateNullable {
-        default void test(Object obj) {
+        default void test(@SuppressWarnings("ConstantConditions") Object obj) {
             if (obj == null) {
                 throw new NullPointerException("Passed a null value");
             }
@@ -33,6 +33,7 @@ public class DefaultProxyTest {
             throw new LuaException("exception!");
         }
 
+        @SuppressWarnings("UnusedReturnValue")
         boolean equals();
 
         void luaError();
@@ -71,14 +72,18 @@ public class DefaultProxyTest {
     }
 
     public void test() {
-        assertDoesNotThrow(this::testMethodEquals);
+        try {
+            this.testMethodEquals();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
         L.run("return { luaError = function(_, i)\n" +
               "assert(i == 2 or i == 3)\n" +
               "if i == 2 then return nil else return 3 end\n" +
               "end }");
         DefaultRunnable proxy =
                 (DefaultRunnable) L.createProxy(new Class[]{DefaultRunnable.class}, Lua.Conversion.SEMI);
-        assertEquals(1024, proxy.call());
+        assertEquals(1024, (int) proxy.call());
         assertEquals(Proxy.getInvocationHandler(proxy).hashCode(), proxy.hashCode());
         // noinspection SimplifiableAssertion,EqualsWithItself
         assertTrue(proxy.equals(proxy));
@@ -98,7 +103,7 @@ public class DefaultProxyTest {
                 .contains("assertion failed"));
         assertTrue(assertThrows(IllegalArgumentException.class, () -> proxy.luaError(2)).getMessage()
                 .contains("Primitive not accepting null values"));
-        assertEquals(3., proxy.luaError(3));
+        assertEquals(3., proxy.luaError(3), 0.000001);
 
         hierarchyTest();
         simpleIterTest();
@@ -143,8 +148,8 @@ public class DefaultProxyTest {
               "}");
         Iterator<?> iter = (Iterator<?>) L.createProxy(new Class[]{Iterator.class}, Lua.Conversion.SEMI);
         Set<Double> set = new HashSet<>();
-        iter.forEachRemaining(i -> {
-            assertInstanceOf(Double.class, i);
+        callForEachRemaining(iter, i -> {
+            assertTrue(i instanceof Double);
             set.add(((Double) i));
         });
         assertEquals(10, set.size());
@@ -158,7 +163,7 @@ public class DefaultProxyTest {
                 "Passed a null value",
                 assertThrows(NullPointerException.class, () -> priv.test(null)).getMessage()
         );
-        assertDoesNotThrow(() -> priv.test(new Object()));
+        priv.test(new Object());
 
         new InvokeSpecialConversionTest(L).test();
     }
@@ -173,8 +178,27 @@ public class DefaultProxyTest {
         L.run("return {}");
         L.push(L.createProxy(new Class[]{A.class}, Lua.Conversion.SEMI), Lua.Conversion.NONE);
         L.setGlobal("aa");
-        assertEquals(OK, L.run("return aa:a() + 1"), L.toString(-1));
-        assertEquals(2., L.toNumber(-1));
+        assertEquals(OK, L.run("return aa:a() + 1"));
+        assertEquals(2., L.toNumber(-1), 0.000001);
+    }
+
+    private void callForEachRemaining(Iterator<?> iter, LuaTestConsumer<Object> testConsumer) {
+        //noinspection TryWithIdenticalCatches
+        try {
+            Class<?> consumer = Class.forName("java.util.function.Consumer");
+            Method method = Iterator.class.getMethod("forEachRemaining", consumer);
+            L.push(l -> {
+                testConsumer.accept(l.toObject(-1));
+                return 0;
+            });
+            Object impl = L.createProxy(new Class[]{consumer}, Lua.Conversion.SEMI);
+            //noinspection JavaReflectionInvocation
+            method.invoke(iter, impl);
+        } catch (ClassNotFoundException ignored) {
+        } catch (NoSuchMethodException ignored) {
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void simpleIterTest() {
@@ -191,12 +215,11 @@ public class DefaultProxyTest {
         Iterator<?> iter = (Iterator<?>)
                 L.createProxy(new Class[]{Iterator.class}, Lua.Conversion.SEMI);
         Set<Double> iset = new HashSet<>();
-        iter.forEachRemaining(i -> {
-            if (i instanceof Double) {
-                assertTrue(iset.add((Double) i));
-            }
+        callForEachRemaining(iter, i -> {
+            assertTrue(i instanceof Double);
+            assertTrue(iset.add((Double) i));
         });
-        assertEquals(10, iset.size(), Arrays.toString(iset.toArray()));
+        assertEquals(10, iset.size());
 
         L.createTable(0, 0);
         assertEquals("Expecting a table / function and interfaces",

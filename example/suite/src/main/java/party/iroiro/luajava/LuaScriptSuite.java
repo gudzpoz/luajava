@@ -1,33 +1,36 @@
 package party.iroiro.luajava;
 
+import party.iroiro.luajava.interfaces.LuaTestConsumer;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 import static party.iroiro.luajava.Lua.LuaError.OK;
 
 public class LuaScriptSuite<T extends AbstractLua> {
     private static final String LUA_ASSERT_THROWS = "function assertThrows(message, fun, ...)\n" +
-                                                   "  ok, msg = pcall(fun, ...)\n" +
-                                                   "  assert(not ok, debug.traceback('No error while expecting \"' .. message .. '\"'))\n" +
-                                                   "  assert(type(msg) == 'string', debug.traceback('Expecting error message on top of the stack'))\n" +
-                                                   "  assert(string.find(msg, message) ~= nil, debug.traceback('Expecting \"' .. message .. '\": Received \"' .. msg .. '\"'))\n" +
-                                                   "end";
+                                                    "  ok, msg = pcall(fun, ...)\n" +
+                                                    "  assert(not ok, debug.traceback('No error while expecting \"' .. message .. '\"'))\n" +
+                                                    "  assert(type(msg) == 'string', debug.traceback('Expecting error message on top of the stack'))\n" +
+                                                    "  assert(string.find(msg, message) ~= nil, debug.traceback('Expecting \"' .. message .. '\": Received \"' .. msg .. '\"'))\n" +
+                                                    "end";
     private final T L;
 
     public LuaScriptSuite(T L) {
         this.L = L;
         addAssertThrows(L);
+        L.openLibrary("package");
+        L.setExternalLoader(new ClassPathLoader());
     }
 
     public static void addAssertThrows(Lua L) {
         L.openLibrary("string");
         L.openLibrary("debug");
-        assertEquals(OK, L.run(LUA_ASSERT_THROWS), L.toString(-1));
+        assertEquals(OK, L.run(LUA_ASSERT_THROWS));
     }
 
     public static final ScriptTester[] TESTERS = {
@@ -54,12 +57,16 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 }
                 L.setGlobal("myuserdata");
             }),
-            new ScriptTester("/suite/proxyTest.lua", L -> {}),
-            new ScriptTester("/suite/importTest.lua", L -> {}),
-            new ScriptTester("/suite/luaifyTest.lua", L -> {}),
-            new ScriptTester("/suite/threadSimpleTest.lua", L -> {}),
+            new ScriptTester("/suite/proxyTest.lua", L -> {
+            }),
+            new ScriptTester("/suite/importTest.lua", L -> {
+            }),
+            new ScriptTester("/suite/luaifyTest.lua", L -> {
+            }),
+            new ScriptTester("/suite/threadSimpleTest.lua", L -> {
+            }),
             new ScriptTester("/suite/arrayTest.lua", L -> {
-                L.pushJavaArray(new int[] {1, 2, 3, 4, 5});
+                L.pushJavaArray(new int[]{1, 2, 3, 4, 5});
                 L.setGlobal("arr");
                 assertEquals(-1, JuaAPI.arrayNewIndex(L.getId(), null, 0));
                 assertEquals(-1, JuaAPI.arrayLength(""));
@@ -74,43 +81,57 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 L.setGlobal("Private");
                 L.pushJavaClass(ThrowsClass.class);
                 L.setGlobal("Throws");
-                assertDoesNotThrow(() ->
-                        assertEquals(-1, JuaAPI.methodInvoke(L,
-                                PrivateClass.class.getDeclaredMethod("privateFunc"), null, null)));
+                try {
+                    assertEquals(-1, JuaAPI.methodInvoke(L,
+                            PrivateClass.class.getDeclaredMethod("privateFunc"), null, null));
+                } catch (NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
             }),
-            new ScriptTester("/suite/signatureTest.lua", L -> {}),
+            new ScriptTester("/suite/signatureTest.lua", L -> {
+            }),
             new ScriptTester("/suite/indexTest.lua", L -> {
                 L.pushJavaClass(StaticClass.class);
                 L.setGlobal("Static");
             }),
             new ScriptTester("/suite/moduleTest.lua", L -> {
-                L.openLibrary("package");
+                // TODO: re-opening `package` will reset our external loader
+                // L.openLibrary("package");
                 L.setExternalLoader(new ClassPathLoader());
             }),
-            new ScriptTester("/suite/apiTest.lua", L -> {}),
+            new ScriptTester("/suite/apiTest.lua", L -> {
+            }),
     };
 
     public void test() {
         L.openLibrary("coroutine");
         for (ScriptTester tester : TESTERS) {
-            assertDoesNotThrow(() -> tester.test(L), tester.file);
+            try {
+                tester.test(L);
+            } catch (Throwable e) {
+                throw new RuntimeException(tester.file, e);
+            }
         }
     }
 
     public static class ScriptTester {
         public final String file;
-        private final Consumer<AbstractLua> init;
+        private final LuaTestConsumer<AbstractLua> init;
 
-        public ScriptTester(String file, Consumer<AbstractLua> init) {
+        public ScriptTester(String file, LuaTestConsumer<AbstractLua> init) {
             this.file = file;
             this.init = init;
         }
 
         public void test(AbstractLua L) throws IOException {
             init.accept(L);
-            ResourceLoader loader = new ResourceLoader();
-            loader.load(file, L);
-            assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
+            assertTrue(file.endsWith(".lua"));
+            assertEquals(OK, L.loadExternal(file.substring(1, file.length() - 4).replace('/', '.')));
+            try {
+                assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET));
+            } catch (Throwable e) {
+                throw new RuntimeException(L.toString(-1), e);
+            }
         }
     }
 
@@ -150,18 +171,24 @@ public class LuaScriptSuite<T extends AbstractLua> {
 
     public static abstract class AbstractClass {
         @SuppressWarnings("unused")
-        public static Object returnsNull() { return null; }
+        public static Object returnsNull() {
+            return null;
+        }
     }
 
     public static class PrivateClass {
-        private PrivateClass() {}
-        private static void privateFunc() {}
+        private PrivateClass() {
+        }
+
+        private static void privateFunc() {
+        }
     }
 
     public static class ThrowsClass {
         public ThrowsClass() throws Exception {
             throw new Exception();
         }
+
         @SuppressWarnings("unused")
         public static void throwsFunc() throws Exception {
             throw new Exception();

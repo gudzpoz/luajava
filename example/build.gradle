@@ -26,6 +26,7 @@ dependencies {
     implementation project(':lua53')
     implementation project(':lua54')
     implementation project(':luajit')
+    implementation project(':example:suite')
     implementation project(path: ':lua51', configuration: 'desktopNatives')
     implementation project(path: ':lua52', configuration: 'desktopNatives')
     implementation project(path: ':lua53', configuration: 'desktopNatives')
@@ -37,7 +38,6 @@ dependencies {
     implementation "org.jline:jline-terminal:$jlineVersion"
     implementation "org.jline:jline-builtins:$jlineVersion"
     implementation "org.jline:jline-terminal-jansi:$jlineVersion"
-    runtimeOnly 'org.ow2.asm:asm:9.3'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'

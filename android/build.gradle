@@ -19,7 +19,7 @@ android {
     namespace = project(':').group
 
     compileSdk 33
-    buildToolsVersion '33.0.0'
+    buildToolsVersion '30.0.3'
 
     defaultConfig {
         minSdk 16
@@ -29,18 +29,22 @@ android {
     }
 
     sourceSets { container ->
-        luaVersions.forEach(ver -> container.create(ver) {
-            manifest.srcFile 'AndroidManifest.xml'
-            jniLibs.srcDirs = ["${ver}-libs"]
-        })
+        luaVersions.forEach { ver ->
+            container.create(ver) {
+                manifest.srcFile 'AndroidManifest.xml'
+                jniLibs.srcDirs = ["${ver}-libs"]
+            }
+        }
     }
 
     flavorDimensions 'lua'
 
     productFlavors { container ->
-        luaVersions.forEach(ver -> container.create(ver) {
-            dimension 'lua'
-        })
+        luaVersions.forEach { ver ->
+            container.create(ver) {
+                dimension 'lua'
+            }
+        }
     }
 
     buildTypes { container ->
@@ -56,12 +60,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    publishing {
-        multipleVariants {
-            allVariants()
-        }
     }
 }
 
