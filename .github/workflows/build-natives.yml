@@ -48,7 +48,7 @@ jobs:
           ./gradlew jniGen jnigenBuild
       - name: Test
         run: |
-          ./gradlew check
+          ./gradlew :example:test
       - name: Upload macOS/iOS natives
         uses: actions/upload-artifact@v2.1.4
         with:
@@ -96,10 +96,10 @@ jobs:
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
           ./gradlew jniGen jnigenBuild
-      - name: Test
+      - name: Test (Desktop)
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
-          ./gradlew check
+          ./gradlew :example:test
       - name: Jacoco Test Report
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
@@ -156,7 +156,7 @@ jobs:
           ./gradlew jniGen
       - name: Test
         run: |
-          ./gradlew check
+          ./gradlew :example:test
   pack-natives:
     environment: OSSRH
     needs:
@@ -207,6 +207,9 @@ jobs:
           ant -f lua53/jni/build.xml pack-natives
           ant -f lua54/jni/build.xml pack-natives
           ant -f luajit/jni/build.xml pack-natives
+      - name: Pack Android AAR
+        run: |
+          ./gradlew :android:assemble
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:

@@ -76,6 +76,9 @@ luajit/.tags
 **/jni/*.h
 **/jni/*.c
 **/libs/*.xml
+**/libs/*.jar
+**/libs/**/*.dylib
+**/libs/**/*.plist
 
 **/jni-headers/
 /scripts/.ipynb_checkpoints/
