@@ -48,7 +48,7 @@ I try to keep up with the most recent version of Lua, that is, [the latest offic
 
 </div>
 
-[`4c2441c`]: https://github.com/LuaJIT/LuaJIT/commits/50936d784474747b4569d988767f1b5bab8bb6d0
+[`50936d7`]: https://github.com/LuaJIT/LuaJIT/commits/50936d784474747b4569d988767f1b5bab8bb6d0
 
 [^jit]: LuaJIT no longer creates new releases. See [Project status · Issue #665](https://github.com/LuaJIT/LuaJIT/issues/665#issuecomment-784452583) for an explanation.
 
@@ -67,7 +67,7 @@ const matrix = {
   'Windows (x86)':    [1, 1, 1, 1, 1],
   'Windows (x86_64)': [2, 2, 2, 2, 2],
   'MacOS':            [2, 2, 2, 2, 2],
-  [android]:          [1, 1, 1, 1, 1],
+  [android]:          [2, 2, 2, 2, 2],
   'iOS':              [1, 1, 1, 1, 0],
 };
 const classes = ['unsupported', 'available', 'tested'];
@@ -124,3 +124,4 @@ ul li {
 </table>
 
 [^android]: Android is available on many platforms, and we provide natives for `armeabi-v7a` `arm64-v8a` `x86` `x86_64`.
+            It is tested against API levels 19, 23, 26, 29 and 31 on `x86` / `x86_64` architectures (and against my own phone of API level 30 on `arm64-v8a`).
