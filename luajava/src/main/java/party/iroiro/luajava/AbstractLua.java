@@ -820,6 +820,9 @@ public abstract class AbstractLua implements Lua {
      */
     protected @Nullable Object invokeSpecial(Object object, Method method, @Nullable Object[] params) throws
             Throwable {
+        if (!ClassUtils.isDefault(method)) {
+            throw new IncompatibleClassChangeError("Unable to invoke non-default method");
+        }
         if (params == null) {
             params = EMPTY;
         }

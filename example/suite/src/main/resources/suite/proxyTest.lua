@@ -44,15 +44,25 @@ iterImpl = {
   end
 }
 
+r = java.import('java.lang.Runnable')(function() end)
+assertThrows('java.lang.IncompatibleClassChangeError',
+             java.method(r, 'java.lang.Runnable:run'))
+
 iter = java.proxy('java.util.Iterator', iterImpl)
-assertThrows('java.lang.UnsupportedOperationException', iter.remove, iter)
+expects = 'party.iroiro.luajava.LuaException: method not implemented: '
+if JAVA8 then
+  expects = 'java.lang.UnsupportedOperationException'
+end
+assertThrows(expects, iter.remove, iter)
 res = {}
-iter:forEachRemaining(function(this, e) res[e] = true end)
-assert(#res == 10)
+if JAVA8 then
+  iter:forEachRemaining(function(this, e) res[e] = true end)
+  assert(#res == 10)
+end
 
 iter2 = java.import('java.util.Iterator')(iterImpl)
-assertThrows('java.lang.UnsupportedOperationException', iter2.remove, iter2)
-assert(java.catched():toString() == 'java.lang.UnsupportedOperationException: remove')
+assertThrows(expects, iter2.remove, iter2)
+assertThrows(expects, error, java.catched():toString())
 
 assertThrows('Expecting a table / function and interfaces', java.import('java.util.Iterator'), 1024)
 
@@ -60,7 +70,12 @@ called = false
 B = java.proxy('party.iroiro.luajava.suite.B', 'party.iroiro.luajava.DefaultProxyTest.A', {
   b = function(this)
     called = true
-    return java.method(B, 'party.iroiro.luajava.suite.B:b')()
+    if JAVA8 then
+      return java.method(B, 'party.iroiro.luajava.suite.B:b')()
+    else
+      assertThrows('java.lang.IncompatibleClassChangeError', java.method(B, 'party.iroiro.luajava.suite.B:b'))
+      return 3
+    end
   end
 })
 assert(not called)
@@ -82,14 +97,21 @@ iter = java.proxy('java.util.Iterator', 'java.lang.Runnable', {
     java.method(iter, 'java.util.Iterator:remove')()
   end
 })
-assert(not called)
-iter:remove()
-assert(called)
-assertThrows('java.lang.UnsupportedOperationException', iter.run, iter)
+if JAVA8 then
+  assert(not called)
+  iter:remove()
+  assert(called)
+  assertThrows(expects, iter.run, iter)
+end
 
 obj = java.proxy('party.iroiro.luajava.DefaultProxyTest.D', {
   noReturn = function()
-    assert(java.method(iter, 'party.iroiro.luajava.DefaultProxyTest.D:noReturn')() == nil)
+    if JAVA8 then
+      assert(java.method(iter, 'party.iroiro.luajava.DefaultProxyTest.D:noReturn')() == nil)
+    else
+      assertThrows('java.lang.IncompatibleClassChangeError',
+                   java.method(iter, 'party.iroiro.luajava.DefaultProxyTest.D:noReturn'))
+    end
   end
 })
 obj:noReturn()

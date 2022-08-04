@@ -48,14 +48,18 @@ public class DefaultProxyTest {
 
     public DefaultProxyTest(AbstractLua L) {
         boolean available;
-        try {
-            Method.class.getMethod("isDefault");
-            available = true;
-        } catch (Throwable e) {
-            available = false;
-        }
+        available = isDefaultAvailable();
         defaultAvailable = available;
         this.L = L;
+    }
+
+    public static boolean isDefaultAvailable() {
+        try {
+            Method.class.getMethod("isDefault");
+            return true;
+        } catch (Throwable e) {
+            return false;
+        }
     }
 
     public void testMethodEquals() throws Throwable {

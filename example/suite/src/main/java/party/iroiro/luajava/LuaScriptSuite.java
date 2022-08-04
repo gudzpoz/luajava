@@ -31,6 +31,8 @@ public class LuaScriptSuite<T extends AbstractLua> {
         L.openLibrary("string");
         L.openLibrary("debug");
         assertEquals(OK, L.run(LUA_ASSERT_THROWS));
+        L.push(DefaultProxyTest.isDefaultAvailable());
+        L.setGlobal("JAVA8");
     }
 
     public static final ScriptTester[] TESTERS = {
@@ -166,7 +168,7 @@ public class LuaScriptSuite<T extends AbstractLua> {
         public Object[] array1 = null;
         public int[] array2 = null;
         public Map<Object, Object> map = null;
-        public FunctionalInterface annotation;
+        public Override annotation;
         public Runnable intf;
     }
 
