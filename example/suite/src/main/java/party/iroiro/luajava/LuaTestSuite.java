@@ -121,9 +121,9 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.push(true);
         assertThrows(IllegalArgumentException.class, () -> L.createProxy(new Class[]{Runnable.class}, Lua.Conversion.NONE));
         assertEquals(OK, L.run("proxyMap = { run = function()\n" +
-                                          "java.import('party.iroiro.luajava.LuaTestSuite').proxyIntegerTest:set(-1024)\n" +
-                                          "end" +
-                                          "}"));
+                               "java.import('party.iroiro.luajava.LuaTestSuite').proxyIntegerTest:set(-1024)\n" +
+                               "end" +
+                               "}"));
         L.getGlobal("proxyMap");
         Object proxy = L.createProxy(new Class[]{Runnable.class}, Lua.Conversion.NONE);
         proxyIntegerTest.set(0);
@@ -209,9 +209,9 @@ public class LuaTestSuite<T extends AbstractLua> {
         sub.push(true);
         assertEquals(OK, sub.resume(1));
         assertEquals(OK, sub.run("function threadCoroutineTest()\n" +
-                                            "coroutine.yield(1)\n" +
-                                            "coroutine.yield(2)\n" +
-                                            "end"));
+                                 "coroutine.yield(1)\n" +
+                                 "coroutine.yield(2)\n" +
+                                 "end"));
         sub.getGlobal("threadCoroutineTest");
         assertEquals(YIELD, sub.resume(0));
         assertEquals(1.0, sub.toNumber(-1), 0.000001);
@@ -226,8 +226,8 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.run("i = java.import('party.iroiro.luajava.LuaTestSuite').integer");
         L.getGlobal("i");
         assertEquals(OK, L.run("coroutine.resume(coroutine.create(\n" +
-                                          "function() java.import('party.iroiro.luajava.LuaTestSuite').integer:set(1024) end\n" +
-                                          "))"));
+                               "function() java.import('party.iroiro.luajava.LuaTestSuite').integer:set(1024) end\n" +
+                               "))"));
         assertEquals(1024, integer.get());
     }
 
@@ -599,10 +599,15 @@ public class LuaTestSuite<T extends AbstractLua> {
         for (LuaTestConsumer<T> t : stackIncrementingOperations) {
             assertThrows("No more stack space available", RuntimeException.class, () -> {
                 double i = 1.0;
+                t.accept(L);
                 //noinspection InfiniteLoopStatement
                 while (true) {
                     L.checkStack((int) i);
-                    t.accept(L);
+                    // TODO: Maybe cache global references?
+                    // JNI ERROR (app bug): global reference table overflow (max=51200)
+                    // Failed adding to JNI global ref table (51200 entries)
+                    // So, instead of: t.accept(L);
+                    L.pushValue(-1);
                     i *= 1.0001;
                 }
             });
