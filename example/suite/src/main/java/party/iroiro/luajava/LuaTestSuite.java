@@ -558,12 +558,13 @@ public class LuaTestSuite<T extends AbstractLua> {
 
     @SuppressWarnings("ConstantConditions")
     private void testPushChecks() {
+        Object n = null;
         assertThrows(IllegalArgumentException.class, () -> L.pushArray(1));
         assertThrows(IllegalArgumentException.class, () -> L.pushJavaArray(1));
         assertThrows(IllegalArgumentException.class, () -> L.pushJavaObject(new int[0]));
-        assertThrows(NullPointerException.class, () -> L.pushArray(null));
-        assertThrows(NullPointerException.class, () -> L.pushJavaArray(null));
-        assertThrows(NullPointerException.class, () -> L.pushJavaObject(null));
+        assertThrows(NullPointerException.class, () -> L.pushArray(n));
+        assertThrows(NullPointerException.class, () -> L.pushJavaArray(n));
+        assertThrows(NullPointerException.class, () -> L.pushJavaObject(n));
         // assertThrows(NullPointerException.class, () -> L.push((JFunction) null));
     }
 

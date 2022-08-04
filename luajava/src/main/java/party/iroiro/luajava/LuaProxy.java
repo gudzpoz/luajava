@@ -22,6 +22,8 @@
 
 package party.iroiro.luajava;
 
+import party.iroiro.luajava.util.ClassUtils;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -66,7 +68,9 @@ public class LuaProxy implements InvocationHandler {
             if (objects == null) {
                 code = L.pCall(1, nResults);
             } else {
-                Arrays.stream(objects).forEach(o -> L.push(o, degree));
+                for (Object o : objects) {
+                    L.push(o, degree);
+                }
                 code = L.pCall(objects.length + 1, nResults);
             }
 
@@ -93,7 +97,7 @@ public class LuaProxy implements InvocationHandler {
     }
 
     private Object callDefaultMethod(Object o, Method method, Object[] objects) throws Throwable {
-        if (method.isDefault()) {
+        if (ClassUtils.isDefault(method)) {
             return L.invokeSpecial(o, method, objects);
         }
         return callObjectDefault(o, method, objects);

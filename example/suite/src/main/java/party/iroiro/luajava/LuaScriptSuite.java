@@ -72,8 +72,9 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 assertEquals(-1, JuaAPI.arrayLength(""));
             }),
             new ScriptTester("/suite/invokeTest.lua", L -> {
+                Object o = null;
                 //noinspection ConstantConditions
-                assertEquals(-1, JuaAPI.objectInvoke(L.getId(), null, null, 0));
+                assertEquals(-1, JuaAPI.objectInvoke(L.getId(), o, null, 0));
                 assertTrue(Objects.requireNonNull(L.toString(-1)).contains("expecting a JFunction"));
                 L.pushJavaClass(AbstractClass.class);
                 L.setGlobal("Abstract");

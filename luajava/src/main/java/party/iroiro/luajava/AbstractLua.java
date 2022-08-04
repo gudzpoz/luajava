@@ -181,11 +181,11 @@ public abstract class AbstractLua implements Lua {
     public void push(@NotNull Map<?, ?> map) {
         checkStack(3);
         C.lua_createtable(L, 0, map.size());
-        map.forEach((k, v) -> {
-            push(k, Conversion.FULL);
-            push(v, Conversion.FULL);
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            push(entry.getKey(), Conversion.FULL);
+            push(entry.getValue(), Conversion.FULL);
             C.lua_rawset(L, -3);
-        });
+        }
     }
 
     @Override

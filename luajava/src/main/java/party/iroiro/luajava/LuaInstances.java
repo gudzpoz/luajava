@@ -29,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.function.Consumer;
 
 /**
  * A collection of {@link Jua} instances, each labeled with a unique id
@@ -112,6 +111,15 @@ class LuaInstances<T extends Lua> {
     }
 
     public static class Token<T> {
+        /**
+         * Replacing the Consumer interface for lower versions
+         *
+         * {@code Call requires API level 24 (current min is 19): java.util.function.Consumer#accept}
+         * @param <T> type
+         */
+        interface Consumer<T> {
+            void accept(T t);
+        }
         public final int id;
         public final Consumer<T> setter;
 

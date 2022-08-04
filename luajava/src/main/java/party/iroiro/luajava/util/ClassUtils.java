@@ -56,11 +56,6 @@ public abstract class ClassUtils {
     private static final String NON_PRIMITIVE_ARRAY_PREFIX = "[L";
 
     /**
-     * A reusable empty class array constant.
-     */
-    private static final Class<?>[] EMPTY_CLASS_ARRAY = {};
-
-    /**
      * The package separator character: {@code '.'}.
      */
     private static final char PACKAGE_SEPARATOR = '.';
@@ -119,20 +114,35 @@ public abstract class ClassUtils {
         registerCommonClasses(Throwable.class, Exception.class, RuntimeException.class,
                 Error.class, StackTraceElement.class, StackTraceElement[].class);
         registerCommonClasses(Enum.class, Iterable.class, Iterator.class, Enumeration.class,
-                Collection.class, List.class, Set.class, Map.class, Map.Entry.class, Optional.class);
+                Collection.class, List.class, Set.class, Map.class, Map.Entry.class,
+                optionalClass());
 
         Class<?>[] javaLanguageInterfaceArray = {Serializable.class, Externalizable.class,
                 Closeable.class, AutoCloseable.class, Cloneable.class, Comparable.class};
         registerCommonClasses(javaLanguageInterfaceArray);
     }
 
+    /**
+     * {@code Class requires API level 24 (current min is 19): java.util.Optional}
+     *
+     * @return the class
+     */
+    private static @Nullable Class<?> optionalClass() {
+        try {
+            return Class.forName("java.util.Optional");
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
 
     /**
      * Register the given common classes with the ClassUtils cache.
      */
     private static void registerCommonClasses(Class<?>... commonClasses) {
         for (Class<?> clazz : commonClasses) {
-            commonClassCache.put(clazz.getName(), clazz);
+            if (clazz != null) {
+                commonClassCache.put(clazz.getName(), clazz);
+            }
         }
     }
 
@@ -263,21 +273,6 @@ public abstract class ClassUtils {
         return result;
     }
 
-    /**
-     * Copy the given {@code Collection} into a {@code Class} array.
-     * <p>The {@code Collection} must contain {@code Class} elements only.
-     *
-     * @param collection the {@code Collection} to copy
-     * @return the {@code Class} array
-     * @since 3.1
-     */
-    public static Class<?>[] toClassArray(@Nullable Collection<Class<?>> collection) {
-        if (collection == null || collection.size() == 0) {
-            return EMPTY_CLASS_ARRAY;
-        }
-        return collection.toArray(EMPTY_CLASS_ARRAY);
-    }
-
     private final static Set<String> OBJECT_METHODS;
 
     static {
@@ -293,9 +288,7 @@ public abstract class ClassUtils {
      * @return {@code null} if not applicable
      */
     public static @Nullable String getLuaFunctionalDescriptor(Class<?>... classes) {
-        if (Arrays.stream(classes).allMatch(c ->
-                c.isInterface() && !c.isAnnotation()
-        )) {
+        if (allInterfaces(classes)) {
             Queue<Class<?>> searchQueue = new ArrayDeque<>(1);
             String name = null;
             Collections.addAll(searchQueue, classes);
@@ -319,5 +312,48 @@ public abstract class ClassUtils {
             return name;
         }
         return null;
+    }
+
+    private static boolean allInterfaces(Class<?>[] classes) {
+        for (Class<?> c : classes) {
+            if (!c.isInterface() || c.isAnnotation()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static final Method IS_DEFAULT;
+
+    static {
+        Method isDefaultMethod;
+        try {
+            isDefaultMethod = Method.class.getMethod("isDefault");
+        } catch (NoSuchMethodException e) {
+            isDefaultMethod = null;
+        }
+        IS_DEFAULT = isDefaultMethod;
+    }
+
+    /**
+     * Wraps {@code isDefault} method, which is unavailable on lower Android versions
+     *
+     * <p>
+     * {@code Call requires API level 24 (current min is 19): java.lang.reflect.Method#isDefault}
+     * </p>
+     *
+     * @param method the method
+     * @return true if the method is a default method
+     */
+    public static boolean isDefault(Method method) {
+        if (IS_DEFAULT == null) {
+            return false;
+        } else {
+            try {
+                return (boolean) IS_DEFAULT.invoke(method);
+            } catch (Throwable e) {
+                return false;
+            }
+        }
     }
 }

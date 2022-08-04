@@ -29,7 +29,7 @@ import party.iroiro.luajava.value.LuaValue;
 
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 /**
  * Provides complex functions for JNI uses
@@ -321,7 +321,7 @@ public abstract class JuaAPI {
             }
         }
         Object[] objects = new Object[paramCount];
-        Constructor<?> constructor = matchMethod(L, clazz.getConstructors(), null, objects);
+        Constructor<?> constructor = matchMethod(L, clazz.getConstructors(), objects);
         if (constructor != null) {
             return construct(L, objects, constructor);
         }
@@ -338,11 +338,14 @@ public abstract class JuaAPI {
      * @return the number of values pushed onto the stack
      */
     private static int construct(Lua L, Object[] objects, Constructor<?> constructor) {
+        //noinspection TryWithIdenticalCatches
         try {
             Object obj = constructor.newInstance(objects);
             L.pushJavaObject(obj);
             return 1;
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException e) {
+            return L.error(e);
+        } catch (IllegalAccessException e) {
             return L.error(e);
         } catch (InvocationTargetException e) {
             return L.error(e.getCause());
@@ -567,7 +570,7 @@ public abstract class JuaAPI {
                 Constructor<?> constructor = matchMethod(clazz, notSignature);
                 if (constructor != null) {
                     Object[] objects = new Object[paramCount];
-                    if (matchMethod(L, new Constructor[]{constructor}, null, objects) != null) {
+                    if (matchMethod(L, new Constructor[]{constructor}, objects) != null) {
                         return construct(L, objects, constructor);
                     }
                 }
@@ -709,6 +712,36 @@ public abstract class JuaAPI {
     }
 
     /**
+     * See {@link #matchMethod(Lua, Object[], ExecutableWrapper, String, Object[])}
+     *
+     * @param L       the lua state
+     * @param methods all the constructors
+     * @param params  an array to store converted parameters
+     * @return a match method
+     */
+    @Nullable
+    private static Constructor<?> matchMethod(Lua L, Constructor<?>[] methods, Object[] params) {
+        return matchMethod(L, methods, CONSTRUCTOR_WRAPPER, null, params);
+    }
+
+    /**
+     * See {@link #matchMethod(Lua, Object[], ExecutableWrapper, String, Object[])}
+     *
+     * @param L       the lua state
+     * @param methods all the constructors
+     * @param name    the method name
+     * @param params  an array to store converted parameters
+     * @return a match method
+     */
+    @Nullable
+    private static Method matchMethod(Lua L, Method[] methods,
+                                      @Nullable String name, Object[] params) {
+        return matchMethod(L, methods,
+                METHOD_WRAPPER,
+                name, params);
+    }
+
+    /**
      * Matches methods against values on stack
      *
      * @param L       the lua state
@@ -719,12 +752,19 @@ public abstract class JuaAPI {
      * @return a match method
      */
     @Nullable
-    private static <T extends Executable> T matchMethod(Lua L, T[] methods,
-                                                        @Nullable String name, Object[] params) {
+    private static <T> T matchMethod(Lua L, T[] methods,
+                                     ExecutableWrapper<T> wrapper,
+                                     @Nullable String name, Object[] params) {
         for (T method : methods) {
-            if (method.getParameterCount() == params.length) {
-                if (name == null || name.equals(method.getName())) {
-                    Class<?>[] classes = method.getParameterTypes();
+            if (name == null || name.equals(wrapper.getName(method))) {
+                /*
+                 * This is costly since it clones the internal array.
+                 * However, getParameterCount() is not available on Android 4.4
+                 *
+                 * {@code Call requires API level 24 (current min is 19): java.lang.reflect.Method#isDefault}
+                 */
+                Class<?>[] classes = wrapper.getParameterTypes(method);
+                if (classes.length == params.length) {
                     try {
                         for (int i = 0; i != params.length; ++i) {
                             params[i] = convertFromLua(L, classes[i], -params.length + i);
@@ -886,16 +926,57 @@ public abstract class JuaAPI {
         throw new IllegalArgumentException("Unsupported conversion");
     }
 
+    private static final Pattern COMMA_SPLIT = Pattern.compile(",");
+
     public static Class<?>[] getClasses(String notSignature) {
         if (notSignature == null || notSignature.isEmpty()) {
             return new Class<?>[0];
         }
-        return ClassUtils.toClassArray(Arrays.stream(notSignature.split(",")).map(s -> {
+        String[] names = COMMA_SPLIT.split(notSignature);
+        Class<?>[] classes = new Class[names.length];
+        for (int i = 0; i < names.length; i++) {
             try {
-                return ClassUtils.forName(s, null);
+                classes[i] = ClassUtils.forName(names[i], null);
             } catch (ClassNotFoundException e) {
-                return null;
+                classes[i] = null;
             }
-        }).collect(Collectors.toList()));
+        }
+        return classes;
     }
+
+    /**
+     * A wrapper to extract common parts from {@link Constructor} and {@link Method},
+     * since {@code Executable} is not introduced until Java 8.
+     */
+    private interface ExecutableWrapper<T> {
+        @Nullable String getName(T executable);
+
+        Class<?>[] getParameterTypes(T executable);
+    }
+
+    private final static ExecutableWrapper<Constructor<?>> CONSTRUCTOR_WRAPPER =
+            new ExecutableWrapper<Constructor<?>>() {
+                @Override
+                public @Nullable String getName(Constructor<?> executable) {
+                    return null;
+                }
+
+                @Override
+                public Class<?>[] getParameterTypes(Constructor<?> executable) {
+                    return executable.getParameterTypes();
+                }
+            };
+
+    private final static ExecutableWrapper<Method> METHOD_WRAPPER =
+            new ExecutableWrapper<Method>() {
+                @Override
+                public String getName(Method executable) {
+                    return executable.getName();
+                }
+
+                @Override
+                public Class<?>[] getParameterTypes(Method executable) {
+                    return executable.getParameterTypes();
+                }
+            };
 }
