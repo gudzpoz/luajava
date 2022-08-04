@@ -338,14 +338,11 @@ public abstract class JuaAPI {
      * @return the number of values pushed onto the stack
      */
     private static int construct(Lua L, Object[] objects, Constructor<?> constructor) {
-        //noinspection TryWithIdenticalCatches
         try {
             Object obj = constructor.newInstance(objects);
             L.pushJavaObject(obj);
             return 1;
-        } catch (InstantiationException e) {
-            return L.error(e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             return L.error(e);
         } catch (InvocationTargetException e) {
             return L.error(e.getCause());
@@ -948,13 +945,13 @@ public abstract class JuaAPI {
      * A wrapper to extract common parts from {@link Constructor} and {@link Method},
      * since {@code Executable} is not introduced until Java 8.
      */
-    private interface ExecutableWrapper<T> {
+    interface ExecutableWrapper<T> {
         @Nullable String getName(T executable);
 
         Class<?>[] getParameterTypes(T executable);
     }
 
-    private final static ExecutableWrapper<Constructor<?>> CONSTRUCTOR_WRAPPER =
+    final static ExecutableWrapper<Constructor<?>> CONSTRUCTOR_WRAPPER =
             new ExecutableWrapper<Constructor<?>>() {
                 @Override
                 public @Nullable String getName(Constructor<?> executable) {
@@ -967,7 +964,7 @@ public abstract class JuaAPI {
                 }
             };
 
-    private final static ExecutableWrapper<Method> METHOD_WRAPPER =
+    final static ExecutableWrapper<Method> METHOD_WRAPPER =
             new ExecutableWrapper<Method>() {
                 @Override
                 public String getName(Method executable) {
