@@ -137,11 +137,10 @@ jnigen {
     all {
         cppExcludes = ['luajit/**/*']
         cExcludes = ['luajit/**/*']
-        libraries = ' -lm '
+        libraries += ' -lm  -lluajit '
         headerDirs = ['../../jni/luajava', 'luajit/src', 'mod']
-        cppExcludes = ['luajit/**/*']
-        cExcludes = ['luajit/**/*']
-        libraries += ' -lluajit '
+        cFlags += ' -D_FORTIFY_SOURCE=1 '
+        cppFlags += ' -D_FORTIFY_SOURCE=1 '
     }
     add(Linux, x64, false, {
         linkerConfig(it, 'linux64')

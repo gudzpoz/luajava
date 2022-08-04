@@ -42,6 +42,8 @@ jnigen {
         cppExcludes = ['lua53/**/*']
         cExcludes = ['lua53/**/*']
         libraries = ' -lm '
+        cFlags += ' -D_FORTIFY_SOURCE=1 '
+        cppFlags += ' -D_FORTIFY_SOURCE=1 '
     }
 
     add(Windows, x32)
