@@ -157,12 +157,82 @@ jobs:
       - name: Test
         run: |
           ./gradlew :example:test
+  android-testing:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        api-level: [ 19, 26, 30 ]
+    needs:
+      - most-natives
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Download most-natives artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: most-natives
+      - name: Gradle cache
+        uses: gradle/gradle-build-action@v2
+      - name: JniGen
+        run: |
+          ./gradlew jniGen
+      - name: Pack Android natives
+        run: |
+          ./gradlew :android:assemble
+      - name: AVD cache
+        uses: actions/cache@v3
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+      - name: Test on Android AVD
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: ./gradlew :android:android-test:connectedAndroidTest
   pack-natives:
     environment: OSSRH
     needs:
       - apple-natives
       - most-natives
       - windows-testing
+      - android-testing
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
