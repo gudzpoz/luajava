@@ -139,8 +139,6 @@ jnigen {
         cExcludes = ['luajit/**/*']
         libraries += ' -lm  -lluajit '
         headerDirs = ['../../jni/luajava', 'luajit/src', 'mod']
-        cFlags += ' -D_FORTIFY_SOURCE=1 '
-        cppFlags += ' -D_FORTIFY_SOURCE=1 '
     }
     add(Linux, x64, false, {
         linkerConfig(it, 'linux64')
@@ -169,6 +167,8 @@ jnigen {
 //        linkerConfig(it, 'iosa')
 //    }
     add(Android) {
+        cFlags += ' -D_FORTIFY_SOURCE=1 '
+        cppFlags += ' -D_FORTIFY_SOURCE=1 '
         androidABIs = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64']
         androidApplicationMk = [
                 'APP_PLATFORM := android-19',
