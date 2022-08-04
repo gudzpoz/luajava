@@ -173,7 +173,7 @@ jnigen {
         androidApplicationMk = [
                 'APP_PLATFORM := android-19',
                 'APP_STL := c++_static',
-                'APP_CFLAG := -D_FORTIFY_SOURCE=1 ',
+                'APP_CFLAGS := -D_FORTIFY_SOURCE=1 ',
         ]
         linkerFlags += " -L${projectDir}/jni/luajit/lib/android/\$(TARGET_ARCH_ABI) -lluajit "
     }

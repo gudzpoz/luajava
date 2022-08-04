@@ -1,5 +1,6 @@
 package party.iroiro.luajava;
 
+import android.util.Log;
 import org.junit.Test;
 
 public class AndroidScriptTest {
@@ -21,6 +22,6 @@ public class AndroidScriptTest {
     }
     @Test
     public void luaJitScriptTest() {
-        // new LuaScriptSuite<>(new LuaJit()).test();
+        new LuaScriptSuite<>(new LuaJit(), s -> Log.i("test", s)).test();
     }
 }
