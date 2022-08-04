@@ -10,6 +10,7 @@ import java.util.Objects;
 
 import static org.junit.Assert.*;
 import static party.iroiro.luajava.Lua.LuaError.OK;
+import static party.iroiro.luajava.Lua.LuaError.RUNTIME;
 
 public class LuaScriptSuite<T extends AbstractLua> {
     private static final String LUA_ASSERT_THROWS = "function assertThrows(message, fun, ...)\n" +
@@ -107,6 +108,11 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 // TODO: re-opening `package` will reset our external loader
                 // L.openLibrary("package");
                 L.setExternalLoader(new ClassPathLoader());
+                // TODO: Await upstream response. Might have to maintain a LuaJIT fork.
+                if (L instanceof LuaJit) {
+                    assertEquals(OK, L.run("package.loaders[1] = function() return 'not found?' end"));
+                }
+                assertEquals(RUNTIME, L.run("require('suite.not.a.module')"));
             }),
             new ScriptTester("/suite/apiTest.lua", L -> {
             }),
@@ -119,7 +125,7 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 logger.accept("Testing " + tester.file);
                 tester.test(L);
             } catch (Throwable e) {
-                throw new RuntimeException(tester.file, e);
+                throw new RuntimeException(tester.file + "\n" + L.toString(-1), e);
             }
         }
     }
