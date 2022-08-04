@@ -161,7 +161,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        api-level: [ 19, 26, 30 ]
+        api-level: [ 19, 26, 29 ]
     needs:
       - most-natives
     steps:
