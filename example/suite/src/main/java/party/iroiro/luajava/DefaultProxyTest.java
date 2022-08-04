@@ -45,11 +45,13 @@ public class DefaultProxyTest {
 
     private final AbstractLua L;
     private final boolean defaultAvailable;
+    private final boolean isAndroid;
 
     public DefaultProxyTest(AbstractLua L) {
         boolean available;
         available = isDefaultAvailable();
         defaultAvailable = available;
+        isAndroid = LuaScriptSuite.isAndroid();
         this.L = L;
     }
 
@@ -98,7 +100,11 @@ public class DefaultProxyTest {
               "end }");
         DefaultRunnable proxy =
                 (DefaultRunnable) L.createProxy(new Class[]{DefaultRunnable.class}, Lua.Conversion.SEMI);
-        if (defaultAvailable) {
+        /*
+         * Our classes are desugared on Android and fail the tests.
+         * Only java.* interfaces should be used to test default methods.
+         */
+        if (defaultAvailable && !isAndroid) {
             assertEquals(1024, (int) proxy.call());
         } else {
             assertTrue(assertThrows(LuaException.class, proxy::call)
@@ -114,7 +120,7 @@ public class DefaultProxyTest {
         LuaException exception = assertThrows(LuaException.class, proxy::equals);
         assertTrue(exception.getMessage().startsWith("method not implemented: "));
 
-        if (defaultAvailable) {
+        if (defaultAvailable && !isAndroid) {
             assertEquals("exception!",
                     assertThrows(LuaException.class, proxy::throwsError).getMessage());
         } else {
@@ -191,7 +197,7 @@ public class DefaultProxyTest {
 
         L.run("return {}");
         PrivateNullable priv = (PrivateNullable) L.createProxy(new Class[]{PrivateNullable.class}, Lua.Conversion.SEMI);
-        if (defaultAvailable) {
+        if (defaultAvailable && !isAndroid) {
             assertEquals(
                     "Passed a null value",
                     assertThrows(NullPointerException.class, () -> priv.test(null)).getMessage()
@@ -202,13 +208,13 @@ public class DefaultProxyTest {
                             .startsWith("method not implemented: ")
             );
         }
-        if (defaultAvailable) {
+        if (defaultAvailable && !isAndroid) {
             priv.test(new Object());
         } else {
             assertThrows(LuaException.class, () -> priv.test(new Object()));
         }
 
-        if (defaultAvailable) {
+        if (defaultAvailable && !isAndroid) {
             new InvokeSpecialConversionTest(L).test();
         }
     }
@@ -223,7 +229,7 @@ public class DefaultProxyTest {
         L.run("return {}");
         L.push(L.createProxy(new Class[]{A.class}, Lua.Conversion.SEMI), Lua.Conversion.NONE);
         L.setGlobal("aa");
-        if (defaultAvailable) {
+        if (defaultAvailable && !isAndroid) {
             assertEquals(OK, L.run("return aa:a() + 1"));
             assertEquals(2., L.toNumber(-1), 0.000001);
         } else {
@@ -284,7 +290,7 @@ public class DefaultProxyTest {
     }
 
     private void hierarchyTest() {
-        if (!defaultAvailable) {
+        if (!defaultAvailable || isAndroid) {
             return;
         }
 

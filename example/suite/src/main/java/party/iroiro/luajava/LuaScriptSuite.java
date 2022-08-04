@@ -40,6 +40,19 @@ public class LuaScriptSuite<T extends AbstractLua> {
         assertEquals(OK, L.run(LUA_ASSERT_THROWS));
         L.push(DefaultProxyTest.isDefaultAvailable());
         L.setGlobal("JAVA8");
+
+        /* Android: desugar: default methods are separated into another class, failing the tests */
+        L.push(isAndroid());
+        L.setGlobal("ANDROID");
+    }
+
+    public static boolean isAndroid() {
+        try {
+            Class.forName("android.os.Build");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
     public static final ScriptTester[] TESTERS = {
@@ -115,6 +128,8 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 assertEquals(RUNTIME, L.run("require('suite.not.a.module')"));
             }),
             new ScriptTester("/suite/apiTest.lua", L -> {
+            }),
+            new ScriptTester("/suite/mapProxy.lua", L -> {
             }),
     };
 

@@ -48,6 +48,7 @@ r = java.import('java.lang.Runnable')(function() end)
 assertThrows('java.lang.IncompatibleClassChangeError',
              java.method(r, 'java.lang.Runnable:run'))
 
+-- java.* libraries: runs fine on Android
 iter = java.proxy('java.util.Iterator', iterImpl)
 expects = 'party.iroiro.luajava.LuaException: method not implemented: '
 if JAVA8 then
@@ -67,10 +68,11 @@ assertThrows(expects, error, java.catched():toString())
 assertThrows('Expecting a table / function and interfaces', java.import('java.util.Iterator'), 1024)
 
 called = false
+-- Custom classes: desugared, not available on Android
 B = java.proxy('party.iroiro.luajava.suite.B', 'party.iroiro.luajava.DefaultProxyTest.A', {
   b = function(this)
     called = true
-    if JAVA8 then
+    if JAVA8 and not ANDROID then
       return java.method(B, 'party.iroiro.luajava.suite.B:b')()
     else
       assertThrows('java.lang.IncompatibleClassChangeError', java.method(B, 'party.iroiro.luajava.suite.B:b'))
@@ -106,7 +108,7 @@ end
 
 obj = java.proxy('party.iroiro.luajava.DefaultProxyTest.D', {
   noReturn = function()
-    if JAVA8 then
+    if JAVA8 and not ANDROID then
       assert(java.method(iter, 'party.iroiro.luajava.DefaultProxyTest.D:noReturn')() == nil)
     else
       assertThrows('java.lang.IncompatibleClassChangeError',
