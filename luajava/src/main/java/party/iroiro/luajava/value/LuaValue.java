@@ -112,21 +112,10 @@ public interface LuaValue extends AutoCloseable {
     @Nullable Object toJavaObject();
 
     /**
-     * For reference based values, this clears the reference
-     *
-     * <p>
-     * References might prevent the underlying object from getting garbadge collected.
-     * However, for immutable types, we do not rely on references but instead store
-     * their values on the Java side, so you do not need to explicitly closing the following types:
-     * </p>
-     * <ul>
-     *     <li>{@link Lua.LuaType#NIL}</li>
-     *     <li>{@link Lua.LuaType#NONE}</li>
-     *     <li>{@link Lua.LuaType#BOOLEAN}</li>
-     *     <li>{@link Lua.LuaType#NUMBER}</li>
-     *     <li>{@link Lua.LuaType#STRING}</li>
-     * </ul>
+     * Does nothing
+     * @deprecated the value now clears Lua-side references on {@link #finalize()}
      */
     @Override
+    @Deprecated
     void close();
 }

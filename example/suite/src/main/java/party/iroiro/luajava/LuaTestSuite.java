@@ -43,6 +43,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         LuaScriptSuite.addAssertThrows(L);
         testException();
         testExternalLoader();
+        testGc();
         testJavaToLuaConversions();
         testLuaToJavaConversions();
         testMeasurements();
@@ -57,6 +58,22 @@ public class LuaTestSuite<T extends AbstractLua> {
         testStackOperations();
         testTableOperations();
         testThreads();
+    }
+
+    private void testGc() {
+        try (T L = constructor.get()) {
+            L.createTable(0, 100000);
+            L.setGlobal("a");
+            assertEquals(OK, L.run("for i = 1, 100000 do a[tostring(i)] = true end"));
+            LuaValue beforeGc = L.execute("return collectgarbage('count')")[0];
+            L.pushNil();
+            L.setGlobal("a");
+            L.gc();
+            L.gc();
+            assertEquals(OK, L.run("return collectgarbage('count')"));
+            beforeGc.push();
+            assertTrue(L.lessThan(-2, -1));
+        }
     }
 
     private void testException() {

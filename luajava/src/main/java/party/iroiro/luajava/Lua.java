@@ -969,6 +969,15 @@ public interface Lua extends AutoCloseable {
     void concat(int n);
 
     /**
+     * Performs a full garbage-collection cycle
+     *
+     * <p>
+     * This also removes unneeded references created by finalized proxies and Lua values.
+     * </p>
+     */
+    void gc();
+
+    /**
      * Throws an error inside a Lua environment
      *
      * <p>

@@ -1559,6 +1559,17 @@ public abstract class LuaNative {
     protected abstract void lua_insert(long ptr, int index);
 
     /**
+     * A wrapper function
+     *
+     * <p>
+     * Performs a full garbage-collection cycle
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     */
+    protected abstract void luaJ_gc(long ptr);
+
+    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_getfield"><code>lua_getfield</code></a>
      *
      * <pre><code>

@@ -623,6 +623,16 @@ def addExtra(functions):
             ],
         },
     })
+    functions.append({
+        'name': 'luaJ_gc',
+        'description': 'Performs a full garbage-collection cycle',
+        'signature': {
+            'return': 'void',
+            'params': [
+                ['lua_State *', 'L'],
+            ],
+        },
+    })
 
 
 def getWhole(luaVersion, package):

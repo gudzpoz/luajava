@@ -61,6 +61,8 @@ int luaJ_invokespecial(JNIEnv * env, lua_State * L,
                        jclass clazz, const char * method, const char * sig,
                        jobject obj, const char * params);
 
+void luaJ_gc(lua_State * L);
+
 inline bool checkIfError (JNIEnv * env, lua_State * L) {
   jthrowable e = env->ExceptionOccurred();
   if (e == NULL) {

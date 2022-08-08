@@ -4720,4 +4720,20 @@ public class Lua54Natives extends LuaNative {
     */
 
 
+    /**
+     * A wrapper function
+     *
+     * <p>
+     * Performs a full garbage-collection cycle
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     */
+    protected native void luaJ_gc(long ptr); /*
+        lua_State * L = (lua_State *) ptr;
+        
+        luaJ_gc((lua_State *) L);
+    */
+
+
 }

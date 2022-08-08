@@ -409,3 +409,7 @@ int luaJ_insertloader(lua_State * L, const char * searchers) {
   lua_pop(L, 2);
   return 0;
 }
+
+void luaJ_gc(lua_State * L) {
+  lua_gc(L, LUA_GCCOLLECT, 0);
+}

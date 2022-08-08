@@ -701,6 +701,14 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
+    public void gc() {
+        recycleReferences();
+        synchronized (getMainState()) {
+            C.luaJ_gc(L);
+        }
+    }
+
+    @Override
     public void error(String message) {
         throw new RuntimeException(message);
     }
