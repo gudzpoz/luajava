@@ -121,10 +121,6 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 // TODO: re-opening `package` will reset our external loader
                 // L.openLibrary("package");
                 L.setExternalLoader(new ClassPathLoader());
-                // TODO: Await upstream response. Might have to maintain a LuaJIT fork.
-                if (L instanceof LuaJit) {
-                    assertEquals(OK, L.run("package.loaders[1] = function() return 'not found?' end"));
-                }
                 assertEquals(RUNTIME, L.run("require('suite.not.a.module')"));
             }),
             new ScriptTester("/suite/apiTest.lua", L -> {
