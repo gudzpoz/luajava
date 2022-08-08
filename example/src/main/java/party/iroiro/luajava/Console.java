@@ -10,9 +10,12 @@ import org.jline.widget.AutopairWidgets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class Console {
     public final static String[] VERSIONS = {
@@ -52,6 +55,7 @@ public class Console {
             L.openLibraries();
             L.setExternalLoader(new ClassPathLoader());
             L.run("print('Running ' .. _VERSION)");
+            injectLicense(L, reader);
             while (true) {
                 String s;
                 try {
@@ -85,6 +89,36 @@ public class Console {
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void injectLicense(Lua L, LineReader reader) {
+        reader.printAbove("Use license() to print licensing info.");
+        L.push(l -> {
+            reader.printAbove("This appliation is licensed under GPL 3.0.");
+            reader.printAbove("Use license_gpl() to read full text of GPL 3.0.");
+            printAll(Lua.class, reader, "/LICENSE-luajava-console");
+            printAll(Lua.class, reader, "/META-INF/LICENSE-luajava");
+            return 0;
+        });
+        L.setGlobal("license");
+        L.push(l -> {
+            reader.printAbove("This appliation is licensed under GPL 3.0.");
+            reader.printAbove("Use license_gpl() to read full text of GPL 3.0.");
+            printAll(Console.class, reader, "/gpl-3.0.txt");
+            return 0;
+        });
+        L.setGlobal("license_gpl");
+    }
+
+    private static void printAll(Class<?> c, LineReader reader, String resource) {
+        try (InputStream s = c.getResourceAsStream(resource)) {
+            Scanner scanner = new Scanner(Objects.requireNonNull(s));
+            while (scanner.hasNextLine()) {
+                reader.printAbove(scanner.nextLine());
+            }
+        } catch (Exception e) {
+            reader.printAbove("IOException during license reading");
         }
     }
 

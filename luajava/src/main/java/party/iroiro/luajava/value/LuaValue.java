@@ -113,7 +113,7 @@ public interface LuaValue extends AutoCloseable {
 
     /**
      * Does nothing
-     * @deprecated the value now clears Lua-side references on {@link #finalize()}
+     * @deprecated the value now clears Lua-side references on finalization
      */
     @Override
     @Deprecated

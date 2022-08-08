@@ -177,7 +177,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ===============================================================================
-[ LuaJava uses the error prone annotations, which has this license statement: ]
+[ LuaJava uses gdx-jnigen, which has this license statement: ]
 
 Copyright 2011 See AUTHORS file.
 
