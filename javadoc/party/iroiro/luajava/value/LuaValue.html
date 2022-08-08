@@ -26,8 +26,8 @@
     catch(err) {
     }
 //-->
-var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
+var data = {"i0":6,"i1":38,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],32:["t6","Deprecated Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -127,7 +127,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dl>
 <dl>
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="ImmutableLuaValue.html" title="class in party.iroiro.luajava.value">ImmutableLuaValue</a></code>, <code><a href="RefLuaValue.html" title="class in party.iroiro.luajava.value">RefLuaValue</a></code></dd>
+<dd><code><a href="AbstractLuaValue.html" title="class in party.iroiro.luajava.value">AbstractLuaValue</a></code>, <code><a href="ImmutableLuaValue.html" title="class in party.iroiro.luajava.value">ImmutableLuaValue</a></code></dd>
 </dl>
 <hr>
 <pre>public interface <span class="typeNameLabel">LuaValue</span>
@@ -151,7 +151,7 @@ extends java.lang.AutoCloseable</pre>
 </a>
 <h3>Method Summary</h3>
 <table class="memberSummary">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t3" class="tableTab"><span><a href="javascript:show(4);">Abstract Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t3" class="tableTab"><span><a href="javascript:show(4);">Abstract Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t6" class="tableTab"><span><a href="javascript:show(32);">Deprecated Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th class="colSecond" scope="col">Method</th>
@@ -168,7 +168,9 @@ extends java.lang.AutoCloseable</pre>
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#close()">close</a></span>()</code></th>
 <td class="colLast">
-<div class="block">For reference based values, this clears the reference</div>
+<div class="block"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">the value now clears Lua-side references on finalization</div>
+</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
@@ -438,21 +440,12 @@ extends java.lang.AutoCloseable</pre>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>close</h4>
-<pre class="methodSignature">void&nbsp;close()</pre>
-<div class="block">For reference based values, this clears the reference
-
- <p>
- References might prevent the underlying object from getting garbadge collected.
- However, for immutable types, we do not rely on references but instead store
- their values on the Java side, so you do not need to explicitly closing the following types:
- </p>
- <ul>
-     <li><a href="../Lua.LuaType.html#NIL"><code>Lua.LuaType.NIL</code></a></li>
-     <li><a href="../Lua.LuaType.html#NONE"><code>Lua.LuaType.NONE</code></a></li>
-     <li><a href="../Lua.LuaType.html#BOOLEAN"><code>Lua.LuaType.BOOLEAN</code></a></li>
-     <li><a href="../Lua.LuaType.html#NUMBER"><code>Lua.LuaType.NUMBER</code></a></li>
-     <li><a href="../Lua.LuaType.html#STRING"><code>Lua.LuaType.STRING</code></a></li>
- </ul></div>
+<pre class="methodSignature">@Deprecated
+void&nbsp;close()</pre>
+<div class="deprecationBlock"><span class="deprecatedLabel">Deprecated.</span>
+<div class="deprecationComment">the value now clears Lua-side references on finalization</div>
+</div>
+<div class="block">Does nothing</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code>close</code>&nbsp;in interface&nbsp;<code>java.lang.AutoCloseable</code></dd>

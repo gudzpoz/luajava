@@ -1,1 +1,0 @@
-const e=JSON.parse('{"key":"v-68c339c8","path":"/examples/awt.html","title":"AWT Example","lang":"en-US","frontmatter":{},"excerpt":"","headers":[],"git":{"updatedTime":1659938666000},"filePathRelative":"examples/awt.md"}');export{e as data};

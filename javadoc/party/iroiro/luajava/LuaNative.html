@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6,"i16":6,"i17":6,"i18":6,"i19":6,"i20":6,"i21":6,"i22":6,"i23":6,"i24":6,"i25":6,"i26":6,"i27":6,"i28":6,"i29":6,"i30":6,"i31":6,"i32":6,"i33":6,"i34":6,"i35":6,"i36":6,"i37":6,"i38":6,"i39":6,"i40":6,"i41":6,"i42":6,"i43":6,"i44":6,"i45":6,"i46":6,"i47":6,"i48":6,"i49":6,"i50":6,"i51":6,"i52":6,"i53":6,"i54":6,"i55":6,"i56":6,"i57":6,"i58":6,"i59":6,"i60":6,"i61":6,"i62":6,"i63":6,"i64":6,"i65":6,"i66":6,"i67":6,"i68":6,"i69":6,"i70":6,"i71":6,"i72":6,"i73":6,"i74":6,"i75":6,"i76":6,"i77":6,"i78":6,"i79":6,"i80":6,"i81":6,"i82":6,"i83":6,"i84":6,"i85":6,"i86":6,"i87":6,"i88":6,"i89":6,"i90":6,"i91":6,"i92":6,"i93":6,"i94":6,"i95":6};
+var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6,"i16":6,"i17":6,"i18":6,"i19":6,"i20":6,"i21":6,"i22":6,"i23":6,"i24":6,"i25":6,"i26":6,"i27":6,"i28":6,"i29":6,"i30":6,"i31":6,"i32":6,"i33":6,"i34":6,"i35":6,"i36":6,"i37":6,"i38":6,"i39":6,"i40":6,"i41":6,"i42":6,"i43":6,"i44":6,"i45":6,"i46":6,"i47":6,"i48":6,"i49":6,"i50":6,"i51":6,"i52":6,"i53":6,"i54":6,"i55":6,"i56":6,"i57":6,"i58":6,"i59":6,"i60":6,"i61":6,"i62":6,"i63":6,"i64":6,"i65":6,"i66":6,"i67":6,"i68":6,"i69":6,"i70":6,"i71":6,"i72":6,"i73":6,"i74":6,"i75":6,"i76":6,"i77":6,"i78":6,"i79":6,"i80":6,"i81":6,"i82":6,"i83":6,"i84":6,"i85":6,"i86":6,"i87":6,"i88":6,"i89":6,"i90":6,"i91":6,"i92":6,"i93":6,"i94":6,"i95":6,"i96":6,"i97":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -670,6 +670,13 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i60" class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_gc(long)">luaJ_gc</a></span>&#8203;(long&nbsp;ptr)</code></th>
+<td class="colLast">
+<div class="block">A wrapper function</div>
+</td>
+</tr>
+<tr id="i61" class="rowColor">
+<td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_getfield(long,int,java.lang.String)">luaJ_getfield</a></span>&#8203;(long&nbsp;ptr,
              int&nbsp;index,
              java.lang.String&nbsp;k)</code></th>
@@ -677,7 +684,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_getfield"><code>lua_getfield</code></a></div>
 </td>
 </tr>
-<tr id="i61" class="rowColor">
+<tr id="i62" class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_getglobal(long,java.lang.String)">luaJ_getglobal</a></span>&#8203;(long&nbsp;ptr,
               java.lang.String&nbsp;name)</code></th>
@@ -685,7 +692,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_getglobal"><code>lua_getglobal</code></a></div>
 </td>
 </tr>
-<tr id="i62" class="altColor">
+<tr id="i63" class="rowColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_getmetatable(long,java.lang.String)">luaJ_getmetatable</a></span>&#8203;(long&nbsp;ptr,
                  java.lang.String&nbsp;tname)</code></th>
@@ -693,7 +700,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_getmetatable"><code>luaL_getmetatable</code></a></div>
 </td>
 </tr>
-<tr id="i63" class="rowColor">
+<tr id="i64" class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_gettable(long,int)">luaJ_gettable</a></span>&#8203;(long&nbsp;ptr,
              int&nbsp;index)</code></th>
@@ -701,7 +708,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_gettable"><code>lua_gettable</code></a></div>
 </td>
 </tr>
-<tr id="i64" class="altColor">
+<tr id="i65" class="rowColor">
 <td class="colFirst"><code>protected abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_initloader(long)">luaJ_initloader</a></span>&#8203;(long&nbsp;ptr)</code></th>
 <td class="colLast">
@@ -710,7 +717,7 @@ extends java.lang.Object</pre>
  Append a searcher loading from Java side into <code>package.searchers / loaders</code></div>
 </td>
 </tr>
-<tr id="i65" class="rowColor">
+<tr id="i66" class="altColor">
 <td class="colFirst"><code>protected abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_invokespecial(long,java.lang.Class,java.lang.String,java.lang.String,java.lang.Object,java.lang.String)">luaJ_invokespecial</a></span>&#8203;(long&nbsp;ptr,
                   java.lang.Class&nbsp;clazz,
@@ -722,7 +729,7 @@ extends java.lang.Object</pre>
 <div class="block">A wrapper function</div>
 </td>
 </tr>
-<tr id="i66" class="altColor">
+<tr id="i67" class="rowColor">
 <td class="colFirst"><code>protected abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_isobject(long,int)">luaJ_isobject</a></span>&#8203;(long&nbsp;ptr,
              int&nbsp;index)</code></th>
@@ -732,7 +739,7 @@ extends java.lang.Object</pre>
  Is a Java object (including object, array or class)</div>
 </td>
 </tr>
-<tr id="i67" class="rowColor">
+<tr id="i68" class="altColor">
 <td class="colFirst"><code>protected abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_len(long,int)">luaJ_len</a></span>&#8203;(long&nbsp;ptr,
         int&nbsp;index)</code></th>
@@ -742,7 +749,7 @@ extends java.lang.Object</pre>
  Wrapper of <code>lua_(obj)len</code></div>
 </td>
 </tr>
-<tr id="i68" class="altColor">
+<tr id="i69" class="rowColor">
 <td class="colFirst"><code>protected abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_loadbuffer(long,java.nio.Buffer,int,java.lang.String)">luaJ_loadbuffer</a></span>&#8203;(long&nbsp;ptr,
                java.nio.Buffer&nbsp;buffer,
@@ -754,7 +761,7 @@ extends java.lang.Object</pre>
  Load a direct buffer</div>
 </td>
 </tr>
-<tr id="i69" class="rowColor">
+<tr id="i70" class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_newmetatable(long,java.lang.String)">luaJ_newmetatable</a></span>&#8203;(long&nbsp;ptr,
                  java.lang.String&nbsp;tname)</code></th>
@@ -762,7 +769,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_newmetatable"><code>luaL_newmetatable</code></a></div>
 </td>
 </tr>
-<tr id="i70" class="altColor">
+<tr id="i71" class="rowColor">
 <td class="colFirst"><code>protected abstract long</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_newthread(long,int)">luaJ_newthread</a></span>&#8203;(long&nbsp;ptr,
               int&nbsp;lid)</code></th>
@@ -772,7 +779,7 @@ extends java.lang.Object</pre>
  Create a new thread</div>
 </td>
 </tr>
-<tr id="i71" class="rowColor">
+<tr id="i72" class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_openlib(long,java.lang.String)">luaJ_openlib</a></span>&#8203;(long&nbsp;ptr,
             java.lang.String&nbsp;lib)</code></th>
@@ -782,7 +789,7 @@ extends java.lang.Object</pre>
  Open a library indivisually, alternative to <code>luaL_openlibs</code></div>
 </td>
 </tr>
-<tr id="i72" class="altColor">
+<tr id="i73" class="rowColor">
 <td class="colFirst"><code>protected abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_pcall(long,int,int)">luaJ_pcall</a></span>&#8203;(long&nbsp;ptr,
           int&nbsp;nargs,
@@ -793,7 +800,7 @@ extends java.lang.Object</pre>
  Protected call</div>
 </td>
 </tr>
-<tr id="i73" class="rowColor">
+<tr id="i74" class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_pcall(long,int,int,int)">luaJ_pcall</a></span>&#8203;(long&nbsp;ptr,
           int&nbsp;nargs,
@@ -803,7 +810,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a></div>
 </td>
 </tr>
-<tr id="i74" class="altColor">
+<tr id="i75" class="rowColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_pusharray(long,java.lang.Object)">luaJ_pusharray</a></span>&#8203;(long&nbsp;ptr,
               java.lang.Object&nbsp;array)</code></th>
@@ -813,7 +820,7 @@ extends java.lang.Object</pre>
  Push a Java array</div>
 </td>
 </tr>
-<tr id="i75" class="rowColor">
+<tr id="i76" class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_pushclass(long,java.lang.Object)">luaJ_pushclass</a></span>&#8203;(long&nbsp;ptr,
               java.lang.Object&nbsp;clazz)</code></th>
@@ -823,7 +830,7 @@ extends java.lang.Object</pre>
  Push a Java class</div>
 </td>
 </tr>
-<tr id="i76" class="altColor">
+<tr id="i77" class="rowColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_pushfunction(long,java.lang.Object)">luaJ_pushfunction</a></span>&#8203;(long&nbsp;ptr,
                  java.lang.Object&nbsp;func)</code></th>
@@ -833,7 +840,7 @@ extends java.lang.Object</pre>
  Push a JFunction</div>
 </td>
 </tr>
-<tr id="i77" class="rowColor">
+<tr id="i78" class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_pushobject(long,java.lang.Object)">luaJ_pushobject</a></span>&#8203;(long&nbsp;ptr,
                java.lang.Object&nbsp;obj)</code></th>
@@ -843,7 +850,7 @@ extends java.lang.Object</pre>
  Push a Java object</div>
 </td>
 </tr>
-<tr id="i78" class="altColor">
+<tr id="i79" class="rowColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_pushstring(long,java.lang.String)">luaJ_pushstring</a></span>&#8203;(long&nbsp;ptr,
                java.lang.String&nbsp;s)</code></th>
@@ -851,7 +858,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pushstring"><code>lua_pushstring</code></a></div>
 </td>
 </tr>
-<tr id="i79" class="rowColor">
+<tr id="i80" class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_rawget(long,int)">luaJ_rawget</a></span>&#8203;(long&nbsp;ptr,
            int&nbsp;index)</code></th>
@@ -859,7 +866,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_rawget"><code>lua_rawget</code></a></div>
 </td>
 </tr>
-<tr id="i80" class="altColor">
+<tr id="i81" class="rowColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_rawgeti(long,int,int)">luaJ_rawgeti</a></span>&#8203;(long&nbsp;ptr,
             int&nbsp;index,
@@ -868,7 +875,14 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_rawgeti"><code>lua_rawgeti</code></a></div>
 </td>
 </tr>
-<tr id="i81" class="rowColor">
+<tr id="i82" class="altColor">
+<td class="colFirst"><code>protected abstract void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_removestateindex(long)">luaJ_removestateindex</a></span>&#8203;(long&nbsp;ptr)</code></th>
+<td class="colLast">
+<div class="block">A wrapper function</div>
+</td>
+</tr>
+<tr id="i83" class="rowColor">
 <td class="colFirst"><code>protected abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_resume(long,int)">luaJ_resume</a></span>&#8203;(long&nbsp;ptr,
            int&nbsp;nargs)</code></th>
@@ -878,7 +892,7 @@ extends java.lang.Object</pre>
  Resume a coroutine</div>
 </td>
 </tr>
-<tr id="i82" class="altColor">
+<tr id="i84" class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_setmetatable(long,int)">luaJ_setmetatable</a></span>&#8203;(long&nbsp;ptr,
                  int&nbsp;index)</code></th>
@@ -886,7 +900,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_setmetatable"><code>lua_setmetatable</code></a></div>
 </td>
 </tr>
-<tr id="i83" class="rowColor">
+<tr id="i85" class="rowColor">
 <td class="colFirst"><code>protected abstract java.lang.Object</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaJ_toobject(long,int)">luaJ_toobject</a></span>&#8203;(long&nbsp;ptr,
              int&nbsp;index)</code></th>
@@ -896,7 +910,7 @@ extends java.lang.Object</pre>
  Convert to Java object if it is one</div>
 </td>
 </tr>
-<tr id="i84" class="altColor">
+<tr id="i86" class="altColor">
 <td class="colFirst"><code>protected abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaL_callmeta(long,int,java.lang.String)">luaL_callmeta</a></span>&#8203;(long&nbsp;ptr,
              int&nbsp;obj,
@@ -905,7 +919,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_callmeta"><code>luaL_callmeta</code></a></div>
 </td>
 </tr>
-<tr id="i85" class="rowColor">
+<tr id="i87" class="rowColor">
 <td class="colFirst"><code>protected abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaL_dostring(long,java.lang.String)">luaL_dostring</a></span>&#8203;(long&nbsp;ptr,
              java.lang.String&nbsp;str)</code></th>
@@ -913,7 +927,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_dostring"><code>luaL_dostring</code></a></div>
 </td>
 </tr>
-<tr id="i86" class="altColor">
+<tr id="i88" class="altColor">
 <td class="colFirst"><code>protected abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaL_getmetafield(long,int,java.lang.String)">luaL_getmetafield</a></span>&#8203;(long&nbsp;ptr,
                  int&nbsp;obj,
@@ -922,7 +936,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_getmetafield"><code>luaL_getmetafield</code></a></div>
 </td>
 </tr>
-<tr id="i87" class="rowColor">
+<tr id="i89" class="rowColor">
 <td class="colFirst"><code>protected abstract java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaL_gsub(long,java.lang.String,java.lang.String,java.lang.String)">luaL_gsub</a></span>&#8203;(long&nbsp;ptr,
          java.lang.String&nbsp;s,
@@ -932,7 +946,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_gsub"><code>luaL_gsub</code></a></div>
 </td>
 </tr>
-<tr id="i88" class="altColor">
+<tr id="i90" class="altColor">
 <td class="colFirst"><code>protected abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaL_loadstring(long,java.lang.String)">luaL_loadstring</a></span>&#8203;(long&nbsp;ptr,
                java.lang.String&nbsp;s)</code></th>
@@ -940,7 +954,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_loadstring"><code>luaL_loadstring</code></a></div>
 </td>
 </tr>
-<tr id="i89" class="rowColor">
+<tr id="i91" class="rowColor">
 <td class="colFirst"><code>protected abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaL_newmetatable(long,java.lang.String)">luaL_newmetatable</a></span>&#8203;(long&nbsp;ptr,
                  java.lang.String&nbsp;tname)</code></th>
@@ -948,21 +962,21 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_newmetatable"><code>luaL_newmetatable</code></a></div>
 </td>
 </tr>
-<tr id="i90" class="altColor">
+<tr id="i92" class="altColor">
 <td class="colFirst"><code>protected abstract long</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaL_newstate(int)">luaL_newstate</a></span>&#8203;(int&nbsp;lid)</code></th>
 <td class="colLast">
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_newstate"><code>luaL_newstate</code></a></div>
 </td>
 </tr>
-<tr id="i91" class="rowColor">
+<tr id="i93" class="rowColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaL_openlibs(long)">luaL_openlibs</a></span>&#8203;(long&nbsp;ptr)</code></th>
 <td class="colLast">
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_openlibs"><code>luaL_openlibs</code></a></div>
 </td>
 </tr>
-<tr id="i92" class="altColor">
+<tr id="i94" class="altColor">
 <td class="colFirst"><code>protected abstract int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaL_ref(long,int)">luaL_ref</a></span>&#8203;(long&nbsp;ptr,
         int&nbsp;t)</code></th>
@@ -970,7 +984,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_ref"><code>luaL_ref</code></a></div>
 </td>
 </tr>
-<tr id="i93" class="rowColor">
+<tr id="i95" class="rowColor">
 <td class="colFirst"><code>protected abstract java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaL_typename(long,int)">luaL_typename</a></span>&#8203;(long&nbsp;ptr,
              int&nbsp;index)</code></th>
@@ -978,7 +992,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_typename"><code>luaL_typename</code></a></div>
 </td>
 </tr>
-<tr id="i94" class="altColor">
+<tr id="i96" class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaL_unref(long,int,int)">luaL_unref</a></span>&#8203;(long&nbsp;ptr,
           int&nbsp;t,
@@ -987,7 +1001,7 @@ extends java.lang.Object</pre>
 <div class="block">Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_unref"><code>luaL_unref</code></a></div>
 </td>
 </tr>
-<tr id="i95" class="rowColor">
+<tr id="i97" class="rowColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaL_where(long,int)">luaL_where</a></span>&#8203;(long&nbsp;ptr,
           int&nbsp;lvl)</code></th>
@@ -3114,6 +3128,24 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
+<a id="luaJ_gc(long)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>luaJ_gc</h4>
+<pre class="methodSignature">protected abstract&nbsp;void&nbsp;luaJ_gc&#8203;(long&nbsp;ptr)</pre>
+<div class="block">A wrapper function
+
+ <p>
+ Performs a full garbage-collection cycle
+ </p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>ptr</code> - the <code>lua_State*</code> pointer</dd>
+</dl>
+</li>
+</ul>
 <a id="luaJ_getfield(long,int,java.lang.String)">
 <!--   -->
 </a>
@@ -3560,6 +3592,24 @@ extends java.lang.Object</pre>
 <dd><code>ptr</code> - the <code>lua_State*</code> pointer</dd>
 <dd><code>index</code> - the stack position of the element</dd>
 <dd><code>n</code> - the number of elements</dd>
+</dl>
+</li>
+</ul>
+<a id="luaJ_removestateindex(long)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>luaJ_removestateindex</h4>
+<pre class="methodSignature">protected abstract&nbsp;void&nbsp;luaJ_removestateindex&#8203;(long&nbsp;ptr)</pre>
+<div class="block">A wrapper function
+
+ <p>
+ Removes the thread from the global registry, thus allowing it to get garbage collected
+ </p></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>ptr</code> - the <code>lua_State*</code> pointer</dd>
 </dl>
 </li>
 </ul>
