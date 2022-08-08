@@ -2,10 +2,12 @@ package party.iroiro.luajava;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 public class FullCoverageJunkTest {
     @SuppressWarnings("unused")
     @Test
-    public void fullCoverageJunk() {
+    public void fullCoverageJunk() throws NoSuchMethodException {
         Jua J = new Jua() {};
         Consts consts = new Consts() {};
         JuaAPI api = new JuaAPI() {};
@@ -14,5 +16,6 @@ public class FullCoverageJunkTest {
         Lua53Consts lua53Consts = new Lua53Consts() {};
         Lua54Consts lua54Consts = new Lua54Consts() {};
         LuaJitConsts luaJitConsts = new LuaJitConsts() {};
+        assertNull(JuaAPI.CONSTRUCTOR_WRAPPER.getName(FullCoverageJunkTest.class.getConstructor()));
     }
 }

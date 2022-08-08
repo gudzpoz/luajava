@@ -19,28 +19,32 @@ android {
     namespace = project(':').group
 
     compileSdk 33
-    buildToolsVersion '33.0.0'
+    buildToolsVersion '30.0.3'
 
     defaultConfig {
-        minSdk 16
-        targetSdk 21
-        versionCode 3
-        versionName "3.0"
+        minSdk 19
+        targetSdk 31
+        versionCode 1
+        versionName '3.1'
     }
 
     sourceSets { container ->
-        luaVersions.forEach(ver -> container.create(ver) {
-            manifest.srcFile 'AndroidManifest.xml'
-            jniLibs.srcDirs = ["${ver}-libs"]
-        })
+        luaVersions.forEach { ver ->
+            container.create(ver) {
+                manifest.srcFile 'AndroidManifest.xml'
+                jniLibs.srcDirs = ["${ver}-libs"]
+            }
+        }
     }
 
     flavorDimensions 'lua'
 
     productFlavors { container ->
-        luaVersions.forEach(ver -> container.create(ver) {
-            dimension 'lua'
-        })
+        luaVersions.forEach { ver ->
+            container.create(ver) {
+                dimension 'lua'
+            }
+        }
     }
 
     buildTypes { container ->
@@ -56,12 +60,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    publishing {
-        multipleVariants {
-            allVariants()
-        }
     }
 }
 
@@ -96,6 +94,12 @@ apply plugin: 'signing'
 apply from: project(':').file('pom.gradle')
 
 afterEvaluate {
+    generateLua51ReleaseBuildConfig.enabled = false
+    generateLua52ReleaseBuildConfig.enabled = false
+    generateLua53ReleaseBuildConfig.enabled = false
+    generateLua54ReleaseBuildConfig.enabled = false
+    generateLuajitReleaseBuildConfig.enabled = false
+
     publishing {
         publications {
             'default'(MavenPublication) { container ->

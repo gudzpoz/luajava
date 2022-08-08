@@ -20,7 +20,7 @@ echo "########## Building armv7-a ##########"
 TARGET=armv7a-linux-androideabi
 NDKP=$NDKB/${TARGET}-
 NDKCC=$NDKB/${TARGET}${NDKAPI}-clang
-NDKARCH="-march=armv7-a -mhard-float -mfpu=vfpv3-d16 -mfloat-abi=softfp -D_NDK_MATH_NO_SOFTFP=1 -marm"
+NDKARCH="-march=armv7-a -mhard-float -mfpu=vfpv3-d16 -mfloat-abi=softfp -D_NDK_MATH_NO_SOFTFP=1 -marm -DNO_RTLD_DEFAULT=1"
 make HOST_CC="gcc -m32 -I/usr/i686-linux-gnu/include" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
@@ -38,7 +38,7 @@ echo "########## Building i686 ##########"
 TARGET=i686-linux-android
 NDKP=$NDKB/${TARGET}-
 NDKCC=$NDKB/${TARGET}${NDKAPI}-clang
-NDKARCH=""
+NDKARCH="-DNO_RTLD_DEFAULT=1"
 make HOST_CC="gcc -m32 -I/usr/i686-linux-gnu/include" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
@@ -58,7 +58,7 @@ echo "########## Building arm64-v8a ##########"
 TARGET=aarch64-linux-android
 NDKP=$NDKB/${TARGET}-
 NDKCC=$NDKB/${TARGET}${NDKAPI}-clang
-NDKARCH="-DLJ_ABI_SOFTFP=0 -DLJ_ARCH_HASFPU=1 -DLUAJIT_ENABLE_GC64=1"
+NDKARCH="-DLJ_ABI_SOFTFP=0 -DLJ_ARCH_HASFPU=1 -DLUAJIT_ENABLE_GC64=1 -DNO_RTLD_DEFAULT=1"
 make HOST_CC="gcc -m64" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
@@ -76,7 +76,7 @@ echo "########## Building x86_64 ##########"
 TARGET=x86_64-linux-android
 NDKP=$NDKB/${TARGET}-
 NDKCC=$NDKB/${TARGET}${NDKAPI}-clang
-NDKARCH="-DLUAJIT_ENABLE_GC64=1"
+NDKARCH="-DLUAJIT_ENABLE_GC64=1 -DNO_RTLD_DEFAULT=1"
 make HOST_CC="gcc -m64" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \

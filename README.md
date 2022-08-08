@@ -39,11 +39,11 @@ Documentation is available at [LuaJava](https://gudzpoz.github.io/luajava/) alon
 
 | Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 |   LuaJIT    |
 |:-------:|:-------:|:-------:|:-------:|:-----------:|
-|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.4  | [`50936d7`] |
+|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.4  | [`e61a1f9`] |
 
 </div>
 
-[`4c2441c`]: https://github.com/LuaJIT/LuaJIT/commits/50936d784474747b4569d988767f1b5bab8bb6d0
+[`e61a1f9`]: https://github.com/LuaJIT/LuaJIT/commits/e61a1f961ac3f063a5d80ca9b7b7e263810abf74
 
 Supported Lua versions: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4 and LuaJIT.
 

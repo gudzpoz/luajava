@@ -3,6 +3,7 @@
 
 #include "jua.cpp"
 #include "invokespecial.cpp"
+#include "importer.cpp"
 #include "juaapi.cpp"
 #include "jualib.cpp"
 

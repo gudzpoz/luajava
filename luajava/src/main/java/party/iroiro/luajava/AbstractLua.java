@@ -181,11 +181,11 @@ public abstract class AbstractLua implements Lua {
     public void push(@NotNull Map<?, ?> map) {
         checkStack(3);
         C.lua_createtable(L, 0, map.size());
-        map.forEach((k, v) -> {
-            push(k, Conversion.FULL);
-            push(v, Conversion.FULL);
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            push(entry.getKey(), Conversion.FULL);
+            push(entry.getValue(), Conversion.FULL);
             C.lua_rawset(L, -3);
-        });
+        }
     }
 
     @Override
@@ -820,6 +820,9 @@ public abstract class AbstractLua implements Lua {
      */
     protected @Nullable Object invokeSpecial(Object object, Method method, @Nullable Object[] params) throws
             Throwable {
+        if (!ClassUtils.isDefault(method)) {
+            throw new IncompatibleClassChangeError("Unable to invoke non-default method");
+        }
         if (params == null) {
             params = EMPTY;
         }

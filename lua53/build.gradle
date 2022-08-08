@@ -30,8 +30,6 @@ configurations {
 dependencies {
     api project(':luajava')
     implementation 'com.badlogicgames.gdx:gdx-jnigen-loader:2.3.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
 
 apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
@@ -56,8 +54,12 @@ jnigen {
         libraries = ''
     }
     add(Android) {
+        cFlags += ' -D_FORTIFY_SOURCE=1 '
+        cppFlags += ' -D_FORTIFY_SOURCE=1 '
         androidApplicationMk = [
-                'APP_PLATFORM := android-21'
+                'APP_PLATFORM := android-19',
+                'APP_STL := c++_static',
+                'APP_CFLAG := -D_FORTIFY_SOURCE=1 ',
         ]
     }
     add(IOS) {

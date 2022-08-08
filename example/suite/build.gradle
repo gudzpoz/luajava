@@ -1,0 +1,25 @@
+plugins {
+    id 'java-library'
+}
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    withSourcesJar()
+
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+dependencies {
+    implementation project(':luajava')
+    implementation project(':lua51')
+    implementation project(':lua52')
+    implementation project(':lua53')
+    implementation project(':lua54')
+    implementation project(':luajit')
+    implementation 'junit:junit:4.13.2'
+}

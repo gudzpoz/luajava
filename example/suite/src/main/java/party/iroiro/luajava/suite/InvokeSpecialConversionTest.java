@@ -2,7 +2,7 @@ package party.iroiro.luajava.suite;
 
 import party.iroiro.luajava.Lua;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
 public class InvokeSpecialConversionTest {
     private final Lua L;
@@ -93,8 +93,8 @@ public class InvokeSpecialConversionTest {
         assertEquals(Short.MAX_VALUE, v.toS(Short.MAX_VALUE));
         assertTrue(v.toZ(Integer.MAX_VALUE));
         assertFalse(v.toZ(0));
-        assertEquals(Short.MAX_VALUE, v.toF(Short.MAX_VALUE));
-        assertEquals(Integer.MAX_VALUE, v.toD(Integer.MAX_VALUE));
+        assertEquals(Short.MAX_VALUE, v.toF(Short.MAX_VALUE), 0.000001);
+        assertEquals(Integer.MAX_VALUE, v.toD(Integer.MAX_VALUE), 0.000001);
         assertEquals(Integer.MAX_VALUE, v.toJ(Integer.MAX_VALUE));
         assertEquals(Integer.MAX_VALUE, v.toI(Integer.MAX_VALUE));
     }

@@ -14,9 +14,11 @@ Integer = java.import('java.lang.Integer')
 assert(type(Integer) == 'userdata')
 assertThrows('java.lang.ClassNotFoundException: java.lang.NonExistentClass',
              java.import, 'java.lang.NonExistentClass')
-assertThrows('java.lang.ClassNotFoundException: java lang Integer',
+-- Message is "java.lang.ClassNotFoundException: Invalid name: blah blah" on Android
+assertThrows('java.lang.ClassNotFoundException: ',
              java.import, 'java lang Integer')
-assertThrows('java.lang.ClassNotFoundException: java&&&&&&&&&&&&/',
+-- Message is "java.lang.ClassNotFoundException: Invalid name: java&&&&&&&&&&&&/" on Android
+assertThrows('java.lang.ClassNotFoundException: ',
              java.import, 'java&&&&&&&&&&&&/')
 -- java.import(package)
 lang = java.import('java.lang.*')

@@ -1,22 +1,24 @@
 package party.iroiro.luajava;
 
+import party.iroiro.luajava.interfaces.LuaTestConsumer;
 import party.iroiro.luajava.suite.B;
 import party.iroiro.luajava.suite.InvokeSpecialConversionTest;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 import static party.iroiro.luajava.Lua.LuaError.OK;
+import static party.iroiro.luajava.Lua.LuaError.RUNTIME;
 
 public class DefaultProxyTest {
     private interface PrivateNullable {
-        default void test(Object obj) {
+        default void test(@SuppressWarnings("ConstantConditions") Object obj) {
             if (obj == null) {
                 throw new NullPointerException("Passed a null value");
             }
@@ -33,6 +35,7 @@ public class DefaultProxyTest {
             throw new LuaException("exception!");
         }
 
+        @SuppressWarnings("UnusedReturnValue")
         boolean equals();
 
         void luaError();
@@ -41,9 +44,22 @@ public class DefaultProxyTest {
     }
 
     private final AbstractLua L;
+    private final boolean defaultAvailable;
+    private final boolean isAndroid;
 
     public DefaultProxyTest(AbstractLua L) {
+        defaultAvailable = isDefaultAvailable();
+        isAndroid = LuaScriptSuite.isAndroid();
         this.L = L;
+    }
+
+    public static boolean isDefaultAvailable() {
+        try {
+            Method.class.getMethod("isDefault");
+            return true;
+        } catch (Throwable e) {
+            return false;
+        }
     }
 
     public void testMethodEquals() throws Throwable {
@@ -71,14 +87,27 @@ public class DefaultProxyTest {
     }
 
     public void test() {
-        assertDoesNotThrow(this::testMethodEquals);
+        try {
+            this.testMethodEquals();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
         L.run("return { luaError = function(_, i)\n" +
               "assert(i == 2 or i == 3)\n" +
               "if i == 2 then return nil else return 3 end\n" +
               "end }");
         DefaultRunnable proxy =
                 (DefaultRunnable) L.createProxy(new Class[]{DefaultRunnable.class}, Lua.Conversion.SEMI);
-        assertEquals(1024, proxy.call());
+        /*
+         * Our classes are desugared on Android and fail the tests.
+         * Only java.* interfaces should be used to test default methods.
+         */
+        if (defaultAvailable && !isAndroid) {
+            assertEquals(1024, (int) proxy.call());
+        } else {
+            assertTrue(assertThrows(LuaException.class, proxy::call)
+                    .getMessage().startsWith("method not implemented: "));
+        }
         assertEquals(Proxy.getInvocationHandler(proxy).hashCode(), proxy.hashCode());
         // noinspection SimplifiableAssertion,EqualsWithItself
         assertTrue(proxy.equals(proxy));
@@ -89,8 +118,13 @@ public class DefaultProxyTest {
         LuaException exception = assertThrows(LuaException.class, proxy::equals);
         assertTrue(exception.getMessage().startsWith("method not implemented: "));
 
-        assertEquals("exception!",
-                assertThrows(LuaException.class, proxy::throwsError).getMessage());
+        if (defaultAvailable && !isAndroid) {
+            assertEquals("exception!",
+                    assertThrows(LuaException.class, proxy::throwsError).getMessage());
+        } else {
+            assertTrue(assertThrows(LuaException.class, proxy::throwsError)
+                    .getMessage().startsWith("method not implemented: "));
+        }
 
         assertTrue(assertThrows(LuaException.class, proxy::luaError).getMessage()
                 .contains("assertion failed"));
@@ -98,7 +132,7 @@ public class DefaultProxyTest {
                 .contains("assertion failed"));
         assertTrue(assertThrows(IllegalArgumentException.class, () -> proxy.luaError(2)).getMessage()
                 .contains("Primitive not accepting null values"));
-        assertEquals(3., proxy.luaError(3));
+        assertEquals(3., proxy.luaError(3), 0.000001);
 
         hierarchyTest();
         simpleIterTest();
@@ -125,10 +159,13 @@ public class DefaultProxyTest {
         };
         L.push(iterator, Lua.Conversion.SEMI);
 
-        assertThrows(UnsupportedOperationException.class, () -> L.invokeSpecial(iterator,
-                Iterator.class.getDeclaredMethod("remove"),
-                new Object[0]
-        ));
+        assertThrows((Class<? extends Throwable>) (defaultAvailable
+                        ? UnsupportedOperationException.class
+                        : IncompatibleClassChangeError.class),
+                () -> L.invokeSpecial(iterator,
+                        Iterator.class.getDeclaredMethod("remove"),
+                        new Object[0]
+                ));
 
         L.error((Throwable) null);
         L.run("i = 10");
@@ -143,24 +180,41 @@ public class DefaultProxyTest {
               "}");
         Iterator<?> iter = (Iterator<?>) L.createProxy(new Class[]{Iterator.class}, Lua.Conversion.SEMI);
         Set<Double> set = new HashSet<>();
-        iter.forEachRemaining(i -> {
-            assertInstanceOf(Double.class, i);
+        callForEachRemaining(iter, i -> {
+            assertTrue(i instanceof Double);
             set.add(((Double) i));
         });
-        assertEquals(10, set.size());
-        for (int i = 0; i < 10; i++) {
-            assertTrue(set.contains((double) i));
+        if (defaultAvailable) {
+            assertEquals(10, set.size());
+            for (int i = 0; i < 10; i++) {
+                assertTrue(set.contains((double) i));
+            }
+        } else {
+            assertTrue(set.isEmpty());
         }
 
         L.run("return {}");
         PrivateNullable priv = (PrivateNullable) L.createProxy(new Class[]{PrivateNullable.class}, Lua.Conversion.SEMI);
-        assertEquals(
-                "Passed a null value",
-                assertThrows(NullPointerException.class, () -> priv.test(null)).getMessage()
-        );
-        assertDoesNotThrow(() -> priv.test(new Object()));
+        if (defaultAvailable && !isAndroid) {
+            assertEquals(
+                    "Passed a null value",
+                    assertThrows(NullPointerException.class, () -> priv.test(null)).getMessage()
+            );
+        } else {
+            assertTrue(
+                    assertThrows(LuaException.class, () -> priv.test(null)).getMessage()
+                            .startsWith("method not implemented: ")
+            );
+        }
+        if (defaultAvailable && !isAndroid) {
+            priv.test(new Object());
+        } else {
+            assertThrows(LuaException.class, () -> priv.test(new Object()));
+        }
 
-        new InvokeSpecialConversionTest(L).test();
+        if (defaultAvailable && !isAndroid) {
+            new InvokeSpecialConversionTest(L).test();
+        }
     }
 
     private void exceptionTest() {
@@ -173,8 +227,33 @@ public class DefaultProxyTest {
         L.run("return {}");
         L.push(L.createProxy(new Class[]{A.class}, Lua.Conversion.SEMI), Lua.Conversion.NONE);
         L.setGlobal("aa");
-        assertEquals(OK, L.run("return aa:a() + 1"), L.toString(-1));
-        assertEquals(2., L.toNumber(-1));
+        if (defaultAvailable && !isAndroid) {
+            assertEquals(OK, L.run("return aa:a() + 1"));
+            assertEquals(2., L.toNumber(-1), 0.000001);
+        } else {
+            assertEquals(RUNTIME, L.run("return aa:a() + 1"));
+            assertTrue(L.toString(-1), Objects.requireNonNull(L.toString(-1))
+                    .startsWith("party.iroiro.luajava.LuaException: method not implemented: "));
+        }
+    }
+
+    private void callForEachRemaining(Iterator<?> iter, LuaTestConsumer<Object> testConsumer) {
+        //noinspection TryWithIdenticalCatches
+        try {
+            Class<?> consumer = Class.forName("java.util.function.Consumer");
+            Method method = Iterator.class.getMethod("forEachRemaining", consumer);
+            L.push(l -> {
+                testConsumer.accept(l.toObject(-1));
+                return 0;
+            });
+            Object impl = L.createProxy(new Class[]{consumer}, Lua.Conversion.SEMI);
+            //noinspection JavaReflectionInvocation
+            method.invoke(iter, impl);
+        } catch (ClassNotFoundException ignored) {
+        } catch (NoSuchMethodException ignored) {
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void simpleIterTest() {
@@ -191,12 +270,15 @@ public class DefaultProxyTest {
         Iterator<?> iter = (Iterator<?>)
                 L.createProxy(new Class[]{Iterator.class}, Lua.Conversion.SEMI);
         Set<Double> iset = new HashSet<>();
-        iter.forEachRemaining(i -> {
-            if (i instanceof Double) {
-                assertTrue(iset.add((Double) i));
-            }
+        callForEachRemaining(iter, i -> {
+            assertTrue(i instanceof Double);
+            assertTrue(iset.add((Double) i));
         });
-        assertEquals(10, iset.size(), Arrays.toString(iset.toArray()));
+        if (defaultAvailable) {
+            assertEquals(10, iset.size());
+        } else {
+            assertEquals(0, iset.size());
+        }
 
         L.createTable(0, 0);
         assertEquals("Expecting a table / function and interfaces",
@@ -206,6 +288,10 @@ public class DefaultProxyTest {
     }
 
     private void hierarchyTest() {
+        if (!defaultAvailable || isAndroid) {
+            return;
+        }
+
         L.createTable(0, 0);
         Object proxy = L.createProxy(new Class[]{
                 A.class, B.class, C.class,
@@ -241,7 +327,8 @@ public class DefaultProxyTest {
         }
 
         @SuppressWarnings("unused")
-        default void noReturn() {}
+        default void noReturn() {
+        }
     }
 
     public interface C extends A {
