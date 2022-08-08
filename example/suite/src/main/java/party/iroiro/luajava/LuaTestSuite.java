@@ -229,6 +229,11 @@ public class LuaTestSuite<T extends AbstractLua> {
                                "function() java.import('party.iroiro.luajava.LuaTestSuite').integer:set(1024) end\n" +
                                "))"));
         assertEquals(1024, integer.get());
+
+        T O = constructor.get();
+        AbstractLua P = O.newThread();
+        O.close();
+        P.close();
     }
 
     public static final AtomicInteger integer = new AtomicInteger(0);

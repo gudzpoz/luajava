@@ -76,6 +76,7 @@ Lua tables usually start the index from 1, while Java arrays from 0.
 |---------------|-----------------------------|-------------------|--------------------------------------------------------|
 | **`array`**   | `(jclass, dim1, ...)`       | `jarray`          | Create an array with specified dimensions              |
 | **`catched`** | `()`                        | `jobject`         | Return the latest captured Java `Throwable`            |
+| **`detach`**  | `(thread)`                  | `nil`             | Detach the sub-thread from registry to allow for GC    |
 | **`import`**  | `(string)`                  | `jclass \| table` | Import a Java class or package                         |
 | **`luaify`**  | `(jobject)`                 | `any`             | Convert an object to Lua types if possible             |
 | **`method`**  | `(jobject, string, string)` | `function`        | Find a method                                          |
@@ -123,6 +124,50 @@ Return the latest captured Java `java.lang.Throwable` during a Java method call.
     - (***jobject***) If some recent Java method call threw a `java.lang.Throwable`.
 
     - (***nil***) No `Throwable` was thrown, or they were cleared.
+
+### `detach (thread)` <Badge>function</Badge>
+
+Detach the sub-thread from registry to allow for GC.
+
+- **Parameters:**
+
+    - ***thread*** The thread (e.g., a return value of `coroutine.create`)
+
+- **Returns:**
+
+    - (***nil***)
+
+- Generates a Lua error if the thread is a main thread.
+
+::: danger Check before detaching
+
+1. Most often, you only want to use `java.detach` on threads created on the Lua side.
+2. You need to ensure that proxies created on that thread is no longer used.
+3. If you are not creating tons of sub-threads, you can worry less about GC
+   by letting `mainThread#close` handle it all instead of manually `detach`ing.
+
+:::
+::: details Thread interface explained
+
+In LuaJava, an `AbstractLua` instance just wraps around a `lua_State *`.
+We ensure that one `lua_State *` maps to no more than one `AbstractLua` instance
+by assigning each state an ID when:
+1. a main state is created;
+2. or when a sub-thread is created on the Java side (with `Lua#newThread`);
+3. or when a sub-thread, created on the Lua side (with `coroutine.create`),
+   eventually requests for an ID if it finds it necessary.
+
+IDs are stored both on:
+
+- the Java side: IDs are stored in `AbstractLua` instances.
+- and the Lua side: IDs are stored in the table at `LUA_REGISTRYINDEX`, *with the thread itself as the key*.
+
+However, since we keep references to the thread in the `LUA_REGISTRYINDEX`, it prevents the thread from garbage collection
+(which is intentional though, as you need threads alive for proxies).
+
+If you are sure that neither the Java side (proxies, Java API, etc.) nor the Lua side uses the thread any more,
+you may manually call `java.detach` or `Lua#close` to free the thread from the global registry.
+:::
 
 ### `import (name)` <Badge>function</Badge>
 

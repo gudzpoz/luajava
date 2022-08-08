@@ -30,6 +30,7 @@ jmethodID juaapi_arraylen       = NULL;
 jmethodID juaapi_arrayindex     = NULL;
 jmethodID juaapi_arraynewindex  = NULL;
 jmethodID juaapi_threadnewid    = NULL;
+jmethodID juaapi_freethreadid   = NULL;
 jmethodID juaapi_luaify         = NULL;
 jmethodID juaapi_import         = NULL;
 jmethodID juaapi_proxy          = NULL;
@@ -149,6 +150,8 @@ int initBindings(JNIEnv * env) {
           "arrayNewIndex", "(ILjava/lang/Object;I)I");
   juaapi_threadnewid = bindJavaStaticMethod(env, juaapi_class,
           "threadNewId", "(IJ)I");
+  juaapi_freethreadid = bindJavaStaticMethod(env, juaapi_class,
+          "freeThreadId", "(I)I");
   juaapi_luaify = bindJavaStaticMethod(env, juaapi_class,
           "luaify", "(I)I");
   juaapi_import = bindJavaStaticMethod(env, juaapi_class,
@@ -179,6 +182,7 @@ int initBindings(JNIEnv * env) {
       || juaapi_arrayindex == NULL
       || juaapi_arraynewindex == NULL
       || juaapi_threadnewid == NULL
+      || juaapi_freethreadid == NULL
       || juaapi_luaify == NULL
       || juaapi_import == NULL
       || juaapi_proxy == NULL
@@ -270,6 +274,16 @@ int createNewId(lua_State * L) {
   lua_pushinteger(L, lid);
   lua_settable(L, LUA_REGISTRYINDEX);
   return lid;
+}
+
+void luaJ_removestateindex(lua_State * L) {
+  if (lua_pushthread(L) != 1) {
+    lua_pushnil(L);
+    lua_rawset(L, LUA_REGISTRYINDEX);
+  } else {
+    /* Main thread */
+    lua_pop(L, 1);
+  }
 }
 
 int getStateIndex(lua_State * L) {

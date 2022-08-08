@@ -4,7 +4,7 @@
 #include "lua.hpp"
 #include "jni.h"
 
-#define JAVA_STATE_INDEX "__JavaJuaStateIndex"
+#define JAVA_STATE_INDEX "__jmainstate__"
 #define GLOBAL_THROWABLE "__jthrowable__"
 
 extern const char JAVA_CLASS_META_REGISTRY[];
@@ -26,6 +26,7 @@ extern jmethodID juaapi_arraynew;
 extern jmethodID juaapi_arraylen;
 extern jmethodID juaapi_arrayindex;
 extern jmethodID juaapi_arraynewindex;
+extern jmethodID juaapi_freethreadid;
 extern jmethodID juaapi_luaify;
 extern jmethodID juaapi_import;
 extern jmethodID juaapi_proxy;
@@ -42,6 +43,7 @@ int initBoxingBindings(JNIEnv * env);
 void initMetaRegistry(lua_State * L);
 
 int getStateIndex(lua_State * L);
+void luaJ_removestateindex(lua_State * L);
 JNIEnv * getJNIEnv(lua_State * L);
 
 int fatalError(lua_State * L);

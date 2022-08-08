@@ -482,6 +482,11 @@ public interface Lua extends AutoCloseable {
     void pushValue(int index);
 
     /**
+     * Pushes the current thread onto the stack
+     */
+    void pushThread();
+
+    /**
      * Removes the element at the given valid index
      *
      * <p>
@@ -1075,7 +1080,8 @@ public interface Lua extends AutoCloseable {
      * Closes the thread
      *
      * <p>
-     * This method might not do anything if the thread is not a global state.
+     * You need to make sure that you call this method no more than once,
+     * or else the Lua binary may / will very likely just crash.
      * </p>
      */
     @Override

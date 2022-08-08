@@ -118,6 +118,14 @@ static int javaCatched(lua_State * L) {
   return 1;
 }
 
+static int javaDetach(lua_State * L) {
+  luaL_checktype(L, 1, LUA_TTHREAD);
+  lua_State * thread = lua_tothread(L, 1);
+  JNIEnv * env = getJNIEnv(L);
+  int stateIndex = getStateIndex(thread);
+  return checkOrError(env, L, env->CallStaticIntMethod(juaapi_class, juaapi_freethreadid, (jint) stateIndex));
+}
+
 const luaL_Reg javalib[] = {
   { "method",    javaMethod },
   { "new",       javaNew },
@@ -127,5 +135,6 @@ const luaL_Reg javalib[] = {
   { "proxy",     javaProxy },
   { "array",     javaArray },
   { "catched",   javaCatched },
+  { "detach",    javaDetach },
   {NULL, NULL}
 };

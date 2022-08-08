@@ -45,6 +45,7 @@ public abstract class AbstractLua implements Lua {
     private final static Object[] EMPTY = new Object[0];
     protected static LuaInstances<AbstractLua> instances = new LuaInstances<>();
     protected final AtomicReference<ExternalLoader> loader;
+    protected final ConcurrentLinkedQueue<Integer> recyclableReferences;
 
     static AbstractLua getInstance(int lid) {
         AbstractLua L = instances.get(lid);
@@ -65,6 +66,7 @@ public abstract class AbstractLua implements Lua {
         mainThread = this;
         subThreads = new LinkedList<>();
         loader = new AtomicReference<>();
+        recyclableReferences = new ConcurrentLinkedQueue<>();
     }
 
     protected AbstractLua(LuaNative luaNative, long L, int id, @NotNull AbstractLua mainThread) {
@@ -74,6 +76,7 @@ public abstract class AbstractLua implements Lua {
         this.mainThread = mainThread;
         this.id = id;
         subThreads = null;
+        recyclableReferences = null;
     }
 
     public static int adopt(int mainId, long ptr) {
@@ -475,6 +478,12 @@ public abstract class AbstractLua implements Lua {
     public void pushValue(int index) {
         checkStack(1);
         C.lua_pushvalue(L, index);
+    }
+
+    @Override
+    public void pushThread() {
+        checkStack(1);
+        C.lua_pushthread(L);
     }
 
     @Override
@@ -881,6 +890,11 @@ public abstract class AbstractLua implements Lua {
                 subThreads.clear();
                 instances.remove(id);
                 C.lua_close(L);
+            } else {
+                if (mainThread.subThreads.remove(this)) {
+                    C.luaJ_removestateindex(L);
+                    instances.remove(getId());
+                }
             }
         }
     }
@@ -965,16 +979,13 @@ public abstract class AbstractLua implements Lua {
         return ImmutableLuaValue.STRING(this, s);
     }
 
-    private final ConcurrentLinkedQueue<Integer> recyclableReferences =
-            new ConcurrentLinkedQueue<>();
-
     /**
      * Used by {@link LuaProxy} and {@link RefLuaValue} to finalize things while preventing deadlocks
      *
      * @param ref the reference to be recycled
      */
     void queueUnref(int ref) {
-        recyclableReferences.add(ref);
+        mainThread.recyclableReferences.add(ref);
     }
 
     /**
@@ -982,10 +993,10 @@ public abstract class AbstractLua implements Lua {
      */
     private void recycleReferences() {
         synchronized (getMainState()) {
-            Integer ref = recyclableReferences.poll();
+            Integer ref = mainThread.recyclableReferences.poll();
             while (ref != null) {
                 unref(ref);
-                ref = recyclableReferences.poll();
+                ref = mainThread.recyclableReferences.poll();
             }
         }
     }

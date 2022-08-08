@@ -187,6 +187,22 @@ public abstract class JuaAPI {
     }
 
     /**
+     * Closes a sub-thread
+     * @param id the thread id
+     * @return 1
+     */
+    @SuppressWarnings("unused")
+    public static int freeThreadId(int id) {
+        AbstractLua L = Jua.get(id);
+        if (L.getMainState() != L) {
+            L.close();
+            return 0;
+        } else {
+            throw new LuaException("unable to detach a main state");
+        }
+    }
+
+    /**
      * Obtains the value of a certain field of an object
      *
      * <p>

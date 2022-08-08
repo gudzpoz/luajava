@@ -108,3 +108,10 @@ abstract class GeneratedAbstractBlahBlah implements DefaultedInterface {
 So any `class Impl implements DefaultedInterface` is actually `class Impl extends GeneratedAbstractBlahBlah`.
 Our proxy only implements the `DefaultedInterface`, which has no default methods at all after desugaring, and knows nothing about `GeneratedAbstractBlahBlah`. So it *will* fail.
 
+## Threads
+
+Calling `Lua#createProxy` actually means that the target function will be executed on that thread,
+on whose stack all the parameter conversions happen.
+
+Don't close a thread with proxies still in use.
+
