@@ -48,9 +48,7 @@ public class DefaultProxyTest {
     private final boolean isAndroid;
 
     public DefaultProxyTest(AbstractLua L) {
-        boolean available;
-        available = isDefaultAvailable();
-        defaultAvailable = available;
+        defaultAvailable = isDefaultAvailable();
         isAndroid = LuaScriptSuite.isAndroid();
         this.L = L;
     }
