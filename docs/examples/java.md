@@ -6,8 +6,6 @@ The Java API is mostly a wrapper around [The Application Program Interface of Lu
 
 The [`party.iroiro.luajava.value.LuaValue`](../javadoc/party/iroiro/luajava/value/LuaValue.html) interface is a wrapper around a Lua value.
 
-Internally, for complex values (for example, Lua tables), it uses [references](#creating-references) to refer to the Lua value. So if you have a long running Lua state, you should close the value to allow garbage collecting the referred value.
-
 ```java
 Lua L = new Lua54();
 LuaValue[] returnValues = L.execute("return { a = 1 }, 1024, 'string'");
@@ -15,8 +13,9 @@ assertEquals(3, returnValues.length);
 assertEquals(L.from(1.0),      returnValues[0].get("a"));
 assertEquals(L.from(1024),     returnValues[1]);
 assertEquals(L.from("string"), returnValues[2]);
-returnValues[0].close();
 ```
+
+Internally, for complex values (for example, Lua tables), it uses [references](#creating-references) to refer to the Lua value.
 
 ## `Lua` <Badge>interface</Badge>
 

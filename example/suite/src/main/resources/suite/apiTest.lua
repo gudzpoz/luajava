@@ -85,3 +85,11 @@ assert(#array[1] == 2)
 assert(#array[2] == 2)
 assertThrows('bad argument #4', java.array, i, 2, 3, {}, 4)
 assertThrows('bad argument #3', java.array, i, 2, -3, -4)
+
+--[[
+  java.detach
+  ]]--
+assert(currentThread ~= nil) -- Injected by the runner
+assertThrows('unable to detach a main state', java.detach, currentThread)
+subThread = coroutine.create(function() end)
+java.detach(subThread)

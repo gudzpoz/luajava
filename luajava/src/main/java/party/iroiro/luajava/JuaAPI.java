@@ -81,7 +81,7 @@ public abstract class JuaAPI {
         AbstractLua L = Jua.get(id);
         Lua.LuaError error = L.loadExternal(module);
         if (error != Lua.LuaError.OK) {
-            L.push("error " + error + " loading module '" + module + '\'');
+            L.push("\nerror " + error + " loading module '" + module + '\'');
         }
         return 1;
     }
@@ -110,7 +110,7 @@ public abstract class JuaAPI {
             }
         }
         Object o = L.createProxy(classes.toArray(new Class[0]), Lua.Conversion.SEMI);
-        L.push(o, Lua.Conversion.NONE);
+        L.pushJavaObject(o);
         return 1;
     }
 
@@ -184,6 +184,22 @@ public abstract class JuaAPI {
     @SuppressWarnings("unused")
     public static int threadNewId(int mainId, long ptr) {
         return AbstractLua.adopt(mainId, ptr);
+    }
+
+    /**
+     * Closes a sub-thread
+     * @param id the thread id
+     * @return 1
+     */
+    @SuppressWarnings("unused")
+    public static int freeThreadId(int id) {
+        AbstractLua L = Jua.get(id);
+        if (L.getMainState() != L) {
+            L.close();
+            return 0;
+        } else {
+            throw new LuaException("unable to detach a main state");
+        }
     }
 
     /**

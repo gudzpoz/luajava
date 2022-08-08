@@ -27,7 +27,11 @@ import party.iroiro.luajava.Lua;
 
 import java.util.Objects;
 
-public abstract class ImmutableLuaValue<T> extends AbstractLuaValue {
+/**
+ * Basic {@link LuaValue} implementation wrapping immutable values
+ * @param <T> the value type
+ */
+public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
     protected final T value;
 
     protected ImmutableLuaValue(Lua L, Lua.LuaType type, T value) {

@@ -613,6 +613,26 @@ def addExtra(functions):
             ],
         },
     })
+    functions.append({
+        'name': 'luaJ_removestateindex',
+        'description': 'Removes the thread from the global registry, thus allowing it to get garbage collected',
+        'signature': {
+            'return': 'void',
+            'params': [
+                ['lua_State *', 'L'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_gc',
+        'description': 'Performs a full garbage-collection cycle',
+        'signature': {
+            'return': 'void',
+            'params': [
+                ['lua_State *', 'L'],
+            ],
+        },
+    })
 
 
 def getWhole(luaVersion, package):

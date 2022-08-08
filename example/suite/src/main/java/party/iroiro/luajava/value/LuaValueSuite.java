@@ -161,7 +161,7 @@ public class LuaValueSuite<T extends Lua> {
         assertNotEquals(L.from(1), L.from(2));
         assertNotEquals(K.from(1), new Object());
 
-        AbstractLuaValue mock = new AbstractLuaValue(L, NUMBER) {
+        AbstractLuaValue<Lua> mock = new AbstractLuaValue<Lua>(L, NUMBER) {
             @Override
             public void push() {
 
@@ -197,7 +197,7 @@ public class LuaValueSuite<T extends Lua> {
                 assertEquals(l, j);
                 assertNotEquals(j, k);
                 assertNotEquals(l, L.from(1));
-                AbstractLuaValue mock1 = new AbstractLuaValue(L, TABLE) {
+                AbstractLuaValue<Lua> mock1 = new AbstractLuaValue<Lua>(L, TABLE) {
                     @Override
                     public void push() {
 

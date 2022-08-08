@@ -24,4 +24,19 @@ public class AndroidScriptTest {
     public void luaJitScriptTest() {
         new LuaScriptSuite<>(new LuaJit(), s -> Log.i("test", s)).test();
     }
+
+    @Test
+    public void memoryTest() {
+        //noinspection resource
+        Lua[] Ls = new Lua[]{
+                new Lua51(),
+                new Lua52(),
+                new Lua53(),
+                new Lua54(),
+                new LuaJit(),
+        };
+        for (Lua L : Ls) {
+            LuaScriptSuite.memoryTest(L);
+        }
+    }
 }

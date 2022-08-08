@@ -1,6 +1,7 @@
 package party.iroiro.luajava.suite;
 
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import party.iroiro.luajava.*;
 
 public class ScriptTest {
@@ -29,5 +30,20 @@ public class ScriptTest {
     @RepeatedTest(REPEATED)
     public void luaJitTest() {
         new LuaScriptSuite<>(new LuaJit()).test();
+    }
+
+    @Test
+    public void memoryTest() {
+        //noinspection resource
+        Lua[] Ls = new Lua[]{
+                new Lua51(),
+                new Lua52(),
+                new Lua53(),
+                new Lua54(),
+                new LuaJit(),
+        };
+        for (Lua L : Ls) {
+            LuaScriptSuite.memoryTest(L);
+        }
     }
 }

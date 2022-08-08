@@ -1559,6 +1559,17 @@ public abstract class LuaNative {
     protected abstract void lua_insert(long ptr, int index);
 
     /**
+     * A wrapper function
+     *
+     * <p>
+     * Performs a full garbage-collection cycle
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     */
+    protected abstract void luaJ_gc(long ptr);
+
+    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_getfield"><code>lua_getfield</code></a>
      *
      * <pre><code>
@@ -1890,6 +1901,17 @@ public abstract class LuaNative {
      * @param n the number of elements
      */
     protected abstract void luaJ_rawgeti(long ptr, int index, int n);
+
+    /**
+     * A wrapper function
+     *
+     * <p>
+     * Removes the thread from the global registry, thus allowing it to get garbage collected
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     */
+    protected abstract void luaJ_removestateindex(long ptr);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_setmetatable"><code>lua_setmetatable</code></a>

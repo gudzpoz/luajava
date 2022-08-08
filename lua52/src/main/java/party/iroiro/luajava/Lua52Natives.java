@@ -4470,4 +4470,36 @@ public class Lua52Natives extends LuaNative {
     */
 
 
+    /**
+     * A wrapper function
+     *
+     * <p>
+     * Removes the thread from the global registry, thus allowing it to get garbage collected
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     */
+    protected native void luaJ_removestateindex(long ptr); /*
+        lua_State * L = (lua_State *) ptr;
+        
+        luaJ_removestateindex((lua_State *) L);
+    */
+
+
+    /**
+     * A wrapper function
+     *
+     * <p>
+     * Performs a full garbage-collection cycle
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     */
+    protected native void luaJ_gc(long ptr); /*
+        lua_State * L = (lua_State *) ptr;
+        
+        luaJ_gc((lua_State *) L);
+    */
+
+
 }

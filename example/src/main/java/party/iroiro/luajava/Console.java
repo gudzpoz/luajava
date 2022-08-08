@@ -8,7 +8,9 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.widget.AutopairWidgets;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,6 +50,7 @@ public class Console {
             AutopairWidgets autopairWidgets = new AutopairWidgets(reader, false);
             autopairWidgets.enable();
             L.openLibraries();
+            L.setExternalLoader(new ClassPathLoader());
             L.run("print('Running ' .. _VERSION)");
             while (true) {
                 String s;
@@ -61,11 +64,23 @@ public class Console {
                 } catch (Throwable ignored) {
                     s = "";
                 }
-                if (L.run(s) != Lua.LuaError.OK) {
-                    if (L.getTop() != 0 && L.isString(-1)) {
-                        reader.printAbove(L.toString(-1));
+                synchronized (L.getMainState()) {
+                    if (L.run(s) != Lua.LuaError.OK) {
+                        if (L.getTop() != 0 && L.isString(-1)) {
+                            reader.printAbove(L.toString(-1));
+                        }
+                        L.setTop(0);
+                        Throwable e = L.getJavaError();
+                        if (e != null) {
+                            reader.printAbove("Last Java side exception:");
+                            ByteArrayOutputStream output = new ByteArrayOutputStream();
+                            PrintStream print = new PrintStream(output);
+                            e.printStackTrace(print);
+                            print.flush();
+                            reader.printAbove(output.toString());
+                            L.error((Throwable) null);
+                        }
                     }
-                    L.setTop(0);
                 }
             }
         } catch (Exception e) {

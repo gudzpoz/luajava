@@ -124,6 +124,8 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 assertEquals(RUNTIME, L.run("require('suite.not.a.module')"));
             }),
             new ScriptTester("/suite/apiTest.lua", L -> {
+                L.pushThread();
+                L.setGlobal("currentThread");
             }),
             new ScriptTester("/suite/mapProxy.lua", L -> {
             }),
@@ -224,5 +226,14 @@ public class LuaScriptSuite<T extends AbstractLua> {
 
     public static class StaticClass {
         public static int i = 0;
+    }
+
+    public static void memoryTest(Lua L) {
+        L.openLibrary("package");
+        L.openLibrary("coroutine");
+        L.setExternalLoader(new ClassPathLoader());
+        L.loadExternal("luajava.testMemory");
+        assertEquals(Lua.LuaError.OK, L.pCall(0, Consts.LUA_MULTRET));
+        L.close();
     }
 }
