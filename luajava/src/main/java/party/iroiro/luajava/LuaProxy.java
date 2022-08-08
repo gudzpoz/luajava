@@ -37,7 +37,7 @@ import java.util.Arrays;
  * @author Rizzato
  * @author Thiago Ponte
  */
-public class LuaProxy implements InvocationHandler {
+public final class LuaProxy implements InvocationHandler {
     final int ref;
     final AbstractLua L;
     private final Lua.Conversion degree;
@@ -121,5 +121,10 @@ public class LuaProxy implements InvocationHandler {
         return method.getReturnType() == returnType
                && name.equals(method.getName())
                && Arrays.equals(method.getParameterTypes(), parameters);
+    }
+
+    @Override
+    protected void finalize() {
+        L.queueUnref(ref);
     }
 }

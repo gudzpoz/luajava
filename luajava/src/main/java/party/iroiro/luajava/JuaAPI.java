@@ -81,7 +81,7 @@ public abstract class JuaAPI {
         AbstractLua L = Jua.get(id);
         Lua.LuaError error = L.loadExternal(module);
         if (error != Lua.LuaError.OK) {
-            L.push("error " + error + " loading module '" + module + '\'');
+            L.push("\nerror " + error + " loading module '" + module + '\'');
         }
         return 1;
     }
@@ -110,7 +110,7 @@ public abstract class JuaAPI {
             }
         }
         Object o = L.createProxy(classes.toArray(new Class[0]), Lua.Conversion.SEMI);
-        L.push(o, Lua.Conversion.NONE);
+        L.pushJavaObject(o);
         return 1;
     }
 

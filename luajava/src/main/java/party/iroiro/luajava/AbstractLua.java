@@ -26,15 +26,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import party.iroiro.luajava.util.ClassUtils;
 import party.iroiro.luajava.util.Type;
+import party.iroiro.luajava.value.AbstractLuaValue;
 import party.iroiro.luajava.value.ImmutableLuaValue;
 import party.iroiro.luajava.value.LuaValue;
-import party.iroiro.luajava.value.RefLuaValue;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.Buffer;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -45,8 +46,10 @@ public abstract class AbstractLua implements Lua {
     protected static LuaInstances<AbstractLua> instances = new LuaInstances<>();
     protected final AtomicReference<ExternalLoader> loader;
 
-    public static AbstractLua getInstance(int lid) {
-        return instances.get(lid);
+    static AbstractLua getInstance(int lid) {
+        AbstractLua L = instances.get(lid);
+        L.recycleReferences();
+        return L;
     }
 
     protected final LuaNative C;
@@ -84,6 +87,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void checkStack(int extra) throws RuntimeException {
+        recycleReferences();
         if (C.lua_checkstack(L, extra) == 0) {
             throw new RuntimeException("No more stack space available");
         }
@@ -527,6 +531,7 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public LuaError pCall(int nArgs, int nResults) {
+        checkStack(Math.max(nResults - nArgs - 1, 0));
         return convertError(C.luaJ_pcall(L, nArgs, nResults));
     }
 
@@ -959,4 +964,78 @@ public abstract class AbstractLua implements Lua {
     public LuaValue from(String s) {
         return ImmutableLuaValue.STRING(this, s);
     }
+
+    private final ConcurrentLinkedQueue<Integer> recyclableReferences =
+            new ConcurrentLinkedQueue<>();
+
+    /**
+     * Used by {@link LuaProxy} and {@link RefLuaValue} to finalize things while preventing deadlocks
+     *
+     * @param ref the reference to be recycled
+     */
+    void queueUnref(int ref) {
+        recyclableReferences.add(ref);
+    }
+
+    /**
+     * Do {@link #unref(int)} on all references in {@link #recyclableReferences}
+     */
+    private void recycleReferences() {
+        synchronized (getMainState()) {
+            Integer ref = recyclableReferences.poll();
+            while (ref != null) {
+                unref(ref);
+                ref = recyclableReferences.poll();
+            }
+        }
+    }
+
+    private static class RefLuaValue extends AbstractLuaValue<AbstractLua> {
+        private final int ref;
+
+        public RefLuaValue(AbstractLua L, LuaType type) {
+            super(L, type);
+            this.ref = L.ref();
+        }
+
+        @Override
+        public void push() {
+            L.refGet(ref);
+        }
+
+        @Override
+        public @Nullable Object toJavaObject() {
+            push();
+            Object o = L.toObject(-1);
+            L.pop(1);
+            return o;
+        }
+
+        @Override
+        public void close() {
+            // nothing
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (super.equals(o) && o instanceof RefLuaValue) {
+                RefLuaValue o2 = (RefLuaValue) o;
+                if (ref == o2.ref) {
+                    return true;
+                }
+                push();
+                o2.push(L);
+                boolean equal = L.equal(-1, -2);
+                L.pop(2);
+                return equal;
+            }
+            return false;
+        }
+
+        @Override
+        protected void finalize() {
+            L.queueUnref(ref);
+        }
+    }
+
 }

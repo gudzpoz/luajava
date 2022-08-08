@@ -26,15 +26,24 @@ import org.jetbrains.annotations.Nullable;
 import party.iroiro.luajava.Consts;
 import party.iroiro.luajava.Lua;
 
-abstract class AbstractLuaValue implements LuaValue {
-    protected final Lua L;
+/**
+ * Basic implementation of a {@link LuaValue} on some Lua thread
+ * @param <T> the Lua thread type
+ */
+public abstract class AbstractLuaValue<T extends Lua> implements LuaValue {
+    protected final T L;
     protected final Lua.LuaType type;
 
-    protected AbstractLuaValue(Lua L, Lua.LuaType type) {
+    protected AbstractLuaValue(T L, Lua.LuaType type) {
         this.L = L;
         this.type = type;
     }
 
+    /**
+     * Checks whether the other value is accessible from the current Lua thread
+     * @param value the other value
+     * @throws IllegalArgumentException if inaccessible
+     */
     protected void check(LuaValue value) throws IllegalArgumentException {
         if (value.state() != state()) {
             throw new IllegalArgumentException("Expecting values on the same state");
@@ -54,12 +63,13 @@ abstract class AbstractLuaValue implements LuaValue {
     @Override
     public boolean equals(Object o) {
         if (o instanceof AbstractLuaValue) {
-            AbstractLuaValue value = (AbstractLuaValue) o;
+            AbstractLuaValue<?> value = (AbstractLuaValue<?>) o;
             return state().getMainState() == value.state().getMainState() && type == value.type();
         }
         return false;
     }
 
+    @Override
     public LuaValue get(String key) {
         push();
         L.getField(-1, key);
@@ -68,6 +78,7 @@ abstract class AbstractLuaValue implements LuaValue {
         return value;
     }
 
+    @Override
     public LuaValue get(int i) {
         push();
         L.push(i);
@@ -77,6 +88,7 @@ abstract class AbstractLuaValue implements LuaValue {
         return luaValue;
     }
 
+    @Override
     public LuaValue get(LuaValue i) {
         check(i);
 
