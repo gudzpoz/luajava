@@ -5,6 +5,8 @@ name: Build and Publish
 on:
   workflow_dispatch:
   push:
+    tags:
+      - '*'
     paths-ignore:
       - '.github/**'
       - 'docs/**'
@@ -291,9 +293,11 @@ jobs:
         with:
           name: natives
           path: ./*/libs
-      - name: Publish
+      - name: Release?
         if: |
-          !startsWith(github.ref, 'refs/tags/')
+          startsWith(github.ref, 'refs/tags/')
+        run: echo "IS_RELEASE=true" >> $GITHUB_ENV
+      - name: Publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
@@ -316,4 +320,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
+          draft: true
           files: example/build/libs/example-all.jar
