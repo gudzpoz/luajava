@@ -10,7 +10,6 @@ assertThrows('no matching constructor found', java.new, t, 'no', 'match')
 -- classIndex
 assert(t.staticField == 1024)
 
--- TODO: Fix this two cases
 -- Currently all non-fields are treated as methods without even trying to check if the method exists
 -- For performance reason though, such a lookup would be slow.
 assert(t.nonexistentField ~= nil)
@@ -58,14 +57,7 @@ assert(arr[4] == 4)
 assertThrows('java.lang.ArrayIndexOutOfBoundsException', function() print(arr[6]) end)
 
 -- not arrayIndex: t.array converts from java arrays to lua tables by default
--- TODO: Maybe conversions should be explicit. Probably should introduce java.toTable
+assert(type(t) == 'userdata')
 assert(t.array[1] == 1)
 assert(t.array[4] == 4)
 assertThrows('java.lang.ArrayIndexOutOfBoundsException', function() print(t.array[6]) end)
-
--- arrayNewIndex
--- TODO: Implement the array system, which is not done yet
-
--- method with signature
--- TODO: Implement method calling with signature specified, to enhance performance
-

@@ -105,7 +105,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         try (T t = constructor.get()) {
             LuaScriptSuite.addAssertThrows(t);
             assertEquals(RUNTIME, t.loadExternal("some.module"));
-            assertThrows(IllegalStateException.class,
+            assertDoesNotThrow(
                     () -> t.setExternalLoader((module, L) -> ByteBuffer.allocate(0)));
             t.openLibrary("package");
             assertDoesNotThrow(

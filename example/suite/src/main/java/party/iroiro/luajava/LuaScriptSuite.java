@@ -118,8 +118,9 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 L.setGlobal("Static");
             }),
             new ScriptTester("/suite/moduleTest.lua", L -> {
-                // TODO: re-opening `package` will reset our external loader
-                // L.openLibrary("package");
+                // Re-opening `package` no more resets our external loader
+                L.openLibrary("package");
+                L.openLibraries();
                 L.setExternalLoader(new ClassPathLoader());
                 assertEquals(RUNTIME, L.run("require('suite.not.a.module')"));
             }),

@@ -1028,13 +1028,12 @@ public interface Lua extends AutoCloseable {
      * <code>package.loaders</code> for Lua 5.1) to load Lua files with this {@link ExternalLoader}.
      * </p>
      * <p>
-     * You need to load the <code>package</code> library before calling this method, or else it will fail.
+     * You need to load the <code>package</code> library to make the external loader effective.
      * </p>
      *
      * @param loader the loader that will be used to find files
-     * @throws IllegalStateException if the package module is not yet loaded
      */
-    void setExternalLoader(ExternalLoader loader) throws IllegalStateException;
+    void setExternalLoader(ExternalLoader loader);
 
     /**
      * Loads a chunk from a {@link ExternalLoader} set by {@link #setExternalLoader(ExternalLoader)}

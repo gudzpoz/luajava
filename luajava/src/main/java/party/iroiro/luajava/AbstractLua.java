@@ -39,7 +39,6 @@ import java.lang.reflect.Proxy;
 import java.nio.Buffer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An implementation that relys on {@link LuaNative} for most of the features independent of Lua versions
@@ -47,7 +46,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class AbstractLua implements Lua {
     private final static Object[] EMPTY = new Object[0];
     protected static LuaInstances<AbstractLua> instances = new LuaInstances<>();
-    protected final AtomicReference<ExternalLoader> loader;
+    protected volatile ExternalLoader loader;
     protected final ReferenceQueue<LuaReferable> recyclableReferences;
     protected final ConcurrentHashMap<Integer, LuaReference<?>> recordedReferences;
 
@@ -74,7 +73,7 @@ public abstract class AbstractLua implements Lua {
         L = luaNative.luaL_newstate(id);
         mainThread = this;
         subThreads = new LinkedList<>();
-        loader = new AtomicReference<>();
+        loader = null;
         recyclableReferences = new ReferenceQueue<>();
         recordedReferences = new ConcurrentHashMap<>();
     }
@@ -88,7 +87,7 @@ public abstract class AbstractLua implements Lua {
      * @param mainThread the main state of this sub state
      */
     protected AbstractLua(LuaNative luaNative, long L, int id, @NotNull AbstractLua mainThread) {
-        loader = new AtomicReference<>();
+        loader = null;
         this.C = luaNative;
         this.L = L;
         this.mainThread = mainThread;
@@ -710,12 +709,16 @@ public abstract class AbstractLua implements Lua {
     public void openLibraries() {
         checkStack(1);
         C.luaL_openlibs(L);
+        C.luaJ_initloader(L);
     }
 
     @Override
     public void openLibrary(String name) {
         checkStack(1);
         C.luaJ_openlib(L, name);
+        if ("package".equals(name)) {
+            C.luaJ_initloader(L);
+        }
     }
 
     @Override
@@ -782,18 +785,13 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void setExternalLoader(ExternalLoader loader) throws IllegalStateException {
-        if (mainThread.loader.getAndSet(loader) == null) {
-            if (C.luaJ_initloader(L) != 0) {
-                mainThread.loader.set(null);
-                throw new IllegalStateException("Probably the package library is not loaded yet");
-            }
-        }
+    public void setExternalLoader(ExternalLoader loader) {
+        mainThread.loader = loader;
     }
 
     @Override
     public LuaError loadExternal(String module) {
-        ExternalLoader loader = mainThread.loader.get();
+        ExternalLoader loader = mainThread.loader;
         if (loader != null) {
             Buffer buffer = loader.load(module, this);
             if (buffer != null) {
