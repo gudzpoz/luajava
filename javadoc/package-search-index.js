@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"party.iroiro.luajava"},{"l":"party.iroiro.luajava.interfaces"},{"l":"party.iroiro.luajava.suite"},{"l":"party.iroiro.luajava.value"}]
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"party.iroiro.luajava"},{"l":"party.iroiro.luajava.cleaner"},{"l":"party.iroiro.luajava.interfaces"},{"l":"party.iroiro.luajava.suite"},{"l":"party.iroiro.luajava.value"}]

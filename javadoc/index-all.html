@@ -113,9 +113,13 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <div class="block">An implementation that relys on <a href="party/iroiro/luajava/LuaNative.html" title="class in party.iroiro.luajava"><code>LuaNative</code></a> for most of the features independent of Lua versions</div>
 </dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#%3Cinit%3E(party.iroiro.luajava.LuaNative)">AbstractLua(LuaNative)</a></span> - Constructor for class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new Lua (main) state</div>
+</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#%3Cinit%3E(party.iroiro.luajava.LuaNative,long,int,party.iroiro.luajava.AbstractLua)">AbstractLua(LuaNative, long, int, AbstractLua)</a></span> - Constructor for class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Adopts a Lua sub state, wrapping it up with the Lua interface</div>
+</dd>
 <dt><a href="party/iroiro/luajava/value/AbstractLuaValue.html" title="class in party.iroiro.luajava.value"><span class="typeNameLink">AbstractLuaValue</span></a>&lt;<a href="party/iroiro/luajava/value/AbstractLuaValue.html" title="type parameter in AbstractLuaValue">T</a> extends <a href="party/iroiro/luajava/Lua.html" title="interface in party.iroiro.luajava">Lua</a>&gt; - Class in <a href="party/iroiro/luajava/value/package-summary.html">party.iroiro.luajava.value</a></dt>
 <dd>
 <div class="block">Basic implementation of a <a href="party/iroiro/luajava/value/LuaValue.html" title="interface in party.iroiro.luajava.value"><code>LuaValue</code></a> on some Lua thread</div>
@@ -127,8 +131,6 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/LuaScriptSuite.html#addAssertThrows(party.iroiro.luajava.Lua)">addAssertThrows(Lua)</a></span> - Static method in class party.iroiro.luajava.<a href="party/iroiro/luajava/LuaScriptSuite.html" title="class in party.iroiro.luajava">LuaScriptSuite</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#addSubThread(party.iroiro.luajava.Lua)">addSubThread(Lua)</a></span> - Method in class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#adopt(int,long)">adopt(int, long)</a></span> - Static method in class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/LuaScriptSuite.OtherTypes.html#annotation">annotation</a></span> - Variable in class party.iroiro.luajava.<a href="party/iroiro/luajava/LuaScriptSuite.OtherTypes.html" title="class in party.iroiro.luajava">LuaScriptSuite.OtherTypes</a></dt>
 <dd>&nbsp;</dd>
@@ -264,6 +266,8 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <div class="deprecationComment">the value now clears Lua-side references on finalization</div>
 </div>
 </dd>
+<dt><span class="memberNameLink"><a href="party/iroiro/luajava/value/RefLuaValue.html#close()">close()</a></span> - Method in class party.iroiro.luajava.value.<a href="party/iroiro/luajava/value/RefLuaValue.html" title="class in party.iroiro.luajava.value">RefLuaValue</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/LuaScriptSuite.OtherTypes.html#collection">collection</a></span> - Variable in class party.iroiro.luajava.<a href="party/iroiro/luajava/LuaScriptSuite.OtherTypes.html" title="class in party.iroiro.luajava">LuaScriptSuite.OtherTypes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#concat(int)">concat(int)</a></span> - Method in class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
@@ -364,6 +368,8 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/value/ImmutableLuaValue.html#equals(java.lang.Object)">equals(Object)</a></span> - Method in class party.iroiro.luajava.value.<a href="party/iroiro/luajava/value/ImmutableLuaValue.html" title="class in party.iroiro.luajava.value">ImmutableLuaValue</a></dt>
 <dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="party/iroiro/luajava/value/RefLuaValue.html#equals(java.lang.Object)">equals(Object)</a></span> - Method in class party.iroiro.luajava.value.<a href="party/iroiro/luajava/value/RefLuaValue.html" title="class in party.iroiro.luajava.value">RefLuaValue</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#error(java.lang.Throwable)">error(Throwable)</a></span> - Method in class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/Lua.html#error(java.lang.Throwable)">error(Throwable)</a></span> - Method in interface party.iroiro.luajava.<a href="party/iroiro/luajava/Lua.html" title="interface in party.iroiro.luajava">Lua</a></dt>
@@ -408,8 +414,6 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">a file-related error</div>
 </dd>
-<dt><span class="memberNameLink"><a href="party/iroiro/luajava/LuaProxy.html#finalize()">finalize()</a></span> - Method in class party.iroiro.luajava.<a href="party/iroiro/luajava/LuaProxy.html" title="class in party.iroiro.luajava">LuaProxy</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/JuaAPI.html#freeThreadId(int)">freeThreadId(int)</a></span> - Static method in class party.iroiro.luajava.<a href="party/iroiro/luajava/JuaAPI.html" title="class in party.iroiro.luajava">JuaAPI</a></dt>
 <dd>
 <div class="block">Closes a sub-thread</div>
@@ -539,6 +543,14 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#getPointer()">getPointer()</a></span> - Method in class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/Lua.html#getPointer()">getPointer()</a></span> - Method in interface party.iroiro.luajava.<a href="party/iroiro/luajava/Lua.html" title="interface in party.iroiro.luajava">Lua</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="party/iroiro/luajava/cleaner/LuaReferable.html#getReference()">getReference()</a></span> - Method in interface party.iroiro.luajava.cleaner.<a href="party/iroiro/luajava/cleaner/LuaReferable.html" title="interface in party.iroiro.luajava.cleaner">LuaReferable</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="party/iroiro/luajava/cleaner/LuaReference.html#getReference()">getReference()</a></span> - Method in class party.iroiro.luajava.cleaner.<a href="party/iroiro/luajava/cleaner/LuaReference.html" title="class in party.iroiro.luajava.cleaner">LuaReference</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="party/iroiro/luajava/LuaProxy.html#getReference()">getReference()</a></span> - Method in class party.iroiro.luajava.<a href="party/iroiro/luajava/LuaProxy.html" title="class in party.iroiro.luajava">LuaProxy</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="party/iroiro/luajava/value/RefLuaValue.html#getReference()">getReference()</a></span> - Method in class party.iroiro.luajava.value.<a href="party/iroiro/luajava/value/RefLuaValue.html" title="class in party.iroiro.luajava.value">RefLuaValue</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#getRegisteredMetatable(java.lang.String)">getRegisteredMetatable(String)</a></span> - Method in class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
 <dd>&nbsp;</dd>
@@ -5047,6 +5059,16 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Class that implements the InvocationHandler interface.</div>
 </dd>
+<dt><a href="party/iroiro/luajava/cleaner/LuaReferable.html" title="interface in party.iroiro.luajava.cleaner"><span class="typeNameLink">LuaReferable</span></a> - Interface in <a href="party/iroiro/luajava/cleaner/package-summary.html">party.iroiro.luajava.cleaner</a></dt>
+<dd>
+<div class="block">An object keeping a reference (via <a href="party/iroiro/luajava/Lua.html#ref()"><code>Lua.ref()</code></a>) to a Lua value</div>
+</dd>
+<dt><a href="party/iroiro/luajava/cleaner/LuaReference.html" title="class in party.iroiro.luajava.cleaner"><span class="typeNameLink">LuaReference</span></a>&lt;<a href="party/iroiro/luajava/cleaner/LuaReference.html" title="type parameter in LuaReference">T</a> extends <a href="party/iroiro/luajava/cleaner/LuaReferable.html" title="interface in party.iroiro.luajava.cleaner">LuaReferable</a>&gt; - Class in <a href="party/iroiro/luajava/cleaner/package-summary.html">party.iroiro.luajava.cleaner</a></dt>
+<dd>
+<div class="block">A <code>PhantomReference</code> to a <a href="party/iroiro/luajava/cleaner/LuaReferable.html" title="interface in party.iroiro.luajava.cleaner"><code>LuaReferable</code></a></div>
+</dd>
+<dt><span class="memberNameLink"><a href="party/iroiro/luajava/cleaner/LuaReference.html#%3Cinit%3E(T,java.lang.ref.ReferenceQueue)">LuaReference(T, ReferenceQueue&lt;? super T&gt;)</a></span> - Constructor for class party.iroiro.luajava.cleaner.<a href="party/iroiro/luajava/cleaner/LuaReference.html" title="class in party.iroiro.luajava.cleaner">LuaReference</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="party/iroiro/luajava/LuaScriptSuite.html" title="class in party.iroiro.luajava"><span class="typeNameLink">LuaScriptSuite</span></a>&lt;<a href="party/iroiro/luajava/LuaScriptSuite.html" title="type parameter in LuaScriptSuite">T</a> extends <a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a>&gt; - Class in <a href="party/iroiro/luajava/package-summary.html">party.iroiro.luajava</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/LuaScriptSuite.html#%3Cinit%3E(T)">LuaScriptSuite(T)</a></span> - Constructor for class party.iroiro.luajava.<a href="party/iroiro/luajava/LuaScriptSuite.html" title="class in party.iroiro.luajava">LuaScriptSuite</a></dt>
@@ -5231,6 +5253,8 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dl>
 <dt><a href="party/iroiro/luajava/package-summary.html">party.iroiro.luajava</a> - package party.iroiro.luajava</dt>
 <dd>&nbsp;</dd>
+<dt><a href="party/iroiro/luajava/cleaner/package-summary.html">party.iroiro.luajava.cleaner</a> - package party.iroiro.luajava.cleaner</dt>
+<dd>&nbsp;</dd>
 <dt><a href="party/iroiro/luajava/interfaces/package-summary.html">party.iroiro.luajava.interfaces</a> - package party.iroiro.luajava.interfaces</dt>
 <dd>&nbsp;</dd>
 <dt><a href="party/iroiro/luajava/suite/package-summary.html">party.iroiro.luajava.suite</a> - package party.iroiro.luajava.suite</dt>
@@ -5259,6 +5283,8 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Pushes the Lua value onto the Lua stack</div>
 </dd>
+<dt><span class="memberNameLink"><a href="party/iroiro/luajava/value/RefLuaValue.html#push()">push()</a></span> - Method in class party.iroiro.luajava.value.<a href="party/iroiro/luajava/value/RefLuaValue.html" title="class in party.iroiro.luajava.value">RefLuaValue</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#push(boolean)">push(boolean)</a></span> - Method in class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/Lua.html#push(boolean)">push(boolean)</a></span> - Method in interface party.iroiro.luajava.<a href="party/iroiro/luajava/Lua.html" title="interface in party.iroiro.luajava">Lua</a></dt>
@@ -5399,6 +5425,8 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Does the equivalent of t[n] = v</div>
 </dd>
+<dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#recordedReferences">recordedReferences</a></span> - Variable in class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#recyclableReferences">recyclableReferences</a></span> - Variable in class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#ref()">ref()</a></span> - Method in class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
@@ -5419,6 +5447,10 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd>
 <div class="block">Calls <a href="party/iroiro/luajava/Lua.html#rawGetI(int,int)"><code>Lua.rawGetI(int, int)</code></a> with the pseudo-index <code>LUA_REGISTRYINDEX</code> and the given <code>ref</code></div>
 </dd>
+<dt><a href="party/iroiro/luajava/value/RefLuaValue.html" title="class in party.iroiro.luajava.value"><span class="typeNameLink">RefLuaValue</span></a> - Class in <a href="party/iroiro/luajava/value/package-summary.html">party.iroiro.luajava.value</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="party/iroiro/luajava/value/RefLuaValue.html#%3Cinit%3E(party.iroiro.luajava.Lua,party.iroiro.luajava.Lua.LuaType)">RefLuaValue(Lua, Lua.LuaType)</a></span> - Constructor for class party.iroiro.luajava.value.<a href="party/iroiro/luajava/value/RefLuaValue.html" title="class in party.iroiro.luajava.value">RefLuaValue</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#register(java.lang.String,party.iroiro.luajava.JFunction)">register(String, JFunction)</a></span> - Method in class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/Lua.html#register(java.lang.String,party.iroiro.luajava.JFunction)">register(String, JFunction)</a></span> - Method in interface party.iroiro.luajava.<a href="party/iroiro/luajava/Lua.html" title="interface in party.iroiro.luajava">Lua</a></dt>
@@ -5609,6 +5641,8 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/value/ImmutableLuaValue.html#toJavaObject()">toJavaObject()</a></span> - Method in class party.iroiro.luajava.value.<a href="party/iroiro/luajava/value/ImmutableLuaValue.html" title="class in party.iroiro.luajava.value">ImmutableLuaValue</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/value/LuaValue.html#toJavaObject()">toJavaObject()</a></span> - Method in interface party.iroiro.luajava.value.<a href="party/iroiro/luajava/value/LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a></dt>
+<dd>&nbsp;</dd>
+<dt><span class="memberNameLink"><a href="party/iroiro/luajava/value/RefLuaValue.html#toJavaObject()">toJavaObject()</a></span> - Method in class party.iroiro.luajava.value.<a href="party/iroiro/luajava/value/RefLuaValue.html" title="class in party.iroiro.luajava.value">RefLuaValue</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="party/iroiro/luajava/AbstractLua.html#toJavaObject(int)">toJavaObject(int)</a></span> - Method in class party.iroiro.luajava.<a href="party/iroiro/luajava/AbstractLua.html" title="class in party.iroiro.luajava">AbstractLua</a></dt>
 <dd>&nbsp;</dd>
