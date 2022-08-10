@@ -24,18 +24,21 @@ package party.iroiro.luajava;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import party.iroiro.luajava.cleaner.LuaReferable;
+import party.iroiro.luajava.cleaner.LuaReference;
 import party.iroiro.luajava.util.ClassUtils;
 import party.iroiro.luajava.util.Type;
-import party.iroiro.luajava.value.AbstractLuaValue;
 import party.iroiro.luajava.value.ImmutableLuaValue;
 import party.iroiro.luajava.value.LuaValue;
+import party.iroiro.luajava.value.RefLuaValue;
 
+import java.lang.ref.ReferenceQueue;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.Buffer;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -45,7 +48,8 @@ public abstract class AbstractLua implements Lua {
     private final static Object[] EMPTY = new Object[0];
     protected static LuaInstances<AbstractLua> instances = new LuaInstances<>();
     protected final AtomicReference<ExternalLoader> loader;
-    protected final ConcurrentLinkedQueue<Integer> recyclableReferences;
+    protected final ReferenceQueue<LuaReferable> recyclableReferences;
+    protected final ConcurrentHashMap<Integer, LuaReference<?>> recordedReferences;
 
     static AbstractLua getInstance(int lid) {
         AbstractLua L = instances.get(lid);
@@ -59,6 +63,11 @@ public abstract class AbstractLua implements Lua {
     protected final AbstractLua mainThread;
     protected final List<Lua> subThreads;
 
+    /**
+     * Creates a new Lua (main) state
+     *
+     * @param luaNative the Lua native wrapper
+     */
     protected AbstractLua(LuaNative luaNative) {
         this.C = luaNative;
         id = instances.add(this);
@@ -66,9 +75,18 @@ public abstract class AbstractLua implements Lua {
         mainThread = this;
         subThreads = new LinkedList<>();
         loader = new AtomicReference<>();
-        recyclableReferences = new ConcurrentLinkedQueue<>();
+        recyclableReferences = new ReferenceQueue<>();
+        recordedReferences = new ConcurrentHashMap<>();
     }
 
+    /**
+     * Adopts a Lua sub state, wrapping it up with the Lua interface
+     *
+     * @param luaNative  the Lua native wrapper
+     * @param L          the new Lua state pointer
+     * @param id         the Lua state id (see {@link LuaInstances})
+     * @param mainThread the main state of this sub state
+     */
     protected AbstractLua(LuaNative luaNative, long L, int id, @NotNull AbstractLua mainThread) {
         loader = new AtomicReference<>();
         this.C = luaNative;
@@ -77,9 +95,17 @@ public abstract class AbstractLua implements Lua {
         this.id = id;
         subThreads = null;
         recyclableReferences = null;
+        recordedReferences = null;
     }
 
-    public static int adopt(int mainId, long ptr) {
+    /**
+     * Adopts a created sub state
+     *
+     * @param mainId the main Lua state
+     * @param ptr    the pointer to the newly created Lua state
+     * @return the Lua state id for the new state
+     */
+    static int adopt(int mainId, long ptr) {
         AbstractLua lua = getInstance(mainId);
         LuaInstances.Token<AbstractLua> token = instances.add();
         AbstractLua child = lua.newThread(ptr, token.id, lua);
@@ -110,7 +136,7 @@ public abstract class AbstractLua implements Lua {
             } else {
                 pushJavaObject(value);
             }
-        } else if (degree == Lua.Conversion.NONE) {
+        } else if (degree == Conversion.NONE) {
             pushJavaObjectOrArray(object);
         } else {
             if (object instanceof Boolean) {
@@ -127,7 +153,7 @@ public abstract class AbstractLua implements Lua {
                 push((Number) object);
             } else if (object instanceof JFunction) {
                 push(((JFunction) object));
-            } else if (degree == Lua.Conversion.SEMI) {
+            } else if (degree == Conversion.SEMI) {
                 pushJavaObjectOrArray(object);
             } else /* (degree == Conversion.FULL) */ {
                 if (object instanceof Class) {
@@ -730,10 +756,13 @@ public abstract class AbstractLua implements Lua {
                     // Fall through
                 case TABLE:
                     try {
+                        LuaProxy proxy = new LuaProxy(ref(), this, degree, interfaces);
+                        mainThread.recordedReferences.put(proxy.getReference(),
+                                new LuaReference<>(proxy, mainThread.recyclableReferences));
                         return Proxy.newProxyInstance(
                                 ClassUtils.getDefaultClassLoader(),
                                 interfaces,
-                                new LuaProxy(ref(), this, degree, interfaces)
+                                proxy
                         );
                     } catch (Throwable e) {
                         throw new IllegalArgumentException(e);
@@ -963,7 +992,10 @@ public abstract class AbstractLua implements Lua {
                 pop(1);
                 return from(s);
             default:
-                return new RefLuaValue(this, type);
+                RefLuaValue ref = new RefLuaValue(this, type);
+                mainThread.recordedReferences.put(ref.getReference(),
+                        new LuaReference<>(ref, mainThread.recyclableReferences));
+                return ref;
         }
     }
 
@@ -988,72 +1020,16 @@ public abstract class AbstractLua implements Lua {
     }
 
     /**
-     * Used by {@link LuaProxy} and {@link RefLuaValue} to finalize things while preventing deadlocks
-     *
-     * @param ref the reference to be recycled
-     */
-    void queueUnref(int ref) {
-        mainThread.recyclableReferences.add(ref);
-    }
-
-    /**
      * Do {@link #unref(int)} on all references in {@link #recyclableReferences}
      */
     private void recycleReferences() {
         synchronized (getMainState()) {
-            Integer ref = mainThread.recyclableReferences.poll();
+            LuaReference<?> ref = (LuaReference<?>) mainThread.recyclableReferences.poll();
             while (ref != null) {
-                unref(ref);
-                ref = mainThread.recyclableReferences.poll();
+                mainThread.recordedReferences.remove(ref.getReference());
+                unref(ref.getReference());
+                ref = (LuaReference<?>) mainThread.recyclableReferences.poll();
             }
-        }
-    }
-
-    private static class RefLuaValue extends AbstractLuaValue<AbstractLua> {
-        private final int ref;
-
-        public RefLuaValue(AbstractLua L, LuaType type) {
-            super(L, type);
-            this.ref = L.ref();
-        }
-
-        @Override
-        public void push() {
-            L.refGet(ref);
-        }
-
-        @Override
-        public @Nullable Object toJavaObject() {
-            push();
-            Object o = L.toObject(-1);
-            L.pop(1);
-            return o;
-        }
-
-        @Override
-        public void close() {
-            // nothing
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (super.equals(o) && o instanceof RefLuaValue) {
-                RefLuaValue o2 = (RefLuaValue) o;
-                if (ref == o2.ref) {
-                    return true;
-                }
-                push();
-                o2.push(L);
-                boolean equal = L.equal(-1, -2);
-                L.pop(2);
-                return equal;
-            }
-            return false;
-        }
-
-        @Override
-        protected void finalize() {
-            L.queueUnref(ref);
         }
     }
 

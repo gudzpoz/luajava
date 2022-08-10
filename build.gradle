@@ -1,5 +1,5 @@
 group 'party.iroiro.luajava'
-version (System.getenv('IS_RELEASE') == 'true' ? '3.1.1' : '3.1.1-SNAPSHOT')
+version (System.getenv('IS_RELEASE') == 'true' ? '3.1.2' : '3.1.2-SNAPSHOT')
 
 buildscript {
     repositories {
@@ -33,10 +33,7 @@ subprojects { it ->
 
 ext {
     jdk = JavaVersion.current().majorVersion
-    jdkJavadoc = "https://docs.oracle.com/javase/$jdk/docs/api/"
-    if (JavaVersion.current().isJava11Compatible()) {
-        jdkJavadoc = "https://docs.oracle.com/en/java/javase/$jdk/docs/api/"
-    }
+    jdkJavadoc = "https://docs.oracle.com/javase/8/docs/api/"
     println "JDK Javadoc link for this build is ${rootProject.jdkJavadoc}"
 }
 

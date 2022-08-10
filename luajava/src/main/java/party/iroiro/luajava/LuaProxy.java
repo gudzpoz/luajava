@@ -22,6 +22,7 @@
 
 package party.iroiro.luajava;
 
+import party.iroiro.luajava.cleaner.LuaReferable;
 import party.iroiro.luajava.util.ClassUtils;
 
 import java.lang.reflect.InvocationHandler;
@@ -37,7 +38,7 @@ import java.util.Arrays;
  * @author Rizzato
  * @author Thiago Ponte
  */
-public final class LuaProxy implements InvocationHandler {
+public final class LuaProxy implements InvocationHandler, LuaReferable {
     final int ref;
     final AbstractLua L;
     private final Lua.Conversion degree;
@@ -124,7 +125,7 @@ public final class LuaProxy implements InvocationHandler {
     }
 
     @Override
-    protected void finalize() {
-        L.queueUnref(ref);
+    public int getReference() {
+        return ref;
     }
 }
