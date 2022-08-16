@@ -4,8 +4,10 @@
 /* Borrowing arch info from LuaJIT */
 #include "lj/lj_arch.h"
 
+/* Disabling exception usage */
 #define LUA_USE_LONGJMP
 
+/* Disabling "system" calls for iOS builds */
 #if LJ_NO_SYSTEM
 
 extern "C" {
@@ -16,6 +18,21 @@ extern "C" {
 
 }
 
+#endif
+
+/* Using versioned Glibc symbols on Linux */
+#if LJ_TARGET_LINUX
+/*
+ * The following symbols are extracted with the shell command:
+ * nm --dynamic --with-symbol-versions lua5*\/libs/linux*\/*.so \
+ * | grep GLIBC | grep --invert-match <common versions>
+ *
+ * This does not work for LuaJIT, which uses an independent build routine.
+ */
+__asm__(".symver exp,exp@GLIBC_2.2.5");
+__asm__(".symver log,log@GLIBC_2.2.5");
+__asm__(".symver log2,log2@GLIBC_2.2.5");
+__asm__(".symver pow,pow@GLIBC_2.2.5");
 #endif
 
 #endif /* !MOBILE_NOSYS_H */

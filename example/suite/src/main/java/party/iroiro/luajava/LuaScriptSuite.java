@@ -41,7 +41,7 @@ public class LuaScriptSuite<T extends AbstractLua> {
         L.push(DefaultProxyTest.isDefaultAvailable());
         L.setGlobal("JAVA8");
 
-        /* Android: desugar: default methods are separated into another class, failing the tests */
+        // Android: desugar: default methods are separated into another class, failing the tests
         L.push(isAndroid());
         L.setGlobal("ANDROID");
     }
@@ -129,6 +129,15 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 L.setGlobal("currentThread");
             }),
             new ScriptTester("/suite/mapProxy.lua", L -> {
+            }),
+            new ScriptTester("/suite/glibcTest.lua", L -> {
+                L.openLibrary("math");
+                L.run("return math.pow");
+                if (L.isNil(-1)) {
+                    // Lua 5.3, Lua 5.4 compatibility
+                    L.run("math.pow = function(x, y) return x ^ y end");
+                }
+                L.pop(1);
             }),
     };
 
