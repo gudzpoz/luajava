@@ -21,7 +21,7 @@ extern "C" {
 #endif
 
 /* Using versioned Glibc symbols on Linux */
-#if LJ_TARGET_LINUX
+#if LJ_TARGET_LINUX && !defined(LUAJIT_NO_LOG2) && !defined(LJ_NO_SYSTEM)
 /*
  * The following symbols are extracted with the shell command:
  * nm --dynamic --with-symbol-versions lua5*\/libs/linux*\/*.so \
