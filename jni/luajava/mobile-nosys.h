@@ -29,12 +29,23 @@ extern "C" {
  *
  * This does not work for LuaJIT, which uses an independent build routine.
  */
-#if LJ_64
+
+#if LJ_TARGET_ARM64
+__asm__(".symver exp,exp@GLIBC_2.17");
+__asm__(".symver log,log@GLIBC_2.17");
+__asm__(".symver log2,log2@GLIBC_2.17");
+__asm__(".symver pow,pow@GLIBC_2.17");
+#elif LJ_TARGET_ARM
+__asm__(".symver exp,exp@GLIBC_2.4");
+__asm__(".symver log,log@GLIBC_2.4");
+__asm__(".symver log2,log2@GLIBC_2.4");
+__asm__(".symver pow,pow@GLIBC_2.4");
+#elif LJ_64
 __asm__(".symver exp,exp@GLIBC_2.2.5");
 __asm__(".symver log,log@GLIBC_2.2.5");
 __asm__(".symver log2,log2@GLIBC_2.2.5");
 __asm__(".symver pow,pow@GLIBC_2.2.5");
-#else
+#elif LJ_32
 __asm__(".symver exp,exp@GLIBC_2.0");
 __asm__(".symver log,log@GLIBC_2.0");
 __asm__(".symver log2,log2@GLIBC_2.1");
