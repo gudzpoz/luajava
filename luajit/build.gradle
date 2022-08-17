@@ -218,18 +218,24 @@ void addPatchElfTask(String platform) {
             })[0].toPath().toAbsolutePath().toString()
             List<String> command = new ArrayList<>()
             command.add('patchelf')
-            ['dlclose',
-             'dlerror',
-             'dlopen',
-             'dlsym',
-             'exp',
-             'log',
-             'log2',
-             'pow'].forEach {
+            for (String symbol : ['dlclose',
+                                  'dlerror',
+                                  'dlopen',
+                                  'dlsym',
+                                  'exp',
+                                  'log',
+                                  'log2',
+                                  'pow']) {
                 command.add('--clear-symbol-version')
-                command.add(it)
+                command.add(symbol)
             }
             command.add(file)
+            logger.lifecycle('$ patchelf --version')
+            exec {
+                workingDir folder
+                commandLine ['patchelf', '--version']
+            }
+            logger.lifecycle('$ ' + command.join(' '))
             exec {
                 workingDir folder
                 commandLine command
