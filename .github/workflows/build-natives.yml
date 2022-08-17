@@ -85,18 +85,17 @@ jobs:
           sudo apt install -y --force-yes gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross
           sudo apt install -y --force-yes gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libc6-dev-armhf-cross
           sudo apt install -y --force-yes mingw-w64 lib32z1
-      - name: Download PatchELF (0.15.0)
-        uses: dsaltares/fetch-gh-release-asset@master
-        with:
-          repo: 'NixOS/patchelf'
-          version: 'tags/0.15.0'
-          file: 'patchelf-0.15.0-x86_64.tar.gz'
-          target: 'patchelf.tar.gz'
-      - name: Install PatchELF
+      - name: Install PatchELF (verneed-fix)
         run: |
-          tar -zxf patchelf.tar.gz
-          rm patchelf.tar.gz
-          echo "`pwd`/bin" >> $GITHUB_PATH
+          git clone https://github.com/NixOS/patchelf.git
+          cd patchelf
+          git checkout e1aa6d671c6e81172f7924b812ff8c8669e1a9e7
+          ./bootstrap.sh
+          ./configure
+          make
+          make check
+          `pwd`/src/patchelf --version
+          echo "`pwd`/src" >> $GITHUB_PATH
       - name: Cache Gradle packages
         uses: actions/cache@v2
         with:
@@ -161,10 +160,6 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Download apple-natives artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: apple-natives
       - name: Download most-natives artifact
         uses: actions/download-artifact@v2
         with:
@@ -186,12 +181,12 @@ jobs:
           ./gradlew :example:shadowJar
       - name: Test on Ubuntu 14.04
         run: |
-          docker build -t ljtest-glibc example/docker/glibc/Dockerfile
-          docker run -it --rm ljtest-glibc
+          sudo docker build -t ljtest-glibc -f example/docker/glibc/Dockerfile example/build/libs
+          sudo docker run -it --rm ljtest-glibc
       - name: Test on Alpine
         run: |
-          docker build -t ljtest-musl example/docker/musl/Dockerfile
-          docker run -it --rm ljtest-musl
+          sudo docker build -t ljtest-musl -f example/docker/musl/Dockerfile example/build/libs
+          sudo docker run -it --rm ljtest-musl
   windows-testing:
     runs-on: windows-latest
     needs:
