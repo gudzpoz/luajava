@@ -7,21 +7,24 @@ import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.widget.AutopairWidgets;
+import party.iroiro.luajava.value.LuaValueSuite;
+import picocli.CommandLine;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.List;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
+
+import static party.iroiro.luajava.LuaVersion.forEachTest;
 
 public class Console {
-    public final static String[] VERSIONS = {
-            "5.1", "5.2", "5.3", "5.4", "jit",
-    };
-
     public static void main(String[] args) {
         try (Terminal terminal = TerminalBuilder.builder()
                 .jansi(true)
@@ -32,12 +35,19 @@ public class Console {
                     .appName("lua")
                     .terminal(terminal)
                     .build();
-            String version = requestLuaVersion(reader);
-            startInteractive(version, terminal);
+            if (args.length == 0) {
+                String version = requestLuaVersion(reader);
+                startInteractive(version, terminal);
+            } else {
+                execute(reader, args);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    private static void execute(LineReader reader, String[] args) {
+        new CommandLine(new ConsoleRunner(reader)).execute(args);
     }
 
     private static void startInteractive(String version, Terminal terminal) {
@@ -123,28 +133,96 @@ public class Console {
     }
 
     private static Lua getLua(String version) {
-        switch (version.toLowerCase()) {
-            case "5.1":
-                return new Lua51();
-            case "5.2":
-                return new Lua52();
-            case "5.3":
-                return new Lua53();
-            case "5.4":
-                return new Lua54();
-            case "jit":
-                return new LuaJit();
-            default:
-                throw new RuntimeException("Unable to find matching version");
+        LuaVersion luaVersion = LuaVersion.from(version.toLowerCase());
+        if (luaVersion == null) {
+            throw new RuntimeException("Unable to find matching version");
+        } else {
+            return luaVersion.supplier.get();
         }
     }
 
     private static String requestLuaVersion(LineReader reader) {
-        List<String> strings = Arrays.asList(VERSIONS);
         String version;
         do {
             version = reader.readLine("Lua Version: ");
-        } while (!strings.contains(version.toLowerCase()));
+        } while (LuaVersion.from(version.toLowerCase()) == null);
         return version;
+    }
+
+    private static class ConsoleRunner implements Callable<Integer> {
+        private static class Command {
+            @CommandLine.Option(names = {"-f", "--file"}, description = "The Lua file to run")
+            String file;
+
+            @CommandLine.Option(names = {"-e", "--expr"}, description = "The Lua expression to run")
+            String expression;
+        }
+
+        private final LineReader reader;
+
+        public ConsoleRunner(LineReader reader) {
+            this.reader = reader;
+        }
+
+        @CommandLine.Option(names = {"-t", "--test"}, help = true, description = "Run built-in tests")
+        boolean test;
+
+        @CommandLine.Option(names = {"-l", "--lua"}, required = true, description = "Specify the Lua version")
+        String lua;
+
+        @SuppressWarnings("DefaultAnnotationParam")
+        @CommandLine.ArgGroup(exclusive = true, multiplicity = "1")
+        Command command;
+
+        @Override
+        public Integer call() {
+            if (test) {
+                reader.printAbove("----- Running LuaTestSuite -----");
+                forEachTest((L, v) -> {
+                    reader.printAbove("----- Testing " + L.getClass().getSimpleName() + " -----");
+                    new LuaTestSuite<>(L, v.supplier).test();
+                });
+                reader.printAbove("----- Running LuaScriptSuite -----");
+                forEachTest((L, v) -> {
+                    reader.printAbove("----- Testing " + L.getClass().getSimpleName() + " -----");
+                    new LuaScriptSuite<>(L).test();
+                });
+                reader.printAbove("----- Running LuaValueSuite -----");
+                forEachTest((L, v) -> {
+                    reader.printAbove("----- Testing " + L.getClass().getSimpleName() + " -----");
+                    new LuaValueSuite<>(L).test();
+                });
+                reader.printAbove("----- Completed -----");
+            } else {
+                try (Lua L = getLua(lua)) {
+                    L.openLibraries();
+                    L.setExternalLoader(new ClassPathLoader());
+                    if (command.file != null) {
+                        Path path = Paths.get(command.file);
+                        byte[] bytes = Files.readAllBytes(path);
+                        ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);
+                        okOrFail(L.load(buffer.put(bytes).flip(), path.getFileName().toString()),
+                                L, "loading file buffer");
+                        okOrFail(L.pCall(0, Consts.LUA_MULTRET),
+                                L, "running file");
+                    } else if (command.expression != null) {
+                        okOrFail(L.load(command.expression),
+                                L, "loading expression");
+                        okOrFail(L.pCall(0, Consts.LUA_MULTRET),
+                                L, "running expression");
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return 0;
+        }
+
+        private void okOrFail(Lua.LuaError error, Lua L, String message) {
+            if (error != Lua.LuaError.OK) {
+                reader.printAbove("Error " + error + " when " + message);
+                throw new RuntimeException(L.toString(-1));
+            }
+        }
     }
 }

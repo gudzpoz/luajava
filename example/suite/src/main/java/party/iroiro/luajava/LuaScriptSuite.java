@@ -244,6 +244,5 @@ public class LuaScriptSuite<T extends AbstractLua> {
         L.setExternalLoader(new ClassPathLoader());
         L.loadExternal("luajava.testMemory");
         assertEquals(Lua.LuaError.OK, L.pCall(0, Consts.LUA_MULTRET));
-        L.close();
     }
 }
