@@ -87,9 +87,9 @@ jobs:
           sudo apt install -y --force-yes mingw-w64 lib32z1
       - name: Install PatchELF (verneed-fix)
         run: |
-          git clone https://github.com/NixOS/patchelf.git
+          git clone https://github.com/gudzpoz/patchelf.git
           cd patchelf
-          git checkout e1aa6d671c6e81172f7924b812ff8c8669e1a9e7
+          git checkout 1684a4606be1fef189d04a465adc0c9d31421dac
           ./bootstrap.sh
           ./configure
           make
