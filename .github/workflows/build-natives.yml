@@ -132,6 +132,66 @@ jobs:
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
+  linux-testing:
+    runs-on: ubuntu-latest
+    needs:
+      - most-natives
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Download apple-natives artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: apple-natives
+      - name: Download most-natives artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: most-natives
+      - name: Gradle cache
+        uses: gradle/gradle-build-action@v2
+      - name: JniGen
+        run: |
+          ./gradlew jniGen
+      - name: Pack desktop natives
+        run: |
+          ant -f lua51/jni/build.xml pack-natives
+          ant -f lua52/jni/build.xml pack-natives
+          ant -f lua53/jni/build.xml pack-natives
+          ant -f lua54/jni/build.xml pack-natives
+          ant -f luajit/jni/build.xml pack-natives
+      - name: Build example
+        run: |
+          ./gradlew :example:shadowJar
+      - name: Test on Ubuntu 14.04
+        run: |
+          docker build -t ljtest-glibc example/docker/glibc/Dockerfile
+          docker run -it --rm ljtest-glibc
+      - name: Test on Alpine
+        run: |
+          docker build -t ljtest-musl example/docker/musl/Dockerfile
+          docker run -it --rm ljtest-musl
   windows-testing:
     runs-on: windows-latest
     needs:
@@ -253,6 +313,7 @@ jobs:
       - most-natives
       - windows-testing
       - android-testing
+      - linux-testing
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
