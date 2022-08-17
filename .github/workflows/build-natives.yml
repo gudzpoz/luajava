@@ -187,11 +187,11 @@ jobs:
       - name: Test on Ubuntu 14.04
         run: |
           sudo docker build -t ljtest-glibc -f example/docker/glibc/Dockerfile example/build/libs
-          sudo docker run -it --rm ljtest-glibc
+          sudo docker run --rm ljtest-glibc
       - name: Test on Alpine
         run: |
           sudo docker build -t ljtest-musl -f example/docker/musl/Dockerfile example/build/libs
-          sudo docker run -it --rm ljtest-musl
+          sudo docker run --rm ljtest-musl
   windows-testing:
     runs-on: windows-latest
     needs:
