@@ -233,7 +233,7 @@ void addPatchElfTask(String platform) {
             logger.lifecycle('$ patchelf --version')
             exec {
                 workingDir folder
-                commandLine ['patchelf', '--version']
+                commandLine new ArrayList<>(['patchelf', '--version'])
             }
             logger.lifecycle('$ ' + command.join(' '))
             exec {
