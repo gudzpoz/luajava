@@ -127,6 +127,10 @@ buildLuaTargets(
 void linkerConfig(BuildTarget it, String platformFolder) {
     // TODO: decide whether to shell-string-escape-and-then-xml-entity-escape $projectDir
     it.linkerFlags += " -L&quot;$projectDir/jni/luajit/lib/${platformFolder}&quot; "
+    if (it.os == BuildTarget.TargetOs.Linux) {
+        it.cFlags += ' -D_FORTIFY_SOURCE=0 '
+        it.cppFlags += ' -D_FORTIFY_SOURCE=0 '
+    }
 }
 
 apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
@@ -141,13 +145,9 @@ jnigen {
         headerDirs = ['../../jni/luajava', 'luajit/src', 'mod']
     }
     add(Linux, x64, false, {
-        cFlags += ' -D_FORTIFY_SOURCE=0 '
-        cppFlags += ' -D_FORTIFY_SOURCE=0 '
         linkerConfig(it, 'linux64')
     })
     add(Linux, x32, false, {
-        cFlags += ' -D_FORTIFY_SOURCE=0 '
-        cppFlags += ' -D_FORTIFY_SOURCE=0 '
         linkerConfig(it, 'linux32')
     })
     add(Windows, x32, false, {
@@ -157,13 +157,9 @@ jnigen {
         linkerConfig(it, 'win64')
     })
     add(Linux, x32, ARM, {
-        cFlags += ' -D_FORTIFY_SOURCE=0 '
-        cppFlags += ' -D_FORTIFY_SOURCE=0 '
         linkerConfig(it, 'arm')
     })
     add(Linux, x64, ARM, {
-        cFlags += ' -D_FORTIFY_SOURCE=0 '
-        cppFlags += ' -D_FORTIFY_SOURCE=0 '
         linkerConfig(it, 'aarch')
     })
     // MacOsX builds for ARM64 and AMD64 regardless of isARM
