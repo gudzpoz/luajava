@@ -9,27 +9,37 @@ public class ScriptTest {
 
     @RepeatedTest(REPEATED)
     public void lua51Test() {
-        new LuaScriptSuite<>(new Lua51()).test();
+        try (Lua51 L = new Lua51()) {
+            new LuaScriptSuite<>(L).test();
+        }
     }
 
     @RepeatedTest(REPEATED)
     public void lua52Test() {
-        new LuaScriptSuite<>(new Lua52()).test();
+        try (Lua52 L = new Lua52()) {
+            new LuaScriptSuite<>(L).test();
+        }
     }
 
     @RepeatedTest(REPEATED)
     public void lua53Test() {
-        new LuaScriptSuite<>(new Lua53()).test();
+        try (Lua53 L = new Lua53()) {
+            new LuaScriptSuite<>(L).test();
+        }
     }
 
     @RepeatedTest(REPEATED)
     public void lua54Test() {
-        new LuaScriptSuite<>(new Lua54()).test();
+        try (Lua54 L = new Lua54()) {
+            new LuaScriptSuite<>(L).test();
+        }
     }
 
     @RepeatedTest(REPEATED)
     public void luaJitTest() {
-        new LuaScriptSuite<>(new LuaJit()).test();
+        try (LuaJit L = new LuaJit()) {
+            new LuaScriptSuite<>(L).test();
+        }
     }
 
     @Test
@@ -44,6 +54,7 @@ public class ScriptTest {
         };
         for (Lua L : Ls) {
             LuaScriptSuite.memoryTest(L);
+            L.close();
         }
     }
 }

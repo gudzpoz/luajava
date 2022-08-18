@@ -6,22 +6,36 @@ import party.iroiro.luajava.value.LuaValueSuite;
 public class AndroidValueTest {
     @Test
     public void lua51Test() {
-        new LuaValueSuite<>(new Lua51()).test();
+        try (Lua51 L = new Lua51()) {
+            new LuaValueSuite<>(L).test();
+        }
     }
+
     @Test
     public void lua52Test() {
-        new LuaValueSuite<>(new Lua52()).test();
+        try (Lua52 L = new Lua52()) {
+            new LuaValueSuite<>(L).test();
+        }
     }
+
     @Test
     public void lua53Test() {
-        new LuaValueSuite<>(new Lua53()).test();
+        try (Lua53 L = new Lua53()) {
+            new LuaValueSuite<>(L).test();
+        }
     }
+
     @Test
     public void lua54Test() {
-        new LuaValueSuite<>(new Lua54()).test();
+        try (Lua54 L = new Lua54()) {
+            new LuaValueSuite<>(L).test();
+        }
     }
+
     @Test
     public void luaJitTest() {
-        new LuaValueSuite<>(new LuaJit()).test();
+        try (LuaJit L = new LuaJit()) {
+            new LuaValueSuite<>(L).test();
+        }
     }
 }

@@ -92,19 +92,19 @@ buildLuaTargets(
                 ['bash', '../scripts/build-ios.sh']),
         addLuaJitTarget('Linux64',
                 ['make', 'amalg',
-                 'CC=gcc -m64', 'CFLAGS=-fPIC',
+                 'CC=gcc -m64 -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC ',
                  'TARGET_SYS=Linux']),
         addLuaJitTarget('Linux32',
                 ['make', 'amalg',
-                 'CC=gcc -m32 -I/usr/i686-linux-gnu/include', 'CFLAGS=-fPIC',
+                 'CC=gcc -m32 -I/usr/i686-linux-gnu/include -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC',
                  'TARGET_SYS=Linux']),
         addLuaJitTarget('ARM',
                 ['make', 'amalg',
-                 'HOST_CC=gcc -m32 -I/usr/i686-linux-gnu/include', 'CFLAGS=-fPIC',
+                 'HOST_CC=gcc -m32 -I/usr/i686-linux-gnu/include -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC',
                  'TARGET_SYS=Linux', 'CROSS=arm-linux-gnueabihf-']),
         addLuaJitTarget('AARCH',
                 ['make', 'amalg',
-                 'HOST_CC=gcc -m64', 'CFLAGS=-fPIC',
+                 'HOST_CC=gcc -m64 -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC',
                  'TARGET_SYS=Linux', 'CROSS=aarch64-linux-gnu-']),
         addLuaJitTarget('Win32',
                 ['make', 'amalg',
@@ -127,6 +127,10 @@ buildLuaTargets(
 void linkerConfig(BuildTarget it, String platformFolder) {
     // TODO: decide whether to shell-string-escape-and-then-xml-entity-escape $projectDir
     it.linkerFlags += " -L&quot;$projectDir/jni/luajit/lib/${platformFolder}&quot; "
+    if (it.os == BuildTarget.TargetOs.Linux) {
+        it.cFlags += ' -D_FORTIFY_SOURCE=0 '
+        it.cppFlags += ' -D_FORTIFY_SOURCE=0 '
+    }
 }
 
 apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
@@ -205,6 +209,54 @@ tasks.jnigenBuildMacOsX64.dependsOn(tasks.buildLuaMacOsXMerge)
 tasks.jnigenBuildAndroid.dependsOn(tasks.buildLuaAndroid)
 // tasks.jnigenBuildIOS.dependsOn(tasks.buildLuaIOS)
 
+void addPatchElfTask(String platform) {
+    String target = "patchElf${platform}"
+    String folder = "libs/${platform.toLowerCase()}"
+    tasks.register(target) {
+        doLast {
+            String file = projectDir.toPath().resolve(folder).toFile().listFiles(new FilenameFilter() {
+                @Override
+                boolean accept(File file, String s) {
+                    return s.endsWith('.so')
+                }
+            })[0].toPath().toAbsolutePath().toString()
+            List<String> command = new ArrayList<>()
+            command.add('patchelf')
+            for (String symbol : ['dlclose',
+                                  'dlerror',
+                                  'dlopen',
+                                  'dlsym',
+                                  'exp',
+                                  'log',
+                                  'log2',
+                                  'pow']) {
+                command.add('--clear-symbol-version')
+                command.add(symbol)
+            }
+            command.add(file)
+            logger.lifecycle('$ patchelf --version')
+            exec {
+                workingDir folder
+                commandLine new ArrayList<>(['patchelf', '--version'])
+            }
+            logger.lifecycle('$ ' + command.join(' '))
+            exec {
+                workingDir folder
+                commandLine command
+            }
+        }
+    }
+}
+
+addPatchElfTask('Linux32')
+addPatchElfTask('Linux64')
+addPatchElfTask('LinuxARM32')
+addPatchElfTask('LinuxARM64')
+
+tasks.jnigenBuildLinux.finalizedBy(tasks.patchElfLinux32)
+tasks.jnigenBuildLinux64.finalizedBy(tasks.patchElfLinux64)
+tasks.jnigenBuildLinuxARM.finalizedBy(tasks.patchElfLinuxARM32)
+tasks.jnigenBuildLinuxARM64.finalizedBy(tasks.patchElfLinuxARM64)
 
 apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
 

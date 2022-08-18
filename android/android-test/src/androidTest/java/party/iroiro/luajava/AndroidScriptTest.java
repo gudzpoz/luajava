@@ -5,24 +5,38 @@ import org.junit.Test;
 
 public class AndroidScriptTest {
     @Test
-    public void lua51ScriptTest() {
-        new LuaScriptSuite<>(new Lua51()).test();
+    public void lua51Test() {
+        try (Lua51 L = new Lua51()) {
+            new LuaScriptSuite<>(L).test();
+        }
     }
+
     @Test
-    public void lua52ScriptTest() {
-        new LuaScriptSuite<>(new Lua52()).test();
+    public void lua52Test() {
+        try (Lua52 L = new Lua52()) {
+            new LuaScriptSuite<>(L).test();
+        }
     }
+
     @Test
-    public void lua53ScriptTest() {
-        new LuaScriptSuite<>(new Lua53()).test();
+    public void lua53Test() {
+        try (Lua53 L = new Lua53()) {
+            new LuaScriptSuite<>(L).test();
+        }
     }
+
     @Test
-    public void lua54ScriptTest() {
-        new LuaScriptSuite<>(new Lua54()).test();
+    public void lua54Test() {
+        try (Lua54 L = new Lua54()) {
+            new LuaScriptSuite<>(L).test();
+        }
     }
+
     @Test
-    public void luaJitScriptTest() {
-        new LuaScriptSuite<>(new LuaJit(), s -> Log.i("test", s)).test();
+    public void luaJitTest() {
+        try (LuaJit L = new LuaJit()) {
+            new LuaScriptSuite<>(L, s -> Log.i("test", s)).test();
+        }
     }
 
     @Test
@@ -37,6 +51,7 @@ public class AndroidScriptTest {
         };
         for (Lua L : Ls) {
             LuaScriptSuite.memoryTest(L);
+            L.close();
         }
     }
 }

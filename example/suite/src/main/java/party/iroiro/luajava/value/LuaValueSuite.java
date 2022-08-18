@@ -28,7 +28,6 @@ public class LuaValueSuite<T extends Lua> {
         nilTest();
         callTest();
         luaStateTest();
-        L.close();
     }
 
     private void luaStateTest() {
@@ -53,7 +52,6 @@ public class LuaValueSuite<T extends Lua> {
         assertEquals(1, results.length);
         assertEquals(NUMBER, results[0].type());
         assertEquals(15., results[0].toJavaObject());
-        func.close();
         L.push((l) -> {
             l.push("Some error");
             return -1;
@@ -93,7 +91,6 @@ public class LuaValueSuite<T extends Lua> {
         assertEquals(3., value.get(3).toJavaObject());
         assertEquals("b", value.get("a").toJavaObject());
         assertEquals("d", value.get(L.from("c")).toJavaObject());
-        value.close();
         value = L.execute("return {}")[0];
         value.set(1, L.from(1));
         value.set(2, L.from(2));
@@ -108,8 +105,6 @@ public class LuaValueSuite<T extends Lua> {
         assertEquals("d", value.get(L.from("c")).toJavaObject());
         assertEquals(false, value.get(L.from(true)).toJavaObject());
         assertNotEquals(L.from(1), value);
-        value.close();
-        L.from(1).close();
 
         assertEquals(top, L.getTop());
     }
