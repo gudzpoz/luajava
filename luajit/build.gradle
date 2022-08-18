@@ -92,19 +92,19 @@ buildLuaTargets(
                 ['bash', '../scripts/build-ios.sh']),
         addLuaJitTarget('Linux64',
                 ['make', 'amalg',
-                 'CC=gcc -m64', 'CFLAGS=-fPIC',
+                 'CC=gcc -m64 -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC ',
                  'TARGET_SYS=Linux']),
         addLuaJitTarget('Linux32',
                 ['make', 'amalg',
-                 'CC=gcc -m32 -I/usr/i686-linux-gnu/include', 'CFLAGS=-fPIC',
+                 'CC=gcc -m32 -I/usr/i686-linux-gnu/include -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC',
                  'TARGET_SYS=Linux']),
         addLuaJitTarget('ARM',
                 ['make', 'amalg',
-                 'HOST_CC=gcc -m32 -I/usr/i686-linux-gnu/include', 'CFLAGS=-fPIC',
+                 'HOST_CC=gcc -m32 -I/usr/i686-linux-gnu/include -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC',
                  'TARGET_SYS=Linux', 'CROSS=arm-linux-gnueabihf-']),
         addLuaJitTarget('AARCH',
                 ['make', 'amalg',
-                 'HOST_CC=gcc -m64', 'CFLAGS=-fPIC',
+                 'HOST_CC=gcc -m64 -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC',
                  'TARGET_SYS=Linux', 'CROSS=aarch64-linux-gnu-']),
         addLuaJitTarget('Win32',
                 ['make', 'amalg',
@@ -141,9 +141,13 @@ jnigen {
         headerDirs = ['../../jni/luajava', 'luajit/src', 'mod']
     }
     add(Linux, x64, false, {
+        cFlags += ' -D_FORTIFY_SOURCE=0 '
+        cppFlags += ' -D_FORTIFY_SOURCE=0 '
         linkerConfig(it, 'linux64')
     })
     add(Linux, x32, false, {
+        cFlags += ' -D_FORTIFY_SOURCE=0 '
+        cppFlags += ' -D_FORTIFY_SOURCE=0 '
         linkerConfig(it, 'linux32')
     })
     add(Windows, x32, false, {
@@ -153,9 +157,13 @@ jnigen {
         linkerConfig(it, 'win64')
     })
     add(Linux, x32, ARM, {
+        cFlags += ' -D_FORTIFY_SOURCE=0 '
+        cppFlags += ' -D_FORTIFY_SOURCE=0 '
         linkerConfig(it, 'arm')
     })
     add(Linux, x64, ARM, {
+        cFlags += ' -D_FORTIFY_SOURCE=0 '
+        cppFlags += ' -D_FORTIFY_SOURCE=0 '
         linkerConfig(it, 'aarch')
     })
     // MacOsX builds for ARM64 and AMD64 regardless of isARM
