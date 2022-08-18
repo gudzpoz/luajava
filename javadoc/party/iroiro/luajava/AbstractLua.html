@@ -200,7 +200,7 @@ implements <a href="Lua.html" title="interface in party.iroiro.luajava">Lua</a><
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected java.util.concurrent.atomic.AtomicReference&lt;<a href="ExternalLoader.html" title="interface in party.iroiro.luajava">ExternalLoader</a>&gt;</code></td>
+<td class="colFirst"><code>protected <a href="ExternalLoader.html" title="interface in party.iroiro.luajava">ExternalLoader</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#loader">loader</a></span></code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
@@ -1077,7 +1077,7 @@ implements <a href="Lua.html" title="interface in party.iroiro.luajava">Lua</a><
 <ul class="blockList">
 <li class="blockList">
 <h4>loader</h4>
-<pre>protected final&nbsp;java.util.concurrent.atomic.AtomicReference&lt;<a href="ExternalLoader.html" title="interface in party.iroiro.luajava">ExternalLoader</a>&gt; loader</pre>
+<pre>protected volatile&nbsp;<a href="ExternalLoader.html" title="interface in party.iroiro.luajava">ExternalLoader</a> loader</pre>
 </li>
 </ul>
 <a id="recyclableReferences">
@@ -3077,8 +3077,7 @@ public&nbsp;@Nullable <a href="Lua.LuaType.html" title="enum in party.iroiro.lua
 <ul class="blockList">
 <li class="blockList">
 <h4>setExternalLoader</h4>
-<pre class="methodSignature">public&nbsp;void&nbsp;setExternalLoader&#8203;(<a href="ExternalLoader.html" title="interface in party.iroiro.luajava">ExternalLoader</a>&nbsp;loader)
-                       throws java.lang.IllegalStateException</pre>
+<pre class="methodSignature">public&nbsp;void&nbsp;setExternalLoader&#8203;(<a href="ExternalLoader.html" title="interface in party.iroiro.luajava">ExternalLoader</a>&nbsp;loader)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="Lua.html#setExternalLoader(party.iroiro.luajava.ExternalLoader)">Lua</a></code></span></div>
 <div class="block">Sets a <a href="ExternalLoader.html" title="interface in party.iroiro.luajava"><code>ExternalLoader</code></a> for the main state
 
@@ -3092,15 +3091,13 @@ public&nbsp;@Nullable <a href="Lua.LuaType.html" title="enum in party.iroiro.lua
  <code>package.loaders</code> for Lua 5.1) to load Lua files with this <a href="ExternalLoader.html" title="interface in party.iroiro.luajava"><code>ExternalLoader</code></a>.
  </p>
  <p>
- You need to load the <code>package</code> library before calling this method, or else it will fail.
+ You need to load the <code>package</code> library to make the external loader effective.
  </p></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="Lua.html#setExternalLoader(party.iroiro.luajava.ExternalLoader)">setExternalLoader</a></code>&nbsp;in interface&nbsp;<code><a href="Lua.html" title="interface in party.iroiro.luajava">Lua</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>loader</code> - the loader that will be used to find files</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.IllegalStateException</code> - if the package module is not yet loaded</dd>
 </dl>
 </li>
 </ul>

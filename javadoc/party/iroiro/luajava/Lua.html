@@ -2610,8 +2610,7 @@ extends java.lang.AutoCloseable</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>setExternalLoader</h4>
-<pre class="methodSignature">void&nbsp;setExternalLoader&#8203;(<a href="ExternalLoader.html" title="interface in party.iroiro.luajava">ExternalLoader</a>&nbsp;loader)
-                throws java.lang.IllegalStateException</pre>
+<pre class="methodSignature">void&nbsp;setExternalLoader&#8203;(<a href="ExternalLoader.html" title="interface in party.iroiro.luajava">ExternalLoader</a>&nbsp;loader)</pre>
 <div class="block">Sets a <a href="ExternalLoader.html" title="interface in party.iroiro.luajava"><code>ExternalLoader</code></a> for the main state
 
  <p>
@@ -2624,13 +2623,11 @@ extends java.lang.AutoCloseable</pre>
  <code>package.loaders</code> for Lua 5.1) to load Lua files with this <a href="ExternalLoader.html" title="interface in party.iroiro.luajava"><code>ExternalLoader</code></a>.
  </p>
  <p>
- You need to load the <code>package</code> library before calling this method, or else it will fail.
+ You need to load the <code>package</code> library to make the external loader effective.
  </p></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>loader</code> - the loader that will be used to find files</dd>
-<dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.IllegalStateException</code> - if the package module is not yet loaded</dd>
 </dl>
 </li>
 </ul>
