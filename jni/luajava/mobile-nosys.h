@@ -20,9 +20,6 @@ extern "C" {
 /* Using versioned Glibc symbols on Linux */
 #if LJ_TARGET_LINUX && !defined(LUAJIT_NO_LOG2) && !defined(LJ_NO_SYSTEM)
 
-/* Workaround for musl systems: __**_chk functions seem to fail with SIGSEGV */
-#define _FORTIFY_SOURCE 0
-
 /*
  * The following symbols are extracted with the shell command:
  * nm --dynamic --with-symbol-versions lua5*\/libs/linux*\/*.so \
