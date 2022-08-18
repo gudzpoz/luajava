@@ -18,6 +18,44 @@ env:
   MACOSX_DEPLOYMENT_TARGET: "10.10"
 
 jobs:
+  apple-natives:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Build natives
+        run: |
+          ./gradlew jniGen jnigenBuild
+      - name: Test
+        run: |
+          ./gradlew :example:test
+      - name: Upload macOS/iOS natives
+        uses: actions/upload-artifact@v2.1.4
+        with:
+          name: apple-natives
+          path: ./*/libs
   most-natives:
     runs-on: ubuntu-20.04
     steps:
@@ -70,7 +108,7 @@ jobs:
       - name: Build natives
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
-          ./gradlew jniGen jnigenBuildLinux64
+          ./gradlew jniGen jnigenBuild
       - name: Test (Desktop)
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
@@ -142,3 +180,206 @@ jobs:
         run: |
           sudo docker build -t ljtest-musl -f example/docker/musl/Dockerfile example/build/libs
           sudo docker run --rm ljtest-musl
+  windows-testing:
+    runs-on: windows-latest
+    needs:
+      - most-natives
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Download most-natives artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: most-natives
+      - name: JniGen
+        run: |
+          ./gradlew jniGen
+      - name: Test
+        run: |
+          ./gradlew :example:test
+  android-testing:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        api-level: [ 23, 26, 29, 31 ]
+        android-arch: [ 'x86_64' ]
+        include:
+          - api-level: 19
+            android-arch: 'x86'
+    needs:
+      - most-natives
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Download most-natives artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: most-natives
+      - name: Gradle cache
+        uses: gradle/gradle-build-action@v2
+      - name: JniGen
+        run: |
+          ./gradlew jniGen
+      - name: Pack Android natives
+        run: |
+          ./gradlew :android:assemble
+      - name: AVD cache
+        uses: actions/cache@v3
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}-${{ matrix.android-arch }}
+      - name: Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: ${{ matrix.android-arch }}
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
+          script: echo "Generated AVD snapshot for caching."
+      - name: Test on Android AVD
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: ${{ matrix.android-arch }}
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: ./gradlew :android:android-test:connectedAndroidTest
+  pack-natives:
+    environment: OSSRH
+    needs:
+      - apple-natives
+      - most-natives
+      - windows-testing
+      - android-testing
+      - linux-testing
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Download apple-natives artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: apple-natives
+      - name: Download most-natives artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: most-natives
+      - name: JniGen
+        run: |
+          ./gradlew jniGen
+      - name: Pack desktop natives
+        run: |
+          ant -f lua51/jni/build.xml pack-natives
+          ant -f lua52/jni/build.xml pack-natives
+          ant -f lua53/jni/build.xml pack-natives
+          ant -f lua54/jni/build.xml pack-natives
+          ant -f luajit/jni/build.xml pack-natives
+      - name: Pack Android AAR
+        run: |
+          ./gradlew :android:assemble
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: natives
+          path: ./*/libs
+      - name: Release?
+        if: |
+          startsWith(github.ref, 'refs/tags/')
+        run: echo "IS_RELEASE=true" >> $GITHUB_ENV
+      - name: Publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+          GPG_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
+          GPG_PASSPHRASE: ${{ secrets.SIGNING_PASSPHRASE }}
+          GPG_SECKEY: ${{ secrets.SIGNING_SECRET_KEY }}
+          GITHUB_REF: ${{ github.ref }}
+        run: |
+          ./gradlew build publish
+      - name: Build example
+        run: |
+          ./gradlew :example:shadowJar
+      - name: Upload example
+        uses: actions/upload-artifact@v2.1.4
+        with:
+          name: example
+          path: example/build/libs/example-all.jar
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+          files: example/build/libs/example-all.jar
