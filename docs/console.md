@@ -22,3 +22,14 @@ Some of these examples return a function so that you may execute them as many ti
 - `luajava.awtTest`
 - `luajava.swingTest`
 - `luajava.testMemory`
+
+## Command Line Options
+
+```
+Usage: <main class> [-t] -l=<lua> (-f=<file> | -e=<expression>)
+  -e, --expr=<expression>   The Lua expression to run
+  -f, --file=<file>         The Lua file to run
+  -l, --lua=<lua>           Specify the Lua version
+  -t, --test                Run built-in tests
+```
+

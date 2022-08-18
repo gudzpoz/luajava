@@ -40,7 +40,6 @@ export default defineUserConfig({
           '/conversions.md',
           '/proxy.md',
           '/threadsafety.md',
-          '/troubleshooting.md',
         ]
       },
       {
@@ -51,6 +50,13 @@ export default defineUserConfig({
           '/examples/hello-world-mod.md',
           '/examples/awt.md',
           '/examples/modules.md',
+        ]
+      },
+      {
+        text: 'Troubleshooting',
+        children: [
+          '/troubleshooting.md',
+          '/glibc.md',
         ]
       },
     ],
