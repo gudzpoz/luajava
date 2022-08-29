@@ -1317,6 +1317,14 @@ public abstract class LuaNative {
      */
     protected abstract Object luaJ_dumptobuffer(long ptr);
 
+    /**
+     * Creates a direct {@link java.nio.ByteBuffer} from the string at the specific index
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @return a nullable {@link java.nio.ByteBuffer} containing the string
+     */
+    protected abstract Object luaJ_tobuffer(long ptr, int index);
 
     /**
      * A wrapper function

@@ -4520,4 +4520,23 @@ public class Lua52Natives extends LuaNative {
     */
 
 
+    /**
+     * A wrapper function
+     *
+     * <p>
+     * See <code>lua_tolstring</code>
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @return see description
+     */
+    protected native Object luaJ_tobuffer(long ptr, int index); /*
+        lua_State * L = (lua_State *) ptr;
+        
+        jobject returnValueReceiver = (jobject) luaJ_tobuffer((lua_State *) L, (int) index);
+        return returnValueReceiver;
+    */
+
+
 }

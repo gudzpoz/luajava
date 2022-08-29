@@ -458,6 +458,16 @@ int dumpBufferWriter(lua_State * L, const void * p, size_t sz, void * ud) {
   return 0;
 }
 
+static jobject toBuffer(JNIEnv * env, lua_State * L, const void * ptr, jint size) {
+  jobject buffer = env->CallStaticObjectMethod(juaapi_class, juaapi_allocatedirect, (jint) size);
+  if (checkIfError(env, L)) {
+    return NULL;
+  }
+  void * addr = env->GetDirectBufferAddress(buffer);
+  memcpy(addr, ptr, size);
+  return buffer;
+}
+
 jobject luaJ_dumptobuffer(lua_State * L) {
   DumpBuffer dump;
   dump.size = 0;
@@ -468,13 +478,17 @@ jobject luaJ_dumptobuffer(lua_State * L) {
     return NULL;
   }
   JNIEnv * env = getJNIEnv(L);
-  jobject buffer = env->CallStaticObjectMethod(juaapi_class, juaapi_allocatedirect, (jint) dump.size);
-  if (checkIfError(env, L)) {
-    free(dump.buffer);
-    return NULL;
-  }
-  void * addr = env->GetDirectBufferAddress(buffer);
-  memcpy(addr, dump.buffer, dump.size);
+  jobject buffer = toBuffer(env, L, dump.buffer, dump.size);
   free(dump.buffer);
   return buffer;
+}
+
+jobject luaJ_tobuffer(lua_State * L, int i) {
+  size_t len;
+  const char * str = lua_tolstring(L, i, &len);
+  if (str == NULL) {
+    return NULL;
+  }
+  JNIEnv * env = getJNIEnv(L);
+  return toBuffer(env, L, str, len);
 }

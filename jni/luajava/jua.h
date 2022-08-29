@@ -56,6 +56,7 @@ jobject luaJ_toobject(lua_State * L, int index);
 int luaJ_isobject(lua_State * L, int index);
 
 jobject luaJ_dumptobuffer(lua_State * L);
+jobject luaJ_tobuffer(lua_State * L, int i);
 
 int luaJ_insertloader(lua_State * L, const char * searchers);
 

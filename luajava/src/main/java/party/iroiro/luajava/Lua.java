@@ -231,6 +231,19 @@ public interface Lua extends AutoCloseable {
     @Nullable String toString(int index);
 
     /**
+     * Creates a direct {@link java.nio.ByteBuffer} from the string at the specific index
+     *
+     * <p>
+     * You may want to use this instead of {@link #toString(int)} when the string is binary
+     * (e.g., those returned by {@code string.dump} and contains null characters).
+     * </p>
+     *
+     * @param index the stack index
+     * @return the created buffer
+     */
+    @Nullable ByteBuffer toBuffer(int index);
+
+    /**
      * Get the element at the specified stack position, if the element is a Java object / array / class
      *
      * @param index the stack position of the element

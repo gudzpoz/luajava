@@ -78,6 +78,24 @@ public class LuaTestSuite<T extends AbstractLua> {
                     J.pop(1);
                 }
             }
+            L.pop(1);
+
+            // toBuffer with string.dump
+            L.openLibrary("string");
+            assertEquals(OK, L.run("return string.dump(function(a, b) return a + b end)"));
+            ByteBuffer dumpedAdd = L.toBuffer(-1);
+            assertNotNull(dumpedAdd);
+            for (int i = 0; i < 100; i += 17) {
+                for (int j = 0; j < 100; j += 37) {
+                    assertEquals(OK, J.load(dumpedAdd, "stringDumpedAdd.lua"));
+                    J.push(i);
+                    J.push(j);
+                    assertEquals(OK, J.pCall(2, 1));
+                    assertEquals(i + j, J.toNumber(-1), 0.000001);
+                    J.pop(1);
+                }
+            }
+            L.pop(1);
 
             // Non-functions
             L.createTable(0, 0);
