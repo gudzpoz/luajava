@@ -55,6 +55,8 @@ void luaJ_pusharray(JNIEnv * env, lua_State * L, jobject array);
 jobject luaJ_toobject(lua_State * L, int index);
 int luaJ_isobject(lua_State * L, int index);
 
+jobject luaJ_dumptobuffer(lua_State * L);
+
 int luaJ_insertloader(lua_State * L, const char * searchers);
 
 int luaJ_invokespecial(JNIEnv * env, lua_State * L,

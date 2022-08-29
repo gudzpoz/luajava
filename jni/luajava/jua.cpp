@@ -36,6 +36,7 @@ jmethodID juaapi_import         = NULL;
 jmethodID juaapi_proxy          = NULL;
 jmethodID juaapi_unwrap         = NULL;
 jmethodID juaapi_load           = NULL;
+jmethodID juaapi_allocatedirect = NULL;
 // java.lang.Throwable
 jclass java_lang_throwable_class = NULL;
 jmethodID throwable_getmessage   = NULL;
@@ -162,6 +163,8 @@ int initBindings(JNIEnv * env) {
           "unwrap", "(ILjava/lang/Object;)I");
   juaapi_load = bindJavaStaticMethod(env, juaapi_class,
           "load", "(ILjava/lang/String;)I");
+  juaapi_allocatedirect = bindJavaStaticMethod(env, juaapi_class,
+          "allocateDirect", "(I)Ljava/nio/ByteBuffer;");
   if (java_lang_class_class == NULL
       || java_lang_class_forname == NULL
       || java_lang_throwable_class == NULL
@@ -186,7 +189,8 @@ int initBindings(JNIEnv * env) {
       || juaapi_luaify == NULL
       || juaapi_import == NULL
       || juaapi_proxy == NULL
-      || juaapi_load == NULL) {
+      || juaapi_load == NULL
+      || juaapi_allocatedirect == NULL) {
     return -1;
   } else {
     return 0;
@@ -412,4 +416,65 @@ int luaJ_insertloader(lua_State * L, const char * searchers) {
 
 void luaJ_gc(lua_State * L) {
   lua_gc(L, LUA_GCCOLLECT, 0);
+}
+
+static jint nextCapacity(jint capacity, jint size) {
+  while (capacity > 0 && capacity < size) {
+    capacity <<= 1;
+  }
+  return capacity;
+}
+
+struct DumpBuffer {
+  unsigned char * buffer = NULL;
+  jint size = 0;
+  jint capacity = 0;
+};
+
+int dumpBufferWriter(lua_State * L, const void * p, size_t sz, void * ud) {
+  DumpBuffer * dump = (DumpBuffer *) ud;
+  jint size = dump->size + sz;
+  if (size < 0) {
+    /* Overflows */
+    return 1;
+  }
+  if (size > dump->capacity) {
+    jint capacity = nextCapacity(dump->capacity, size);
+    if (capacity <= 0) {
+      /* Overflows */
+      return 1;
+    }
+    void * buffer = realloc(dump->buffer, capacity);
+    if (buffer == NULL) {
+      return 1;
+    }
+    dump->capacity = capacity;
+    dump->buffer = (unsigned char *) buffer;
+  }
+  memcpy(dump->buffer + dump->size, p, sz);
+  dump->size = size;
+  return 0;
+}
+
+jobject luaJ_dumptobuffer(lua_State * L) {
+  DumpBuffer dump;
+  dump.size = 0;
+  dump.capacity = 4096;
+  dump.buffer = (unsigned char *) malloc(dump.size);
+  if (luaJ_dump(L, dumpBufferWriter, &dump)) {
+    free(dump.buffer);
+    luaL_error(L, "memory allocation failed");
+    return NULL;
+  }
+  JNIEnv * env = getJNIEnv(L);
+  jobject buffer = env->CallStaticObjectMethod(juaapi_class, juaapi_allocatedirect, (jint) dump.size);
+  if (checkIfError(env, L)) {
+    free(dump.buffer);
+    lua_error(L);
+    return NULL;
+  }
+  void * addr = env->GetDirectBufferAddress(buffer);
+  memcpy(addr, dump.buffer, dump.size);
+  free(dump.buffer);
+  return buffer;
 }

@@ -633,6 +633,16 @@ def addExtra(functions):
             ],
         },
     })
+    functions.append({
+        'name': 'luaJ_dumptobuffer',
+        'description': 'See <code>lua_dump</code>',
+        'signature': {
+            'return': 'jobject',
+            'params': [
+                ['lua_State *', 'L'],
+            ],
+        },
+    })
 
 
 def getWhole(luaVersion, package):

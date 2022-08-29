@@ -4736,4 +4736,22 @@ public class Lua54Natives extends LuaNative {
     */
 
 
+    /**
+     * A wrapper function
+     *
+     * <p>
+     * See <code>lua_dump</code>
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @return see description
+     */
+    protected native Object luaJ_dumptobuffer(long ptr); /*
+        lua_State * L = (lua_State *) ptr;
+        
+        jobject returnValueReceiver = (jobject) luaJ_dumptobuffer((lua_State *) L);
+        return returnValueReceiver;
+    */
+
+
 }

@@ -71,4 +71,8 @@ static int luaJ_initloader(lua_State * L) {
   return luaJ_insertloader(L, "searchers");
 }
 
+static int luaJ_dump (lua_State *L, lua_Writer writer, void *data) {
+  return lua_dump (L, writer, data, true);
+}
+
 #endif /* !LUACOMP_H */

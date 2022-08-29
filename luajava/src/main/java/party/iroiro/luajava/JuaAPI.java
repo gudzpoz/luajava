@@ -28,6 +28,7 @@ import party.iroiro.luajava.util.ClassUtils;
 import party.iroiro.luajava.value.LuaValue;
 
 import java.lang.reflect.*;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -38,6 +39,17 @@ import java.util.regex.Pattern;
  * </p>
  */
 public abstract class JuaAPI {
+    /**
+     * Allocates a direct buffer whose memory is managed by Java
+     *
+     * @param size the buffer size
+     * @return a direct buffer
+     */
+    @SuppressWarnings("unused")
+    public static ByteBuffer allocateDirect(int size) {
+        return ByteBuffer.allocateDirect(size);
+    }
+
     /**
      * Pushes on stack the backing Lua table for a proxy
      *
@@ -188,6 +200,7 @@ public abstract class JuaAPI {
 
     /**
      * Closes a sub-thread
+     *
      * @param id the thread id
      * @return 1
      */
