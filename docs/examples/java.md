@@ -180,3 +180,53 @@ See
 [`unref(int)`](../javadoc/party/iroiro/luajava/Lua.html#unref(int))
 and [`unRef(int, int)`](../javadoc/party/iroiro/luajava/Lua.html#unRef(int,int)) for more info.
 
+### Pre-compiled chunks
+
+According to the Lua reference manual:
+
+> Chunks can also be pre-compiled into binary form;
+> see program luac for details.
+> Programs in source and compiled forms are interchangeable;
+> Lua automatically detects the file type and acts accordingly. 
+
+Replacing Lua source files with pre-compiled chunks speeds up loading.
+However, according to `luac` manual:
+
+> Precompiled chunks are *not* portable across different architectures.
+> Moreover, the internal format of precompiled chunks is likely to change
+> when a new version of Lua is released.  Make sure you save  the  source
+> files of all Lua programs that you precompile.
+
+Binary chunks compiled on one platform may not run on another.
+Since we are using Java / JVM-based languages, this is absolutely not desirable.
+To work around this, you may either:
+1. Provide precompiled chunks for all your target platforms;
+2. Or compile them at runtime for once and just reuse the compiled binaries.
+
+Here is a tiny example for the second approach:
+
+:::: code-group
+::: code-group-item Use lua_dump
+```java
+Lua L = getYourLuaInstance();
+ByteBuffer code = readFromFile("MyScript.lua");
+// L.load(...) pushes on stack a precompiled function
+L.load(code, "MyScript.lua");
+// L.dump() calls lua_dump, dumping the precompiled binary
+ByteBuffer precompiledChunk = L.dump();
+```
+:::
+::: code-group-item Use string.dump
+```java
+Lua L = getYourLuaInstance();
+L.openLibrary("string");
+// string.dump(...) returns the precompiled binary as a Lua string
+L.run("return string.dump(function(a, b) return a + b end)");
+// L.toBuffer(...) stores the precompiled binary into a buffer and returns it
+ByteBuffer precompiledChunk = L.toBuffer(-1);
+```
+:::
+::::
+
+Dumping functions involves some more Lua knowledge such as up-values and environments.
+What these terms mean might differ between versions and is not a topic of this document.
