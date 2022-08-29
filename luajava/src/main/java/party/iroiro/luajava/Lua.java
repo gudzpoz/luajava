@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import party.iroiro.luajava.value.LuaValue;
 
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 /**
@@ -579,6 +580,20 @@ public interface Lua extends AutoCloseable {
      * @return {@link LuaError#OK} or {@link LuaError#MEMORY} or {@link LuaError#RUNTIME}
      */
     LuaError run(Buffer buffer, String name);
+
+    /**
+     * Dumps a function as a binary chunk
+     *
+     * <p>
+     * Receives a Lua function on the top of the stack
+     * and produces a binary chunk that,
+     * if loaded again, results in a function equivalent to the one dumped.
+     * </p>
+     *
+     * @return the binary chunk, null if an error occurred
+     */
+    @Nullable
+    ByteBuffer dump();
 
     /**
      * Calls a function in protected mode

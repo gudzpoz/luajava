@@ -41,6 +41,7 @@ public class LuaTestSuite<T extends AbstractLua> {
     public void test() {
         L.openLibraries();
         LuaScriptSuite.addAssertThrows(L);
+        testDump();
         testException();
         testExternalLoader();
         testGc();
@@ -58,6 +59,55 @@ public class LuaTestSuite<T extends AbstractLua> {
         testStackOperations();
         testTableOperations();
         testThreads();
+    }
+
+    private void testDump() {
+        try (T L = constructor.get();
+             T J = constructor.get()) {
+            // Simple functions
+            assertEquals(OK, L.run("return function(a, b) return a + b end"));
+            ByteBuffer add = L.dump();
+            assertNotNull(add);
+            for (int i = 0; i < 100; i += 17) {
+                for (int j = 0; j < 100; j += 37) {
+                    assertEquals(OK, J.load(add, "addition.lua"));
+                    J.push(i);
+                    J.push(j);
+                    assertEquals(OK, J.pCall(2, 1));
+                    assertEquals(i + j, J.toNumber(-1), 0.000001);
+                    J.pop(1);
+                }
+            }
+
+            // Non-functions
+            L.createTable(0, 0);
+            assertNull(L.dump());
+            L.pop(1);
+            L.pushNil();
+            assertNull(L.dump());
+            L.pop(1);
+
+            // C functions
+            assertEquals(OK, L.run("return java.new"));
+            assertTrue(L.isFunction(-1));
+            assertNull(L.dump());
+            L.pop(1);
+
+            // Functions with up-values
+            assertEquals(OK, L.run("value = 1000"));
+            assertEquals(OK, L.run("return function(b) return b + value end"));
+            ByteBuffer upAdd = L.dump();
+            assertNotNull(upAdd);
+            assertEquals(OK, J.load(upAdd, "upAdd.lua"));
+            J.push(24);
+            assertEquals(RUNTIME, J.pCall(1, 1));
+            assertEquals(OK, J.run("value = 1000"));
+            assertEquals(OK, J.load(upAdd, "upAdd.lua"));
+            J.push(24);
+            assertEquals(OK, J.pCall(1, 1));
+            assertEquals(1024., J.toNumber(-1), 0.000001);
+            L.pop(1);
+        }
     }
 
     private void testGc() {

@@ -1282,6 +1282,43 @@ public abstract class LuaNative {
     protected abstract long lua_touserdata(long ptr, int index);
 
     /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_dump"><code>lua_dump</code></a>
+     *
+     * <pre><code>
+     * [-0, +0, m]
+     * </code></pre>
+     *
+     * <pre><code>
+     * int lua_dump (lua_State *L, lua_Writer writer, void *data);
+     * </code></pre>
+     *
+     * <p>
+     * Dumps a function as a binary chunk.
+     * Receives a Lua function on the top of the stack
+     * and produces a binary chunk that,
+     * if loaded again, results in a function equivalent to the one dumped.
+     * As it produces parts of the chunk,
+     * <a href="https://www.lua.org/manual/5.1/manual.html#lua_dump"><code>lua_dump</code></a>
+     * calls function writer (see <a href="https://www.lua.org/manual/5.1/manual.html#lua_Writer"><code>lua_Writer</code></a>)
+     * with the given data to write them.
+     * </p>
+     *
+     * <p>
+     * The value returned is the error code returned by the last call to the writer;
+     * 0 means no errors.
+     * </p>
+     *
+     * <p>
+     *  This function does not pop the Lua function from the stack.
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @return a nullable {@link java.nio.ByteBuffer} containing the dumped binary
+     */
+    protected abstract Object luaJ_dumptobuffer(long ptr);
+
+
+    /**
      * A wrapper function
      *
      * Convert to Java object if it is one
