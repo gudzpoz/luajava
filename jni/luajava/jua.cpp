@@ -4,6 +4,8 @@
 #include "jua.h"
 #include "juaapi.h"
 
+#include <stdlib.h>
+
 // For template usage
 const char JAVA_CLASS_META_REGISTRY[] = "__jclass__";
 const char JAVA_OBJECT_META_REGISTRY[] = "__jobject__";
@@ -460,17 +462,15 @@ jobject luaJ_dumptobuffer(lua_State * L) {
   DumpBuffer dump;
   dump.size = 0;
   dump.capacity = 4096;
-  dump.buffer = (unsigned char *) malloc(dump.size);
+  dump.buffer = (unsigned char *) malloc(dump.capacity);
   if (luaJ_dump(L, dumpBufferWriter, &dump)) {
     free(dump.buffer);
-    luaL_error(L, "memory allocation failed");
     return NULL;
   }
   JNIEnv * env = getJNIEnv(L);
   jobject buffer = env->CallStaticObjectMethod(juaapi_class, juaapi_allocatedirect, (jint) dump.size);
   if (checkIfError(env, L)) {
     free(dump.buffer);
-    lua_error(L);
     return NULL;
   }
   void * addr = env->GetDirectBufferAddress(buffer);
