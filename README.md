@@ -39,11 +39,11 @@ Documentation is available at [LuaJava](https://gudzpoz.github.io/luajava/) alon
 
 | Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 |   LuaJIT    |
 |:-------:|:-------:|:-------:|:-------:|:-----------:|
-|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.4  | [`e61a1f9`] |
+|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.4  | [`03080b7`] |
 
 </div>
 
-[`e61a1f9`]: https://github.com/LuaJIT/LuaJIT/commits/e61a1f961ac3f063a5d80ca9b7b7e263810abf74
+[`e61a1f9`]: https://github.com/LuaJIT/LuaJIT/commits/03080b795aa3496ed62d4a0697c9f4767e7ca7e5
 
 Supported Lua versions: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4 and LuaJIT.
 
@@ -94,14 +94,11 @@ And [a more advanced "Hello World"](https://gudzpoz.github.io/luajava/examples/h
 ```lua
 print = java.method(java.import('java.lang.System').out,'println','java.lang.Object')
 Ansi = java.import('org.fusesource.jansi.Ansi')
-runnable = {
-  run = function()
+thread = java.import('java.lang.Thread')(function()
 
     print(Ansi:ansi():render('@|magenta,bold Hello |@'):toString())
 
-  end
-}
-thread = java.import('java.lang.Thread')(java.proxy('java.lang.Runnable', runnable))
+end)
 thread:start()
 ```
 
