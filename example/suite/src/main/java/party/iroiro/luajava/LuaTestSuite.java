@@ -125,6 +125,30 @@ public class LuaTestSuite<T extends AbstractLua> {
             assertEquals(OK, J.pCall(1, 1));
             assertEquals(1024., J.toNumber(-1), 0.000001);
             L.pop(1);
+
+            // Large string to buffer
+            J.openLibrary("string");
+            // Aiming 1 MB
+            J.run("s = 's'; for i = 1, 11 do s = string.rep(s, 4) end");
+            J.getGlobal("s");
+            int size = 4 * 1024 * 1024;
+            assertEquals(size, J.rawLength(-1));
+            ByteBuffer buffer = J.toBuffer(-1);
+            assertNotNull(buffer);
+            assertEquals(size, buffer.capacity());
+            for (int i = 0; i < size; i++) {
+                assertEquals('s', buffer.get(i));
+            }
+            ByteBuffer direct = J.toDirectBuffer(-1);
+            assertNotNull(direct);
+            assertTrue(direct.isDirect());
+            assertTrue(direct.isReadOnly());
+            assertEquals(size, direct.limit());
+            assertEquals(size, direct.capacity());
+            J.pop(1);
+            J.createTable(0, 0);
+            assertNull(J.toDirectBuffer(-1));
+            J.pop(1);
         }
     }
 

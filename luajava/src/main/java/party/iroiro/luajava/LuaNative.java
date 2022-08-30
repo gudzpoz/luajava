@@ -1318,13 +1318,33 @@ public abstract class LuaNative {
     protected abstract Object luaJ_dumptobuffer(long ptr);
 
     /**
-     * Creates a direct {@link java.nio.ByteBuffer} from the string at the specific index
+     * Creates a {@link java.nio.ByteBuffer} from the string at the specific index
+     *
+     * <p>
+     * This method copies the content of the string into a buffer managed by Java,
+     * and you are safe to pop the string from Lua stack.
+     * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      * @return a nullable {@link java.nio.ByteBuffer} containing the string
      */
     protected abstract Object luaJ_tobuffer(long ptr, int index);
+
+    /**
+     * Creates a direct {@link java.nio.ByteBuffer} backed by the string at the stack index
+     *
+     * <p>
+     * This method creates a buffer that directly accesses the memory managed by Lua.
+     * You are not expected to modify the content of the buffer,
+     * and the buffer will become invalid after the string.
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @return a nullable {@link java.nio.ByteBuffer} containing the string
+     */
+    protected abstract Object luaJ_todirectbuffer(long ptr, int index);
 
     /**
      * A wrapper function

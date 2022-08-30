@@ -654,6 +654,17 @@ def addExtra(functions):
             ],
         },
     })
+    functions.append({
+        'name': 'luaJ_todirectbuffer',
+        'description': 'See <code>lua_tolstring</code>',
+        'signature': {
+            'return': 'jobject',
+            'params': [
+                ['lua_State *', 'L'],
+                ['int', 'index'],
+            ],
+        },
+    })
 
 
 def getWhole(luaVersion, package):

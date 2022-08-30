@@ -231,7 +231,7 @@ public interface Lua extends AutoCloseable {
     @Nullable String toString(int index);
 
     /**
-     * Creates a direct {@link java.nio.ByteBuffer} from the string at the specific index
+     * Creates a {@link java.nio.ByteBuffer} from the string at the specific index
      *
      * <p>
      * You may want to use this instead of {@link #toString(int)} when the string is binary
@@ -242,6 +242,20 @@ public interface Lua extends AutoCloseable {
      * @return the created buffer
      */
     @Nullable ByteBuffer toBuffer(int index);
+
+    /**
+     * Creates a read-only direct {@link java.nio.ByteBuffer} from the string at the specific index
+     *
+     * <p>
+     * The memory of this buffer is managed by Lua.
+     * So you should never use the buffer after poping the corresponding value
+     * from the Lua stack.
+     * </p>
+     *
+     * @param index the stack index
+     * @return the created read-only buffer
+     */
+    @Nullable ByteBuffer toDirectBuffer(int index);
 
     /**
      * Get the element at the specified stack position, if the element is a Java object / array / class

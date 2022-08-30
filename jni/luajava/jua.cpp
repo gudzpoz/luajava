@@ -492,3 +492,18 @@ jobject luaJ_tobuffer(lua_State * L, int i) {
   JNIEnv * env = getJNIEnv(L);
   return toBuffer(env, L, str, len);
 }
+
+jobject luaJ_todirectbuffer(lua_State * L, int i) {
+  size_t len;
+  const void * str = lua_tolstring(L, i, &len);
+  if (str == NULL) {
+    return NULL;
+  }
+  JNIEnv * env = getJNIEnv(L);
+  /* Have to const_cast. We are to use it "asReadOnlyBuffer" on the Java side. */
+  jobject buffer = env->NewDirectByteBuffer(const_cast<void *>(str), (jlong) len);
+  if (checkIfError(env, L)) {
+    return NULL;
+  }
+  return buffer;
+}

@@ -3738,4 +3738,23 @@ public class LuaJitNatives extends LuaNative {
     */
 
 
+    /**
+     * A wrapper function
+     *
+     * <p>
+     * See <code>lua_tolstring</code>
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @return see description
+     */
+    protected native Object luaJ_todirectbuffer(long ptr, int index); /*
+        lua_State * L = (lua_State *) ptr;
+        
+        jobject returnValueReceiver = (jobject) luaJ_todirectbuffer((lua_State *) L, (int) index);
+        return returnValueReceiver;
+    */
+
+
 }

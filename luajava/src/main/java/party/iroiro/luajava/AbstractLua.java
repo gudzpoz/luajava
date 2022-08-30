@@ -357,6 +357,16 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
+    public @Nullable ByteBuffer toDirectBuffer(int index) {
+        ByteBuffer buffer = (ByteBuffer) C.luaJ_todirectbuffer(L, index);
+        if (buffer == null) {
+            return null;
+        } else {
+            return buffer.asReadOnlyBuffer();
+        }
+    }
+
+    @Override
     public @Nullable Object toJavaObject(int index) {
         return C.luaJ_toobject(L, index);
     }
