@@ -41,6 +41,7 @@ public class LuaTestSuite<T extends AbstractLua> {
     public void test() {
         L.openLibraries();
         LuaScriptSuite.addAssertThrows(L);
+        testDump();
         testException();
         testExternalLoader();
         testGc();
@@ -58,6 +59,97 @@ public class LuaTestSuite<T extends AbstractLua> {
         testStackOperations();
         testTableOperations();
         testThreads();
+    }
+
+    private void testDump() {
+        try (T L = constructor.get();
+             T J = constructor.get()) {
+            // Simple functions
+            assertEquals(OK, L.run("return function(a, b) return a + b end"));
+            ByteBuffer add = L.dump();
+            assertNotNull(add);
+            for (int i = 0; i < 100; i += 17) {
+                for (int j = 0; j < 100; j += 37) {
+                    assertEquals(OK, J.load(add, "addition.lua"));
+                    J.push(i);
+                    J.push(j);
+                    assertEquals(OK, J.pCall(2, 1));
+                    assertEquals(i + j, J.toNumber(-1), 0.000001);
+                    J.pop(1);
+                }
+            }
+            L.pop(1);
+
+            // toBuffer with string.dump
+            L.openLibrary("string");
+            assertEquals(OK, L.run("return string.dump(function(a, b) return a + b end)"));
+            ByteBuffer dumpedAdd = L.toBuffer(-1);
+            assertNotNull(dumpedAdd);
+            for (int i = 0; i < 100; i += 17) {
+                for (int j = 0; j < 100; j += 37) {
+                    assertEquals(OK, J.load(dumpedAdd, "stringDumpedAdd.lua"));
+                    J.push(i);
+                    J.push(j);
+                    assertEquals(OK, J.pCall(2, 1));
+                    assertEquals(i + j, J.toNumber(-1), 0.000001);
+                    J.pop(1);
+                }
+            }
+            L.pop(1);
+
+            // Non-functions
+            L.createTable(0, 0);
+            assertNull(L.dump());
+            L.pop(1);
+            L.pushNil();
+            assertNull(L.dump());
+            L.pop(1);
+
+            // C functions
+            assertEquals(OK, L.run("return java.new"));
+            assertTrue(L.isFunction(-1));
+            assertNull(L.dump());
+            L.pop(1);
+
+            // Functions with up-values
+            assertEquals(OK, L.run("value = 1000"));
+            assertEquals(OK, L.run("return function(b) return b + value end"));
+            ByteBuffer upAdd = L.dump();
+            assertNotNull(upAdd);
+            assertEquals(OK, J.load(upAdd, "upAdd.lua"));
+            J.push(24);
+            assertEquals(RUNTIME, J.pCall(1, 1));
+            assertEquals(OK, J.run("value = 1000"));
+            assertEquals(OK, J.load(upAdd, "upAdd.lua"));
+            J.push(24);
+            assertEquals(OK, J.pCall(1, 1));
+            assertEquals(1024., J.toNumber(-1), 0.000001);
+            L.pop(1);
+
+            // Large string to buffer
+            J.openLibrary("string");
+            // Aiming 1 MB
+            J.run("s = 's'; for i = 1, 11 do s = string.rep(s, 4) end");
+            J.getGlobal("s");
+            int size = 4 * 1024 * 1024;
+            assertEquals(size, J.rawLength(-1));
+            ByteBuffer buffer = J.toBuffer(-1);
+            assertNotNull(buffer);
+            assertEquals(size, buffer.capacity());
+            for (int i = 0; i < size; i++) {
+                assertEquals('s', buffer.get(i));
+            }
+            ByteBuffer direct = J.toDirectBuffer(-1);
+            assertNotNull(direct);
+            assertTrue(direct.isDirect());
+            assertTrue(direct.isReadOnly());
+            assertEquals(size, direct.limit());
+            assertEquals(size, direct.capacity());
+            J.pop(1);
+            J.createTable(0, 0);
+            assertNull(J.toDirectBuffer(-1));
+            J.pop(1);
+        }
     }
 
     private void testGc() {

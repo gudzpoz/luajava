@@ -37,6 +37,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -351,6 +352,21 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
+    public @Nullable ByteBuffer toBuffer(int index) {
+        return (ByteBuffer) C.luaJ_tobuffer(L, index);
+    }
+
+    @Override
+    public @Nullable ByteBuffer toDirectBuffer(int index) {
+        ByteBuffer buffer = (ByteBuffer) C.luaJ_todirectbuffer(L, index);
+        if (buffer == null) {
+            return null;
+        } else {
+            return buffer.asReadOnlyBuffer();
+        }
+    }
+
+    @Override
     public @Nullable Object toJavaObject(int index) {
         return C.luaJ_toobject(L, index);
     }
@@ -561,6 +577,11 @@ public abstract class AbstractLua implements Lua {
         } else {
             return LuaError.MEMORY;
         }
+    }
+
+    @Override
+    public ByteBuffer dump() {
+        return (ByteBuffer) C.luaJ_dumptobuffer(L);
     }
 
     @Override

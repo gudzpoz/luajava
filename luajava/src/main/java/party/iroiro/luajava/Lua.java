@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import party.iroiro.luajava.value.LuaValue;
 
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 /**
@@ -228,6 +229,33 @@ public interface Lua extends AutoCloseable {
      * @return the converted string
      */
     @Nullable String toString(int index);
+
+    /**
+     * Creates a {@link java.nio.ByteBuffer} from the string at the specific index
+     *
+     * <p>
+     * You may want to use this instead of {@link #toString(int)} when the string is binary
+     * (e.g., those returned by {@code string.dump} and contains null characters).
+     * </p>
+     *
+     * @param index the stack index
+     * @return the created buffer
+     */
+    @Nullable ByteBuffer toBuffer(int index);
+
+    /**
+     * Creates a read-only direct {@link java.nio.ByteBuffer} from the string at the specific index
+     *
+     * <p>
+     * The memory of this buffer is managed by Lua.
+     * So you should never use the buffer after poping the corresponding value
+     * from the Lua stack.
+     * </p>
+     *
+     * @param index the stack index
+     * @return the created read-only buffer
+     */
+    @Nullable ByteBuffer toDirectBuffer(int index);
 
     /**
      * Get the element at the specified stack position, if the element is a Java object / array / class
@@ -579,6 +607,20 @@ public interface Lua extends AutoCloseable {
      * @return {@link LuaError#OK} or {@link LuaError#MEMORY} or {@link LuaError#RUNTIME}
      */
     LuaError run(Buffer buffer, String name);
+
+    /**
+     * Dumps a function as a binary chunk
+     *
+     * <p>
+     * Receives a Lua function on the top of the stack
+     * and produces a binary chunk that,
+     * if loaded again, results in a function equivalent to the one dumped.
+     * </p>
+     *
+     * @return the binary chunk, null if an error occurred
+     */
+    @Nullable
+    ByteBuffer dump();
 
     /**
      * Calls a function in protected mode

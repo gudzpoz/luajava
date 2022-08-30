@@ -633,6 +633,38 @@ def addExtra(functions):
             ],
         },
     })
+    functions.append({
+        'name': 'luaJ_dumptobuffer',
+        'description': 'See <code>lua_dump</code>',
+        'signature': {
+            'return': 'jobject',
+            'params': [
+                ['lua_State *', 'L'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_tobuffer',
+        'description': 'See <code>lua_tolstring</code>',
+        'signature': {
+            'return': 'jobject',
+            'params': [
+                ['lua_State *', 'L'],
+                ['int', 'index'],
+            ],
+        },
+    })
+    functions.append({
+        'name': 'luaJ_todirectbuffer',
+        'description': 'See <code>lua_tolstring</code>',
+        'signature': {
+            'return': 'jobject',
+            'params': [
+                ['lua_State *', 'L'],
+                ['int', 'index'],
+            ],
+        },
+    })
 
 
 def getWhole(luaVersion, package):

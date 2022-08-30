@@ -1,7 +1,6 @@
 #!/bin/python
 
-# python scripts/comm-abstract.py \
-#        lua*/src/main/java/party/iroiro/luajava/*Natives*
+# python scripts/comm-abstract.py lua*/src/main/java/party/iroiro/luajava/*Natives*
 
 import sys
 import re
