@@ -136,12 +136,12 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li class="blockList">
 <dl>
 <dt>All Implemented Interfaces:</dt>
-<dd><code>java.lang.AutoCloseable</code>, <code><a href="../cleaner/LuaReferable.html" title="interface in party.iroiro.luajava.cleaner">LuaReferable</a></code>, <code><a href="LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a></code></dd>
+<dd><code>java.lang.AutoCloseable</code>, <code>party.iroiro.luajava.cleaner.LuaReferable</code>, <code><a href="LuaValue.html" title="interface in party.iroiro.luajava.value">LuaValue</a></code></dd>
 </dl>
 <hr>
 <pre>public class <span class="typeNameLabel">RefLuaValue</span>
 extends <a href="AbstractLuaValue.html" title="class in party.iroiro.luajava.value">AbstractLuaValue</a>&lt;<a href="../Lua.html" title="interface in party.iroiro.luajava">Lua</a>&gt;
-implements <a href="../cleaner/LuaReferable.html" title="interface in party.iroiro.luajava.cleaner">LuaReferable</a></pre>
+implements party.iroiro.luajava.cleaner.LuaReferable</pre>
 </li>
 </ul>
 </div>
@@ -353,9 +353,7 @@ public&nbsp;@Nullable java.lang.Object&nbsp;toJavaObject()</pre>
 <pre class="methodSignature">public&nbsp;int&nbsp;getReference()</pre>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../cleaner/LuaReferable.html#getReference()">getReference</a></code>&nbsp;in interface&nbsp;<code><a href="../cleaner/LuaReferable.html" title="interface in party.iroiro.luajava.cleaner">LuaReferable</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>a reference obtained with <a href="../Lua.html#ref()"><code>Lua.ref()</code></a>, to be used with <a href="../Lua.html#unref(int)"><code>Lua.unref(int)</code></a></dd>
+<dd><code>getReference</code>&nbsp;in interface&nbsp;<code>party.iroiro.luajava.cleaner.LuaReferable</code></dd>
 </dl>
 </li>
 </ul>

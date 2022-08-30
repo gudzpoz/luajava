@@ -26,7 +26,7 @@
     catch(err) {
     }
 //-->
-var data = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9,"i7":9,"i8":9,"i9":9,"i10":9,"i11":9,"i12":9,"i13":9,"i14":9,"i15":9,"i16":9,"i17":9,"i18":9,"i19":9,"i20":9,"i21":9,"i22":9,"i23":9,"i24":9,"i25":9};
+var data = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9,"i7":9,"i8":9,"i9":9,"i10":9,"i11":9,"i12":9,"i13":9,"i14":9,"i15":9,"i16":9,"i17":9,"i18":9,"i19":9,"i20":9,"i21":9,"i22":9,"i23":9,"i24":9,"i25":9,"i26":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -178,6 +178,13 @@ extends java.lang.Object</pre>
 <th class="colLast" scope="col">Description</th>
 </tr>
 <tr id="i0" class="altColor">
+<td class="colFirst"><code>static java.nio.ByteBuffer</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#allocateDirect(int)">allocateDirect</a></span>&#8203;(int&nbsp;size)</code></th>
+<td class="colLast">
+<div class="block">Allocates a direct buffer whose memory is managed by Java</div>
+</td>
+</tr>
+<tr id="i1" class="rowColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#arrayIndex(int,java.lang.Object,int)">arrayIndex</a></span>&#8203;(int&nbsp;index,
           java.lang.Object&nbsp;obj,
@@ -186,12 +193,12 @@ extends java.lang.Object</pre>
 <div class="block">Gets an element of an array</div>
 </td>
 </tr>
-<tr id="i1" class="rowColor">
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#arrayLength(java.lang.Object)">arrayLength</a></span>&#8203;(java.lang.Object&nbsp;obj)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#arrayNew(int,java.lang.Object,int)">arrayNew</a></span>&#8203;(int&nbsp;index,
         java.lang.Object&nbsp;oClass,
@@ -200,7 +207,7 @@ extends java.lang.Object</pre>
 <div class="block">Pushes a created array onto the stack</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#arrayNewIndex(int,java.lang.Object,int)">arrayNewIndex</a></span>&#8203;(int&nbsp;index,
              java.lang.Object&nbsp;obj,
@@ -209,7 +216,7 @@ extends java.lang.Object</pre>
 <div class="block">Assigns to an element of an array</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#classIndex(int,java.lang.Class,java.lang.String)">classIndex</a></span>&#8203;(int&nbsp;index,
           java.lang.Class&lt;?&gt;&nbsp;clazz,
@@ -218,7 +225,7 @@ extends java.lang.Object</pre>
 <div class="block">Pushes a static field of a class onto the stack</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#classInvoke(int,java.lang.Class,java.lang.String,int)">classInvoke</a></span>&#8203;(int&nbsp;index,
            java.lang.Class&lt;?&gt;&nbsp;clazz,
@@ -228,7 +235,7 @@ extends java.lang.Object</pre>
 <div class="block">Invokes a static method of a class</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#classInvoke(int,java.lang.Class,java.lang.String,java.lang.String,int)">classInvoke</a></span>&#8203;(int&nbsp;index,
            java.lang.Class&lt;?&gt;&nbsp;clazz,
@@ -239,7 +246,7 @@ extends java.lang.Object</pre>
 <div class="block">Invokes a static method of a class</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#classNew(int,java.lang.Object,int)">classNew</a></span>&#8203;(int&nbsp;index,
         java.lang.Object&nbsp;oClazz,
@@ -248,7 +255,7 @@ extends java.lang.Object</pre>
 <div class="block">Constructs an instance of a class</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#classNewIndex(int,java.lang.Class,java.lang.String)">classNewIndex</a></span>&#8203;(int&nbsp;index,
              java.lang.Class&lt;?&gt;&nbsp;clazz,
@@ -257,7 +264,7 @@ extends java.lang.Object</pre>
 <div class="block">Assigns to a static field</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>static @Nullable java.lang.Object</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#convertFromLua(party.iroiro.luajava.Lua,java.lang.Class,int)">convertFromLua</a></span>&#8203;(<a href="Lua.html" title="interface in party.iroiro.luajava">Lua</a>&nbsp;L,
               java.lang.Class&lt;?&gt;&nbsp;clazz,
@@ -266,7 +273,7 @@ extends java.lang.Object</pre>
 <div class="block">Converts an element on the lua stack at <code>index</code> to Java</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#fieldIndex(party.iroiro.luajava.Lua,java.lang.Class,java.lang.Object,java.lang.String)">fieldIndex</a></span>&#8203;(<a href="Lua.html" title="interface in party.iroiro.luajava">Lua</a>&nbsp;L,
           java.lang.Class&lt;?&gt;&nbsp;clazz,
@@ -276,19 +283,19 @@ extends java.lang.Object</pre>
 <div class="block">Tries to fetch field from an object</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#freeThreadId(int)">freeThreadId</a></span>&#8203;(int&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Closes a sub-thread</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>static java.lang.Class&lt;?&gt;[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getClasses(java.lang.String)">getClasses</a></span>&#8203;(java.lang.String&nbsp;notSignature)</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#javaImport(int,java.lang.String)">javaImport</a></span>&#8203;(int&nbsp;id,
           java.lang.String&nbsp;className)</code></th>
@@ -296,7 +303,7 @@ extends java.lang.Object</pre>
 <div class="block">Pushed onto the stack a jclass or a package</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#load(int,java.lang.String)">load</a></span>&#8203;(int&nbsp;id,
     java.lang.String&nbsp;module)</code></th>
@@ -304,14 +311,14 @@ extends java.lang.Object</pre>
 <div class="block">Loads a Lua chunck according with <a href="Lua.html#loadExternal(java.lang.String)"><code>Lua.loadExternal(String)</code></a></div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#luaify(int)">luaify</a></span>&#8203;(int&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Converts a value on top of the stack into a more Lua-style form</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#methodInvoke(int,java.lang.Class,java.lang.Object,java.lang.String,int)">methodInvoke</a></span>&#8203;(int&nbsp;index,
             java.lang.Class&lt;?&gt;&nbsp;clazz,
@@ -322,7 +329,7 @@ extends java.lang.Object</pre>
 <div class="block">Calls the given method <code>{obj}.{name}(...</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#methodInvoke(int,java.lang.Class,java.lang.Object,java.lang.String,java.lang.String,int)">methodInvoke</a></span>&#8203;(int&nbsp;index,
             java.lang.Class&lt;?&gt;&nbsp;clazz,
@@ -334,7 +341,7 @@ extends java.lang.Object</pre>
 <div class="block">Invokes a method</div>
 </td>
 </tr>
-<tr id="i18" class="altColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#methodInvoke(party.iroiro.luajava.Lua,java.lang.reflect.Method,java.lang.Object,java.lang.Object%5B%5D)">methodInvoke</a></span>&#8203;(<a href="Lua.html" title="interface in party.iroiro.luajava">Lua</a>&nbsp;L,
             java.lang.reflect.Method&nbsp;method,
@@ -344,7 +351,7 @@ extends java.lang.Object</pre>
 <div class="block">Invokes a method and pushes the result onto the stack</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#objectIndex(int,java.lang.Object,java.lang.String)">objectIndex</a></span>&#8203;(int&nbsp;index,
            @NotNull java.lang.Object&nbsp;object,
@@ -353,7 +360,7 @@ extends java.lang.Object</pre>
 <div class="block">Obtains the value of a certain field of an object</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#objectInvoke(int,java.lang.Object,java.lang.String,int)">objectInvoke</a></span>&#8203;(int&nbsp;index,
             @NotNull java.lang.Object&nbsp;obj,
@@ -363,7 +370,7 @@ extends java.lang.Object</pre>
 <div class="block">Invokes a member method of an object</div>
 </td>
 </tr>
-<tr id="i21" class="rowColor">
+<tr id="i22" class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#objectInvoke(int,java.lang.Object,java.lang.String,java.lang.String,int)">objectInvoke</a></span>&#8203;(int&nbsp;index,
             java.lang.Object&nbsp;obj,
@@ -374,7 +381,7 @@ extends java.lang.Object</pre>
 <div class="block">Invokes a member method of an object</div>
 </td>
 </tr>
-<tr id="i22" class="altColor">
+<tr id="i23" class="rowColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#objectNewIndex(int,java.lang.Object,java.lang.String)">objectNewIndex</a></span>&#8203;(int&nbsp;index,
               java.lang.Object&nbsp;obj,
@@ -383,14 +390,14 @@ extends java.lang.Object</pre>
 <div class="block">Sets a field of an object</div>
 </td>
 </tr>
-<tr id="i23" class="rowColor">
+<tr id="i24" class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#proxy(int)">proxy</a></span>&#8203;(int&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Creates a proxy</div>
 </td>
 </tr>
-<tr id="i24" class="altColor">
+<tr id="i25" class="rowColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#threadNewId(int,long)">threadNewId</a></span>&#8203;(int&nbsp;mainId,
            long&nbsp;ptr)</code></th>
@@ -398,7 +405,7 @@ extends java.lang.Object</pre>
 <div class="block">Allocates an id for a thread created on the Lua side</div>
 </td>
 </tr>
-<tr id="i25" class="rowColor">
+<tr id="i26" class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#unwrap(int,java.lang.Object)">unwrap</a></span>&#8203;(int&nbsp;id,
       java.lang.Object&nbsp;obj)</code></th>
@@ -449,6 +456,22 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a id="allocateDirect(int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>allocateDirect</h4>
+<pre class="methodSignature">public static&nbsp;java.nio.ByteBuffer&nbsp;allocateDirect&#8203;(int&nbsp;size)</pre>
+<div class="block">Allocates a direct buffer whose memory is managed by Java</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>size</code> - the buffer size</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>a direct buffer</dd>
+</dl>
+</li>
+</ul>
 <a id="unwrap(int,java.lang.Object)">
 <!--   -->
 </a>
