@@ -45,7 +45,7 @@ public final class LuaScriptEngine extends AbstractScriptEngine implements Scrip
     }
 
     @Override
-    public Object eval(String script, ScriptContext scriptContext) throws ScriptException {
+    public LuaValue[] eval(String script, ScriptContext scriptContext) throws ScriptException {
         assertNotNull(script, "script");
         assertNotNull(scriptContext, "context");
         try (Lua L = getLua()) {
@@ -61,7 +61,7 @@ public final class LuaScriptEngine extends AbstractScriptEngine implements Scrip
     }
 
     @Override
-    public Object eval(Reader reader, ScriptContext scriptContext) throws ScriptException {
+    public LuaValue[] eval(Reader reader, ScriptContext scriptContext) throws ScriptException {
         return eval(readAll(reader), scriptContext);
     }
 
