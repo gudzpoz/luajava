@@ -1,5 +1,5 @@
 subprojects {
-    if (!['example', 'android', 'android-test'].contains(project.name)) {
+    if (!['example', 'android', 'android-test', 'jsr223'].contains(project.name)) {
         apply plugin: 'jacoco'
 
         jacocoTestReport {

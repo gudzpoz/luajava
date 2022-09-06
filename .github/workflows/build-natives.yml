@@ -50,7 +50,7 @@ jobs:
           ./gradlew jniGen jnigenBuild
       - name: Test
         run: |
-          ./gradlew :example:test
+          ./gradlew :example:test :jsr223:test
       - name: Upload macOS/iOS natives
         uses: actions/upload-artifact@v2.1.4
         with:
@@ -112,7 +112,7 @@ jobs:
       - name: Test (Desktop)
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
-          ./gradlew :example:test
+          ./gradlew :example:test :jsr223:test
       - name: Jacoco Test Report
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
@@ -120,7 +120,7 @@ jobs:
       - name: Upload test result
         uses: codecov/codecov-action@v2
         with:
-          files: ./lua51/build/reports/jacoco/report.xml,./lua52/build/reports/jacoco/report.xml,./lua53/build/reports/jacoco/report.xml,./lua54/build/reports/jacoco/report.xml,./luajit/build/reports/jacoco/report.xml,./luajava/build/reports/jacoco/report.xml
+          files: ./lua51/build/reports/jacoco/report.xml,./lua52/build/reports/jacoco/report.xml,./lua53/build/reports/jacoco/report.xml,./lua54/build/reports/jacoco/report.xml,./luajit/build/reports/jacoco/report.xml,./luajava/build/reports/jacoco/report.xml,./jsr223/build/reports/jacoco/report.xml
           verbose: true
       - name: Upload all output libs
         uses: actions/upload-artifact@v2.1.4
@@ -218,7 +218,7 @@ jobs:
           ./gradlew jniGen
       - name: Test
         run: |
-          ./gradlew :example:test
+          ./gradlew :example:test :jsr223:test
   android-testing:
     runs-on: macos-latest
     strategy:
