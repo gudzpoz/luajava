@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-2da8c44d","path":"/glibc.html","title":"GNU C Library (glibc) Compatibility","lang":"en-US","frontmatter":{},"excerpt":"","headers":[{"level":2,"title":"glibc","slug":"glibc","children":[]},{"level":2,"title":"musl","slug":"musl","children":[]}],"git":{"updatedTime":1662527874000},"filePathRelative":"glibc.md"}');export{e as data};
