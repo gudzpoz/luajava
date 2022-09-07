@@ -32,6 +32,8 @@ extern jmethodID juaapi_import;
 extern jmethodID juaapi_proxy;
 extern jmethodID juaapi_unwrap;
 extern jmethodID juaapi_load;
+extern jmethodID juaapi_loadmodule;
+extern jmethodID juaapi_loadlib;
 extern jmethodID throwable_tostring;
 
 jclass bindJavaClass(JNIEnv * env, const char * name);

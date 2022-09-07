@@ -34,4 +34,27 @@ tasks.withType(JavaCompile) {
 
 test {
     useJUnitPlatform()
+
+    jacoco {
+        destinationFile = buildDir.toPath().resolve('jacoco/test.exec').toFile()
+    }
+}
+
+jacocoTestReport {
+    dependsOn fileTree(buildDir.absolutePath).include('jacoco/*.exec')
+
+    executionData.setFrom(fileTree(buildDir.absolutePath).include('jacoco/*.exec'))
+
+    reports {
+        xml.enabled true
+        html.enabled true
+        csv.enabled false
+        xml.destination file("${buildDir}/reports/jacoco/report.xml")
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: '**/party/iroiro/luajava/util/**')
+        }))
+    }
 }

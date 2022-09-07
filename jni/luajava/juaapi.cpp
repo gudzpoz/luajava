@@ -179,6 +179,7 @@ int jobjectSigCall(lua_State * L) {
   return jSigCall(L, &jobjectSigInvoke);
 }
 
+// Calls juaapi_load and loads with an ExternalLoader
 int jmoduleLoad(lua_State * L) {
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
@@ -188,4 +189,16 @@ int jmoduleLoad(lua_State * L) {
                                      (jint) stateIndex, moduleName);
   env->DeleteLocalRef(moduleName);
   return checkOrError(env, L, ret);
+}
+
+// Calls juaapi_loadmodule and loads a Java static method
+int jloadModule(lua_State * L) {
+  JNIEnv * env = getJNIEnv(L);
+  int stateIndex = getStateIndex(L);
+  const char * name = luaL_checkstring(L, 1);
+  jstring moduleName = env->NewStringUTF(name);
+  env->CallStaticIntMethod(juaapi_class, juaapi_loadmodule,
+                           (jint) stateIndex, moduleName);
+  env->DeleteLocalRef(moduleName);
+  return checkOrError(env, L, 1);
 }

@@ -55,10 +55,19 @@ public class LuaTestSuite<T extends AbstractLua> {
         testProxy();
         testPushChecks();
         testRef();
+        testRequire();
         testRunners();
         testStackOperations();
         testTableOperations();
         testThreads();
+    }
+
+    private void testRequire() {
+        try (T L = constructor.get()) {
+            L.openLibrary("package");
+            Lua.LuaError res = L.run("assert(1024 == require('party.iroiro.luajava.JavaLibTest.open').getNumber())");
+            assertEquals(L.toString(-1), OK, res);
+        }
     }
 
     private void testDump() {

@@ -38,6 +38,8 @@ jmethodID juaapi_import         = NULL;
 jmethodID juaapi_proxy          = NULL;
 jmethodID juaapi_unwrap         = NULL;
 jmethodID juaapi_load           = NULL;
+jmethodID juaapi_loadmodule     = NULL;
+jmethodID juaapi_loadlib        = NULL;
 jmethodID juaapi_allocatedirect = NULL;
 // java.lang.Throwable
 jclass java_lang_throwable_class = NULL;
@@ -165,6 +167,10 @@ int initBindings(JNIEnv * env) {
           "unwrap", "(ILjava/lang/Object;)I");
   juaapi_load = bindJavaStaticMethod(env, juaapi_class,
           "load", "(ILjava/lang/String;)I");
+  juaapi_loadmodule = bindJavaStaticMethod(env, juaapi_class,
+          "loadModule", "(ILjava/lang/String;)I");
+  juaapi_loadlib = bindJavaStaticMethod(env, juaapi_class,
+          "loadLib", "(ILjava/lang/String;Ljava/lang/String;)I");
   juaapi_allocatedirect = bindJavaStaticMethod(env, juaapi_class,
           "allocateDirect", "(I)Ljava/nio/ByteBuffer;");
   if (java_lang_class_class == NULL
@@ -192,6 +198,8 @@ int initBindings(JNIEnv * env) {
       || juaapi_import == NULL
       || juaapi_proxy == NULL
       || juaapi_load == NULL
+      || juaapi_loadmodule == NULL
+      || juaapi_loadlib == NULL
       || juaapi_allocatedirect == NULL) {
     return -1;
   } else {
@@ -409,9 +417,11 @@ int luaJ_insertloader(lua_State * L, const char * searchers) {
     lua_pop(L, 2);
     return -1;
   }
-  int next = luaJ_len(L, -1) + 1;
+  int len = luaJ_len(L, -1);
   lua_pushcfunction(L, &jmoduleLoad);
-  lua_rawseti(L, -2, next);
+  lua_rawseti(L, -2, len + 1);
+  lua_pushcfunction(L, &jloadModule);
+  lua_rawseti(L, -2, len + 2);
   lua_pop(L, 2);
   return 0;
 }

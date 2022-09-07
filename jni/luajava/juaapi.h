@@ -47,6 +47,7 @@ int jarrayIndex(lua_State * L);
 int jarrayNewIndex(lua_State * L);
 int jfunctionWrapper(lua_State * L);
 int jmoduleLoad(lua_State * L);
+int jloadModule(lua_State * L);
 
 int jpackageImport(lua_State * L);
 
