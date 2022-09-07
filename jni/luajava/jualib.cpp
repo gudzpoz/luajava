@@ -126,6 +126,22 @@ static int javaDetach(lua_State * L) {
   return checkOrError(env, L, env->CallStaticIntMethod(juaapi_class, juaapi_freethreadid, (jint) stateIndex));
 }
 
+static int javaLoadlib(lua_State * L) {
+  const char * className = luaL_checkstring(L, 1);
+  const char * methodName = luaL_checkstring(L, 2);
+
+  JNIEnv * env = getJNIEnv(L);
+  int stateIndex = getStateIndex(L);
+
+  jstring classNameStr = env->NewStringUTF(className);
+  jstring methodNameStr = env->NewStringUTF(methodName);
+  int ret = env->CallStaticIntMethod(juaapi_class, juaapi_loadlib, (jint) stateIndex,
+                                     classNameStr, methodNameStr);
+  env->DeleteLocalRef(classNameStr);
+  env->DeleteLocalRef(methodNameStr);
+  return checkOrError(env, L, ret);
+}
+
 const luaL_Reg javalib[] = {
   { "method",    javaMethod },
   { "new",       javaNew },
@@ -136,5 +152,6 @@ const luaL_Reg javalib[] = {
   { "array",     javaArray },
   { "catched",   javaCatched },
   { "detach",    javaDetach },
+  { "loadlib",   javaLoadlib },
   {NULL, NULL}
 };

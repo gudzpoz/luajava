@@ -93,9 +93,64 @@ public abstract class JuaAPI {
         AbstractLua L = Jua.get(id);
         Lua.LuaError error = L.loadExternal(module);
         if (error != Lua.LuaError.OK) {
-            L.push("\nerror " + error + " loading module '" + module + '\'');
+            L.push("\n  no module '" + module + "': " + error);
         }
         return 1;
+    }
+
+    /**
+     * Loads a Java static method that accepts a single {@link Lua} parameter and returns an integer
+     *
+     * @param id     see {@link AbstractLua#getInstance(int)}
+     * @param module the module name, i.e., the class name and the method name joined by a dot
+     * @return the number of elements pushed onto the stack
+     */
+    @SuppressWarnings("unused")
+    public static int loadModule(int id, String module) {
+        int i = module.lastIndexOf('.');
+        if (i == -1) {
+            AbstractLua L = Jua.get(id);
+            L.pushNil();
+            L.push("\n  no method '" + module + "': invalid name");
+            return 2;
+        }
+        return loadLib(id, module.substring(0, i), module.substring(i + 1));
+    }
+
+    /**
+     * Loads a Java static method that accepts a single {@link Lua} parameter and returns an integer
+     *
+     * @param id         see {@link AbstractLua#getInstance(int)}
+     * @param className  the class name
+     * @param methodName the method name
+     * @return the number of elements pushed onto the stack
+     */
+    public static int loadLib(int id, String className, String methodName) {
+        AbstractLua L = Jua.get(id);
+        try {
+            Class<?> clazz = ClassUtils.forName(className, null);
+            Method method = clazz.getDeclaredMethod(methodName, Lua.class);
+            if (method.getReturnType() == int.class) {
+                L.push(l -> {
+                    try {
+                        return (Integer) method.invoke(null, l);
+                    } catch (IllegalAccessException e) {
+                        return l.error(e);
+                    } catch (InvocationTargetException e) {
+                        return l.error(e.getCause());
+                    }
+                });
+                return 1;
+            } else {
+                L.pushNil();
+                L.push("\n  no method '" + methodName + "': not returning int values");
+                return 2;
+            }
+        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
+            L.pushNil();
+            L.push("\n  no method '" + methodName + "': no such method");
+            return 2;
+        }
     }
 
     /**
@@ -676,12 +731,12 @@ public abstract class JuaAPI {
         if (executable.isVarArgs()) {
             int count = executable.getParameterCount();
             Object[] transformed = new Object[count];
-            
+
             Class<?>[] types = executable.getParameterTypes();
             Class<?> component = types[types.length - 1].getComponentType();
             // TODO: Handle primitive types
             Object[] args = (Object[]) Array.newInstance(component, objects.length - count + 1);
-            
+
             System.arraycopy(objects, 0, transformed, 0, count - 1);
             System.arraycopy(objects, count - 1, args, 0, args.length);
             transformed[count - 1] = args;

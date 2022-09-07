@@ -139,6 +139,8 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 }
                 L.pop(1);
             }),
+            new ScriptTester("/suite/compatTest.lua", L ->
+                    L.setExternalLoader(new ClassPathLoader())),
     };
 
     public void test() {

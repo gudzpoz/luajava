@@ -17,6 +17,7 @@ We bundle several examples with the console JAR, which you may obtain using `req
 3. `require('luajava.swingTest')()`: Sets up a Swing frame to execute Lua commands.
 4. `require('luajava.testMemory')`: Tests garbage collecting a bunch of Java objects and created threads.
 5. `require('luajava.wrongLuaFile')`: Tests loading a malformed Lua file.
+6. `luajava = require('suite.luajava-compat')`: Wraps the `java` API into the original `luajava` API.
 
 Some of these examples return a function so that you may execute them as many times as you wish:
 - `luajava.awtTest`

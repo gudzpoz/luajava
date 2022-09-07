@@ -78,11 +78,19 @@ Lua tables usually start the index from 1, while Java arrays from 0.
 | **`catched`** | `()`                        | `jobject`         | Return the latest captured Java `Throwable`            |
 | **`detach`**  | `(thread)`                  | `nil`             | Detach the sub-thread from registry to allow for GC    |
 | **`import`**  | `(string)`                  | `jclass \| table` | Import a Java class or package                         |
+| **`loadlib`** | `(string, string)`          | `function`        | Load a Java method, similar to `package.loadlib`       |
 | **`luaify`**  | `(jobject)`                 | `any`             | Convert an object to Lua types if possible             |
 | **`method`**  | `(jobject, string, string)` | `function`        | Find a method                                          |
 | **`new`**     | `(jclass, ...)`             | `jobject`         | Call the constructor of the given Java type            |
 | **`proxy`**   | `(string, ..., table)`      | `jobject`         | Create an object with all calls proxied to a Lua table |
 | **`unwrap`**  | `(jobject)`                 | `table`           | Return the backing table of a proxy object             |
+
+::: tip There's more!
+Actually, if you load the built-in `package` library (either by `Lua#openLibraries()` or `Lua#openLibrary("package")`),
+you can use the Lua `require` functions to load Java side things.
+
+See [Java-Side Modules](./examples/modules.md) for a brief introduction.
+:::
 
 ### `array (jclass, dim1, ...)` <Badge>function</Badge>
 
@@ -206,6 +214,58 @@ print(j.lang.System:currentTimeMillis())
 System = java.import('java.lang.System')
 print(System:currentTimeMillis())
 ```
+
+### `loadlib (classname, method)` <Badge>function</Badge>
+
+This function provides similar functionalities to Lua's `loadlib`. It looks for a method `static public int yourSuppliedMethodName(Lua L);` inside the class, and returns it as a C function.
+
+- **Parameters:**
+
+    - `classname`: (***string***) The class name.
+
+    - `method`: (***string***) The method name.
+
+      * We expect the method to accept a single `Lua` parameter and return an integer.
+
+- **Returns:**
+
+    - (***function***) If the method is found, we wrap it up with a C function wrapper and return it.
+
+    - (***nil***, ***string***) If no valid method is found, we return `nil` plus a error message. Similar to `package.loadlib`, we do not generate a Lua error in this case.
+
+You might also want to check out [Java-Side Modules](./examples/modules.md) to see how we use this function to extend the Lua `require`.
+
+:::: code-group
+::: code-group-item Java Library
+```java
+package com.example;
+
+public class LuaLib {
+    public static int open(Lua L) {
+        L.createTable(0, 1);
+        L.push(l -> {
+            l.push(1024);
+            return 1;
+        });
+        L.setField(-2, "getNumber");
+        return 1;
+    }
+}
+```
+:::
+::: code-group-item Java Side
+```java
+Lua L = new Lua51();
+L.openLibrary("package");
+```
+:::
+::: code-group-item Lua Side
+```lua
+local LuaLibOpen = java.loadlib('com.example.LuaLib.open')
+assert(1024 == LuaLibOpen().getNumber())
+```
+:::
+::::
 
 ### `luaify (jobject)` <Badge>function</Badge>
 
