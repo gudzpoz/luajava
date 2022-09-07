@@ -48,7 +48,7 @@ I try to keep up with the most recent version of Lua, that is, [the latest offic
 
 </div>
 
-[`e61a1f9`]: https://github.com/LuaJIT/LuaJIT/commits/03080b795aa3496ed62d4a0697c9f4767e7ca7e5
+[`03080b7`]: https://github.com/LuaJIT/LuaJIT/commits/03080b795aa3496ed62d4a0697c9f4767e7ca7e5
 
 [^jit]: LuaJIT no longer creates new releases. See [Project status · Issue #665](https://github.com/LuaJIT/LuaJIT/issues/665#issuecomment-784452583) for an explanation.
 

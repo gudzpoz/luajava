@@ -43,11 +43,11 @@ Documentation is available at [LuaJava](https://gudzpoz.github.io/luajava/) alon
 
 </div>
 
-[`e61a1f9`]: https://github.com/LuaJIT/LuaJIT/commits/03080b795aa3496ed62d4a0697c9f4767e7ca7e5
+[`03080b7`]: https://github.com/LuaJIT/LuaJIT/commits/03080b795aa3496ed62d4a0697c9f4767e7ca7e5
 
 Supported Lua versions: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4 and LuaJIT.
 
-Supported platforms: **Windows**, **Linux**, **MacOS**, **Android**, **iOS**. Compiled against both ARM and x32/x64. LuaJIT is not available on iOS yet.
+Supported platforms: **Windows**, **Linux**, **MacOS**, **Android**, **iOS**. Compiled against both ARM and x32/x64. Binaries are not yet tested for iOS.
 
 Compiled natives are available for most common platforms. Check out [LuaJava Platforms](https://gudzpoz.github.io/luajava/#platforms) for a platform matrix.
 
@@ -57,22 +57,28 @@ To include LuaJava into your project, you need to include two artifacts, one for
 
 ```groovy
 // Example: LuaJIT with Desktop natives
-implementation 'party.iroiro.luajava:luajit:3.1.0'
-runtimeOnly 'party.iroiro.luajava:luajit-platform:3.1.0:natives-desktop'
+implementation 'party.iroiro.luajava:luajit:3.2.0'
+runtimeOnly 'party.iroiro.luajava:luajit-platform:3.2.0:natives-desktop'
 ```
 
 Different artifacts are provided for different Lua versions and different platforms. Check out [Getting Started](https://gudzpoz.github.io/luajava/getting-started.html) for an overview. Or you may also search in the [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava).
+
+Optionally, you may include `party.iroiro.luajava:jsr223` to provide JSR 223 functionalities. (Note that you still need the above artifacts!)
 
 ## Java module ##
 
 [The `java` module](https://gudzpoz.github.io/luajava/api.html#java-module) provides these functions:
 
+- `array`: Create a Java array.
+- `catched`: Return the latest captured Java `Throwable`
+- `detach`: Detach the sub-thread from registry to allow for GC
 - `import`: Import classes from Java
-- `new`: Construct a Java object
-- `proxy`: Create a Java object, calls to whose method will be proxied to Lua functions
+- `loadlib`: Load a Java method, similar to `package.loadlib`
 - `luaify`: Convert Java values to Lua values
 - `method`: Provide an alternative way to call Java methods
-- `array`: Create a Java array.
+- `new`: Construct a Java object
+- `proxy`: Create a Java object, calls to whose method will be proxied to Lua functions
+- `unwrap`: Return the backing table of a proxy object
 
 ### Examples
 
