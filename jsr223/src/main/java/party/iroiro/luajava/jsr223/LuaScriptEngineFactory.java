@@ -168,7 +168,7 @@ public class LuaScriptEngineFactory implements ScriptEngineFactory {
             {"Lua 5.4", "5.4.4", "party.iroiro.luajava.lua54.Lua54", "54"},
             {"Lua 5.3", "5.3.6", "party.iroiro.luajava.lua53.Lua53", "53"},
             {"Lua 5.2", "5.2.4", "party.iroiro.luajava.lua52.Lua52", "52"},
-            {"LuaJIT", "03080b795aa3496ed62d4a0697c9f4767e7ca7e5",
+            {"LuaJIT", "6c4826f12c4d33b8b978004bc681eb1eef2be977",
                     "party.iroiro.luajava.luajit.LuaJit", "jit"},
             {"Lua 5.1", "5.1.5", "party.iroiro.luajava.lua51.Lua51", "51"},
     };
