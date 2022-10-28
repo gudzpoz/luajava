@@ -92,7 +92,7 @@ artifacts {
 
 tasks.named('jar') {
     manifest {
-        attributes('Automatic-Module-Name': 'party.iroiro.lua52java')
+        attributes('Automatic-Module-Name': 'party.iroiro.luajava.lua52')
     }
 }
 

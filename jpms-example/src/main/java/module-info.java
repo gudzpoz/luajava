@@ -1,10 +1,9 @@
 module party.iroiro.luajava.jpms {
     exports party.iroiro.luajava.jpms;
 
-    requires party.iroiro.luajava;
-    requires party.iroiro.lua51java;
-    requires party.iroiro.lua52java;
-    requires party.iroiro.lua53java;
-    requires party.iroiro.lua54java;
-    requires party.iroiro.luajitjava;
+    requires party.iroiro.luajava.lua51;
+    requires party.iroiro.luajava.lua52;
+    requires party.iroiro.luajava.lua53;
+    requires party.iroiro.luajava.lua54;
+    requires party.iroiro.luajava.luajit;
 }
