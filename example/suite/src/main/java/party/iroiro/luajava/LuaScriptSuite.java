@@ -1,6 +1,11 @@
 package party.iroiro.luajava;
 
 import party.iroiro.luajava.interfaces.LuaTestConsumer;
+import party.iroiro.luajava.lua51.Lua51Natives;
+import party.iroiro.luajava.lua52.Lua52Natives;
+import party.iroiro.luajava.lua53.Lua53Natives;
+import party.iroiro.luajava.lua54.Lua54Natives;
+import party.iroiro.luajava.luajit.LuaJitNatives;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -65,15 +70,35 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 L.setGlobal("others");
                 LuaNative C = L.getLuaNative();
                 if (C instanceof Lua51Natives) {
-                    ((Lua51Natives) C).lua_newuserdata(L.getPointer(), 1024);
+                    new Lua51Natives() {
+                        {
+                            lua_newuserdata(L.getPointer(), 1024);
+                        }
+                    };
                 } else if (C instanceof Lua52Natives) {
-                    ((Lua52Natives) C).lua_newuserdata(L.getPointer(), 1024);
+                    new Lua52Natives() {
+                        {
+                            lua_newuserdata(L.getPointer(), 1024);
+                        }
+                    };
                 } else if (C instanceof Lua53Natives) {
-                    ((Lua53Natives) C).lua_newuserdata(L.getPointer(), 1024);
+                    new Lua53Natives() {
+                        {
+                            lua_newuserdata(L.getPointer(), 1024);
+                        }
+                    };
                 } else if (C instanceof Lua54Natives) {
-                    ((Lua54Natives) C).lua_newuserdatauv(L.getPointer(), 1024, 0);
+                    new Lua54Natives() {
+                        {
+                            lua_newuserdatauv(L.getPointer(), 1024, 0);
+                        }
+                    };
                 } else if (C instanceof LuaJitNatives) {
-                    ((LuaJitNatives) C).lua_newuserdata(L.getPointer(), 1024);
+                    new LuaJitNatives() {
+                        {
+                            lua_newuserdata(L.getPointer(), 1024);
+                        }
+                    };
                 } else {
                     fail("Not a supported natives");
                 }

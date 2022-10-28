@@ -1,6 +1,7 @@
 package party.iroiro.luajava;
 
 import party.iroiro.luajava.interfaces.*;
+import party.iroiro.luajava.lua51.Lua51;
 import party.iroiro.luajava.value.LuaValue;
 
 import java.lang.reflect.Array;

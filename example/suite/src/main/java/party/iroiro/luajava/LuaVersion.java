@@ -2,6 +2,11 @@ package party.iroiro.luajava;
 
 import party.iroiro.luajava.interfaces.LuaTestBiConsumer;
 import party.iroiro.luajava.interfaces.LuaTestSupplier;
+import party.iroiro.luajava.lua51.Lua51;
+import party.iroiro.luajava.lua52.Lua52;
+import party.iroiro.luajava.lua53.Lua53;
+import party.iroiro.luajava.lua54.Lua54;
+import party.iroiro.luajava.luajit.LuaJit;
 
 import java.util.Collections;
 import java.util.HashMap;

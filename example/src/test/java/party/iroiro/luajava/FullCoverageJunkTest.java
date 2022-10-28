@@ -1,6 +1,12 @@
 package party.iroiro.luajava;
 
 import org.junit.jupiter.api.Test;
+import party.iroiro.luajava.lua51.Lua51;
+import party.iroiro.luajava.lua51.Lua51Consts;
+import party.iroiro.luajava.lua52.Lua52Consts;
+import party.iroiro.luajava.lua53.Lua53Consts;
+import party.iroiro.luajava.lua54.Lua54Consts;
+import party.iroiro.luajava.luajit.LuaJitConsts;
 import party.iroiro.luajava.value.ImmutableLuaValue;
 import party.iroiro.luajava.value.LuaValue;
 import party.iroiro.luajava.value.RefLuaValue;

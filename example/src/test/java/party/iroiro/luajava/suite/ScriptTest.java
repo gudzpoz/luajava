@@ -3,6 +3,11 @@ package party.iroiro.luajava.suite;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import party.iroiro.luajava.*;
+import party.iroiro.luajava.lua51.Lua51;
+import party.iroiro.luajava.lua52.Lua52;
+import party.iroiro.luajava.lua53.Lua53;
+import party.iroiro.luajava.lua54.Lua54;
+import party.iroiro.luajava.luajit.LuaJit;
 
 public class ScriptTest {
     public static final int REPEATED = 30;
