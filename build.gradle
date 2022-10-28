@@ -1,5 +1,5 @@
 group 'party.iroiro.luajava'
-version(System.getenv('IS_RELEASE') == 'true' ? '3.2.0' : '3.2.0-SNAPSHOT')
+version(System.getenv('IS_RELEASE') == 'true' ? '3.3.0' : '3.3.0-SNAPSHOT')
 
 buildscript {
     repositories {
@@ -18,8 +18,9 @@ repositories {
 }
 
 subprojects { it ->
-    if (!['android', 'android-test'].contains(it.name)) {
+    if (!['android', 'android-test', 'jpms-example'].contains(it.name)) {
         apply plugin: 'java'
+
         java {
             toolchain {
                 languageVersion = JavaLanguageVersion.of(8)

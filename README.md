@@ -3,6 +3,7 @@
 [![Build Status](https://github.com/gudzpoz/luajava/actions/workflows/build-natives.yml/badge.svg)](https://github.com/gudzpoz/luajava/actions/workflows/build-natives.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Codecov](https://img.shields.io/codecov/c/github/gudzpoz/luajava?label=Coverage)
+![Java 8](https://img.shields.io/badge/Java-8-brown)
 [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/party.iroiro.luajava/luajava?server=https%3A%2F%2Fs01.oss.sonatype.org&label=Nexus&color=pink)](https://s01.oss.sonatype.org/content/repositories/snapshots/party/iroiro/luajava/)
 [![Maven Central](https://img.shields.io/maven-central/v/party.iroiro.luajava/luajava?color=blue&label=Maven%20Central)](https://mvnrepository.com/search?q=party.iroiro.luajava)
 
@@ -57,8 +58,8 @@ To include LuaJava into your project, you need to include two artifacts, one for
 
 ```groovy
 // Example: LuaJIT with Desktop natives
-implementation 'party.iroiro.luajava:luajit:3.2.0'
-runtimeOnly 'party.iroiro.luajava:luajit-platform:3.2.0:natives-desktop'
+implementation 'party.iroiro.luajava:luajit:3.3.0'
+runtimeOnly 'party.iroiro.luajava:luajit-platform:3.3.0:natives-desktop'
 ```
 
 Different artifacts are provided for different Lua versions and different platforms. Check out [Getting Started](https://gudzpoz.github.io/luajava/getting-started.html) for an overview. Or you may also search in the [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava).

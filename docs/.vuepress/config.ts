@@ -32,6 +32,7 @@ export default defineUserConfig({
           '/getting-started.md',
           '/console.md',
           '/jsr223.md',
+          '/jpms.md',
         ]
       },
       {

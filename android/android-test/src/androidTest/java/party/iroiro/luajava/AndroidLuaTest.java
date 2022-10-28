@@ -1,6 +1,11 @@
 package party.iroiro.luajava;
 
 import org.junit.Test;
+import party.iroiro.luajava.lua51.Lua51;
+import party.iroiro.luajava.lua52.Lua52;
+import party.iroiro.luajava.lua53.Lua53;
+import party.iroiro.luajava.lua54.Lua54;
+import party.iroiro.luajava.luajit.LuaJit;
 
 public class AndroidLuaTest {
     @Test

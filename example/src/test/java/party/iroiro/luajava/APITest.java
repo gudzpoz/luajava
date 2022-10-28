@@ -3,6 +3,7 @@ package party.iroiro.luajava;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
+import party.iroiro.luajava.lua51.Lua51;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

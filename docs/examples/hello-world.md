@@ -2,7 +2,7 @@
 
 ```java
 import party.iroiro.luajava.Lua;
-import party.iroiro.luajava.Lua51;
+import party.iroiro.luajava.lua51.Lua51;
 
 public class Hello {
   public static void main(String[] args) {

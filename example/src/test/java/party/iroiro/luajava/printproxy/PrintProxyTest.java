@@ -28,8 +28,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.platform.commons.annotation.Testable;
 import party.iroiro.luajava.Consts;
 import party.iroiro.luajava.Lua;
-import party.iroiro.luajava.Lua51;
 import party.iroiro.luajava.ResourceLoader;
+import party.iroiro.luajava.lua51.Lua51;
 
 import java.io.IOException;
 

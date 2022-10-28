@@ -1,5 +1,8 @@
-package party.iroiro.luajava;
+package party.iroiro.luajava.jsr223;
 
+import party.iroiro.luajava.ClassPathLoader;
+import party.iroiro.luajava.Consts;
+import party.iroiro.luajava.Lua;
 import party.iroiro.luajava.util.ClassUtils;
 import party.iroiro.luajava.value.LuaValue;
 
@@ -21,6 +24,7 @@ public final class LuaScriptEngine extends AbstractScriptEngine implements Scrip
 
     private Lua getLua() throws ScriptException {
         try {
+            //noinspection deprecation
             Lua L = (Lua) ClassUtils.forName(luaClass, null).newInstance();
             L.setExternalLoader(new ClassPathLoader());
             L.openLibraries();

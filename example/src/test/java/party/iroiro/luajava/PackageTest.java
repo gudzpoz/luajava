@@ -1,6 +1,7 @@
 package party.iroiro.luajava;
 
 import org.junit.jupiter.api.Test;
+import party.iroiro.luajava.luajit.LuaJit;
 
 import java.util.Objects;
 

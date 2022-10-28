@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.platform.commons.annotation.Testable;
+import party.iroiro.luajava.lua51.Lua51;
 
 import java.util.ArrayList;
 import java.util.Arrays;

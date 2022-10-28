@@ -12,13 +12,30 @@ group = rootProject.group
 version = rootProject.version
 
 dependencies {
-    implementation 'com.badlogicgames.gdx:gdx-jnigen-loader:2.3.1'
-    implementation 'com.google.errorprone:error_prone_annotations:2.15.0'
+    implementation 'com.google.errorprone:error_prone_annotations:2.16'
     implementation 'org.jetbrains:annotations:23.0.0'
 }
 
 tasks.withType(JavaCompile) {
     options.deprecation = true
+}
+
+configurations {
+    instrumentedJars {
+        canBeConsumed = true
+        canBeResolved = false
+        extendsFrom api, implementation, runtimeOnly
+    }
+}
+
+artifacts {
+    instrumentedJars(jar)
+}
+
+tasks.named('jar') {
+    manifest {
+        attributes('Automatic-Module-Name': 'party.iroiro.luajava')
+    }
 }
 
 test {

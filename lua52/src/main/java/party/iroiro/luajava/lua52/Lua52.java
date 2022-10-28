@@ -20,28 +20,31 @@
  * SOFTWARE.
  */
 
-package party.iroiro.luajava;
+package party.iroiro.luajava.lua52;
+
+import party.iroiro.luajava.AbstractLua;
+import party.iroiro.luajava.LuaNative;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static party.iroiro.luajava.Lua53Consts.*;
+import static party.iroiro.luajava.lua52.Lua52Consts.*;
 
 /**
- * A thin wrapper around a Lua 5.3 Lua state
+ * A thin wrapper around a Lua 5.2 Lua state
  */
-public class Lua53 extends AbstractLua {
-    private final static AtomicReference<Lua53Natives> natives = new AtomicReference<>();
+public class Lua52 extends AbstractLua {
+    private final static AtomicReference<Lua52Natives> natives = new AtomicReference<>();
 
     /**
      * Creates a new Lua state
      *
-     * @throws LinkageError if Lua 5.3 natives unavailable
+     * @throws LinkageError if Lua 5.2 natives unavailable
      */
-    public Lua53() throws LinkageError {
+    public Lua52() throws LinkageError {
         super(getNatives());
     }
 
-    protected Lua53(long L, int id, AbstractLua main) {
+    protected Lua52(long L, int id, AbstractLua main) {
         super(main.getLuaNative(), L, id, main);
     }
 
@@ -49,7 +52,7 @@ public class Lua53 extends AbstractLua {
         synchronized (natives) {
             if (natives.get() == null) {
                 try {
-                    natives.set(new Lua53Natives());
+                    natives.set(new Lua52Natives());
                 } catch (IllegalStateException e) {
                     throw new LinkageError("Unable to find natives or init", e);
                 }
@@ -60,7 +63,7 @@ public class Lua53 extends AbstractLua {
 
     @Override
     protected AbstractLua newThread(long L, int id, AbstractLua mainThread) {
-        return new Lua53(L, id, mainThread);
+        return new Lua52(L, id, mainThread);
     }
 
     @Override

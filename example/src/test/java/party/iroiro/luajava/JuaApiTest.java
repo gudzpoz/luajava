@@ -1,6 +1,8 @@
 package party.iroiro.luajava;
 
 import org.junit.jupiter.api.Test;
+import party.iroiro.luajava.lua51.Lua51;
+import party.iroiro.luajava.lua51.Lua51Natives;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -66,9 +68,16 @@ public class JuaApiTest {
         L.pop(1);
     }
 
+    private static class NativeTest extends Lua51Natives {
+        @Override
+        public long lua_newuserdata(long ptr, int size) {
+            return super.lua_newuserdata(ptr, size);
+        }
+    }
+
     private void convertUserdataTest() {
         Lua L = new Lua51();
-        assertNotEquals(0, ((Lua51Natives) L.getLuaNative())
+        assertNotEquals(0, new NativeTest()
                 .lua_newuserdata(L.getPointer(), 1024));
         assertThrows(IllegalArgumentException.class,
                 () -> JuaAPI.convertFromLua(L, Integer.class, -1),

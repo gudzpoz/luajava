@@ -1,11 +1,10 @@
-package party.iroiro.luajava;
+package party.iroiro.luajava.jsr223;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import party.iroiro.luajava.value.LuaValue;
 
 import javax.script.*;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;

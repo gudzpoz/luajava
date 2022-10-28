@@ -20,12 +20,13 @@
  * SOFTWARE.
  */
 
-package party.iroiro.luajava;
+package party.iroiro.luajava.luajit;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.nio.Buffer;
 
 import com.badlogic.gdx.utils.SharedLibraryLoader;
+import party.iroiro.luajava.LuaNative;
 
 /**
  * Lua C API wrappers
@@ -94,7 +95,7 @@ import com.badlogic.gdx.utils.SharedLibraryLoader;
  * </ul>
  */
 @SuppressWarnings({"unused", "rawtypes"})
-public class Lua51Natives extends LuaNative {
+public class LuaJitNatives extends LuaNative {
         /*JNI
             #include "luacustomamalg.h"
 
@@ -111,14 +112,14 @@ public class Lua51Natives extends LuaNative {
 
             #include "luacustom.h"
          */
-    
+
     private final static AtomicBoolean loaded = new AtomicBoolean(false);
 
-    protected Lua51Natives() throws IllegalStateException {
+    protected LuaJitNatives() throws IllegalStateException {
         synchronized (loaded) {
             if (loaded.get()) { return; }
             try {
-                new SharedLibraryLoader().load("lua51");
+                new SharedLibraryLoader().load("luajit");
                 if (initBindings() != 0) {
                     throw new RuntimeException("Unable to init bindings");
                 }
@@ -130,7 +131,7 @@ public class Lua51Natives extends LuaNative {
     }
 
     private native static int initBindings() throws Exception; /*
-        return (jint) initLua51Bindings(env);
+        return (jint) initLuaJitBindings(env);
     */
 
     /**
@@ -165,7 +166,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_checkstack(long ptr, int extra); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_checkstack((lua_State *) L, (int) extra);
         return returnValueReceiver;
     */
@@ -198,7 +199,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_close(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_close((lua_State *) L);
     */
 
@@ -229,7 +230,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_concat(long ptr, int n); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_concat((lua_State *) L, (int) n);
     */
 
@@ -260,7 +261,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_createtable(long ptr, int narr, int nrec); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_createtable((lua_State *) L, (int) narr, (int) nrec);
     */
 
@@ -292,7 +293,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_equal(long ptr, int index1, int index2); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_equal((lua_State *) L, (int) index1, (int) index2);
         return returnValueReceiver;
     */
@@ -323,7 +324,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_error(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_error((lua_State *) L);
         return returnValueReceiver;
     */
@@ -343,41 +344,41 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Controls the garbage collector.
      * </p>
-     * 
+     *
      * <p>
      * This function performs several tasks,
      * according to the value of the parameter <code>what</code>:
-     * 
+     *
      * </p>
-     * 
+     *
      * <ul>
-     * 
+     *
      * <li>
      * <b><code>LUA_GCSTOP</code>:</b>
      * stops the garbage collector.
      * </li>
-     * 
+     *
      * <li>
      * <b><code>LUA_GCRESTART</code>:</b>
      * restarts the garbage collector.
      * </li>
-     * 
+     *
      * <li>
      * <b><code>LUA_GCCOLLECT</code>:</b>
      * performs a full garbage-collection cycle.
      * </li>
-     * 
+     *
      * <li>
      * <b><code>LUA_GCCOUNT</code>:</b>
      * returns the current amount of memory (in Kbytes) in use by Lua.
      * </li>
-     * 
+     *
      * <li>
      * <b><code>LUA_GCCOUNTB</code>:</b>
      * returns the remainder of dividing the current amount of bytes of
      * memory in use by Lua by 1024.
      * </li>
-     * 
+     *
      * <li>
      * <b><code>LUA_GCSTEP</code>:</b>
      * performs an incremental step of garbage collection.
@@ -388,21 +389,21 @@ public class Lua51Natives extends LuaNative {
      * The function returns 1 if the step finished a
      * garbage-collection cycle.
      * </li>
-     * 
+     *
      * <li>
      * <b><code>LUA_GCSETPAUSE</code>:</b>
      * sets <code>data</code> as the new value
      * for the <em>pause</em> of the collector (see <a href="https://www.lua.org/manual/5.1/manual.html#2.10">&#167;2.10</a>).
      * The function returns the previous value of the pause.
      * </li>
-     * 
+     *
      * <li>
      * <b><code>LUA_GCSETSTEPMUL</code>:</b>
      * sets <code>data</code> as the new value for the <em>step multiplier</em> of
      * the collector (see <a href="https://www.lua.org/manual/5.1/manual.html#2.10">&#167;2.10</a>).
      * The function returns the previous value of the step multiplier.
      * </li>
-     * 
+     *
      * </ul>
      *
      * @param ptr the <code>lua_State*</code> pointer
@@ -412,7 +413,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_gc(long ptr, int what, int data); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_gc((lua_State *) L, (int) what, (int) data);
         return returnValueReceiver;
     */
@@ -439,7 +440,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_getfenv(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_getfenv((lua_State *) L, (int) index);
     */
 
@@ -468,7 +469,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_getfield(long ptr, int index, String k); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_getfield((lua_State *) L, (int) index, (const char *) k);
     */
 
@@ -497,7 +498,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_getfield(long ptr, int index, String k); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_getfield((lua_State *) L, (int) index, (const char *) k);
     */
 
@@ -516,9 +517,9 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Pushes onto the stack the value of the global <code>name</code>.
      * It is defined as a macro:
-     * 
+     *
      * </p>
-     * 
+     *
      * <pre>
      *      #define lua_getglobal(L,s)  lua_getfield(L, LUA_GLOBALSINDEX, s)
      * </pre>
@@ -528,7 +529,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_getglobal(long ptr, String name); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_getglobal((lua_State *) L, (const char *) name);
     */
 
@@ -547,9 +548,9 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Pushes onto the stack the value of the global <code>name</code>.
      * It is defined as a macro:
-     * 
+     *
      * </p>
-     * 
+     *
      * <pre>
      *      #define lua_getglobal(L,s)  lua_getfield(L, LUA_GLOBALSINDEX, s)
      * </pre>
@@ -559,7 +560,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_getglobal(long ptr, String name); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_getglobal((lua_State *) L, (const char *) name);
     */
 
@@ -589,7 +590,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_getmetatable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_getmetatable((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -611,7 +612,7 @@ public class Lua51Natives extends LuaNative {
      * where <code>t</code> is the value at the given valid index
      * and <code>k</code> is the value at the top of the stack.
      * </p>
-     * 
+     *
      * <p>
      * This function pops the key from the stack
      * (putting the resulting value in its place).
@@ -624,7 +625,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_gettable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_gettable((lua_State *) L, (int) index);
     */
 
@@ -645,7 +646,7 @@ public class Lua51Natives extends LuaNative {
      * where <code>t</code> is the value at the given valid index
      * and <code>k</code> is the value at the top of the stack.
      * </p>
-     * 
+     *
      * <p>
      * This function pops the key from the stack
      * (putting the resulting value in its place).
@@ -658,7 +659,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_gettable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_gettable((lua_State *) L, (int) index);
     */
 
@@ -686,7 +687,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_gettop(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_gettop((lua_State *) L);
         return returnValueReceiver;
     */
@@ -715,7 +716,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_insert(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_insert((lua_State *) L, (int) index);
     */
 
@@ -742,7 +743,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_isboolean(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_isboolean((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -770,7 +771,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_iscfunction(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_iscfunction((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -798,7 +799,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_isfunction(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_isfunction((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -826,7 +827,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_islightuserdata(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_islightuserdata((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -854,7 +855,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_isnil(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_isnil((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -883,7 +884,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_isnone(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_isnone((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -913,7 +914,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_isnoneornil(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_isnoneornil((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -942,7 +943,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_isnumber(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_isnumber((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -971,7 +972,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_isstring(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_isstring((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -999,7 +1000,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_istable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_istable((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -1027,7 +1028,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_isthread(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_isthread((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -1055,7 +1056,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_isuserdata(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_isuserdata((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -1088,7 +1089,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_lessthan(long ptr, int index1, int index2); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_lessthan((lua_State *) L, (int) index1, (int) index2);
         return returnValueReceiver;
     */
@@ -1114,7 +1115,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_newtable(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_newtable((lua_State *) L);
     */
 
@@ -1137,7 +1138,7 @@ public class Lua51Natives extends LuaNative {
      * all global objects (such as tables),
      * but has an independent execution stack.
      * </p>
-     * 
+     *
      * <p>
      * There is no explicit function to close or to destroy a thread.
      * Threads are subject to garbage collection,
@@ -1149,7 +1150,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native long lua_newthread(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jlong returnValueReceiver = (jlong) lua_newthread((lua_State *) L);
         return returnValueReceiver;
     */
@@ -1171,7 +1172,7 @@ public class Lua51Natives extends LuaNative {
      * pushes onto the stack a new full userdata with the block address,
      * and returns this address.
      * </p>
-     * 
+     *
      * <p>
      * Userdata represent C&#160;values in Lua.
      * A <em>full userdata</em> represents a block of memory.
@@ -1180,7 +1181,7 @@ public class Lua51Natives extends LuaNative {
      * and you can detect when it is being collected.
      * A full userdata is only equal to itself (under raw equality).
      * </p>
-     * 
+     *
      * <p>
      * When Lua collects a full userdata with a <code>gc</code> metamethod,
      * Lua calls the metamethod and marks the userdata as finalized.
@@ -1194,7 +1195,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native long lua_newuserdata(long ptr, int size); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jlong returnValueReceiver = (jlong) lua_newuserdata((lua_State *) L, (size_t) size);
         return returnValueReceiver;
     */
@@ -1218,12 +1219,12 @@ public class Lua51Natives extends LuaNative {
      * If there are no more elements in the table,
      * then <a href="https://www.lua.org/manual/5.1/manual.html#lua_next"><code>lua_next</code></a> returns 0 (and pushes nothing).
      * </p>
-     * 
+     *
      * <p>
      * A typical traversal looks like this:
-     * 
+     *
      * </p>
-     * 
+     *
      * <pre>
      *      /* table is in the stack at index 't' *&#47;
      *      lua_pushnil(L);  /* first key *&#47;
@@ -1236,7 +1237,7 @@ public class Lua51Natives extends LuaNative {
      *        lua_pop(L, 1);
      *      }
      * </pre>
-     * 
+     *
      * <p>
      * While traversing a table,
      * do not call <a href="https://www.lua.org/manual/5.1/manual.html#lua_tolstring"><code>lua_tolstring</code></a> directly on a key,
@@ -1252,7 +1253,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_next(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_next((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -1284,7 +1285,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_objlen(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_objlen((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -1304,7 +1305,7 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Calls a function in protected mode.
      * </p>
-     * 
+     *
      * <p>
      * Both <code>nargs</code> and <code>nresults</code> have the same meaning as
      * in <a href="https://www.lua.org/manual/5.1/manual.html#lua_call"><code>lua_call</code></a>.
@@ -1318,7 +1319,7 @@ public class Lua51Natives extends LuaNative {
      * <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a> always removes the function
      * and its arguments from the stack.
      * </p>
-     * 
+     *
      * <p>
      * If <code>errfunc</code> is 0,
      * then the error message returned on the stack
@@ -1330,39 +1331,39 @@ public class Lua51Natives extends LuaNative {
      * this function will be called with the error message
      * and its return value will be the message returned on the stack by <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a>.
      * </p>
-     * 
+     *
      * <p>
      * Typically, the error handler function is used to add more debug
      * information to the error message, such as a stack traceback.
      * Such information cannot be gathered after the return of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a>,
      * since by then the stack has unwound.
      * </p>
-     * 
+     *
      * <p>
      * The <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a> function returns 0 in case of success
      * or one of the following error codes
      * (defined in <code>lua.h</code>):
-     * 
+     *
      * </p>
-     * 
+     *
      * <ul>
-     * 
+     *
      * <li>
      * <b><a><code>LUA_ERRRUN</code></a>:</b>
      * a runtime error.
      * </li>
-     * 
+     *
      * <li>
      * <b><a><code>LUA_ERRMEM</code></a>:</b>
      * memory allocation error.
      * For such errors, Lua does not call the error handler function.
      * </li>
-     * 
+     *
      * <li>
      * <b><a><code>LUA_ERRERR</code></a>:</b>
      * error while running the error handler function.
      * </li>
-     * 
+     *
      * </ul>
      *
      * @param ptr the <code>lua_State*</code> pointer
@@ -1373,7 +1374,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_pcall(long ptr, int nargs, int nresults, int errfunc); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_pcall((lua_State *) L, (int) nargs, (int) nresults, (int) errfunc);
         return returnValueReceiver;
     */
@@ -1393,7 +1394,7 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Calls a function in protected mode.
      * </p>
-     * 
+     *
      * <p>
      * Both <code>nargs</code> and <code>nresults</code> have the same meaning as
      * in <a href="https://www.lua.org/manual/5.1/manual.html#lua_call"><code>lua_call</code></a>.
@@ -1407,7 +1408,7 @@ public class Lua51Natives extends LuaNative {
      * <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a> always removes the function
      * and its arguments from the stack.
      * </p>
-     * 
+     *
      * <p>
      * If <code>errfunc</code> is 0,
      * then the error message returned on the stack
@@ -1419,39 +1420,39 @@ public class Lua51Natives extends LuaNative {
      * this function will be called with the error message
      * and its return value will be the message returned on the stack by <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a>.
      * </p>
-     * 
+     *
      * <p>
      * Typically, the error handler function is used to add more debug
      * information to the error message, such as a stack traceback.
      * Such information cannot be gathered after the return of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a>,
      * since by then the stack has unwound.
      * </p>
-     * 
+     *
      * <p>
      * The <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a> function returns 0 in case of success
      * or one of the following error codes
      * (defined in <code>lua.h</code>):
-     * 
+     *
      * </p>
-     * 
+     *
      * <ul>
-     * 
+     *
      * <li>
      * <b><a><code>LUA_ERRRUN</code></a>:</b>
      * a runtime error.
      * </li>
-     * 
+     *
      * <li>
      * <b><a><code>LUA_ERRMEM</code></a>:</b>
      * memory allocation error.
      * For such errors, Lua does not call the error handler function.
      * </li>
-     * 
+     *
      * <li>
      * <b><a><code>LUA_ERRERR</code></a>:</b>
      * error while running the error handler function.
      * </li>
-     * 
+     *
      * </ul>
      *
      * @param ptr the <code>lua_State*</code> pointer
@@ -1461,7 +1462,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_pcall(long ptr, int nargs, int nresults, int errfunc); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_pcall((lua_State *) L, (int) nargs, (int) nresults, (int) errfunc);
     */
 
@@ -1486,7 +1487,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_pop(long ptr, int n); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_pop((lua_State *) L, (int) n);
     */
 
@@ -1511,7 +1512,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_pushboolean(long ptr, int b); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_pushboolean((lua_State *) L, (int) b);
     */
 
@@ -1536,7 +1537,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_pushinteger(long ptr, int n); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_pushinteger((lua_State *) L, (lua_Integer) n);
     */
 
@@ -1555,7 +1556,7 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Pushes a light userdata onto the stack.
      * </p>
-     * 
+     *
      * <p>
      * Userdata represent C&#160;values in Lua.
      * A <em>light userdata</em> represents a pointer.
@@ -1571,7 +1572,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_pushlightuserdata(long ptr, long p); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_pushlightuserdata((lua_State *) L, (void *) p);
     */
 
@@ -1595,7 +1596,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_pushnil(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_pushnil((lua_State *) L);
     */
 
@@ -1620,7 +1621,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_pushnumber(long ptr, double n); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_pushnumber((lua_State *) L, (lua_Number) n);
     */
 
@@ -1651,7 +1652,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_pushstring(long ptr, String s); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_pushstring((lua_State *) L, (const char *) s);
     */
 
@@ -1682,7 +1683,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_pushstring(long ptr, String s); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_pushstring((lua_State *) L, (const char *) s);
     */
 
@@ -1708,7 +1709,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_pushthread(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_pushthread((lua_State *) L);
         return returnValueReceiver;
     */
@@ -1735,7 +1736,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_pushvalue(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_pushvalue((lua_State *) L, (int) index);
     */
 
@@ -1766,7 +1767,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_rawequal(long ptr, int index1, int index2); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_rawequal((lua_State *) L, (int) index1, (int) index2);
         return returnValueReceiver;
     */
@@ -1793,7 +1794,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_rawget(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_rawget((lua_State *) L, (int) index);
     */
 
@@ -1819,7 +1820,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_rawget(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_rawget((lua_State *) L, (int) index);
     */
 
@@ -1848,7 +1849,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_rawgeti(long ptr, int index, int n); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_rawgeti((lua_State *) L, (int) index, (int) n);
     */
 
@@ -1877,7 +1878,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_rawgeti(long ptr, int index, int n); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_rawgeti((lua_State *) L, (int) index, (int) n);
     */
 
@@ -1903,7 +1904,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_rawset(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_rawset((lua_State *) L, (int) index);
     */
 
@@ -1924,7 +1925,7 @@ public class Lua51Natives extends LuaNative {
      * where <code>t</code> is the value at the given valid index
      * and <code>v</code> is the value at the top of the stack.
      * </p>
-     * 
+     *
      * <p>
      * This function pops the value from the stack.
      * The assignment is raw;
@@ -1937,7 +1938,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_rawseti(long ptr, int index, int n); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_rawseti((lua_State *) L, (int) index, (int) n);
     */
 
@@ -1965,7 +1966,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_remove(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_remove((lua_State *) L, (int) index);
     */
 
@@ -1992,7 +1993,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_replace(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_replace((lua_State *) L, (int) index);
     */
 
@@ -2011,7 +2012,7 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Starts and resumes a coroutine in a given thread.
      * </p>
-     * 
+     *
      * <p>
      * To start a coroutine, you first create a new thread
      * (see <a href="https://www.lua.org/manual/5.1/manual.html#lua_newthread"><code>lua_newthread</code></a>);
@@ -2041,7 +2042,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_resume(long ptr, int narg); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_resume((lua_State *) L, (int) narg);
         return returnValueReceiver;
     */
@@ -2073,7 +2074,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_setfenv(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_setfenv((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -2095,7 +2096,7 @@ public class Lua51Natives extends LuaNative {
      * where <code>t</code> is the value at the given valid index
      * and <code>v</code> is the value at the top of the stack.
      * </p>
-     * 
+     *
      * <p>
      * This function pops the value from the stack.
      * As in Lua, this function may trigger a metamethod
@@ -2108,7 +2109,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_setfield(long ptr, int index, String k); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_setfield((lua_State *) L, (int) index, (const char *) k);
     */
 
@@ -2128,9 +2129,9 @@ public class Lua51Natives extends LuaNative {
      * Pops a value from the stack and
      * sets it as the new value of global <code>name</code>.
      * It is defined as a macro:
-     * 
+     *
      * </p>
-     * 
+     *
      * <pre>
      *      #define lua_setglobal(L,s)   lua_setfield(L, LUA_GLOBALSINDEX, s)
      * </pre>
@@ -2140,7 +2141,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_setglobal(long ptr, String name); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_setglobal((lua_State *) L, (const char *) name);
     */
 
@@ -2168,7 +2169,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_setmetatable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_setmetatable((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -2196,7 +2197,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_setmetatable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_setmetatable((lua_State *) L, (int) index);
     */
 
@@ -2218,7 +2219,7 @@ public class Lua51Natives extends LuaNative {
      * <code>v</code> is the value at the top of the stack,
      * and <code>k</code> is the value just below the top.
      * </p>
-     * 
+     *
      * <p>
      * This function pops both the key and the value from the stack.
      * As in Lua, this function may trigger a metamethod
@@ -2230,7 +2231,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_settable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_settable((lua_State *) L, (int) index);
     */
 
@@ -2259,7 +2260,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void lua_settop(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         lua_settop((lua_State *) L, (int) index);
     */
 
@@ -2278,7 +2279,7 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Returns the status of the thread <code>L</code>.
      * </p>
-     * 
+     *
      * <p>
      * The status can be 0 for a normal thread,
      * an error code if the thread finished its execution with an error,
@@ -2290,7 +2291,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_status(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_status((lua_State *) L);
         return returnValueReceiver;
     */
@@ -2325,7 +2326,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_toboolean(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_toboolean((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -2349,7 +2350,7 @@ public class Lua51Natives extends LuaNative {
      * (see <a href="https://www.lua.org/manual/5.1/manual.html#2.2.1">&#167;2.2.1</a>);
      * otherwise, <a href="https://www.lua.org/manual/5.1/manual.html#lua_tointeger"><code>lua_tointeger</code></a> returns&#160;0.
      * </p>
-     * 
+     *
      * <p>
      * If the number is not an integer,
      * it is truncated in some non-specified way.
@@ -2361,7 +2362,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_tointeger(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_tointeger((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -2392,7 +2393,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native double lua_tonumber(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jdouble returnValueReceiver = (jdouble) lua_tonumber((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -2417,7 +2418,7 @@ public class Lua51Natives extends LuaNative {
      * Different objects will give different pointers.
      * There is no way to convert the pointer back to its original value.
      * </p>
-     * 
+     *
      * <p>
      * Typically this function is used only for debug information.
      * </p>
@@ -2428,7 +2429,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native long lua_topointer(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jlong returnValueReceiver = (jlong) lua_topointer((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -2455,7 +2456,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native String lua_tostring(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         const char * returnValueReceiver = (const char *) lua_tostring((lua_State *) L, (int) index);
         return env->NewStringUTF(returnValueReceiver);
     */
@@ -2485,7 +2486,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native long lua_tothread(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jlong returnValueReceiver = (jlong) lua_tothread((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -2516,7 +2517,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native long lua_touserdata(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jlong returnValueReceiver = (jlong) lua_touserdata((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -2557,7 +2558,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_type(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_type((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -2585,7 +2586,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native String lua_typename(long ptr, int tp); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         const char * returnValueReceiver = (const char *) lua_typename((lua_State *) L, (int) tp);
         return env->NewStringUTF(returnValueReceiver);
     */
@@ -2605,7 +2606,7 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Exchange values between different threads of the <em>same</em> global state.
      * </p>
-     * 
+     *
      * <p>
      * This function pops <code>n</code> values from the stack <code>from</code>,
      * and pushes them onto the stack <code>to</code>.
@@ -2634,17 +2635,17 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Yields a coroutine.
      * </p>
-     * 
+     *
      * <p>
      * This function should only be called as the
      * return expression of a C&#160;function, as follows:
-     * 
+     *
      * </p>
-     * 
+     *
      * <pre>
      *      return lua_yield (L, nresults);
      * </pre>
-     * 
+     *
      * <p>
      * When a C&#160;function calls <a href="https://www.lua.org/manual/5.1/manual.html#lua_yield"><code>lua_yield</code></a> in that way,
      * the running coroutine suspends its execution,
@@ -2652,10 +2653,10 @@ public class Lua51Natives extends LuaNative {
      * The parameter <code>nresults</code> is the number of values from the stack
      * that are passed as results to <a href="https://www.lua.org/manual/5.1/manual.html#lua_resume"><code>lua_resume</code></a>.
      * </p>
-     * 
+     *
      * <h2>3.8 &#8211; <a>The Debug Interface</a>
      * </h2>
-     * 
+     *
      * <p>
      * Lua has no built-in debugging facilities.
      * Instead, it offers a special interface
@@ -2671,7 +2672,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_yield(long ptr, int nresults); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_yield((lua_State *) L, (int) nresults);
         return returnValueReceiver;
     */
@@ -2697,7 +2698,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_gethookcount(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_gethookcount((lua_State *) L);
         return returnValueReceiver;
     */
@@ -2723,7 +2724,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int lua_gethookmask(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) lua_gethookmask((lua_State *) L);
         return returnValueReceiver;
     */
@@ -2753,7 +2754,7 @@ public class Lua51Natives extends LuaNative {
      * as they are active through the whole function.
      * So, they are numbered in an arbitrary order.)
      * </p>
-     * 
+     *
      * <p>
      * Returns <code>NULL</code> (and pushes nothing)
      * when the index is greater than the number of upvalues.
@@ -2768,7 +2769,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native String lua_getupvalue(long ptr, int funcindex, int n); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         const char * returnValueReceiver = (const char *) lua_getupvalue((lua_State *) L, (int) funcindex, (int) n);
         return env->NewStringUTF(returnValueReceiver);
     */
@@ -2793,7 +2794,7 @@ public class Lua51Natives extends LuaNative {
      * Parameters <code>funcindex</code> and <code>n</code> are as in the <a href="https://www.lua.org/manual/5.1/manual.html#lua_getupvalue"><code>lua_getupvalue</code></a>
      * (see <a href="https://www.lua.org/manual/5.1/manual.html#lua_getupvalue"><code>lua_getupvalue</code></a>).
      * </p>
-     * 
+     *
      * <p>
      * Returns <code>NULL</code> (and pops nothing)
      * when the index is greater than the number of upvalues.
@@ -2806,7 +2807,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native String lua_setupvalue(long ptr, int funcindex, int n); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         const char * returnValueReceiver = (const char *) lua_setupvalue((lua_State *) L, (int) funcindex, (int) n);
         return env->NewStringUTF(returnValueReceiver);
     */
@@ -2826,7 +2827,7 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Calls a metamethod.
      * </p>
-     * 
+     *
      * <p>
      * If the object at index <code>obj</code> has a metatable and this
      * metatable has a field <code>e</code>,
@@ -2844,7 +2845,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaL_callmeta(long ptr, int obj, String e); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaL_callmeta((lua_State *) L, (int) obj, (const char *) e);
         return returnValueReceiver;
     */
@@ -2864,13 +2865,13 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Loads and runs the given string.
      * It is defined as the following macro:
-     * 
+     *
      * </p>
-     * 
+     *
      * <pre>
      *      (luaL_loadstring(L, str) || lua_pcall(L, 0, LUA_MULTRET, 0))
      * </pre>
-     * 
+     *
      * <p>
      * It returns 0 if there are no errors
      * or 1 in case of errors.
@@ -2882,7 +2883,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaL_dostring(long ptr, String str); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaL_dostring((lua_State *) L, (const char *) str);
         return returnValueReceiver;
     */
@@ -2914,7 +2915,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaL_getmetafield(long ptr, int obj, String e); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaL_getmetafield((lua_State *) L, (int) obj, (const char *) e);
         return returnValueReceiver;
     */
@@ -2941,7 +2942,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaL_getmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         luaL_getmetatable((lua_State *) L, (const char *) tname);
     */
 
@@ -2967,7 +2968,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_getmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         luaL_getmetatable((lua_State *) L, (const char *) tname);
     */
 
@@ -3001,7 +3002,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native String luaL_gsub(long ptr, String s, String p, String r); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         const char * returnValueReceiver = (const char *) luaL_gsub((lua_State *) L, (const char *) s, (const char *) p, (const char *) r);
         return env->NewStringUTF(returnValueReceiver);
     */
@@ -3023,11 +3024,11 @@ public class Lua51Natives extends LuaNative {
      * This function uses <a href="https://www.lua.org/manual/5.1/manual.html#lua_load"><code>lua_load</code></a> to load the chunk in
      * the zero-terminated string <code>s</code>.
      * </p>
-     * 
+     *
      * <p>
      * This function returns the same results as <a href="https://www.lua.org/manual/5.1/manual.html#lua_load"><code>lua_load</code></a>.
      * </p>
-     * 
+     *
      * <p>
      * Also as <a href="https://www.lua.org/manual/5.1/manual.html#lua_load"><code>lua_load</code></a>, this function only loads the chunk;
      * it does not run it.
@@ -3039,7 +3040,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaL_loadstring(long ptr, String s); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaL_loadstring((lua_State *) L, (const char *) s);
         return returnValueReceiver;
     */
@@ -3064,7 +3065,7 @@ public class Lua51Natives extends LuaNative {
      * adds it to the registry with key <code>tname</code>,
      * and returns 1.
      * </p>
-     * 
+     *
      * <p>
      * In both cases pushes onto the stack the final value associated
      * with <code>tname</code> in the registry.
@@ -3076,7 +3077,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaL_newmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaL_newmetatable((lua_State *) L, (const char *) tname);
         return returnValueReceiver;
     */
@@ -3101,7 +3102,7 @@ public class Lua51Natives extends LuaNative {
      * adds it to the registry with key <code>tname</code>,
      * and returns 1.
      * </p>
-     * 
+     *
      * <p>
      * In both cases pushes onto the stack the final value associated
      * with <code>tname</code> in the registry.
@@ -3112,7 +3113,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_newmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         luaL_newmetatable((lua_State *) L, (const char *) tname);
     */
 
@@ -3136,7 +3137,7 @@ public class Lua51Natives extends LuaNative {
      * an error message to the standard error output in case of fatal
      * errors.
      * </p>
-     * 
+     *
      * <p>
      * Returns the new state,
      * or <code>NULL</code> if there is a memory allocation error.
@@ -3171,7 +3172,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaL_openlibs(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         luaL_openlibs((lua_State *) L);
     */
 
@@ -3192,7 +3193,7 @@ public class Lua51Natives extends LuaNative {
      * in the table at index <code>t</code>,
      * for the object at the top of the stack (and pops the object).
      * </p>
-     * 
+     *
      * <p>
      * A reference is a unique integer key.
      * As long as you do not manually add integer keys into table <code>t</code>,
@@ -3201,7 +3202,7 @@ public class Lua51Natives extends LuaNative {
      * by calling <code>lua_rawgeti(L, t, r)</code>.
      * Function <a href="https://www.lua.org/manual/5.1/manual.html#luaL_unref"><code>luaL_unref</code></a> frees a reference and its associated object.
      * </p>
-     * 
+     *
      * <p>
      * If the object at the top of the stack is <b>nil</b>,
      * <a href="https://www.lua.org/manual/5.1/manual.html#luaL_ref"><code>luaL_ref</code></a> returns the constant <a><code>LUA_REFNIL</code></a>.
@@ -3215,7 +3216,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaL_ref(long ptr, int t); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaL_ref((lua_State *) L, (int) t);
         return returnValueReceiver;
     */
@@ -3242,7 +3243,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native String luaL_typename(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         const char * returnValueReceiver = (const char *) luaL_typename((lua_State *) L, (int) index);
         return env->NewStringUTF(returnValueReceiver);
     */
@@ -3261,13 +3262,13 @@ public class Lua51Natives extends LuaNative {
      *
      * <p>
      * Generates an error with a message like the following:
-     * 
+     *
      * </p>
-     * 
+     *
      * <pre>
      *      <em>location</em>: bad argument <em>narg</em> to '<em>func</em>' (<em>tname</em> expected, got <em>rt</em>)
      * </pre>
-     * 
+     *
      * <p>
      * where <code><em>location</em></code> is produced by <a href="https://www.lua.org/manual/5.1/manual.html#luaL_where"><code>luaL_where</code></a>,
      * <code><em>func</em></code> is the name of the current function,
@@ -3281,7 +3282,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaL_typerror(long ptr, int narg, String tname); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaL_typerror((lua_State *) L, (int) narg, (const char *) tname);
         return returnValueReceiver;
     */
@@ -3305,7 +3306,7 @@ public class Lua51Natives extends LuaNative {
      * so that the referred object can be collected.
      * The reference <code>ref</code> is also freed to be used again.
      * </p>
-     * 
+     *
      * <p>
      * If <code>ref</code> is <a href="https://www.lua.org/manual/5.1/manual.html#pdf-LUA_NOREF"><code>LUA_NOREF</code></a> or <a href="https://www.lua.org/manual/5.1/manual.html#pdf-LUA_REFNIL"><code>LUA_REFNIL</code></a>,
      * <a href="https://www.lua.org/manual/5.1/manual.html#luaL_unref"><code>luaL_unref</code></a> does nothing.
@@ -3317,7 +3318,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaL_unref(long ptr, int t, int ref); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         luaL_unref((lua_State *) L, (int) t, (int) ref);
     */
 
@@ -3337,19 +3338,19 @@ public class Lua51Natives extends LuaNative {
      * Pushes onto the stack a string identifying the current position
      * of the control at level <code>lvl</code> in the call stack.
      * Typically this string has the following format:
-     * 
+     *
      * </p>
-     * 
+     *
      * <pre>
      *      <em>chunkname</em>:<em>currentline</em>:
      * </pre>
-     * 
+     *
      * <p>
      * Level&#160;0 is the running function,
      * level&#160;1 is the function that called the running function,
      * etc.
      * </p>
-     * 
+     *
      * <p>
      * This function is used to build a prefix for error messages.
      * </p>
@@ -3359,7 +3360,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaL_where(long ptr, int lvl); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         luaL_where((lua_State *) L, (int) lvl);
     */
 
@@ -3376,7 +3377,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_openlib(long ptr, String lib); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         luaJ_openlib((lua_State *) L, (const char *) lib);
     */
 
@@ -3396,7 +3397,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaJ_compare(long ptr, int index1, int index2, int op); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaJ_compare((lua_State *) L, (int) index1, (int) index2, (int) op);
         return returnValueReceiver;
     */
@@ -3415,7 +3416,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaJ_len(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaJ_len((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -3436,7 +3437,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaJ_loadbuffer(long ptr, Buffer buffer, int size, String name); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaJ_loadbuffer((lua_State *) L, (unsigned char *) buffer, (int) size, (const char *) name);
         return returnValueReceiver;
     */
@@ -3457,7 +3458,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaJ_dobuffer(long ptr, Buffer buffer, int size, String name); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaJ_dobuffer((lua_State *) L, (unsigned char *) buffer, (int) size, (const char *) name);
         return returnValueReceiver;
     */
@@ -3477,7 +3478,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaJ_pcall(long ptr, int nargs, int nresults); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaJ_pcall((lua_State *) L, (int) nargs, (int) nresults);
         return returnValueReceiver;
     */
@@ -3496,7 +3497,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaJ_resume(long ptr, int nargs); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaJ_resume((lua_State *) L, (int) nargs);
         return returnValueReceiver;
     */
@@ -3514,7 +3515,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_pushobject(long ptr, Object obj); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         luaJ_pushobject((JNIEnv *) env, (lua_State *) L, (jobject) obj);
     */
 
@@ -3531,7 +3532,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_pushclass(long ptr, Object clazz); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         luaJ_pushclass((JNIEnv *) env, (lua_State *) L, (jobject) clazz);
     */
 
@@ -3548,7 +3549,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_pusharray(long ptr, Object array); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         luaJ_pusharray((JNIEnv *) env, (lua_State *) L, (jobject) array);
     */
 
@@ -3565,7 +3566,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_pushfunction(long ptr, Object func); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         luaJ_pushfunction((JNIEnv *) env, (lua_State *) L, (jobject) func);
     */
 
@@ -3583,7 +3584,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaJ_isobject(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaJ_isobject((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -3602,7 +3603,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native Object luaJ_toobject(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jobject returnValueReceiver = (jobject) luaJ_toobject((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -3621,7 +3622,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native long luaJ_newthread(long ptr, int lid); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jlong returnValueReceiver = (jlong) luaJ_newthread((lua_State *) L, (int) lid);
         return returnValueReceiver;
     */
@@ -3639,7 +3640,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaJ_initloader(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaJ_initloader((lua_State *) L);
         return returnValueReceiver;
     */
@@ -3663,7 +3664,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native int luaJ_invokespecial(long ptr, Class clazz, String method, String sig, Object obj, String params); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jint returnValueReceiver = (jint) luaJ_invokespecial((JNIEnv *) env, (lua_State *) L, (jclass) clazz, (const char *) method, (const char *) sig, (jobject) obj, (const char *) params);
         return returnValueReceiver;
     */
@@ -3680,7 +3681,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_removestateindex(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         luaJ_removestateindex((lua_State *) L);
     */
 
@@ -3696,7 +3697,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native void luaJ_gc(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         luaJ_gc((lua_State *) L);
     */
 
@@ -3713,7 +3714,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native Object luaJ_dumptobuffer(long ptr); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jobject returnValueReceiver = (jobject) luaJ_dumptobuffer((lua_State *) L);
         return returnValueReceiver;
     */
@@ -3732,7 +3733,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native Object luaJ_tobuffer(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jobject returnValueReceiver = (jobject) luaJ_tobuffer((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
@@ -3751,7 +3752,7 @@ public class Lua51Natives extends LuaNative {
      */
     protected native Object luaJ_todirectbuffer(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-        
+
         jobject returnValueReceiver = (jobject) luaJ_todirectbuffer((lua_State *) L, (int) index);
         return returnValueReceiver;
     */

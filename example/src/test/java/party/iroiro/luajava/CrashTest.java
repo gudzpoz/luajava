@@ -2,6 +2,7 @@ package party.iroiro.luajava;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import party.iroiro.luajava.lua51.Lua51;
 
 public class CrashTest {
     @Disabled

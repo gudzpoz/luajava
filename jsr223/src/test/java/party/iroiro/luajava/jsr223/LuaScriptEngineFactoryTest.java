@@ -1,4 +1,4 @@
-package party.iroiro.luajava;
+package party.iroiro.luajava.jsr223;
 
 import org.junit.jupiter.api.Test;
 
