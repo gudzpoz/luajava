@@ -59,7 +59,7 @@ The AAR archive bundles native binaries for `armeabi-v7a` `arm64-v8a` `x86` and 
 ext {
     // You may replace `lua51` with `luajit` or other Lua versions
     lua = 'luajit'
-    luaJavaVersion = '3.2.0'
+    luaJavaVersion = '3.3.0'
 }
 
 dependencies {
@@ -85,7 +85,7 @@ android {
 ext {
     // You may replace `lua51` with `luajit` or other Lua versions
     lua = 'lua51'
-    luajavaVersion = '3.2.0'
+    luajavaVersion = '3.3.0'
 }
 
 configurations { natives }
