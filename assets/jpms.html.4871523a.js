@@ -1,1 +1,0 @@
-const e=JSON.parse('{"key":"v-224bb814","path":"/jpms.html","title":"Java 9 Platform Module System","lang":"en-US","frontmatter":{},"excerpt":"","headers":[{"level":2,"title":"Modules","slug":"modules","children":[]}],"git":{"updatedTime":1666959046000},"filePathRelative":"jpms.md"}');export{e as data};
