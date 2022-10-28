@@ -33,7 +33,7 @@ import java.util.Iterator;
 /**
  * A collection of {@link Jua} instances, each labeled with a unique id
  */
-class LuaInstances<T extends Lua> {
+public class LuaInstances<T extends Lua> {
     private final ArrayList<T> instances;
     private final HashSet<Integer> freeIds;
 
@@ -117,7 +117,7 @@ class LuaInstances<T extends Lua> {
          * {@code Call requires API level 24 (current min is 19): java.util.function.Consumer#accept}
          * @param <T> type
          */
-        interface Consumer<T> {
+        public interface Consumer<T> {
             void accept(T t);
         }
         public final int id;

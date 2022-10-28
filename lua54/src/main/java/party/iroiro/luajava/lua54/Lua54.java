@@ -20,28 +20,31 @@
  * SOFTWARE.
  */
 
-package party.iroiro.luajava;
+package party.iroiro.luajava.lua54;
+
+import party.iroiro.luajava.AbstractLua;
+import party.iroiro.luajava.LuaNative;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static party.iroiro.luajava.Lua51Consts.*;
+import static party.iroiro.luajava.lua54.Lua54Consts.*;
 
 /**
- * A thin wrapper around a Lua 5.1 Lua state
+ * A thin wrapper around a Lua 5.4 Lua state
  */
-public class Lua51 extends AbstractLua {
-    private final static AtomicReference<Lua51Natives> natives = new AtomicReference<>();
+public class Lua54 extends AbstractLua {
+    private final static AtomicReference<Lua54Natives> natives = new AtomicReference<>();
 
     /**
      * Creates a new Lua state
      *
-     * @throws LinkageError if Lua 5.1 natives unavailable
+     * @throws LinkageError if Lua 5.4 natives unavailable
      */
-    public Lua51() throws LinkageError {
+    public Lua54() throws LinkageError {
         super(getNatives());
     }
 
-    protected Lua51(long L, int id, AbstractLua main) {
+    protected Lua54(long L, int id, AbstractLua main) {
         super(main.getLuaNative(), L, id, main);
     }
 
@@ -49,7 +52,7 @@ public class Lua51 extends AbstractLua {
         synchronized (natives) {
             if (natives.get() == null) {
                 try {
-                    natives.set(new Lua51Natives());
+                    natives.set(new Lua54Natives());
                 } catch (IllegalStateException e) {
                     throw new LinkageError("Unable to find natives or init", e);
                 }
@@ -60,13 +63,13 @@ public class Lua51 extends AbstractLua {
 
     @Override
     protected AbstractLua newThread(long L, int id, AbstractLua mainThread) {
-        return new Lua51(L, id, mainThread);
+        return new Lua54(L, id, mainThread);
     }
 
     @Override
     public LuaError convertError(int code) {
         switch (code) {
-            case 0:
+            case LUA_OK:
                 return LuaError.OK;
             case LUA_YIELD:
                 return LuaError.YIELD;

@@ -2,3 +2,5 @@ node_modules/
 .temp
 .cache
 .pnp.*
+.vuepress/public/
+.vuepress/luajava

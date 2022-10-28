@@ -20,11 +20,14 @@
  * SOFTWARE.
  */
 
-package party.iroiro.luajava;
+package party.iroiro.luajava.luajit;
+
+import party.iroiro.luajava.AbstractLua;
+import party.iroiro.luajava.LuaNative;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static party.iroiro.luajava.LuaJitConsts.*;
+import static party.iroiro.luajava.luajit.LuaJitConsts.*;
 
 /**
  * A thin wrapper around a LuaJIT Lua state
