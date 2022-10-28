@@ -20,6 +20,12 @@ tasks.withType(JavaCompile) {
     options.deprecation = true
 }
 
+tasks.named('jar') {
+    manifest {
+        attributes('Automatic-Module-Name': 'party.iroiro.luajava')
+    }
+}
+
 test {
     useJUnitPlatform()
 }

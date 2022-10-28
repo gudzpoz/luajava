@@ -25,7 +25,7 @@ myProxyInstance = Proxy:newProxyInstance(
 )
 assertThrows('No a LuaProxy backed object', java.unwrap, myProxyInstance)
 
-Lua54 = java.import('party.iroiro.luajava.Lua54')
+Lua54 = java.import('party.iroiro.luajava.lua54.Lua54')
 Lua = java.import('party.iroiro.luajava.Lua')
 L = Lua54()
 L:createTable(0, 0)

@@ -83,4 +83,10 @@ artifacts {
     desktopNatives(jnigenJarNativesDesktop)
 }
 
+tasks.named('jar') {
+    manifest {
+        attributes('Automatic-Module-Name': 'party.iroiro.lua51java')
+    }
+}
+
 tasks.jnigen.dependsOn(tasks.build)
