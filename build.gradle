@@ -18,7 +18,7 @@ repositories {
 }
 
 subprojects { it ->
-    if (!['android', 'android-test'].contains(it.name)) {
+    if (!['android', 'android-test', 'jpms-example'].contains(it.name)) {
         apply plugin: 'java'
 
         java {

@@ -20,6 +20,18 @@ tasks.withType(JavaCompile) {
     options.deprecation = true
 }
 
+configurations {
+    instrumentedJars {
+        canBeConsumed = true
+        canBeResolved = false
+        extendsFrom api, implementation, runtimeOnly
+    }
+}
+
+artifacts {
+    instrumentedJars(jar)
+}
+
 tasks.named('jar') {
     manifest {
         attributes('Automatic-Module-Name': 'party.iroiro.luajava')

@@ -27,6 +27,12 @@ configurations {
         canBeConsumed = true
         canBeResolved = false
     }
+
+    instrumentedJars {
+        canBeConsumed = true
+        canBeResolved = false
+        extendsFrom api, implementation, runtimeOnly
+    }
 }
 
 dependencies {
@@ -261,6 +267,7 @@ tasks.jnigenBuildLinuxARM64.finalizedBy(tasks.patchElfLinuxARM64)
 apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
 
 artifacts {
+    instrumentedJars(jar)
     desktopNatives(jnigenJarNativesDesktop)
 }
 

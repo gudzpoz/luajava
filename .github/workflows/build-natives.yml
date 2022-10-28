@@ -50,7 +50,7 @@ jobs:
           ./gradlew jniGen jnigenBuild
       - name: Test
         run: |
-          ./gradlew :example:test :jsr223:test
+          ./gradlew :example:test :jsr223:test :jpms-example:run
       - name: Upload macOS/iOS natives
         uses: actions/upload-artifact@v2.1.4
         with:

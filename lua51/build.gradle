@@ -25,6 +25,12 @@ configurations {
         canBeConsumed = true
         canBeResolved = false
     }
+
+    instrumentedJars {
+        canBeConsumed = true
+        canBeResolved = false
+        extendsFrom api, implementation, runtimeOnly
+    }
 }
 
 dependencies {
@@ -80,6 +86,7 @@ jnigen {
 }
 
 artifacts {
+    instrumentedJars(jar)
     desktopNatives(jnigenJarNativesDesktop)
 }
 

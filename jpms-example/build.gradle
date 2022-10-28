@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(9)
+    }
+
+    modularity.inferModulePath = true
+
+    withSourcesJar()
+    withJavadocJar()
+}
+
+application {
+    mainClass = 'party.iroiro.luajava.jpms.Main'
+    mainModule = 'party.iroiro.luajava.jpms'
+}
+
+dependencies {
+    implementation project(path: ':luajava', configuration: 'instrumentedJars')
+    implementation project(path: ':lua51', configuration: 'instrumentedJars')
+    implementation project(path: ':lua52', configuration: 'instrumentedJars')
+    implementation project(path: ':lua53', configuration: 'instrumentedJars')
+    implementation project(path: ':lua54', configuration: 'instrumentedJars')
+    implementation project(path: ':luajit', configuration: 'instrumentedJars')
+    runtimeOnly project(path: ':lua51', configuration: 'desktopNatives')
+    runtimeOnly project(path: ':lua52', configuration: 'desktopNatives')
+    runtimeOnly project(path: ':lua53', configuration: 'desktopNatives')
+    runtimeOnly project(path: ':lua54', configuration: 'desktopNatives')
+    runtimeOnly project(path: ':luajit', configuration: 'desktopNatives')
+}

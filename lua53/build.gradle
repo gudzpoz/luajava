@@ -25,6 +25,12 @@ configurations {
         canBeConsumed = true
         canBeResolved = false
     }
+
+    instrumentedJars {
+        canBeConsumed = true
+        canBeResolved = false
+        extendsFrom api, implementation, runtimeOnly
+    }
 }
 
 dependencies {
@@ -80,12 +86,13 @@ jnigen {
 }
 
 artifacts {
+    instrumentedJars(jar)
     desktopNatives(jnigenJarNativesDesktop)
 }
 
 tasks.named('jar') {
     manifest {
-        attributes('Automatic-Module-Name': 'party.iroiro.luajava')
+        attributes('Automatic-Module-Name': 'party.iroiro.lua53java')
     }
 }
 
