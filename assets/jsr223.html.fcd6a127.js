@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-d4e0ad14","path":"/jsr223.html","title":"JSR 223","lang":"en-US","frontmatter":{},"excerpt":"","headers":[{"level":2,"title":"Caveats","slug":"caveats","children":[{"level":3,"title":"Lua Versions","slug":"lua-versions","children":[]}]}],"git":{"updatedTime":1666959046000},"filePathRelative":"jsr223.md"}');export{e as data};
