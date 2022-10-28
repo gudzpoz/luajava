@@ -24,6 +24,7 @@ public final class LuaScriptEngine extends AbstractScriptEngine implements Scrip
 
     private Lua getLua() throws ScriptException {
         try {
+            //noinspection deprecation
             Lua L = (Lua) ClassUtils.forName(luaClass, null).newInstance();
             L.setExternalLoader(new ClassPathLoader());
             L.openLibraries();
