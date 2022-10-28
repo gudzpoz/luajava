@@ -1,5 +1,6 @@
-package party.iroiro.luajava;
+package party.iroiro.luajava.jsr223;
 
+import party.iroiro.luajava.Lua;
 import party.iroiro.luajava.util.ClassUtils;
 
 import javax.script.ScriptEngine;
@@ -17,6 +18,7 @@ public class LuaScriptEngineFactory implements ScriptEngineFactory {
         ArrayList<String> mimeTypes = new ArrayList<>(2);
         mimeTypes.add("text/x-lua");
         mimeTypes.add("application/x-lua");
+        //noinspection Java9CollectionFactory
         MIME_TYPES = Collections.unmodifiableList(mimeTypes);
 
         EXTENSIONS = Collections.singletonList("lua");
@@ -163,12 +165,12 @@ public class LuaScriptEngineFactory implements ScriptEngineFactory {
     }
 
     private final static String[][] ENGINES = {
-            {"Lua 5.4", "5.4.4", "party.iroiro.luajava.Lua54", "54"},
-            {"Lua 5.3", "5.3.6", "party.iroiro.luajava.Lua53", "53"},
-            {"Lua 5.2", "5.2.4", "party.iroiro.luajava.Lua52", "52"},
+            {"Lua 5.4", "5.4.4", "party.iroiro.luajava.lua54.Lua54", "54"},
+            {"Lua 5.3", "5.3.6", "party.iroiro.luajava.lua53.Lua53", "53"},
+            {"Lua 5.2", "5.2.4", "party.iroiro.luajava.lua52.Lua52", "52"},
             {"LuaJIT", "03080b795aa3496ed62d4a0697c9f4767e7ca7e5",
-                    "party.iroiro.luajava.LuaJit", "jit"},
-            {"Lua 5.1", "5.1.5", "party.iroiro.luajava.Lua51", "51"},
+                    "party.iroiro.luajava.luajit.LuaJit", "jit"},
+            {"Lua 5.1", "5.1.5", "party.iroiro.luajava.lua51.Lua51", "51"},
     };
 
     private static String[] findAvailableEngine() {

@@ -13,6 +13,11 @@ version = rootProject.version
 
 dependencies {
     api project(':luajava')
+    compileOnly project(':lua51')
+    compileOnly project(':lua52')
+    compileOnly project(':lua53')
+    compileOnly project(':lua54')
+    compileOnly project(':luajit')
     testImplementation project(':lua51')
     testImplementation project(':lua52')
     testImplementation project(':lua53')
