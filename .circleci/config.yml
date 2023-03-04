@@ -1,0 +1,23 @@
+version: 2.1
+
+jobs:
+  download-and-test:
+    machine:
+      image: ubuntu-2004:202101-01
+    resource_class: arm.medium
+    steps:
+      - run:
+          name: Download test artifact
+          command: |
+            artifact=$(curl -L https://api.github.com/repos/gudzpoz/luajava/actions/artifacts?name=example&per_page=1)
+            url=$(echo "$artifact" | jq --raw-output ".artifacts[0].archive_download_url")
+            curl -L -H "Authorization: Bearer $GITHUB_TOKEN" "$url" --output ./example.zip
+            unzip ./example.zip
+      - run:
+          name: Run the built-in tests
+          command: java -jar example-all.jar --test
+
+workflows:
+  arm-test-workflow:
+    jobs:
+      - download-and-test
