@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-2289fe4a","path":"/examples/compat.html","title":"LuaJava API Compatibility","lang":"en-US","frontmatter":{},"excerpt":"","headers":[],"git":{"updatedTime":1677914536000},"filePathRelative":"examples/compat.md"}');export{e as data};
