@@ -16,6 +16,7 @@ description: LuaJava, a scripting tool for Java
 [![Maven Central](https://img.shields.io/maven-central/v/party.iroiro.luajava/luajava?color=blue&label=Maven%20Central)](https://mvnrepository.com/search?q=party.iroiro.luajava)
 [![Build Status](https://github.com/gudzpoz/luajava/actions/workflows/docs.yml/badge.svg)](https://github.com/gudzpoz/luajava/actions/workflows/docs.yml)
 [![Document Version](https://img.shields.io/github/package-json/v/gudzpoz/luajava?filename=docs%2Fpackage.json&label=Documentation)](https://gudzpoz.github.io/luajava/)
+[![Tests: macOS on M1](https://img.shields.io/bitrise/ace86394e12a32ad/main?label=macOS%20on%20M1&token=t-lcEHLpUl_xT-CeJYzagg)](https://app.bitrise.io/app/ace86394e12a32ad)
 
 <style>
 img + span svg.external-link-icon {
@@ -68,7 +69,7 @@ const matrix = {
   'Windows (x86)':    [1, 1, 1, 1, 1],
   'Windows (x86_64)': [2, 2, 2, 2, 2],
   'MacOS (x86_64)':   [2, 2, 2, 2, 2],
-  'MacOS (ARM64)':    [1, 1, 1, 1, 1],
+  'MacOS (ARM64)':    [2, 2, 2, 2, 2],
   [android]:          [2, 2, 2, 2, 2],
   'iOS':              [1, 1, 1, 1, 0],
 };
