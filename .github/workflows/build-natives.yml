@@ -394,3 +394,8 @@ jobs:
           BITRISE_TOKEN: ${{ secrets.BITRISE_TOKEN }}
         run: |
           curl -X POST -H "Authorization: $BITRISE_TOKEN" -d '{"hook_info":{"type":"bitrise"},"build_params":{"branch":"main","workflow_id":"primary"}}' https://app.bitrise.io/app/ace86394e12a32ad/build/start.json
+      - name: Trigger CircleCI tests for Linux on arm64
+        env:
+          CIRCLECI_TOKEN: ${{ secrets.CIRCLECI_TOKEN }}
+        run: |
+          curl -X POST -H "Circle-Token: $CIRCLECI_TOKEN" https://circleci.com/api/v2/project/github/gudzpoz/luajava/pipeline
