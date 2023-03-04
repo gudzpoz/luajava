@@ -71,6 +71,9 @@ jnigen {
     add(MacOsX, x64) {
         libraries = ''
     }
+    add(MacOsX, x64, ARM) {
+        libraries = ''
+    }
     add(Android) {
         cFlags += ' -D_FORTIFY_SOURCE=1 '
         cppFlags += ' -D_FORTIFY_SOURCE=1 '
