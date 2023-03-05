@@ -12,8 +12,7 @@ group = rootProject.group
 version = rootProject.version
 
 dependencies {
-    implementation 'com.google.errorprone:error_prone_annotations:2.16'
-    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation 'org.jetbrains:annotations:24.0.0'
 }
 
 tasks.withType(JavaCompile) {

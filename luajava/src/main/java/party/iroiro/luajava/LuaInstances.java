@@ -22,7 +22,6 @@
 
 package party.iroiro.luajava;
 
-import com.google.errorprone.annotations.CheckReturnValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +47,6 @@ public class LuaInstances<T extends Lua> {
      * @param instance element to be added to this collection
      * @return the allocated id
      */
-    @CheckReturnValue
     synchronized int add(@NotNull T instance) {
         return addNullable(instance);
     }
@@ -67,7 +65,6 @@ public class LuaInstances<T extends Lua> {
         }
     }
 
-    @CheckReturnValue
     synchronized Token<T> add() {
         int id = addNullable(null);
         return new Token<>(id, lua -> instances.set(id, lua));
@@ -78,7 +75,6 @@ public class LuaInstances<T extends Lua> {
      * @param id id of the instance to return
      * @return the element with the specified id
      */
-    @CheckReturnValue
     synchronized T get(int id) {
         return instances.get(id);
     }
