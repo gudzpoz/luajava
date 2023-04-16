@@ -21,10 +21,26 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
+import java.util.regex.Pattern;
 
 import static party.iroiro.luajava.LuaVersion.forEachTest;
 
-public class Console {
+public class Console implements Callable<Integer> {
+    private final LineReader reader;
+    private final Terminal terminal;
+    @CommandLine.Option(names = {"-t", "--test"}, help = true, description = "Run built-in tests")
+    boolean test;
+    @CommandLine.Option(names = {"-l", "--lua"}, description = "Specify the Lua version")
+    String lua;
+    @SuppressWarnings("DefaultAnnotationParam")
+    @CommandLine.ArgGroup(exclusive = true, multiplicity = "0..1")
+    Command command;
+
+    public Console(LineReader reader, Terminal terminal) {
+        this.reader = reader;
+        this.terminal = terminal;
+    }
+
     public static void main(String[] args) {
         try (Terminal terminal = TerminalBuilder.builder()
                 .jansi(true)
@@ -35,23 +51,14 @@ public class Console {
                     .appName("lua")
                     .terminal(terminal)
                     .build();
-            if (args.length == 0) {
-                String version = requestLuaVersion(reader);
-                startInteractive(version, terminal);
-            } else {
-                execute(reader, args);
-            }
+            new CommandLine(new Console(reader, terminal)).execute(args);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void execute(LineReader reader, String[] args) {
-        new CommandLine(new ConsoleRunner(reader)).execute(args);
-    }
-
-    private static void startInteractive(String version, Terminal terminal) {
-        try (Lua L = getLua(version)) {
+    private void startInteractive(Lua l) {
+        try (Lua L = l) {
             LineReader reader = LineReaderBuilder.builder()
                     .appName("lua")
                     .terminal(terminal)
@@ -66,10 +73,15 @@ public class Console {
             L.setExternalLoader(new ClassPathLoader());
             L.run("print('Running ' .. _VERSION)");
             injectLicense(L, reader);
+            Pattern varName = Pattern.compile("^[a-zA-Z_]\\w+$");
             while (true) {
                 String s;
                 try {
                     s = reader.readLine(">>> ");
+                    if (varName.matcher(s).matches()) {
+                        prettyPrint(L, s);
+                        s = "print(" + s + ")";
+                    }
                 } catch (EndOfFileException ignored) {
                     break;
                 } catch (UserInterruptException ignored) {
@@ -99,6 +111,16 @@ public class Console {
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void prettyPrint(Lua L, String varName) {
+        synchronized (L.getMainState()) {
+            L.getGlobal(varName);
+            if (L.isTable(-1)) {
+                L.run("require(\"pretty\")(" + varName + ")");
+            }
+            L.pop(1);
         }
     }
 
@@ -132,8 +154,10 @@ public class Console {
         }
     }
 
-    private static Lua getLua(String version) {
-        LuaVersion luaVersion = LuaVersion.from(version.toLowerCase());
+    private Lua getLua(String version) {
+        LuaVersion luaVersion = LuaVersion.from(
+                version == null ? requestLuaVersion() : version.toLowerCase()
+        );
         if (luaVersion == null) {
             throw new RuntimeException("Unable to find matching version");
         } else {
@@ -141,7 +165,7 @@ public class Console {
         }
     }
 
-    private static String requestLuaVersion(LineReader reader) {
+    private String requestLuaVersion() {
         String version;
         do {
             version = reader.readLine("Lua Version: ");
@@ -149,80 +173,64 @@ public class Console {
         return version;
     }
 
-    private static class ConsoleRunner implements Callable<Integer> {
-        private static class Command {
-            @CommandLine.Option(names = {"-f", "--file"}, description = "The Lua file to run")
-            String file;
-
-            @CommandLine.Option(names = {"-e", "--expr"}, description = "The Lua expression to run")
-            String expression;
-        }
-
-        private final LineReader reader;
-
-        public ConsoleRunner(LineReader reader) {
-            this.reader = reader;
-        }
-
-        @CommandLine.Option(names = {"-t", "--test"}, help = true, description = "Run built-in tests")
-        boolean test;
-
-        @CommandLine.Option(names = {"-l", "--lua"}, required = true, description = "Specify the Lua version")
-        String lua;
-
-        @SuppressWarnings("DefaultAnnotationParam")
-        @CommandLine.ArgGroup(exclusive = true, multiplicity = "1")
-        Command command;
-
-        @Override
-        public Integer call() {
-            if (test) {
-                reader.printAbove("----- Running LuaTestSuite -----");
-                forEachTest((L, v) -> {
-                    reader.printAbove("----- Testing " + L.getClass().getSimpleName() + " -----");
-                    new LuaTestSuite<>(L, v.supplier).test();
-                });
-                reader.printAbove("----- Running LuaScriptSuite -----");
-                forEachTest((L, v) -> {
-                    reader.printAbove("----- Testing " + L.getClass().getSimpleName() + " -----");
-                    new LuaScriptSuite<>(L).test();
-                });
-                reader.printAbove("----- Running LuaValueSuite -----");
-                forEachTest((L, v) -> {
-                    reader.printAbove("----- Testing " + L.getClass().getSimpleName() + " -----");
-                    new LuaValueSuite<>(L).test();
-                });
-                reader.printAbove("----- Completed -----");
-            } else {
-                try (Lua L = getLua(lua)) {
-                    L.openLibraries();
-                    L.setExternalLoader(new ClassPathLoader());
-                    if (command.file != null) {
-                        Path path = Paths.get(command.file);
-                        byte[] bytes = Files.readAllBytes(path);
-                        ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);
-                        okOrFail(L.load(buffer.put(bytes).flip(), path.getFileName().toString()),
-                                L, "loading file buffer");
-                        okOrFail(L.pCall(0, Consts.LUA_MULTRET),
-                                L, "running file");
-                    } else if (command.expression != null) {
-                        okOrFail(L.load(command.expression),
-                                L, "loading expression");
-                        okOrFail(L.pCall(0, Consts.LUA_MULTRET),
-                                L, "running expression");
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+    @Override
+    public Integer call() {
+        if (test) {
+            reader.printAbove("----- Running LuaTestSuite -----");
+            forEachTest((L, v) -> {
+                reader.printAbove("----- Testing " + L.getClass().getSimpleName() + " -----");
+                new LuaTestSuite<>(L, v.supplier).test();
+            });
+            reader.printAbove("----- Running LuaScriptSuite -----");
+            forEachTest((L, v) -> {
+                reader.printAbove("----- Testing " + L.getClass().getSimpleName() + " -----");
+                new LuaScriptSuite<>(L).test();
+            });
+            reader.printAbove("----- Running LuaValueSuite -----");
+            forEachTest((L, v) -> {
+                reader.printAbove("----- Testing " + L.getClass().getSimpleName() + " -----");
+                new LuaValueSuite<>(L).test();
+            });
+            reader.printAbove("----- Completed -----");
+        } else if (command == null) {
+            startInteractive(getLua(lua));
+        } else {
+            try (Lua L = getLua(lua)) {
+                L.openLibraries();
+                L.setExternalLoader(new ClassPathLoader());
+                if (command.file != null) {
+                    Path path = Paths.get(command.file);
+                    byte[] bytes = Files.readAllBytes(path);
+                    ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);
+                    okOrFail(L.load(buffer.put(bytes).flip(), path.getFileName().toString()),
+                            L, "loading file buffer");
+                    okOrFail(L.pCall(0, Consts.LUA_MULTRET),
+                            L, "running file");
+                } else if (command.expression != null) {
+                    okOrFail(L.load(command.expression),
+                            L, "loading expression");
+                    okOrFail(L.pCall(0, Consts.LUA_MULTRET),
+                            L, "running expression");
                 }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            return 0;
         }
+        return 0;
+    }
 
-        private void okOrFail(Lua.LuaError error, Lua L, String message) {
-            if (error != Lua.LuaError.OK) {
-                reader.printAbove("Error " + error + " when " + message);
-                throw new RuntimeException(L.toString(-1));
-            }
+    private void okOrFail(Lua.LuaError error, Lua L, String message) {
+        if (error != Lua.LuaError.OK) {
+            reader.printAbove("Error " + error + " when " + message);
+            throw new RuntimeException(L.toString(-1));
         }
+    }
+
+    private static class Command {
+        @CommandLine.Option(names = {"-f", "--file"}, description = "The Lua file to run")
+        String file;
+
+        @CommandLine.Option(names = {"-e", "--expr"}, description = "The Lua expression to run")
+        String expression;
     }
 }
