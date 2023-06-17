@@ -72,3 +72,10 @@ assert(1024 == LuaLib.getNumber())
 ```
 :::
 ::::
+
+## Binary Modules
+
+Lua supports dynamically loading binary libraries, which utilizes Lua C API to interact with Lua runtime.
+A binary library, by its nature, is hardly portable and might not even work across Lua versions.
+To load binary modules, you will need to invoke `LuaNative#loadAsGlobal` manually.
+See [Using Binary Lua Libraries](../rtld.md) for more info.
