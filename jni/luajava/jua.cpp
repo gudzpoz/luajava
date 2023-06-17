@@ -10,7 +10,7 @@
 #if LJ_TARGET_DLOPEN
 #include <dlfcn.h>
 int openLibraryGlobally(const char * file) {
-  return dlopen(file, RTLD_GLOBAL) == NULL;
+  return dlopen(file, RTLD_LAZY | RTLD_GLOBAL) == NULL ? -1 : 0;
 }
 #else
 int openLibraryGlobally(const char * file) {
