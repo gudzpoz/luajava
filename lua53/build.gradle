@@ -51,35 +51,42 @@ jnigen {
 
     add(Windows, x32)
     add(Windows, x64)
+    String linuxFlags = ' -D_FORTIFY_SOURCE=0 -DLUA_USE_DLOPEN '
     add(Linux, x32) {
-        cFlags += ' -D_FORTIFY_SOURCE=0 '
-        cppFlags += ' -D_FORTIFY_SOURCE=0 '
+        cFlags += linuxFlags
+        cppFlags += linuxFlags
     }
     add(Linux, x64) {
-        cFlags += ' -D_FORTIFY_SOURCE=0 '
-        cppFlags += ' -D_FORTIFY_SOURCE=0 '
+        cFlags += linuxFlags
+        cppFlags += linuxFlags
     }
     add(Linux, x32, ARM) {
-        cFlags += ' -D_FORTIFY_SOURCE=0 '
-        cppFlags += ' -D_FORTIFY_SOURCE=0 '
+        cFlags += linuxFlags
+        cppFlags += linuxFlags
     }
     add(Linux, x64, ARM) {
-        cFlags += ' -D_FORTIFY_SOURCE=0 '
-        cppFlags += ' -D_FORTIFY_SOURCE=0 '
+        cFlags += linuxFlags
+        cppFlags += linuxFlags
     }
+    String macFlags = ' -DLUA_USE_DLOPEN '
     add(MacOsX, x64) {
         libraries = ''
+        cFlags += macFlags
+        cppFlags += macFlags
     }
     add(MacOsX, x64, ARM) {
         libraries = ''
+        cFlags += macFlags
+        cppFlags += macFlags
     }
     add(Android) {
-        cFlags += ' -D_FORTIFY_SOURCE=1 '
-        cppFlags += ' -D_FORTIFY_SOURCE=1 '
+        String androidFlags = ' -D_FORTIFY_SOURCE=1 -DLUA_USE_DLOPEN '
+        cFlags += androidFlags
+        cppFlags += androidFlags
         androidApplicationMk = [
                 'APP_PLATFORM := android-19',
                 'APP_STL := c++_static',
-                'APP_CFLAG := -D_FORTIFY_SOURCE=1 ',
+                "APP_CFLAG :=$androidFlags",
         ]
     }
     add(IOS) {
