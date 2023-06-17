@@ -3,8 +3,12 @@
 
 # In[109]:
 
-# for i in {1..4}; do python scripts/jnigen-lua.py 5.$i party.iroiro.luajava lua5${i}/src/main/java/; done
+# for i in {1..4}; do python scripts/jnigen-lua.py 5.$i party.iroiro.luajava.lua5${i} lua5${i}/src/main/java/; done
 # Do not forget to update LuaJit
+#
+# python scripts/jnigen-lua.py 5.1 party.iroiro.luajava.luajit luajit/src/main/java/
+# mv luajit/src/main/java/party/iroiro/luajava/luajit/Lua51Natives.java \
+#    luajit/src/main/java/party/iroiro/luajava/luajit/LuaJitNatives.java
 
 import requests
 from lxml import html
@@ -325,26 +329,38 @@ def jniGen(f):
         return indent(
             jniStatePointerConv(f) + '\n' +
             callingJni(f)
-        )
+        ).replace('\n        \n', '\n\n')
 
 
 emptyPattern = re.compile('(     \\*( )?\n){2,}')
 
 
 def formatJavadoc(luaVersion, f):
+    luaWrapper = f'Wrapper of <a href="{getUrl(luaVersion)}#{f["name"]}"><code>{f["name"]}</code></a>'
+    quote = f"""<pre><code>
+{f['apii']}
+</code></pre>""" if 'apii' in f else ''
+    pre = f"""<pre><code>
+{f['pre']}
+</code></pre>""" if 'pre' in f else ''
+    nl = "\n"
     return emptyPattern.sub('     *\n', (
-        '    /**\n' +
-        ('     * A wrapper function\n' if 'luaJ' in f['name'] else (
-         '     * Wrapper of <a href="' + getUrl(luaVersion)
-        + '#' + f['name'] + '"><code>' + f['name'] + '</code></a>\n')) +
-        '     *\n' + javadocQuote('<pre><code>\n' + f['apii']
-                                  + '\n</code></pre>' if 'apii' in f else '') + '\n' +
-        '     *\n' + javadocQuote('<pre><code>\n' + f['pre']
-                                  + '\n</code></pre>' if 'pre' in f else '') + '\n' +
-        '     *\n' + javadocQuote(f['description'] if ('<p>' in f['description']) else ('<p>\n' + f['description'] + '\n</p>')) + '\n' +
-        '     *\n' + javadocSignature(f['signature'], f) + '\n' +
-        '     */\n' + javaSignature(f) + ' /*\n' + jniGen(f) + '\n    */\n'
-    ))
+f"""    /**
+     * {'A wrapper function' if 'luaJ' in f['name'] else luaWrapper}
+     *
+{javadocQuote(quote)}
+     *
+{javadocQuote(pre)}
+     *
+{javadocQuote(f['description'] if ('<p>' in f['description']) else (f'<p>{nl}{f["description"]}{nl}</p>'))}
+     *
+{javadocSignature(f['signature'], f)}
+     */
+{javaSignature(f)} /*
+{jniGen(f)}
+    */
+"""
+    )).replace('* \n', '*\n')
 
 
 def functionHas(f, noGo):
@@ -669,10 +685,11 @@ def addExtra(functions):
 
 def getWhole(luaVersion, package):
     functions, errors = generate(luaVersion, transformIntoFunctionInfo)
-    inner = '@SuppressWarnings({"unused", "rawtypes"})\n'
-    className = 'Lua' + luaVersion.replace('.', '') + 'Natives'
-    inner += 'public class ' + className + ' extends LuaNative {\n'
-    inner += """        /*JNI
+    className = f"Lua{luaVersion.replace('.', '')}Natives"
+    inner = (
+        f'''@SuppressWarnings({{"unused", "rawtypes"}})
+public class {className} extends LuaNative {{
+        /*JNI
             #include "luacustomamalg.h"
 
             #include "lua.hpp"
@@ -688,41 +705,36 @@ def getWhole(luaVersion, package):
 
             #include "luacustom.h"
          */
-    """
-    inner += (
-        '\n    private final static AtomicBoolean loaded = '
-        + 'new AtomicBoolean(false);\n\n' +
-        '    protected ' + className + '() '
-        + 'throws IllegalStateException {\n' +
-        '        synchronized (loaded) {\n' +
-        '            if (loaded.get()) { return; }\n' +
-        '            try {\n' +
-        '                new SharedLibraryLoader().load("'
-        + 'lua' + luaVersion.replace('.', '') + '");\n' +
-        '                if (initBindings() != 0) {\n' +
-        '                    throw new RuntimeException("Unable to init bindings");\n' +
-        '                }\n' +
-        '                loaded.set(true);\n' +
-        '            } catch (Throwable e) {\n' +
-        '                throw new IllegalStateException(e);\n' +
-        '            }\n' +
-        '        }\n' +
-        '    }\n\n'
-    )
-    inner += (
-        '    private native static int initBindings() throws Exception; /*\n' +
-        '        return (jint) initLua'
-        + luaVersion.replace('.', '') + 'Bindings(env);\n'
-        '    */\n\n'
-    )
-    inner += (
-        '    /**\n' +
-        '     * Get <code>LUA_REGISTRYINDEX</code>, '
-        + 'which is a computed compile time constant\n' +
-        '     */\n' +
-        '    protected native int getRegistryIndex(); /*\n' +
-        '        return LUA_REGISTRYINDEX;\n' +
-        '    */\n\n'
+
+    private final static AtomicBoolean loaded = new AtomicBoolean(false);
+
+    protected {className}() throws IllegalStateException {{
+        synchronized (loaded) {{
+            if (loaded.get()) {{ return; }}
+            try {{
+                new SharedLibraryLoader().load("lua{luaVersion.replace('.', '')}");
+                if (initBindings() != 0) {{
+                    throw new RuntimeException("Unable to init bindings");
+                }}
+                loaded.set(true);
+            }} catch (Throwable e) {{
+                throw new IllegalStateException(e);
+            }}
+        }}
+    }}
+
+    private native static int initBindings() throws Exception; /*
+        return (jint) initLua{luaVersion.replace('.', '')}Bindings(env);
+    */
+
+    /**
+     * Get <code>LUA_REGISTRYINDEX</code>, which is a computed compile time constant
+     */
+    protected native int getRegistryIndex(); /*
+        return LUA_REGISTRYINDEX;
+    */
+
+'''
     )
     addExtra(functions)
     for f in functions:
@@ -734,27 +746,50 @@ def getWhole(luaVersion, package):
         else:
             errors.append(f['name'])
     inner += '}'
+    newline = "\n"
     comment = (
-        'package ' + package + ';\n\n' +
-        'import java.util.concurrent.atomic.AtomicBoolean;\n' +
-        'import java.nio.Buffer;\n' +
-        '\n' +
-        'import com.badlogic.gdx.utils.SharedLibraryLoader;\n\n' +
-        '/**\n' +
-        ' * Lua C API wrappers\n' +
-        ' *\n' +
-        ' * <p>\n' +
-        ' * This file is programmatically generated from <a href="'
-        + getUrl(luaVersion) + '">the Lua ' + luaVersion
-        + ' Reference Manual</a>.\n' +
-        ' * </p>\n' +
-        ' * <p>\n' +
-        ' * The following functions are excluded:\n' +
-        ' * <ul>\n' +
-        ('\n'.join(map(lambda name: ' * <li><code>' + name + '</code></li>',
-                       sorted(errors)))) + '\n' +
-        ' * </ul>\n' +
-        ' */'
+f"""/*
+ * Copyright (C) 2022 the original author or authors.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+package {package};
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.nio.Buffer;
+
+import com.badlogic.gdx.utils.SharedLibraryLoader;
+import party.iroiro.luajava.LuaNative;
+
+/**
+ * Lua C API wrappers
+ *
+ * <p>
+ * This file is programmatically generated from <a href="{getUrl(luaVersion)}">the Lua {luaVersion} Reference Manual</a>.
+ * </p>
+ * <p>
+ * The following functions are excluded:
+ * <ul>
+{newline.join(map(lambda name: ' * <li><code>' + name + '</code></li>', sorted(errors)))}
+ * </ul>
+ */"""
     )
     output = comment + '\n' + inner
     return className, output
@@ -764,12 +799,12 @@ def getWhole(luaVersion, package):
 
 
 if len(sys.argv) != 4:
-    print('Usage: ' + sys.argv[0] + ' luaVersion javaPackage outputFolder')
+    print(f'Usage: {sys.argv[0]} luaVersion javaPackage outputFolder')
 else:
     name, output = getWhole(sys.argv[1], sys.argv[2])
     directory = os.path.join(sys.argv[3], *(sys.argv[2].split('.')))
     out = os.path.join(directory, name + '.java')
-    if input('Writing to ' + out + ', continue? (yes/no) ') != None:
+    if input(f'Writing to {out}, continue? (yes/no) ') != None:
         os.makedirs(directory, exist_ok=True)
         f = open(out, 'w')
         f.write(output)
