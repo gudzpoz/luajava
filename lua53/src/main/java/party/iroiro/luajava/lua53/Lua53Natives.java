@@ -25,8 +25,8 @@ package party.iroiro.luajava.lua53;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.nio.Buffer;
 
-import com.badlogic.gdx.utils.SharedLibraryLoader;
 import party.iroiro.luajava.LuaNative;
+import party.iroiro.luajava.util.GlobalLibraryLoader;
 
 /**
  * Lua C API wrappers
@@ -127,8 +127,8 @@ public class Lua53Natives extends LuaNative {
         synchronized (loaded) {
             if (loaded.get()) { return; }
             try {
-                new SharedLibraryLoader().load("lua53");
-                if (initBindings() != 0) {
+                String file = GlobalLibraryLoader.load("lua53");
+                if (initBindings(file) != 0) {
                     throw new RuntimeException("Unable to init bindings");
                 }
                 loaded.set(true);
@@ -138,8 +138,8 @@ public class Lua53Natives extends LuaNative {
         }
     }
 
-    private native static int initBindings() throws Exception; /*
-        return (jint) initLua53Bindings(env);
+    private native static int initBindings(String file) throws Exception; /*
+        return (jint) initLua53Bindings(env, (const char *) file);
     */
 
     /**

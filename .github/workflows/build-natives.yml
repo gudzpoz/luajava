@@ -76,6 +76,7 @@ jobs:
       - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
       - name: Install cross-compilation toolchains
         run: |
+          sudo apt update
           sudo apt install -y --force-yes gcc g++ linux-libc-dev libc6-dev
           sudo apt install -y --force-yes libc6-dev-i386 lib32stdc++-9-dev
           sudo apt install -y --force-yes linux-libc-dev linux-libc-dev-i386-cross

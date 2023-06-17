@@ -6,6 +6,18 @@
 
 #include <stdlib.h>
 
+#include "lj/lj_arch.h"
+#if LJ_TARGET_DLOPEN
+#include <dlfcn.h>
+int openLibraryGlobally(const char * file) {
+  return dlopen(file, RTLD_GLOBAL) == NULL;
+}
+#else
+int openLibraryGlobally(const char * file) {
+  return 0;
+}
+#endif
+
 // For template usage
 const char JAVA_CLASS_META_REGISTRY[] = "__jclass__";
 const char JAVA_OBJECT_META_REGISTRY[] = "__jobject__";
@@ -101,13 +113,18 @@ jmethodID bindJavaMethod(JNIEnv * env, jclass c, const char * name, const char *
   return id;
 }
 
+
+
 // TODO: switch to reinterpret_cast<jclass> etc.
 /**
  * Init JNI cache bindings
  * See AbstractLua.java
  * Returns zero if completed without errors
  */
-int initBindings(JNIEnv * env) {
+int initBindings(JNIEnv * env, const char * path) {
+  if (openLibraryGlobally(path) != 0) {
+    return -1;
+  }
   if (updateJNIEnv(env) != 0) {
     return -1;
   }

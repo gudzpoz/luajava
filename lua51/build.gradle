@@ -35,7 +35,6 @@ configurations {
 
 dependencies {
     api project(':luajava')
-    implementation 'com.badlogicgames.gdx:gdx-jnigen-loader:2.3.1'
 }
 
 apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
