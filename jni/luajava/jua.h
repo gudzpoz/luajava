@@ -36,6 +36,8 @@ extern jmethodID juaapi_loadmodule;
 extern jmethodID juaapi_loadlib;
 extern jmethodID throwable_tostring;
 
+int reopenAsGlobal(const char * file);
+
 jclass bindJavaClass(JNIEnv * env, const char * name);
 jmethodID bindJavaStaticMethod(JNIEnv * env, jclass c, const char * name, const char * sig);
 jmethodID bindJavaMethod(JNIEnv * env, jclass c, const char * name, const char * sig);

@@ -706,25 +706,43 @@ public class {className} extends LuaNative {{
             #include "luacustom.h"
          */
 
-    private final static AtomicBoolean loaded = new AtomicBoolean(false);
+    private final static AtomicReference<String> loaded = new AtomicReference<>(null);
 
     protected {className}() throws IllegalStateException {{
         synchronized (loaded) {{
-            if (loaded.get()) {{ return; }}
+            if (loaded.get() != null) {{ return; }}
             try {{
+                GlobalLibraryLoader.register(Lua{luaVersion.replace('.', '')}Natives.class, false);
                 String file = GlobalLibraryLoader.load("lua{luaVersion.replace('.', '')}");
-                if (initBindings(file) != 0) {{
+                if (initBindings() != 0) {{
                     throw new RuntimeException("Unable to init bindings");
                 }}
-                loaded.set(true);
+                loaded.set(file);
             }} catch (Throwable e) {{
                 throw new IllegalStateException(e);
             }}
         }}
     }}
 
-    private native static int initBindings(String file) throws Exception; /*
-        return (jint) initLua{luaVersion.replace('.', '')}Bindings(env, (const char *) file);
+    /**
+     * Exposes the symbols in the natives to external libraries.
+     *
+     * <p>
+     *     Users are only allowed load one instance of natives if they want it global.
+     *     Otherwise, the JVM might just crash due to identical symbol names in different binaries.
+     * </p>
+     */
+    public void loadAsGlobal() {{
+        GlobalLibraryLoader.register(this.getClass(), true);
+        reopenGlobal(loaded.get());
+    }}
+
+    private native int reopenGlobal(String file); /*
+        return (jint) reopenAsGlobal((const char *) file);
+    */
+
+    private native static int initBindings() throws Exception; /*
+        return (jint) initLua{luaVersion.replace('.', '')}Bindings(env);
     */
 
     /**
@@ -772,7 +790,7 @@ f"""/*
 
 package {package};
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.nio.Buffer;
 
 import party.iroiro.luajava.LuaNative;

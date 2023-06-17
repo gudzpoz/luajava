@@ -20,8 +20,8 @@ static void luaJavaSetup(lua_State * L, JNIEnv * env, int lid) {
     initMetaRegistry(L);
 }
 
-static int initLua53Bindings(JNIEnv * env, const char * lib) {
-    return initBindings(env, lib);
+static int initLua53Bindings(JNIEnv * env) {
+    return initBindings(env);
 }
 
 #endif /* !CUSTOM_H */

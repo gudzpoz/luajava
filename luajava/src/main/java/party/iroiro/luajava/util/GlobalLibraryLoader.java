@@ -2,6 +2,7 @@ package party.iroiro.luajava.util;
 
 import com.badlogic.gdx.utils.SharedLibraryLoadRuntimeException;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
+import party.iroiro.luajava.LuaNative;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,6 +41,8 @@ import java.io.InputStream;
  */
 public class GlobalLibraryLoader {
     private final static SharedLibraryLoader loader = new SharedLibraryLoader();
+    private static volatile Class<? extends LuaNative> loadedNatives = null;
+    private static volatile int nativesLoaded = 0;
 
     private static InputStream readFile(String path) {
         InputStream input = SharedLibraryLoader.class.getResourceAsStream("/" + path);
@@ -81,5 +84,51 @@ public class GlobalLibraryLoader {
             }
         }
         throw new SharedLibraryLoadRuntimeException("Unable to locate the library path");
+    }
+
+    /**
+     * Marks natives of a certain version as loaded, used to prevent JVM crashes from incompatible symbols.
+     *
+     * <ul>
+     *     <li>{@code loadedNatives == null && nativesLoaded == 0}: None loaded.</li>
+     *     <li>{@code loadedNatives != null && nativesLoaded > 0}: Some loaded.</li>
+     *     <li>{@code loadedNatives != null && nativesLoaded == 0}: Global loaded.</li>
+     *     <li>{@code loadedNatives == null && nativesLoaded > 0}: Never.</li>
+     * </ul>
+     *
+     * @param natives the natives to be loaded
+     * @param global  whether the natives are
+     */
+    public synchronized static void register(Class<? extends LuaNative> natives, boolean global) {
+        if (loadedNatives == null && nativesLoaded == 0) {
+            loadedNatives = natives;
+            nativesLoaded = global ? 0 : 1;
+            return;
+        }
+        if (global) {
+            if (loadedNatives == natives && nativesLoaded == 1) {
+                // Natives already loaded either:
+                // - as the only RTLD_LOCAL library,
+                // - or with RTLD_GLOBAL.
+                nativesLoaded = 0;
+                return;
+            }
+            // Other natives already loaded, rejecting making it global.
+            throw new SharedLibraryLoadRuntimeException(
+                    "Library " + loadedNatives.getName()
+                    + " already loaded when loading " + natives.getName() + " globally"
+            );
+        } else {
+            if (loadedNatives != null && nativesLoaded == 0 && loadedNatives != natives) {
+                // Global library already loaded.
+                throw new SharedLibraryLoadRuntimeException(
+                        "Global library " + loadedNatives.getName()
+                        + " already loaded when loading " + natives.getName()
+                );
+            }
+            // Already loaded as global, or all others loaded as local.
+            loadedNatives = natives;
+            nativesLoaded++;
+        }
     }
 }

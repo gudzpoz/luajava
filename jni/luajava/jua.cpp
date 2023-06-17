@@ -9,7 +9,7 @@
 #include "lj/lj_arch.h"
 #if LJ_TARGET_DLOPEN
 #include <dlfcn.h>
-int openLibraryGlobally(const char * file) {
+int reopenAsGlobal(const char * file) {
   return dlopen(file, RTLD_LAZY | RTLD_GLOBAL) == NULL ? -1 : 0;
 }
 #else
@@ -121,10 +121,7 @@ jmethodID bindJavaMethod(JNIEnv * env, jclass c, const char * name, const char *
  * See AbstractLua.java
  * Returns zero if completed without errors
  */
-int initBindings(JNIEnv * env, const char * path) {
-  if (openLibraryGlobally(path) != 0) {
-    return -1;
-  }
+int initBindings(JNIEnv * env) {
   if (updateJNIEnv(env) != 0) {
     return -1;
   }
