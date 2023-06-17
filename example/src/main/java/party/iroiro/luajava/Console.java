@@ -30,6 +30,8 @@ public class Console implements Callable<Integer> {
     private final Terminal terminal;
     @CommandLine.Option(names = {"-t", "--test"}, help = true, description = "Run built-in tests")
     boolean test;
+    @CommandLine.Option(names = {"-g", "--global"}, help = true, description = "Make Lua symbol global")
+    boolean global;
     @CommandLine.Option(names = {"-l", "--lua"}, description = "Specify the Lua version")
     String lua;
     @SuppressWarnings("DefaultAnnotationParam")
@@ -161,7 +163,11 @@ public class Console implements Callable<Integer> {
         if (luaVersion == null) {
             throw new RuntimeException("Unable to find matching version");
         } else {
-            return luaVersion.supplier.get();
+            Lua L = luaVersion.supplier.get();
+            if (global) {
+                L.getLuaNative().loadAsGlobal();
+            }
+            return L;
         }
     }
 
