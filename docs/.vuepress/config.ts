@@ -59,6 +59,7 @@ export default defineUserConfig({
         text: 'Troubleshooting',
         children: [
           '/troubleshooting.md',
+          '/rtld.md',
           '/glibc.md',
         ]
       },

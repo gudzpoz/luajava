@@ -6,6 +6,18 @@
 
 #include <stdlib.h>
 
+#include "lj/lj_arch.h"
+#if LJ_TARGET_DLOPEN
+#include <dlfcn.h>
+int reopenAsGlobal(const char * file) {
+  return dlopen(file, RTLD_LAZY | RTLD_GLOBAL) == NULL ? -1 : 0;
+}
+#else
+int reopenAsGlobal(const char * file) {
+  return 0;
+}
+#endif
+
 // For template usage
 const char JAVA_CLASS_META_REGISTRY[] = "__jclass__";
 const char JAVA_OBJECT_META_REGISTRY[] = "__jobject__";
@@ -100,6 +112,8 @@ jmethodID bindJavaMethod(JNIEnv * env, jclass c, const char * name, const char *
   }
   return id;
 }
+
+
 
 // TODO: switch to reinterpret_cast<jclass> etc.
 /**

@@ -1048,7 +1048,6 @@ public abstract class JuaAPI {
                 }
             };
 
-    @SuppressWarnings("Convert2Diamond")
     final static ExecutableWrapper<Method> METHOD_WRAPPER =
             new ExecutableWrapper<Method>() {
                 @Override

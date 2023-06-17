@@ -22,11 +22,11 @@
 
 package party.iroiro.luajava.lua54;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.nio.Buffer;
 
-import com.badlogic.gdx.utils.SharedLibraryLoader;
 import party.iroiro.luajava.LuaNative;
+import party.iroiro.luajava.util.GlobalLibraryLoader;
 
 /**
  * Lua C API wrappers
@@ -129,22 +129,40 @@ public class Lua54Natives extends LuaNative {
             #include "luacustom.h"
          */
 
-    private final static AtomicBoolean loaded = new AtomicBoolean(false);
+    private final static AtomicReference<String> loaded = new AtomicReference<>(null);
 
     protected Lua54Natives() throws IllegalStateException {
         synchronized (loaded) {
-            if (loaded.get()) { return; }
+            if (loaded.get() != null) { return; }
             try {
-                new SharedLibraryLoader().load("lua54");
+                GlobalLibraryLoader.register(Lua54Natives.class, false);
+                String file = GlobalLibraryLoader.load("lua54");
                 if (initBindings() != 0) {
                     throw new RuntimeException("Unable to init bindings");
                 }
-                loaded.set(true);
+                loaded.set(file);
             } catch (Throwable e) {
                 throw new IllegalStateException(e);
             }
         }
     }
+
+    /**
+     * Exposes the symbols in the natives to external libraries.
+     *
+     * <p>
+     *     Users are only allowed load one instance of natives if they want it global.
+     *     Otherwise, the JVM might just crash due to identical symbol names in different binaries.
+     * </p>
+     */
+    public void loadAsGlobal() {
+        GlobalLibraryLoader.register(this.getClass(), true);
+        reopenGlobal(loaded.get());
+    }
+
+    private native int reopenGlobal(String file); /*
+        return (jint) reopenAsGlobal((const char *) file);
+    */
 
     private native static int initBindings() throws Exception; /*
         return (jint) initLua54Bindings(env);
@@ -349,8 +367,7 @@ public class Lua54Natives extends LuaNative {
      * </p>
      *
      * <p>
-     * (Exceptionally, this function was introduced in release 5.4.3.
-     * It is not present in previous 5.4 releases.)
+     * (This function was introduced in release&#160;5.4.3.)
      * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
@@ -360,6 +377,51 @@ public class Lua54Natives extends LuaNative {
         lua_State * L = (lua_State *) ptr;
 
         lua_closeslot((lua_State *) L, (int) index);
+    */
+
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.4/manual.html#lua_closethread"><code>lua_closethread</code></a>
+     *
+     * <pre><code>
+     * [-0, +?, –]
+     * </code></pre>
+     *
+     * <pre><code>
+     * int lua_closethread (lua_State *L, lua_State *from);
+     * </code></pre>
+     *
+     * <p>
+     * Resets a thread, cleaning its call stack and closing all pending
+     * to-be-closed variables.
+     * Returns a status code:
+     * <a href="https://www.lua.org/manual/5.4/manual.html#pdf-LUA_OK"><code>LUA_OK</code></a> for no errors in the thread
+     * (either the original error that stopped the thread or
+     * errors in closing methods),
+     * or an error status otherwise.
+     * In case of error,
+     * leaves the error object on the top of the stack.
+     * </p>
+     *
+     * <p>
+     * The parameter <code>from</code> represents the coroutine that is resetting <code>L</code>.
+     * If there is no such coroutine,
+     * this parameter can be <code>NULL</code>.
+     * </p>
+     *
+     * <p>
+     * (This function was introduced in release&#160;5.4.6.)
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param from a thread
+     * @return see description
+     */
+    protected native int lua_closethread(long ptr, long from); /*
+        lua_State * L = (lua_State *) ptr;
+
+        jint returnValueReceiver = (jint) lua_closethread((lua_State *) L, (lua_State *) from);
+        return returnValueReceiver;
     */
 
 
@@ -1507,7 +1569,7 @@ public class Lua54Natives extends LuaNative {
      * and pushes a key&#8211;value pair from the table at the given index,
      * the "next" pair after the given key.
      * If there are no more elements in the table,
-     * then <a href="https://www.lua.org/manual/5.4/manual.html#lua_next"><code>lua_next</code></a> returns 0 and pushes nothing.
+     * then <a href="https://www.lua.org/manual/5.4/manual.html#lua_next"><code>lua_next</code></a> returns&#160;0 and pushes nothing.
      * </p>
      *
      * <p>
@@ -2049,6 +2111,7 @@ public class Lua54Natives extends LuaNative {
      * <p>
      * Similar to <a href="https://www.lua.org/manual/5.4/manual.html#lua_gettable"><code>lua_gettable</code></a>, but does a raw access
      * (i.e., without metamethods).
+     * The value at <code>index</code> must be a table.
      * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
@@ -2077,6 +2140,7 @@ public class Lua54Natives extends LuaNative {
      * <p>
      * Similar to <a href="https://www.lua.org/manual/5.4/manual.html#lua_gettable"><code>lua_gettable</code></a>, but does a raw access
      * (i.e., without metamethods).
+     * The value at <code>index</code> must be a table.
      * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
@@ -2240,6 +2304,7 @@ public class Lua54Natives extends LuaNative {
      * <p>
      * Similar to <a href="https://www.lua.org/manual/5.4/manual.html#lua_settable"><code>lua_settable</code></a>, but does a raw assignment
      * (i.e., without metamethods).
+     * The value at <code>index</code> must be a table.
      * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
@@ -2389,15 +2454,9 @@ public class Lua54Natives extends LuaNative {
      * </code></pre>
      *
      * <p>
-     * Resets a thread, cleaning its call stack and closing all pending
-     * to-be-closed variables.
-     * Returns a status code:
-     * <a href="https://www.lua.org/manual/5.4/manual.html#pdf-LUA_OK"><code>LUA_OK</code></a> for no errors in the thread
-     * (either the original error that stopped the thread or
-     * errors in closing methods),
-     * or an error status otherwise.
-     * In case of error,
-     * leaves the error object on the top of the stack.
+     * This function is deprecated;
+     * it is equivalent to <a href="https://www.lua.org/manual/5.4/manual.html#lua_closethread"><code>lua_closethread</code></a> with
+     * <code>from</code> being <code>NULL</code>.
      * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
@@ -3662,8 +3721,8 @@ public class Lua54Natives extends LuaNative {
      * </pre>
      *
      * <p>
-     * It returns <a href="https://www.lua.org/manual/5.4/manual.html#pdf-LUA_OK"><code>LUA_OK</code></a> if there are no errors,
-     * or an error code in case of errors (see <a href="https://www.lua.org/manual/5.4/manual.html#4.4.1">&#167;4.4.1</a>).
+     * It returns&#160;0 (<a href="https://www.lua.org/manual/5.4/manual.html#pdf-LUA_OK"><code>LUA_OK</code></a>) if there are no errors,
+     * or 1 in case of errors.
      * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
@@ -4054,7 +4113,7 @@ public class Lua54Natives extends LuaNative {
      * <p>
      * Creates a new Lua state.
      * It calls <a href="https://www.lua.org/manual/5.4/manual.html#lua_newstate"><code>lua_newstate</code></a> with an
-     * allocator based on the standard&#160;C allocation functions
+     * allocator based on the ISO&#160;C allocation functions
      * and then sets a warning function and a panic function (see <a href="https://www.lua.org/manual/5.4/manual.html#4.4">&#167;4.4</a>)
      * that print messages to the standard error output.
      * </p>

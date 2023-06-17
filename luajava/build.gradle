@@ -13,6 +13,7 @@ version = rootProject.version
 
 dependencies {
     implementation 'org.jetbrains:annotations:24.0.1'
+    implementation 'com.badlogicgames.gdx:gdx-jnigen-loader:2.3.1'
 }
 
 tasks.withType(JavaCompile) {

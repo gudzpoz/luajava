@@ -22,11 +22,11 @@
 
 package party.iroiro.luajava.lua51;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.nio.Buffer;
 
-import com.badlogic.gdx.utils.SharedLibraryLoader;
 import party.iroiro.luajava.LuaNative;
+import party.iroiro.luajava.util.GlobalLibraryLoader;
 
 /**
  * Lua C API wrappers
@@ -113,22 +113,40 @@ public class Lua51Natives extends LuaNative {
             #include "luacustom.h"
          */
 
-    private final static AtomicBoolean loaded = new AtomicBoolean(false);
+    private final static AtomicReference<String> loaded = new AtomicReference<>(null);
 
     protected Lua51Natives() throws IllegalStateException {
         synchronized (loaded) {
-            if (loaded.get()) { return; }
+            if (loaded.get() != null) { return; }
             try {
-                new SharedLibraryLoader().load("lua51");
+                GlobalLibraryLoader.register(Lua51Natives.class, false);
+                String file = GlobalLibraryLoader.load("lua51");
                 if (initBindings() != 0) {
                     throw new RuntimeException("Unable to init bindings");
                 }
-                loaded.set(true);
+                loaded.set(file);
             } catch (Throwable e) {
                 throw new IllegalStateException(e);
             }
         }
     }
+
+    /**
+     * Exposes the symbols in the natives to external libraries.
+     *
+     * <p>
+     *     Users are only allowed load one instance of natives if they want it global.
+     *     Otherwise, the JVM might just crash due to identical symbol names in different binaries.
+     * </p>
+     */
+    public void loadAsGlobal() {
+        GlobalLibraryLoader.register(this.getClass(), true);
+        reopenGlobal(loaded.get());
+    }
+
+    private native int reopenGlobal(String file); /*
+        return (jint) reopenAsGlobal((const char *) file);
+    */
 
     private native static int initBindings() throws Exception; /*
         return (jint) initLua51Bindings(env);

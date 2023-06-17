@@ -37,6 +37,16 @@ import java.nio.Buffer;
 public abstract class LuaNative {
 
     /**
+     * Exposes the symbols in the natives to external libraries.
+     *
+     * <p>
+     *     Users are only allowed load one instance of natives if they want it global.
+     *     Otherwise, the JVM might just crash due to identical symbol names in different binaries.
+     * </p>
+     */
+    public abstract void loadAsGlobal();
+
+    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_tonumber"><code>lua_tonumber</code></a>
      *
      * <pre><code>
