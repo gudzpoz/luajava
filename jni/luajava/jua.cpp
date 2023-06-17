@@ -13,7 +13,7 @@ int reopenAsGlobal(const char * file) {
   return dlopen(file, RTLD_LAZY | RTLD_GLOBAL) == NULL ? -1 : 0;
 }
 #else
-int openLibraryGlobally(const char * file) {
+int reopenAsGlobal(const char * file) {
   return 0;
 }
 #endif
