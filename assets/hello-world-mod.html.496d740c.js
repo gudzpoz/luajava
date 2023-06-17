@@ -1,1 +1,0 @@
-const e=JSON.parse('{"key":"v-da61120c","path":"/examples/hello-world-mod.html","title":"Advanced Hello World","lang":"en-US","frontmatter":{},"excerpt":"","headers":[],"git":{"updatedTime":1686997614000},"filePathRelative":"examples/hello-world-mod.md"}');export{e as data};
