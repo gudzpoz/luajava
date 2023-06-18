@@ -1,6 +1,6 @@
 package party.iroiro.luajava;
 
-import org.jline.builtins.Nano;
+import org.jline.builtins.SyntaxHighlighter;
 import org.jline.reader.Highlighter;
 import org.jline.reader.LineReader;
 import org.jline.utils.AttributedString;
@@ -8,14 +8,14 @@ import org.jline.utils.AttributedString;
 import java.util.regex.Pattern;
 
 public class LuaHighlighter implements Highlighter {
-    private final Nano.SyntaxHighlighter highlighter;
+    private final SyntaxHighlighter highlighter;
 
     public static Highlighter get() {
         return new LuaHighlighter();
     }
 
     private LuaHighlighter() {
-        highlighter = Nano.SyntaxHighlighter.build("classpath:/lua.nanorc");
+        highlighter = SyntaxHighlighter.build("classpath:/lua.nanorc");
     }
 
     @Override

@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import static party.iroiro.luajava.LuaVersion.forEachTest;
 
 public class Console implements Callable<Integer> {
+    public static final Pattern VAR_NAME_PATTERN = Pattern.compile("^[a-zA-Z_]\\w*$");
     private final LineReader reader;
     private final Terminal terminal;
     @CommandLine.Option(names = {"-t", "--test"}, help = true, description = "Run built-in tests")
@@ -53,76 +54,16 @@ public class Console implements Callable<Integer> {
                     .appName("lua")
                     .terminal(terminal)
                     .build();
-            new CommandLine(new Console(reader, terminal)).execute(args);
+            CommandLine cmd = new CommandLine(new Console(reader, terminal));
+            cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
+                if (ex instanceof UserInterruptException) {
+                    return 0;
+                }
+                throw ex;
+            });
+            cmd.execute(args);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private void startInteractive(Lua l) {
-        try (Lua L = l) {
-            LineReader reader = LineReaderBuilder.builder()
-                    .appName("lua")
-                    .terminal(terminal)
-                    .highlighter(LuaHighlighter.get())
-                    .parser(new LuaConsoleParser())
-                    .variable(LineReader.SECONDARY_PROMPT_PATTERN, "  > ")
-                    .variable(LineReader.INDENTATION, 2)
-                    .build();
-            AutopairWidgets autopairWidgets = new AutopairWidgets(reader, false);
-            autopairWidgets.enable();
-            L.openLibraries();
-            L.setExternalLoader(new ClassPathLoader());
-            L.run("print('Running ' .. _VERSION)");
-            injectLicense(L, reader);
-            Pattern varName = Pattern.compile("^[a-zA-Z_]\\w+$");
-            while (true) {
-                String s;
-                try {
-                    s = reader.readLine(">>> ");
-                    if (varName.matcher(s).matches()) {
-                        prettyPrint(L, s);
-                        s = "print(" + s + ")";
-                    }
-                } catch (EndOfFileException ignored) {
-                    break;
-                } catch (UserInterruptException ignored) {
-                    reader.printAbove("UserInterrupt");
-                    continue;
-                } catch (Throwable ignored) {
-                    s = "";
-                }
-                synchronized (L.getMainState()) {
-                    if (L.run(s) != Lua.LuaError.OK) {
-                        if (L.getTop() != 0 && L.isString(-1)) {
-                            reader.printAbove(L.toString(-1));
-                        }
-                        L.setTop(0);
-                        Throwable e = L.getJavaError();
-                        if (e != null) {
-                            reader.printAbove("Last Java side exception:");
-                            ByteArrayOutputStream output = new ByteArrayOutputStream();
-                            PrintStream print = new PrintStream(output);
-                            e.printStackTrace(print);
-                            print.flush();
-                            reader.printAbove(output.toString());
-                            L.error((Throwable) null);
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void prettyPrint(Lua L, String varName) {
-        synchronized (L.getMainState()) {
-            L.getGlobal(varName);
-            if (L.isTable(-1)) {
-                L.run("require(\"pretty\")(" + varName + ")");
-            }
-            L.pop(1);
         }
     }
 
@@ -156,6 +97,84 @@ public class Console implements Callable<Integer> {
         }
     }
 
+    private void startInteractive(Lua l) {
+        try (Lua L = l) {
+            LineReader reader = LineReaderBuilder.builder()
+                    .appName("lua")
+                    .terminal(terminal)
+                    .highlighter(LuaHighlighter.get())
+                    .parser(new LuaConsoleParser())
+                    .variable(LineReader.SECONDARY_PROMPT_PATTERN, "  > ")
+                    .variable(LineReader.INDENTATION, 2)
+                    .variable(LineReader.WORDCHARS, "")
+                    .build();
+            AutopairWidgets autopairWidgets = new AutopairWidgets(reader, false);
+            autopairWidgets.enable();
+            L.openLibraries();
+            L.setExternalLoader(new ClassPathLoader());
+            L.run("print('Running ' .. _VERSION)");
+            injectLicense(L, reader);
+            while (true) {
+                String s;
+                try {
+                    s = reader.readLine(">>> ");
+                    if (VAR_NAME_PATTERN.matcher(s).matches()) {
+                        prettyPrint(L, s);
+                        s = "print(" + s + ")";
+                    }
+                } catch (EndOfFileException ignored) {
+                    break;
+                } catch (UserInterruptException ignored) {
+                    reader.printAbove("UserInterrupt");
+                    continue;
+                } catch (Throwable ignored) {
+                    s = "";
+                }
+                synchronized (L.getMainState()) {
+                    if (L.run(s) != Lua.LuaError.OK) {
+                        String message = null;
+                        if (L.getTop() != 0 && L.isString(-1)) {
+                            message = L.toString(-1);
+                        }
+                        L.setTop(0);
+                        Throwable e = L.getJavaError();
+                        if (e != null) {
+                            L.error((Throwable) null);
+                        }
+                        s = "_ = (" + s + ")\nprint(_)";
+                        if (L.run(s) == Lua.LuaError.OK) {
+                            prettyPrint(L, "_");
+                        } else {
+                            reader.printAbove(message);
+                            if (e != null) {
+                                reader.printAbove("Last Java side exception:");
+                                ByteArrayOutputStream output = new ByteArrayOutputStream();
+                                PrintStream print = new PrintStream(output);
+                                e.printStackTrace(print);
+                                print.flush();
+                                reader.printAbove(output.toString());
+                            }
+                            L.setTop(0);
+                            L.error((Throwable) null);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void prettyPrint(Lua L, String varName) {
+        synchronized (L.getMainState()) {
+            L.getGlobal(varName);
+            if (L.isTable(-1)) {
+                L.run("require(\"pretty\")(" + varName + ")");
+            }
+            L.pop(1);
+        }
+    }
+
     private Lua getLua(String version) {
         LuaVersion luaVersion = LuaVersion.from(
                 version == null ? requestLuaVersion() : version.toLowerCase()
@@ -174,7 +193,11 @@ public class Console implements Callable<Integer> {
     private String requestLuaVersion() {
         String version;
         do {
-            version = reader.readLine("Lua Version: ");
+            try {
+                version = reader.readLine("Lua Version: ");
+            } catch (EndOfFileException e) {
+                throw new UserInterruptException("");
+            }
         } while (LuaVersion.from(version.toLowerCase()) == null);
         return version;
     }
