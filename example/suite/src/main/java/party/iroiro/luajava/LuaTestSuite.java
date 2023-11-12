@@ -59,8 +59,86 @@ public class LuaTestSuite<T extends AbstractLua> {
         testRequire();
         testRunners();
         testStackOperations();
+        testStackPositions();
         testTableOperations();
         testThreads();
+    }
+
+    private void testStackPositions() {
+        try (T L = constructor.get()) {
+            Random random = new Random();
+            // Relative stack positions
+            for (int i = 0; i < 1024; i++) {
+                L.setTop(0);
+                int top = random.nextInt(1024) + 512;
+                int abs = random.nextInt(top) + 1;
+                int rel = abs - top - 1;
+                for (int j = 0; j < top; j++) {
+                    if (j == abs - 1) {
+                        L.push(top);
+                    } else {
+                        L.pushNil();
+                    }
+                }
+                assertTrue(L.isNumber(abs));
+                assertTrue(L.isNumber(rel));
+                assertEquals(abs, L.toAbsoluteIndex(rel));
+                assertEquals(top, L.toNumber(abs), 1e-10);
+                assertEquals(top, L.toNumber(rel), 1e-10);
+            }
+            // Table operations with random indices
+            for (int i = 0; i < 32; i++) {
+                L.setTop(0);
+                int top = random.nextInt(1024) + 512;
+                for (int j = 0; j < top; j++) {
+                    L.pushNil();
+                }
+
+                int tableIndex = -random.nextInt(top) - 1;
+                int absTableIndex = L.toAbsoluteIndex(tableIndex);
+                L.pop(1);
+                L.createTable(0, 0);
+                L.insert(tableIndex);
+                assertTrue(L.isTable(tableIndex));
+                assertTrue(L.isTable(absTableIndex));
+
+                for (int j = 0; j < 16; j++) {
+                    L.push(j + 1);
+                    L.push(j + 1);
+                    if (j % 2 == 0) {
+                        L.setTable(absTableIndex);
+                    } else {
+                        L.setTable(tableIndex - 2);
+                    }
+                }
+                for (int j = 0; j < 16; j++) {
+                    L.push("key-" + j);
+                    L.push("value-" + j);
+                    if (j % 2 == 0) {
+                        L.setTable(absTableIndex);
+                    } else {
+                        L.setTable(tableIndex - 2);
+                    }
+                }
+                assertEquals(16, L.rawLength(absTableIndex));
+                assertEquals(16, L.rawLength(tableIndex));
+
+                for (List<?> l : new List[]{ L.toList(absTableIndex), L.toList(tableIndex) }) {
+                    assertNotNull(l);
+                    for (int j = 0; j < l.size(); j++) {
+                        assertEquals(j + 1, (int) (double) (Double) l.get(j));
+                    }
+                }
+
+                for (Map<?, ?> m : new Map[]{ L.toMap(absTableIndex), L.toMap(tableIndex) }) {
+                    assertNotNull(m);
+                    for (int j = 0; j < 16; j++) {
+                        assertEquals(j + 1, (int) (double) (Double) m.get((double) j + 1));
+                        assertEquals("value-" + j, m.get("key-" + j));
+                    }
+                }
+            }
+        }
     }
 
     private void testRequire() {
@@ -240,9 +318,9 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.push(true);
         assertThrows(IllegalArgumentException.class, () -> L.createProxy(new Class[]{Runnable.class}, Lua.Conversion.NONE));
         assertEquals(OK, L.run("proxyMap = { run = function()\n" +
-                               "java.import('party.iroiro.luajava.LuaTestSuite').proxyIntegerTest:set(-1024)\n" +
-                               "end" +
-                               "}"));
+                "java.import('party.iroiro.luajava.LuaTestSuite').proxyIntegerTest:set(-1024)\n" +
+                "end" +
+                "}"));
         L.getGlobal("proxyMap");
         Object proxy = L.createProxy(new Class[]{Runnable.class}, Lua.Conversion.NONE);
         proxyIntegerTest.set(0);
@@ -328,9 +406,9 @@ public class LuaTestSuite<T extends AbstractLua> {
         sub.push(true);
         assertEquals(OK, sub.resume(1));
         assertEquals(OK, sub.run("function threadCoroutineTest()\n" +
-                                 "coroutine.yield(1)\n" +
-                                 "coroutine.yield(2)\n" +
-                                 "end"));
+                "coroutine.yield(1)\n" +
+                "coroutine.yield(2)\n" +
+                "end"));
         sub.getGlobal("threadCoroutineTest");
         assertEquals(YIELD, sub.resume(0));
         assertEquals(1.0, sub.toNumber(-1), 0.000001);
@@ -345,8 +423,8 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.run("i = java.import('party.iroiro.luajava.LuaTestSuite').integer");
         L.getGlobal("i");
         assertEquals(OK, L.run("coroutine.resume(coroutine.create(\n" +
-                               "function() java.import('party.iroiro.luajava.LuaTestSuite').integer:set(1024) end\n" +
-                               "))"));
+                "function() java.import('party.iroiro.luajava.LuaTestSuite').integer:set(1024) end\n" +
+                "))"));
         assertEquals(1024, integer.get());
 
         T O = constructor.get();
@@ -796,7 +874,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         }
     }
 
-    public static Verifier V(LuaTestBiPredicate<Object, Object> verifier) {
+    private static Verifier V(LuaTestBiPredicate<Object, Object> verifier) {
         return new Verifier(verifier);
     }
 
@@ -826,11 +904,11 @@ public class LuaTestSuite<T extends AbstractLua> {
                         if (i instanceof Number) {
                             if (o instanceof BigInteger) {
                                 return !o.equals(i)
-                                       && ((BigInteger) o).compareTo(
+                                        && ((BigInteger) o).compareTo(
                                         BigInteger.valueOf(((Number) i).longValue())) > 0;
                             } else if (o instanceof Number) {
                                 return Math.abs(((Number) o).doubleValue() - ((Number) i).doubleValue())
-                                       < 0.00000001;
+                                        < 0.00000001;
                             } else if (o instanceof Character) {
                                 return ((Number) i).intValue() == (int) ((Character) o);
                             }
@@ -904,7 +982,7 @@ public class LuaTestSuite<T extends AbstractLua> {
                     V(Object::equals),
                     USERDATA, USERDATA, USERDATA,
                     new BigInteger("9999999999999999999999999999999999999" +
-                                   "99999999999999999999999999999999999999999999999"),
+                            "99999999999999999999999999999999999999999999999"),
                     new AtomicInteger(1),
                     System.out, Runtime.getRuntime(), new IllegalAccessError()
             },
