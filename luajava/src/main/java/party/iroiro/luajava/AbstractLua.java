@@ -280,6 +280,25 @@ public abstract class AbstractLua implements Lua {
         C.luaJ_pushclass(L, clazz);
     }
 
+    /**
+     * Converts a stack index into an absolute index.
+     *
+     * @param index a stack index
+     * @return an absolute positive stack index
+     */
+    public int toAbsoluteIndex(int index) {
+        if (index > 0) {
+            return index;
+        }
+        if (index <= C.getRegistryIndex()) {
+            return index;
+        }
+        if (index == 0) {
+            throw new IllegalArgumentException("Stack index should not be 0");
+        }
+        return getTop() + 1 + index;
+    }
+
     @Override
     public double toNumber(int index) {
         return C.lua_tonumber(L, index);
@@ -378,10 +397,11 @@ public abstract class AbstractLua implements Lua {
             return ((Map<?, ?>) obj);
         }
         checkStack(2);
+        index = toAbsoluteIndex(index);
         if (C.lua_istable(L, index) == 1) {
             C.lua_pushnil(L);
             Map<Object, Object> map = new HashMap<>();
-            while (C.lua_next(L, -2) != 0) {
+            while (C.lua_next(L, index) != 0) {
                 Object k = toObject(-2);
                 Object v = toObject(-1);
                 map.put(k, v);
