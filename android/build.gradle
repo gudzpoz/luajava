@@ -105,7 +105,10 @@ afterEvaluate {
             'default'(MavenPublication) { container ->
                 setPom(pom, '')
                 luaVersions.forEach { ver ->
-                    container.artifact("${buildDir}/outputs/aar/android-${ver}-release.aar") {
+                    String path = "${buildDir}/outputs/aar/android-${ver}-release.aar"
+                    file(path).getParentFile().mkdirs()
+                    file(path).createNewFile()
+                    container.artifact(path) {
                         classifier ver
                         extension 'aar'
                     }
