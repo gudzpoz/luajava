@@ -21,8 +21,8 @@ android {
     compileSdkVersion 30
 
     defaultConfig {
-        minSdk 19
-        targetSdk 19
+        minSdk 21
+        targetSdk 21
         versionCode 1
         versionName '3.1'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'

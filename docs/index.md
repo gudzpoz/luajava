@@ -128,4 +128,5 @@ ul li {
 </table>
 
 [^android]: Android is available on many platforms, and we provide natives for `armeabi-v7a` `arm64-v8a` `x86` `x86_64`.
-            It is tested against API levels 19, 23, 26, 29 and 31 on `x86` / `x86_64` architectures (and against my own phone of API level 30 on `arm64-v8a`).
+            It is tested against API levels 21, 24, 27, 30 and 33 on `x86_64` architectures
+            (and on `x86` if a `default` emulator image is available) (and against my own phone of API level 30 on `arm64-v8a`).
