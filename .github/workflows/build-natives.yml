@@ -224,11 +224,13 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        api-level: [ 23, 26, 29, 31 ]
-        android-arch: [ 'x86_64' ]
+        api-level: [ 21, 24, 27 ]
+        android-arch: [ 'x86_64', 'x86' ]
         include:
-          - api-level: 19
-            android-arch: 'x86'
+          - api-level: 30
+            android-arch: 'x86_64'
+          - api-level: 33
+            android-arch: 'x86_64'
     needs:
       - most-natives
     steps:
