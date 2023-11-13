@@ -47,11 +47,11 @@ I try to keep up with the most recent version of Lua, that is, [the latest offic
 
 | Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 |   LuaJIT    |
 |:-------:|:-------:|:-------:|:-------:|:-----------:|
-|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.6  | [`ff6c496`] |
+|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.6  | [`e826d0c`] |
 
 </div>
 
-[`ff6c496`]: https://github.com/LuaJIT/LuaJIT/commits/ff6c496ba1b51ed360065cbc5259f62becd70daa
+[`e826d0c`]: https://github.com/LuaJIT/LuaJIT/commits/e826d0c101d750fac8334d71e221c50d8dbe236c
 
 [^jit]: LuaJIT no longer creates new releases. See [Project status · Issue #665](https://github.com/LuaJIT/LuaJIT/issues/665#issuecomment-784452583) for an explanation.
 
