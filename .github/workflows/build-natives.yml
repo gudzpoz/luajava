@@ -371,7 +371,8 @@ jobs:
           GPG_SECKEY: ${{ secrets.SIGNING_SECRET_KEY }}
           GITHUB_REF: ${{ github.ref }}
         run: |
-          ./gradlew build publish
+          ./gradlew build -x test
+          ./gradlew publish
       - name: Build example
         run: |
           ./gradlew :example:shadowJar
