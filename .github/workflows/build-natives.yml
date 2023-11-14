@@ -372,7 +372,7 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
         run: |
           ./gradlew build -x test
-          ./gradlew publish
+          ./gradlew publish -Dorg.gradle.parallel=false
       - name: Build example
         run: |
           ./gradlew :example:shadowJar
