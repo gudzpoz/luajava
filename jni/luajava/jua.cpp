@@ -221,6 +221,7 @@ int initBindings(JNIEnv * env) {
   }
 }
 
+#define LUA_METAFIELD_EQ "__eq"
 #define LUA_METAFIELD_GC "__gc"
 #define LUA_METAFIELD_LEN "__len"
 #define LUA_METAFIELD_CALL "__call"
@@ -239,6 +240,8 @@ void initMetaRegistry(lua_State * L) {
     lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
     lua_pushcfunction(L, &jclassCall);
     lua_setfield(L, -2, LUA_METAFIELD_CALL);
+    lua_pushcfunction(L, &jobjectEquals);
+    lua_setfield(L, -2, LUA_METAFIELD_EQ);
   }
   lua_pop(L, 1);
 
@@ -249,6 +252,8 @@ void initMetaRegistry(lua_State * L) {
     lua_setfield(L, -2, LUA_METAFIELD_INDEX);
     lua_pushcfunction(L, &jobjectNewIndex);
     lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
+    lua_pushcfunction(L, &jobjectEquals);
+    lua_setfield(L, -2, LUA_METAFIELD_EQ);
   }
   lua_pop(L, 1);
 
@@ -261,6 +266,8 @@ void initMetaRegistry(lua_State * L) {
     lua_setfield(L, -2, LUA_METAFIELD_INDEX);
     lua_pushcfunction(L, &jarrayNewIndex);
     lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
+    lua_pushcfunction(L, &jobjectEquals);
+    lua_setfield(L, -2, LUA_METAFIELD_EQ);
   }
 
   if (luaL_newmetatable(L, JAVA_PACKAGE_META_REGISTRY) == 1) {

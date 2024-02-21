@@ -83,6 +83,26 @@ int jobjectCall(lua_State * L) {
   return jInvoke(L, JAVA_OBJECT_META_REGISTRY, juaapi_objectinvoke);
 }
 
+static void checkJobject(lua_State * L, int n) {
+  if (luaL_testudata(L, n, JAVA_CLASS_META_REGISTRY) != NULL ||
+      luaL_testudata(L, n, JAVA_OBJECT_META_REGISTRY) != NULL ||
+      luaL_testudata(L, n, JAVA_ARRAY_META_REGISTRY) != NULL) {
+    return;
+  }
+  luaL_error(L, "bad argument #%d to jobjectEquals: %s, %s or %s expected",
+             n, JAVA_CLASS_META_REGISTRY, JAVA_OBJECT_META_REGISTRY, JAVA_ARRAY_META_REGISTRY);
+}
+
+int jobjectEquals(lua_State * L) {
+  checkJobject(L, 1);
+  checkJobject(L, 2);
+  jobject * obj1 = (jobject *) lua_touserdata(L, 1);
+  jobject * obj2 = (jobject *) lua_touserdata(L, 2);
+  JNIEnv * env = getJNIEnv(L);
+  lua_pushboolean(L, env->IsSameObject(*obj1, *obj2));
+  return 1;
+}
+
 int jfunctionWrapper(lua_State * L) {
   jobject * data = (jobject *) lua_touserdata(L, lua_upvalueindex(1));
   return jInvokeObject(L, juaapi_objectinvoke, *data, NULL, lua_gettop(L));
