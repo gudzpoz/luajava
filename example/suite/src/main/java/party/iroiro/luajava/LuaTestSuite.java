@@ -819,6 +819,18 @@ public class LuaTestSuite<T extends AbstractLua> {
     }
 
     private void testJavaToLuaConversions() {
+        Integer integer = Integer.valueOf(1 << 14);
+        L.push(integer, Lua.Conversion.NONE);
+        L.setGlobal("object1");
+        L.push(integer, Lua.Conversion.NONE);
+        L.setGlobal("object2");
+        Integer another = Integer.valueOf((int) integer);
+        assertTrue(integer != another);
+        L.push(another, Lua.Conversion.NONE);
+        L.setGlobal("object3");
+        assertEquals(OK, L.run("assert(object1 == object2)"));
+        assertEquals(OK, L.run("assert(object2 ~= object3)"));
+
         L.push(l -> {
             l.push(1024);
             return 1;

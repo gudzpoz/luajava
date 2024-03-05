@@ -37,6 +37,12 @@ LuaJava is available under the same license as Lua 5.1, that is, it can be used 
 Try it out with [a pre-built console](./console.md)!
 :::
 
+## Prerequisites
+
+The Java API of this library is a thin wrapper around the Lua C API.
+So you will need some basic understanding of the [Lua C API](https://www.lua.org/manual/5.1/manual.html#3).
+Most API names are renamed in CamelCases with the `lua_` or `luaL_` prefix removed.
+
 ## Supported Lua Versions
 
 Supported Lua versions are: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4 and LuaJIT.

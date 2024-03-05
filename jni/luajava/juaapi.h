@@ -42,6 +42,7 @@ int jclassSigCall(lua_State * L);
 int jobjectIndex(lua_State * L);
 int jobjectSigCall(lua_State * L);
 int jobjectNewIndex(lua_State * L);
+int jobjectEquals(lua_State * L);
 int jarrayLength(lua_State * L);
 int jarrayIndex(lua_State * L);
 int jarrayNewIndex(lua_State * L);
