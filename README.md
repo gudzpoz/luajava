@@ -45,11 +45,12 @@ since this library is more or less just a thin wrapper and requires some basic u
 
 | Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 |   LuaJIT    |
 |:-------:|:-------:|:-------:|:-------:|:-----------:|
-|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.6  | [`e826d0c`] |
+|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.6  | [`0d313b2`] |
 
 </div>
 
-[`e826d0c`]: https://github.com/LuaJIT/LuaJIT/commits/e826d0c101d750fac8334d71e221c50d8dbe236c
+
+[`0d313b2`]: https://github.com/LuaJIT/LuaJIT/commits/0d313b243194a0b8d2399d8b549ca5a0ff234db5
 
 Supported Lua versions: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4 and LuaJIT.
 
