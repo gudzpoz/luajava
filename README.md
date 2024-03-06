@@ -36,6 +36,8 @@ This is yet another fork of [the original LuaJava](https://github.com/jasonsanto
 > LuaJava is available under the same license as Lua 5.1, that is, it can be used at no cost for both academic and commercial purposes.
 
 Documentation is available at [LuaJava](https://gudzpoz.github.io/luajava/) along with Javadoc.
+You are also recommended to familiarize yourself with [the Lua C API](https://www.lua.org/manual/5.4/manual.html#4)
+since this library is more or less just a thin wrapper and requires some basic understanding of the C API.
 
 ## Platforms and Versions ##
 
