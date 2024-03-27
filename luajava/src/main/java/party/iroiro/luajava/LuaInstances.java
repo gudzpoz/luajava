@@ -32,11 +32,11 @@ import java.util.Iterator;
 /**
  * A collection of {@link Jua} instances, each labeled with a unique id
  */
-public class LuaInstances<T extends Lua> {
+public class LuaInstances<T> {
     private final ArrayList<T> instances;
     private final HashSet<Integer> freeIds;
 
-    LuaInstances() {
+    protected LuaInstances() {
         freeIds = new HashSet<>();
         instances = new ArrayList<>();
     }
@@ -47,11 +47,11 @@ public class LuaInstances<T extends Lua> {
      * @param instance element to be added to this collection
      * @return the allocated id
      */
-    synchronized int add(@NotNull T instance) {
+    protected synchronized int add(@NotNull T instance) {
         return addNullable(instance);
     }
 
-    private synchronized int addNullable(@Nullable T instance) {
+    protected synchronized int addNullable(@Nullable T instance) {
         if (freeIds.isEmpty()) {
             int id = instances.size();
             instances.add(instance);
@@ -65,9 +65,13 @@ public class LuaInstances<T extends Lua> {
         }
     }
 
-    synchronized Token<T> add() {
+    protected synchronized Token<T> add() {
         int id = addNullable(null);
-        return new Token<>(id, lua -> instances.set(id, lua));
+        return new Token<>(id, lua -> set(id, lua));
+    }
+
+    private synchronized void set(int id, @Nullable T instance) {
+        instances.set(id, instance);
     }
 
     /**
@@ -75,7 +79,7 @@ public class LuaInstances<T extends Lua> {
      * @param id id of the instance to return
      * @return the element with the specified id
      */
-    synchronized T get(int id) {
+    protected synchronized T get(int id) {
         return instances.get(id);
     }
 
@@ -88,12 +92,10 @@ public class LuaInstances<T extends Lua> {
      *
      * @param id the id of the instance to be removed
      */
-    synchronized void remove(int id) {
+    protected synchronized void remove(int id) {
         if (id == instances.size() - 1) {
-            //noinspection resource
             instances.remove(id);
         } else {
-            //noinspection resource
             instances.set(id, null);
             freeIds.add(id);
         }
@@ -102,14 +104,14 @@ public class LuaInstances<T extends Lua> {
     /**
      * @return the number of elements in this collection
      */
-    synchronized int size() {
+    protected synchronized int size() {
         return instances.size() - freeIds.size();
     }
 
     public static class Token<T> {
         /**
          * Replacing the Consumer interface for lower versions
-         *
+         * <p>
          * {@code Call requires API level 24 (current min is 19): java.util.function.Consumer#accept}
          * @param <T> type
          */
