@@ -1,0 +1,32 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
+group = rootProject.group
+version = rootProject.version
+
+dependencies {
+    api project(':luajava')
+    implementation 'com.github.wagyourtail.luaj:luaj-core:f062b53a34'
+}
+
+tasks.named('jar') {
+    manifest {
+        attributes('Automatic-Module-Name': 'party.iroiro.luajava.luaj')
+    }
+}

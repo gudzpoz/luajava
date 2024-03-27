@@ -7,6 +7,9 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 ext {
@@ -26,6 +29,7 @@ dependencies {
     implementation project(':lua53')
     implementation project(':lua54')
     implementation project(':luajit')
+    implementation project(':luaj')
     implementation project(':example:suite')
     implementation project(path: ':lua51', configuration: 'desktopNatives')
     implementation project(path: ':lua52', configuration: 'desktopNatives')
