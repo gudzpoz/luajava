@@ -13,6 +13,10 @@ import static party.iroiro.luajava.luaj.LuaJConsts.*;
 public class LuaJ extends AbstractLua {
     private final static AtomicReference<LuaJNatives> natives = new AtomicReference<>();
 
+    public LuaJ(long L, int id, AbstractLua mainThread) {
+        super(mainThread.getLuaNative(), L, id, mainThread);
+    }
+
     private static LuaNative getNatives() {
         synchronized (natives) {
             if (natives.get() == null) {
@@ -28,8 +32,7 @@ public class LuaJ extends AbstractLua {
 
     @Override
     protected AbstractLua newThread(long L, int id, AbstractLua mainThread) {
-        // return new Lua51(L, id, mainThread);
-        return null;
+        return new LuaJ(L, id, mainThread);
     }
 
     @Override

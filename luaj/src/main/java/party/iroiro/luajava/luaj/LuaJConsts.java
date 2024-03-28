@@ -1,5 +1,7 @@
 package party.iroiro.luajava.luaj;
 
+import org.luaj.vm2.LuaValue;
+
 /**
  * Generated with <code>generate-consts.awk</code>:
  * <pre><code>awk -f scripts/generate-consts.awk \
@@ -98,65 +100,25 @@ public abstract class LuaJConsts {
      */
     public static final int LUA_ERRERR = 5;
 
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 72):
-     * <pre><code>#define LUA_TNONE		(-1)</code></pre>
-     */
-    public static final int LUA_TNONE = (-1);
+    public static final int LUA_TNONE = LuaValue.TNONE;
 
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 74):
-     * <pre><code>#define LUA_TNIL		0</code></pre>
-     */
-    public static final int LUA_TNIL = 0;
+    public static final int LUA_TNIL = LuaValue.TNIL;
 
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 75):
-     * <pre><code>#define LUA_TBOOLEAN		1</code></pre>
-     */
-    public static final int LUA_TBOOLEAN = 1;
+    public static final int LUA_TBOOLEAN = LuaValue.TBOOLEAN;
 
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 76):
-     * <pre><code>#define LUA_TLIGHTUSERDATA	2</code></pre>
-     */
-    public static final int LUA_TLIGHTUSERDATA = 2;
+    public static final int LUA_TLIGHTUSERDATA = LuaValue.TLIGHTUSERDATA;
 
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 77):
-     * <pre><code>#define LUA_TNUMBER		3</code></pre>
-     */
-    public static final int LUA_TNUMBER = 3;
+    public static final int LUA_TNUMBER = LuaValue.TNUMBER;
 
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 78):
-     * <pre><code>#define LUA_TSTRING		4</code></pre>
-     */
-    public static final int LUA_TSTRING = 4;
+    public static final int LUA_TSTRING = LuaValue.TSTRING;
 
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 79):
-     * <pre><code>#define LUA_TTABLE		5</code></pre>
-     */
-    public static final int LUA_TTABLE = 5;
+    public static final int LUA_TTABLE = LuaValue.TTABLE;
 
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 80):
-     * <pre><code>#define LUA_TFUNCTION		6</code></pre>
-     */
-    public static final int LUA_TFUNCTION = 6;
+    public static final int LUA_TFUNCTION = LuaValue.TFUNCTION;
 
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 81):
-     * <pre><code>#define LUA_TUSERDATA		7</code></pre>
-     */
-    public static final int LUA_TUSERDATA = 7;
+    public static final int LUA_TUSERDATA = LuaValue.TUSERDATA;
 
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 82):
-     * <pre><code>#define LUA_TTHREAD		8</code></pre>
-     */
-    public static final int LUA_TTHREAD = 8;
+    public static final int LUA_TTHREAD = LuaValue.TTHREAD;
 
     /**
      * Generated from lua51/jni/lua51/src/lua.h (line 87):
