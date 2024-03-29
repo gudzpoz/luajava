@@ -465,7 +465,7 @@ assert(max(1.2, 2.3) == 2.3)
 :::
 
 If you would like to access an overridden default method from a proxy object,
-you may also use
+you may also use:
 
 ```lua
 iter1 = java.proxy('java.util.Iterator', {})
@@ -486,3 +486,11 @@ iter = java.proxy('java.util.Iterator', iterImpl)
 -- Calls the implemented `remove`, which then calls the default one
 iter:remove()
 ```
+
+::: warning
+
+Calling default methods is not available with LuaJ bindings,
+since the Java reflection does not provide a way to do so.
+(We use JNI functions to achieve this within binary bindings.)
+
+:::

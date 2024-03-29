@@ -49,4 +49,5 @@ public class AndroidLuaTest {
         try (LuaJ L = new LuaJ()) {
             new LuaTestSuite<>(L, LuaJit::new).test();
         }
+    }
 }

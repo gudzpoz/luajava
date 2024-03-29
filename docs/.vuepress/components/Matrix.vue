@@ -10,7 +10,7 @@
 <script setup>
 import { ref } from 'vue'
 const groupId = 'party.iroiro.luajava'
-const version = '3.4.1'
+const version = '3.5.0'
 
 const notAvailable = {
   luajit: {
@@ -25,6 +25,7 @@ const luaVersions = {
   lua53: 'Lua 5.3',
   lua54: 'Lua 5.4',
   luajit: 'LuaJIT',
+  luaj: 'LuaJ',
 }
 
 const platform = ref('Desktop')
@@ -65,7 +66,7 @@ function lines(lua, platform, line) {
     const native = natives[platform]
     return `${line(groupId, 'luajava', version, null)}
 ${line(groupId, lua, version, null)}
-${native.map(n => line(groupId, lua + '-platform', version, n, 'runtime')).join('\n')}`
+${lua === 'luaj' ? '' : native.map(n => line(groupId, lua + '-platform', version, n, 'runtime')).join('\n')}`
   }
 }
 </script>

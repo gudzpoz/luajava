@@ -6,7 +6,7 @@ The jar bundles desktop natives with it, so you should be about to play around w
 
 <ClientOnly><Asciinema :file="$withBase('/example.cast')" /></ClientOnly>
 
-`Lua Version` can be any of `5.1`, `5.2`, `5.3`, `5.4` or `jit`.
+`Lua Version` can be any of `5.1`, `5.2`, `5.3`, `5.4`, `luaj` or `jit`.
 
 ## Built-In Examples
 
@@ -33,4 +33,3 @@ Usage: <main class> [-t] [-l=<lua>] [-f=<file> | -e=<expression>]
   -l, --lua=<lua>           Specify the Lua version
   -t, --test                Run built-in tests
 ```
-

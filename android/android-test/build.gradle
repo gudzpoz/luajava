@@ -51,9 +51,16 @@ android {
     packagingOptions {
         excludes += 'META-INF/LICENSE*'
     }
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.9'
     androidTestImplementation project(':luajava')
     androidTestImplementation project(':lua51')
     androidTestImplementation project(':lua52')

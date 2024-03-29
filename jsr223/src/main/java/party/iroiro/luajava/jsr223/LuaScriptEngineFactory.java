@@ -18,9 +18,7 @@ public class LuaScriptEngineFactory implements ScriptEngineFactory {
         ArrayList<String> mimeTypes = new ArrayList<>(2);
         mimeTypes.add("text/x-lua");
         mimeTypes.add("application/x-lua");
-        //noinspection Java9CollectionFactory
         MIME_TYPES = Collections.unmodifiableList(mimeTypes);
-
         EXTENSIONS = Collections.singletonList("lua");
     }
 
