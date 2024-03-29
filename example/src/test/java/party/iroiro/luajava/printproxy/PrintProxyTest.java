@@ -30,6 +30,7 @@ import party.iroiro.luajava.Consts;
 import party.iroiro.luajava.Lua;
 import party.iroiro.luajava.ResourceLoader;
 import party.iroiro.luajava.lua51.Lua51;
+import party.iroiro.luajava.luaj.LuaJ;
 
 import java.io.IOException;
 
@@ -39,10 +40,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PrintProxyTest {
     @Test
-    public void testPrintProxy() throws IOException {
+    public void testPrintProxy51() throws IOException {
+        testPrintProxy(new Lua51());
+    }
+
+    @Test
+    public void testPrintProxyLuaJ() throws IOException {
+        testPrintProxy(new LuaJ());
+    }
+
+    public void testPrintProxy(Lua L) throws IOException {
         StringBuilder output = new StringBuilder();
 
-        Lua L = new Lua51();
         L.register("print", l -> {
             System.out.println(l.toString(-1));
             output.append(l.toString(-1)).append('\n');

@@ -13,6 +13,7 @@ import party.iroiro.luajava.luaj.values.JavaClass;
 import party.iroiro.luajava.luaj.values.JavaObject;
 
 import static org.luaj.vm2.LuaValue.*;
+import static party.iroiro.luajava.luaj.JavaLib.checkOrError;
 
 public abstract class JavaMetatables {
     private static LuaTable objectMetatable(boolean clazz) {
@@ -34,11 +35,9 @@ public abstract class JavaMetatables {
             public Varargs invoke(Varargs args) {
                 JavaClass o = (JavaClass) args.arg1();
                 LuaJState J = LuaJNatives.instances.get(o.L);
+                J.pushFrame();
                 J.pushAll(args);
-                int i = JuaAPI.classNew(J.lid, o.m_instance, args.narg() - 1);
-                LuaValue value = i == 1 ? J.toLuaValue(-1) : LuaValue.NIL;
-                J.pop(args.narg() + i);
-                return value;
+                return checkOrError(J, JuaAPI.classNew(J.lid, o.m_instance, args.narg() - 1));
             }
         });
         return table;
@@ -60,10 +59,8 @@ public abstract class JavaMetatables {
                 LuaJState J = LuaJNatives.instances.get(array.L);
                 if (index.isnumber()) {
                     J.pushFrame();
-                    int i = JuaAPI.arrayIndex(J.lid, array.m_instance, index.checkint());
-                    LuaValue value = i == 1 ? J.toLuaValue(-1) : LuaValue.NIL;
-                    J.popFrame();
-                    return value;
+                    return checkOrError(J,
+                            JuaAPI.arrayIndex(J.lid, array.m_instance, index.checkint())).arg1();
                 }
                 return super.call(object, index);
             }
@@ -77,9 +74,8 @@ public abstract class JavaMetatables {
                 J.push(LuaValue.NIL);
                 J.push(LuaValue.NIL);
                 J.push(value);
-                JuaAPI.arrayNewIndex(J.lid, array.m_instance, index.checkint());
-                J.popFrame();
-                return LuaValue.NIL;
+                return checkOrError(J,
+                        JuaAPI.arrayNewIndex(J.lid, array.m_instance, index.checkint())).arg1();
             }
         });
         table.set(EQ, new ObjectEq());
@@ -111,16 +107,14 @@ public abstract class JavaMetatables {
                     public Varargs invoke(Varargs args) {
                         J.pushFrame();
                         J.setError(null);
+                        if (!(args.arg1() instanceof JavaObject)) {
+                            return LuaValue.error("bad argument #1");
+                        }
                         J.pushAll(args);
                         int i = clazz
-                                ? JuaAPI.classInvoke(J.lid, (Class<?>) o.m_instance, f, args.narg())
+                                ? JuaAPI.classInvoke(J.lid, (Class<?>) o.m_instance, f, args.narg() - 1)
                                 : JuaAPI.objectInvoke(J.lid, o.m_instance, f, args.narg() - 1);
-                        LuaValue value = i == 1 ? J.toLuaValue(-1) : LuaValue.NIL;
-                        J.popFrame();
-                        if (J.getError() != null) {
-                            return LuaValue.error(J.getError().toString());
-                        }
-                        return value;
+                        return checkOrError(J, i);
                     }
                 };
             }
@@ -137,21 +131,17 @@ public abstract class JavaMetatables {
 
         @Override
         public LuaValue call(LuaValue object, LuaValue field, LuaValue value) {
-            JavaObject o = (JavaObject) object.checkuserdata(
-                    clazz ? JavaClass.class : JavaObject.class
-            );
+            JavaObject o = (JavaObject) object;
             String f = field.checkjstring();
             LuaJState J = LuaJNatives.instances.get(o.L);
+            J.pushFrame();
             J.push(null);
             J.push(null);
             J.push(value);
-            if (clazz) {
-                JuaAPI.classNewIndex(J.lid, (Class<?>) o.m_instance, f);
-            } else {
-                JuaAPI.objectNewIndex(J.lid, o.m_instance, f);
-            }
-            J.pop(3);
-            return LuaValue.NIL;
+            int i = clazz
+                ? JuaAPI.classNewIndex(J.lid, (Class<?>) o.m_instance, f)
+                : JuaAPI.objectNewIndex(J.lid, o.m_instance, f);
+            return checkOrError(J, i).arg1();
         }
     }
 

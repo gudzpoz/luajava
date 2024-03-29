@@ -20,7 +20,7 @@ For a `jclass` `clazz`:
     4. Otherwise, it prepares for a method call. See `clazz:memberMethod(...)` below.
 - `clazz.memberVar = value` assigns to the public static member. If exceptions occur, a Lua error is generated.
 - `clazz:memberMethod(...)` calls the public static member method `memberMethod`. See [Proxied Method Calls](#proxied-method-calls) for more info.
-- `class(...)`:
+- `clazz(...)`:
   - For an interface, this expects a table as the parameter and creates a proxy for it. See [`java.proxy`](#proxy-jclass-table-function).
   - Otherwise, it calls the corresponding constructor. See [`java.new`](#new-jclass-function).
 - `clazz.class` returns a `jobject`, wrapping an instance of `java.lang.Class<clazz>`.
@@ -98,7 +98,7 @@ Creates a Java array.
 
 - **Parameters:**
 
-  - `jclass`: (***jclass*** | ***jobject***) The component type. One may pass a `jclass` or a `jobject` of `Class<?>`. 
+  - `jclass`: (***jclass*** | ***jobject***) The component type. One may pass a `jclass` or a `jobject` of `Class<?>`.
 
   - `dim1`: (***number***) The size of the first dimension.
 
@@ -465,7 +465,7 @@ assert(max(1.2, 2.3) == 2.3)
 :::
 
 If you would like to access an overridden default method from a proxy object,
-you may also use 
+you may also use
 
 ```lua
 iter1 = java.proxy('java.util.Iterator', {})

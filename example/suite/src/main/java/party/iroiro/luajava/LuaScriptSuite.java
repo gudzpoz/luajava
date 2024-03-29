@@ -5,6 +5,8 @@ import party.iroiro.luajava.lua51.Lua51Natives;
 import party.iroiro.luajava.lua52.Lua52Natives;
 import party.iroiro.luajava.lua53.Lua53Natives;
 import party.iroiro.luajava.lua54.Lua54Natives;
+import party.iroiro.luajava.luaj.LuaJ;
+import party.iroiro.luajava.luaj.LuaJNatives;
 import party.iroiro.luajava.luajit.LuaJitNatives;
 
 import java.io.IOException;
@@ -43,8 +45,10 @@ public class LuaScriptSuite<T extends AbstractLua> {
         L.openLibrary("string");
         L.openLibrary("debug");
         assertEquals(OK, L.run(LUA_ASSERT_THROWS));
-        L.push(DefaultProxyTest.isDefaultAvailable());
+        L.push(DefaultProxyTest.isDefaultAvailable() && !(L instanceof LuaJ));
         L.setGlobal("JAVA8");
+        L.push(L instanceof LuaJ);
+        L.setGlobal("LUAJ");
 
         // Android: desugar: default methods are separated into another class, failing the tests
         L.push(isAndroid());
@@ -97,6 +101,12 @@ public class LuaScriptSuite<T extends AbstractLua> {
                     new LuaJitNatives() {
                         {
                             lua_newuserdata(L.getPointer(), 1024);
+                        }
+                    };
+                } else if (C instanceof LuaJNatives) {
+                    new LuaJNatives() {
+                        {
+                            lua_newuserdata(L.getPointer(), new Object());
                         }
                     };
                 } else {
@@ -270,6 +280,7 @@ public class LuaScriptSuite<T extends AbstractLua> {
         L.openLibrary("coroutine");
         L.setExternalLoader(new ClassPathLoader());
         L.loadExternal("luajava.testMemory");
-        assertEquals(Lua.LuaError.OK, L.pCall(0, Consts.LUA_MULTRET));
+        Lua.LuaError result = L.pCall(0, Consts.LUA_MULTRET);
+        assertEquals(L.toString(-1), Lua.LuaError.OK, result);
     }
 }
