@@ -6,6 +6,7 @@ import party.iroiro.luajava.lua52.Lua52;
 import party.iroiro.luajava.lua53.Lua53;
 import party.iroiro.luajava.lua54.Lua54;
 import party.iroiro.luajava.luajit.LuaJit;
+import party.iroiro.luajava.luaj.LuaJ;
 import party.iroiro.luajava.value.LuaValueSuite;
 
 public class AndroidValueTest {
@@ -40,6 +41,13 @@ public class AndroidValueTest {
     @Test
     public void luaJitTest() {
         try (LuaJit L = new LuaJit()) {
+            new LuaValueSuite<>(L).test();
+        }
+    }
+
+    @Test
+    public void luaJTest() {
+        try (LuaJ L = new LuaJ()) {
             new LuaValueSuite<>(L).test();
         }
     }
