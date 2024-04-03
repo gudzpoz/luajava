@@ -7,7 +7,6 @@ import party.iroiro.luajava.lua52.Lua52;
 import party.iroiro.luajava.lua53.Lua53;
 import party.iroiro.luajava.lua54.Lua54;
 import party.iroiro.luajava.luajit.LuaJit;
-import party.iroiro.luajava.luaj.LuaJ;
 
 public class AndroidScriptTest {
     @Test
@@ -46,13 +45,6 @@ public class AndroidScriptTest {
     }
 
     @Test
-    public void luaJTest() {
-        try (LuaJ L = new LuaJ()) {
-            new LuaScriptSuite<>(L, s -> Log.i("test", s)).test();
-        }
-    }
-
-    @Test
     public void memoryTest() {
         //noinspection resource
         Lua[] Ls = new Lua[]{
@@ -61,7 +53,6 @@ public class AndroidScriptTest {
                 new Lua53(),
                 new Lua54(),
                 new LuaJit(),
-                new LuaJ(),
         };
         for (Lua L : Ls) {
             LuaScriptSuite.memoryTest(L);

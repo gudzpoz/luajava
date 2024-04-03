@@ -18,6 +18,9 @@ ext {
     luaVersions = ['lua51', 'lua52', 'lua53', 'lua54', 'luajit']
 }
 
+// Lint involves an outdated version of Kotlin, which cause weird errors.
+lint.enabled = false
+
 android {
     namespace = project(':').group
 
@@ -38,7 +41,6 @@ android {
         }
     }
 
-
     buildFeatures {
         viewBinding true
     }
@@ -53,21 +55,18 @@ android {
     }
 
     compileOptions {
-        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.9'
     androidTestImplementation project(':luajava')
     androidTestImplementation project(':lua51')
     androidTestImplementation project(':lua52')
     androidTestImplementation project(':lua53')
     androidTestImplementation project(':lua54')
     androidTestImplementation project(':luajit')
-    androidTestImplementation project(':luaj')
     androidTestImplementation project(':example:suite')
     androidTestImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:core:1.5.0'

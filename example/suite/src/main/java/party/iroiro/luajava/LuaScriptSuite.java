@@ -5,8 +5,6 @@ import party.iroiro.luajava.lua51.Lua51Natives;
 import party.iroiro.luajava.lua52.Lua52Natives;
 import party.iroiro.luajava.lua53.Lua53Natives;
 import party.iroiro.luajava.lua54.Lua54Natives;
-import party.iroiro.luajava.luaj.LuaJ;
-import party.iroiro.luajava.luaj.LuaJNatives;
 import party.iroiro.luajava.luajit.LuaJitNatives;
 
 import java.io.IOException;
@@ -16,6 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.Assert.*;
+import static party.iroiro.luajava.DefaultProxyTest.isLuaJ;
 import static party.iroiro.luajava.Lua.LuaError.OK;
 import static party.iroiro.luajava.Lua.LuaError.RUNTIME;
 
@@ -45,9 +44,9 @@ public class LuaScriptSuite<T extends AbstractLua> {
         L.openLibrary("string");
         L.openLibrary("debug");
         assertEquals(OK, L.run(LUA_ASSERT_THROWS));
-        L.push(DefaultProxyTest.isDefaultAvailable() && !(L instanceof LuaJ));
+        L.push(DefaultProxyTest.isDefaultAvailable() && !(isLuaJ(L)));
         L.setGlobal("JAVA8");
-        L.push(L instanceof LuaJ);
+        L.push(isLuaJ(L));
         L.setGlobal("LUAJ");
 
         // Android: desugar: default methods are separated into another class, failing the tests
@@ -103,12 +102,10 @@ public class LuaScriptSuite<T extends AbstractLua> {
                             lua_newuserdata(L.getPointer(), 1024);
                         }
                     };
-                } else if (C instanceof LuaJNatives) {
-                    new LuaJNatives() {
-                        {
-                            lua_newuserdata(L.getPointer(), new Object());
-                        }
-                    };
+                } else if (C.getClass().getName().endsWith("LuaJNatives")) {
+                    // This is tested instead in NativesTest,
+                    // because our Android build has trouble desugaring and cannot run LuaJ.
+                    L.pushJavaObject(new Object());
                 } else {
                     fail("Not a supported natives");
                 }

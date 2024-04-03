@@ -57,7 +57,7 @@ end
 if LUAJ then
   expects = 'invokespecial not available'
 end
-assertThrows(expects, iter.remove, iter)
+assertThrows(ANDROID and "UnsupportedOperationException" or expects, iter.remove, iter)
 res = {}
 if JAVA8 then
   iter:forEachRemaining(function(this, e) res[e] = true end)
@@ -78,7 +78,7 @@ B = java.proxy('party.iroiro.luajava.suite.B', 'party.iroiro.luajava.DefaultProx
     if JAVA8 and not ANDROID then
       return java.method(B, 'party.iroiro.luajava.suite.B:b')()
     else
-      assertThrows(expects, java.method(B, 'party.iroiro.luajava.suite.B:b'))
+      assertThrows(LUAJ and expects or 'java.lang.IncompatibleClassChangeError', java.method(B, 'party.iroiro.luajava.suite.B:b'))
       return 3
     end
   end
@@ -114,7 +114,8 @@ obj = java.proxy('party.iroiro.luajava.DefaultProxyTest.D', {
     if JAVA8 and not ANDROID then
       assert(java.method(iter, 'party.iroiro.luajava.DefaultProxyTest.D:noReturn')() == nil)
     else
-      assertThrows(expects, java.method(iter, 'party.iroiro.luajava.DefaultProxyTest.D:noReturn'))
+      assertThrows(LUAJ and expects or 'java.lang.IncompatibleClassChangeError',
+                   java.method(iter, 'party.iroiro.luajava.DefaultProxyTest.D:noReturn'))
     end
   end
 })
