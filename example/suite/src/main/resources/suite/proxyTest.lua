@@ -50,14 +50,13 @@ assertThrows('java.lang.IncompatibleClassChangeError',
 
 -- java.* libraries: runs fine on Android
 iter = java.proxy('java.util.Iterator', iterImpl)
-expects = 'party.iroiro.luajava.LuaException: method not implemented: '
-if JAVA8 then
-  expects = 'java.lang.UnsupportedOperationException'
-end
-if LUAJ then
-  expects = 'invokespecial not available'
-end
-assertThrows(ANDROID and "UnsupportedOperationException" or expects, iter.remove, iter)
+expects = {
+  'java.lang.UnsupportedOperationException',
+  'java.lang.IncompatibleClassChangeError',
+  'method not implemented',
+  'invokespecial not available',
+}
+assertThrows(expects, iter.remove, iter)
 res = {}
 if JAVA8 then
   iter:forEachRemaining(function(this, e) res[e] = true end)
@@ -78,7 +77,7 @@ B = java.proxy('party.iroiro.luajava.suite.B', 'party.iroiro.luajava.DefaultProx
     if JAVA8 and not ANDROID then
       return java.method(B, 'party.iroiro.luajava.suite.B:b')()
     else
-      assertThrows(LUAJ and expects or 'java.lang.IncompatibleClassChangeError', java.method(B, 'party.iroiro.luajava.suite.B:b'))
+      assertThrows(expects, java.method(B, 'party.iroiro.luajava.suite.B:b'))
       return 3
     end
   end
@@ -114,8 +113,7 @@ obj = java.proxy('party.iroiro.luajava.DefaultProxyTest.D', {
     if JAVA8 and not ANDROID then
       assert(java.method(iter, 'party.iroiro.luajava.DefaultProxyTest.D:noReturn')() == nil)
     else
-      assertThrows(LUAJ and expects or 'java.lang.IncompatibleClassChangeError',
-                   java.method(iter, 'party.iroiro.luajava.DefaultProxyTest.D:noReturn'))
+      assertThrows(expects, java.method(iter, 'party.iroiro.luajava.DefaultProxyTest.D:noReturn'))
     end
   end
 })

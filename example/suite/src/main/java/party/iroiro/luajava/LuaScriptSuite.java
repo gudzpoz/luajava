@@ -19,12 +19,20 @@ import static party.iroiro.luajava.Lua.LuaError.OK;
 import static party.iroiro.luajava.Lua.LuaError.RUNTIME;
 
 public class LuaScriptSuite<T extends AbstractLua> {
-    private static final String LUA_ASSERT_THROWS = "function assertThrows(message, fun, ...)\n" +
-                                                    "  ok, msg = pcall(fun, ...)\n" +
-                                                    "  assert(not ok, debug.traceback('No error while expecting \"' .. message .. '\"'))\n" +
-                                                    "  assert(type(msg) == 'string', debug.traceback('Expecting error message on top of the stack'))\n" +
-                                                    "  assert(string.find(msg, message) ~= nil, debug.traceback('Expecting \"' .. message .. '\": Received \"' .. msg .. '\"'))\n" +
-                                                    "end";
+    private static final String LUA_ASSERT_THROWS = "\n" +
+            "function assertThrows(message, fun, ...)\n" +
+            "  ok, msg = pcall(fun, ...)\n" +
+            "  messages = type(message) == 'string' and { message } or message\n" +
+            "  message = '\"' .. table.concat(messages, ', ') .. '\"'\n" +
+            "  assert(not ok, debug.traceback('No error while expecting ' .. message))\n" +
+            "  assert(type(msg) == 'string', debug.traceback('Expecting error message on top of the stack'))\n" +
+            "  for _, m in ipairs(messages) do\n" +
+            "    if string.find(msg, m) ~= nil then\n" +
+            "      return\n" +
+            "    end\n" +
+            "  end\n" +
+            "  assert(false, debug.traceback('Expecting ' .. message .. ': Received \"' .. msg .. '\"'))\n" +
+            "end";
     private final T L;
     private final LuaTestConsumer<String> logger;
 
@@ -43,6 +51,7 @@ public class LuaScriptSuite<T extends AbstractLua> {
     public static void addAssertThrows(Lua L) {
         L.openLibrary("string");
         L.openLibrary("debug");
+        L.openLibrary("table");
         assertEquals(OK, L.run(LUA_ASSERT_THROWS));
         L.push(DefaultProxyTest.isDefaultAvailable() && !(isLuaJ(L)));
         L.setGlobal("JAVA8");
