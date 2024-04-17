@@ -9,6 +9,14 @@ import static party.iroiro.luajava.luaj.LuaJConsts.*;
 
 /**
  * A thin wrapper around LuaJ to provide Lua C API-like API.
+ *
+ * <p>
+ *     Please note that LuaJ bindings are limited in its capabilities.
+ *     Other bindings provided by LuaJava utilizes JNI functions to provide
+ *     functionalities like calling default methods in interfaces. However,
+ *     LuaJ uses no JNI, and thus won't be able to do things beyond the Java
+ *     reflection API.
+ * </p>
  */
 public class LuaJ extends AbstractLua {
     private final static AtomicReference<LuaJNatives> natives = new AtomicReference<>();

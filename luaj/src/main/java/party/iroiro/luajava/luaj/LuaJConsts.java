@@ -1,5 +1,6 @@
 package party.iroiro.luajava.luaj;
 
+import org.luaj.vm2.Lua;
 import org.luaj.vm2.LuaValue;
 
 /**
@@ -10,17 +11,9 @@ import org.luaj.vm2.LuaValue;
  *     &gt; .../party/iroiro/jua/...Consts.java</code></pre>
  */
 public abstract class LuaJConsts {
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 19):
-     * <pre><code>#define LUA_VERSION	"Lua 5.1"</code></pre>
-     */
-    public static final String LUA_VERSION = "Lua 5.1";
+    public static final String LUA_VERSION = Lua._VERSION;
 
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 20):
-     * <pre><code>#define LUA_RELEASE	"Lua 5.1.5"</code></pre>
-     */
-    public static final String LUA_RELEASE = "Lua 5.1.5";
+    public static final String LUA_RELEASE = LUA_VERSION;
 
     /**
      * Generated from lua51/jni/lua51/src/lua.h (line 21):
@@ -28,29 +21,9 @@ public abstract class LuaJConsts {
      */
     public static final int LUA_VERSION_NUM = 501;
 
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 22):
-     * <pre><code>#define LUA_COPYRIGHT	"Copyright (C) 1994-2012 Lua.org, PUC-Rio"</code></pre>
-     */
-    public static final String LUA_COPYRIGHT = "Copyright (C) 1994-2012 Lua.org, PUC-Rio";
+    public static final String LUA_COPYRIGHT = "Copyright (C) 2012 luaj.org";
 
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 23):
-     * <pre><code>#define LUA_AUTHORS 	"R. Ierusalimschy, L. H. de Figueiredo & W. Celes"</code></pre>
-     */
-    public static final String LUA_AUTHORS = "R. Ierusalimschy, L. H. de Figueiredo & W. Celes";
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 27):
-     * <pre><code>#define	LUA_SIGNATURE	"\033Lua"</code></pre>
-     */
-    public static final String LUA_SIGNATURE = "\033Lua";
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 30):
-     * <pre><code>#define LUA_MULTRET	(-1)</code></pre>
-     */
-    public static final int LUA_MULTRET = (-1);
+    public static final int LUA_MULTRET = Lua.LUA_MULTRET;
 
     /**
      * Generated from lua51/jni/lua51/src/lua.h (line 36):
@@ -127,88 +100,10 @@ public abstract class LuaJConsts {
     public static final int LUA_MINSTACK = 20;
 
     /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 221):
-     * <pre><code>#define LUA_GCSTOP		0</code></pre>
-     */
-    public static final int LUA_GCSTOP = 0;
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 222):
-     * <pre><code>#define LUA_GCRESTART		1</code></pre>
-     */
-    public static final int LUA_GCRESTART = 1;
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 223):
-     * <pre><code>#define LUA_GCCOLLECT		2</code></pre>
-     */
-    public static final int LUA_GCCOLLECT = 2;
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 224):
-     * <pre><code>#define LUA_GCCOUNT		3</code></pre>
-     */
-    public static final int LUA_GCCOUNT = 3;
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 225):
-     * <pre><code>#define LUA_GCCOUNTB		4</code></pre>
-     */
-    public static final int LUA_GCCOUNTB = 4;
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 226):
-     * <pre><code>#define LUA_GCSTEP		5</code></pre>
-     */
-    public static final int LUA_GCSTEP = 5;
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 227):
-     * <pre><code>#define LUA_GCSETPAUSE		6</code></pre>
-     */
-    public static final int LUA_GCSETPAUSE = 6;
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 228):
-     * <pre><code>#define LUA_GCSETSTEPMUL	7</code></pre>
-     */
-    public static final int LUA_GCSETSTEPMUL = 7;
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 311):
-     * <pre><code>#define LUA_HOOKCALL	0</code></pre>
-     */
-    public static final int LUA_HOOKCALL = 0;
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 312):
-     * <pre><code>#define LUA_HOOKRET	1</code></pre>
-     */
-    public static final int LUA_HOOKRET = 1;
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 313):
-     * <pre><code>#define LUA_HOOKLINE	2</code></pre>
-     */
-    public static final int LUA_HOOKLINE = 2;
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 314):
-     * <pre><code>#define LUA_HOOKCOUNT	3</code></pre>
-     */
-    public static final int LUA_HOOKCOUNT = 3;
-
-    /**
-     * Generated from lua51/jni/lua51/src/lua.h (line 315):
-     * <pre><code>#define LUA_HOOKTAILRET 4</code></pre>
-     */
-    public static final int LUA_HOOKTAILRET = 4;
-
-    /**
      * Generated from lua51/jni/lua51/src/lauxlib.h (line 547):
      * <pre><code>#define LUA_NOREF       (-2)</code></pre>
      */
-    public static final int LUA_NOREF = (-2);
+    public static final int LUA_NOREF = 0;
 
     /**
      * Generated from lua51/jni/lua51/src/lauxlib.h (line 548):
