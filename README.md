@@ -61,7 +61,8 @@ Compiled natives are available for most common platforms. Check out [LuaJava Pla
 
 ### Artifacts
 
-To include LuaJava into your project, you need to include two artifacts, one for the Java bindings, the other for the compiled native binaries. (For LuaJ bindings, you don't need the latter one.)
+To include LuaJava into your project, you need to include two artifacts, one for the Java bindings, the other for the compiled native binaries.
+(For LuaJ bindings, you don't need the latter one. However, you will need to add [JitPack](https://jitpack.io/) to your repositories.)
 
 ```groovy
 // Example: LuaJIT with Desktop natives
@@ -128,6 +129,7 @@ You may also have a look at [our tests](./example/src/test/resources).
  * [LibGDX](https://github.com/libgdx/libgdx)
  * [jnigen](https://github.com/libgdx/gdx-jnigen)
  * [Nonlua](https://github.com/deathbeam/jua)
+ * [LuaJ](https://github.com/wagyourtail/luaj)
 
 ## License ##
 

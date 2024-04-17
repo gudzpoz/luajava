@@ -9,8 +9,6 @@ import java.util.Objects;
 
 /**
  * Copied from LuaJ libraries.
- *
- * TODO: Copy license.
  */
 public class JseIoLib extends IoLib {
     @Override
