@@ -3681,6 +3681,25 @@ public class LuaJitNatives extends LuaNative {
      * A wrapper function
      *
      * <p>
+     * See <code>lua_isinteger</code>
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @return see description
+     */
+    protected native int luaJ_isinteger(long ptr, int index); /*
+        lua_State * L = (lua_State *) ptr;
+
+        jint returnValueReceiver = (jint) luaJ_isinteger((lua_State *) L, (int) index);
+        return returnValueReceiver;
+    */
+
+
+    /**
+     * A wrapper function
+     *
+     * <p>
      * Removes the thread from the global registry, thus allowing it to get garbage collected
      * </p>
      *

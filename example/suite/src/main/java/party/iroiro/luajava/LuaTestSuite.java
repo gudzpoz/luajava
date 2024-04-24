@@ -21,6 +21,9 @@ import static party.iroiro.luajava.Lua.LuaError.*;
 import static party.iroiro.luajava.Lua.LuaType.*;
 
 public class LuaTestSuite<T extends AbstractLua> {
+
+    public static final long I_60_BITS = 1152921504606846976L;
+
     @SuppressWarnings("UnusedReturnValue")
     public static <S> S assertInstanceOf(Class<S> sClass, Object o) {
         assertTrue(sClass.isInstance(o));
@@ -77,7 +80,7 @@ public class LuaTestSuite<T extends AbstractLua> {
             }
             // Since pow_2_60 has trailing zero bits,
             // for most 64-bit machines, (long) (double) pow_2_60 == pow_2_60, so we need a +1.
-            long i60Bits = 1152921504606846976L;
+            long i60Bits = I_60_BITS;
             assertEquals(OK, L.run("return pow_2_60, pow_2_60 + 1"));
             L.push(i60Bits);
             L.push(i60Bits + 1);
@@ -91,6 +94,31 @@ public class LuaTestSuite<T extends AbstractLua> {
 
             L.push(converted);
             assertTrue(L.equal(-2, -1));
+
+            //noinspection Convert2Lambda
+            L.push(new JFunction() {
+                @Override
+                public int __call(Lua L) {
+                    L.push(L.toInteger(-1));
+                    return 1;
+                }
+            });
+            L.setGlobal("jfunc");
+            assertEquals(OK, L.run("return pow_2_60 + 1 == jfunc(pow_2_60 + 1)"));
+            assertTrue(L.toBoolean(-1));
+
+            L.pushJavaClass(LuaTestSuite.class);
+            L.setGlobal("suite");
+            assertEquals(OK, L.run("return pow_2_60 + 1 == suite:passAlong(pow_2_60 + 1)"));
+            assertEquals(BOOLEAN, L.type(-1));
+            assertTrue(L.toBoolean(-1));
+
+            assertEquals(OK, L.run("return { passAlong = function(_, l) return l end }"));
+            Object o = L.createProxy(new Class[]{PasserAlong.class}, FULL);
+            assertEquals(
+                    supports64BitInteger,
+                    I_60_BITS + 1 == ((PasserAlong) o).passAlong(I_60_BITS + 1)
+            );
         }
     }
 
@@ -1051,5 +1079,14 @@ public class LuaTestSuite<T extends AbstractLua> {
                     System.out, Runtime.getRuntime(), new IllegalAccessError()
             },
     };
+
+    @SuppressWarnings("unused")
+    public static long passAlong(long value) {
+        return value;
+    }
+
+    public interface PasserAlong {
+        long passAlong(long value);
+    }
 
 }

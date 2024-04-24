@@ -179,6 +179,11 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
+    protected int luaJ_isinteger(long ptr, int index) {
+        return 0;
+    }
+
+    @Override
     protected int lua_isstring(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);

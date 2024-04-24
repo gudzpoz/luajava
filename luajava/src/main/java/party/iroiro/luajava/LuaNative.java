@@ -395,6 +395,29 @@ public abstract class LuaNative {
     protected abstract int lua_isnumber(long ptr, int index);
 
     /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.3/manual.html#lua_isinteger"><code>lua_isinteger</code></a>
+     *
+     * <pre><code>
+     * [-0, +0, –]
+     * </code></pre>
+     *
+     * <pre><code>
+     * int lua_isinteger (lua_State *L, int index);
+     * </code></pre>
+     *
+     * <p>
+     * Returns 1 if the value at the given index is an integer
+     * (that is, the value is a number and is represented as an integer),
+     * and 0&#160;otherwise.
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @return see description
+     */
+    protected abstract int luaJ_isinteger(long ptr, int index);
+
+    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_isstring"><code>lua_isstring</code></a>
      *
      * <pre><code>

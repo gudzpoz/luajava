@@ -922,7 +922,13 @@ public abstract class JuaAPI {
             return L.toString(index);
         } else if (type == Lua.LuaType.NUMBER) {
             if (clazz.isPrimitive() || Number.class.isAssignableFrom(clazz)) {
-                return convertNumber(L.toNumber(index), clazz);
+                Number v;
+                if (L.isInteger(index)) {
+                    v = L.toInteger(index);
+                } else {
+                    v = L.toNumber(index);
+                }
+                return convertNumber(v, clazz);
             } else if (Character.class == clazz) {
                 return (char) L.toNumber(index);
             } else if (Boolean.class == clazz) {
@@ -963,46 +969,46 @@ public abstract class JuaAPI {
         throw new IllegalArgumentException("Unable to convert to " + clazz.getName());
     }
 
-    private static Object convertNumber(double toNumber, Class<?> clazz)
+    private static Object convertNumber(Number i, Class<?> clazz)
             throws IllegalArgumentException {
         if (clazz.isPrimitive()) {
             if (boolean.class == clazz) {
-                return toNumber != 0;
+                return i.intValue() != 0;
             }
             if (char.class == clazz) {
-                return (char) (byte) toNumber;
+                return (char) i.byteValue();
             } else if (byte.class == clazz) {
-                return (byte) toNumber;
+                return i.byteValue();
             } else if (short.class == clazz) {
-                return (short) toNumber;
+                return i.shortValue();
             } else if (int.class == clazz) {
-                return (int) toNumber;
+                return i.intValue();
             } else if (long.class == clazz) {
-                return (long) toNumber;
+                return i.longValue();
             } else if (float.class == clazz) {
-                return (float) toNumber;
+                return i.floatValue();
             } else /* if (double.class == clazz) */ {
-                return toNumber;
+                return i.doubleValue();
             }
         } else {
-            return convertBoxedNumber(toNumber, clazz);
+            return convertBoxedNumber(i, clazz);
         }
     }
 
-    private static Number convertBoxedNumber(double toNumber, Class<?> clazz)
+    private static Number convertBoxedNumber(Number i, Class<?> clazz)
             throws IllegalArgumentException {
         if (Byte.class == clazz) {
-            return (byte) toNumber;
+            return i.byteValue();
         } else if (Short.class == clazz) {
-            return (short) toNumber;
+            return i.shortValue();
         } else if (Integer.class == clazz) {
-            return (int) toNumber;
+            return i.intValue();
         } else if (Long.class == clazz) {
-            return (long) toNumber;
+            return i.longValue();
         } else if (Float.class == clazz) {
-            return (float) toNumber;
+            return i.floatValue();
         } else if (Double.class == clazz) {
-            return toNumber;
+            return i.doubleValue();
         }
         throw new IllegalArgumentException("Unsupported conversion");
     }

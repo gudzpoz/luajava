@@ -372,6 +372,18 @@ public interface Lua extends AutoCloseable {
     boolean isNumber(int index);
 
     /**
+     * Returns true if the value at the given index is an integer, and false otherwise
+     *
+     * <p>
+     * (that is, the value is a number and is represented as an integer)
+     * </p>
+     *
+     * @param index the stack index
+     * @return true if the value is an integer, and false otherwise
+     */
+    boolean isInteger(int index);
+
+    /**
      * Returns true if the value at the given index is a string or a number
      *
      * @param index the stack index

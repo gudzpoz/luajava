@@ -474,6 +474,11 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
+    public boolean isInteger(int index) {
+        return C.luaJ_isinteger(L, index) != 0;
+    }
+
+    @Override
     public boolean isString(int index) {
         return C.lua_isstring(L, index) != 0;
     }

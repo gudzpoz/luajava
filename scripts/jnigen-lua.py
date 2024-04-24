@@ -632,6 +632,17 @@ def addExtra(functions):
         },
     })
     functions.append({
+        'name': 'luaJ_isinteger',
+        'description': 'See <code>lua_isinteger</code>',
+        'signature': {
+            'return': 'int',
+            'params': [
+                ['lua_State *', 'L'],
+                ['int', 'index'],
+            ],
+        },
+    })
+    functions.append({
         'name': 'luaJ_removestateindex',
         'description': 'Removes the thread from the global registry, thus allowing it to get garbage collected',
         'signature': {
