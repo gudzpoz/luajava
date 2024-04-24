@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 import party.iroiro.luajava.lua51.Lua51;
+import party.iroiro.luajava.luaj.LuaJ;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -20,8 +21,16 @@ public class APITest {
     }
 
     @Test
-    public void apiTest() throws Exception {
-        Lua L = new Lua51();
+    public void apiTest51() throws Exception {
+        apiTest(new Lua51());
+    }
+
+    @Test
+    public void apiTestJ() throws Exception {
+        apiTest(new LuaJ());
+    }
+
+    public void apiTest(Lua L) throws Exception {
         L.openLibrary("string");
         L.push(sum);
         L.setGlobal("sum");

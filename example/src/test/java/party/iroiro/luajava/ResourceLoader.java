@@ -15,6 +15,7 @@ public class ResourceLoader {
                 }
                 ByteBuffer buffer = ByteBuffer.allocateDirect(output.size());
                 buffer.put(output.toByteArray());
+                buffer.flip();
                 L.load(buffer, path);
                 return 0;
             } else {

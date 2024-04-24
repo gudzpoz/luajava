@@ -45,6 +45,14 @@ public class AndroidScriptTest {
     }
 
     @Test
+    public void luaJTest() {
+        org.junit.Assume.assumeTrue(android.os.Build.VERSION.SDK_INT >= 30);
+        try (AbstractLua L = AndroidLuaTest.getLuaJ()) {
+            new LuaScriptSuite<>(L, s -> Log.i("test", s)).test();
+        }
+    }
+
+    @Test
     public void memoryTest() {
         //noinspection resource
         Lua[] Ls = new Lua[]{
@@ -55,6 +63,11 @@ public class AndroidScriptTest {
                 new LuaJit(),
         };
         for (Lua L : Ls) {
+            LuaScriptSuite.memoryTest(L);
+            L.close();
+        }
+        if (android.os.Build.VERSION.SDK_INT >= 30) {
+            Lua L = AndroidLuaTest.getLuaJ();
             LuaScriptSuite.memoryTest(L);
             L.close();
         }

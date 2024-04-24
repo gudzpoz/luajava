@@ -14,8 +14,10 @@ description: LuaJava, a scripting tool for Java
 [![Java 8](https://img.shields.io/badge/Java-8-brown)](https://www.oracle.com/java/technologies/java8.html)
 [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/party.iroiro.luajava/luajava?server=https%3A%2F%2Fs01.oss.sonatype.org&label=Nexus&color=pink)](https://s01.oss.sonatype.org/content/repositories/snapshots/party/iroiro/luajava/)
 [![Maven Central](https://img.shields.io/maven-central/v/party.iroiro.luajava/luajava?color=blue&label=Maven%20Central)](https://mvnrepository.com/search?q=party.iroiro.luajava)
+
 [![Build Status](https://github.com/gudzpoz/luajava/actions/workflows/docs.yml/badge.svg)](https://github.com/gudzpoz/luajava/actions/workflows/docs.yml)
 [![Document Version](https://img.shields.io/github/package-json/v/gudzpoz/luajava?filename=docs%2Fpackage.json&label=Documentation)](https://gudzpoz.github.io/luajava/)
+
 [![Tests: macOS on M1](https://img.shields.io/bitrise/ace86394e12a32ad/main?label=macOS%20on%20M1&token=t-lcEHLpUl_xT-CeJYzagg)](https://app.bitrise.io/app/ace86394e12a32ad)
 [![Tests: Linux on arm64](https://img.shields.io/circleci/build/github/gudzpoz/luajava/main?label=Linux%20on%20arm64)](https://app.circleci.com/pipelines/github/gudzpoz/luajava)
 
@@ -25,13 +27,13 @@ img + span svg.external-link-icon {
 }
 </style>
 
-Yet another fork of [the original LuaJava](https://github.com/jasonsantos/luajava):
+This is yet another fork of [the original LuaJava](https://github.com/jasonsantos/luajava).
 
-LuaJava is a scripting tool for Java. The goal of this tool is to allow scripts written in Lua to manipulate components developed in Java. LuaJava allows Java components to be accessed from Lua using the same syntax that is used for accessing Lua's native objects, without any need for declarations or any kind of preprocessing.
-
-LuaJava also allows any Java interface to get implemented in Lua and passed as parameter to any method, and when called, the equivalent function will be called in Lua, the result passed back to Java.
-
-LuaJava is available under the same license as Lua 5.1, that is, it can be used at no cost for both academic and commercial purposes.
+> LuaJava is a scripting tool for Java. The goal of this tool is to allow scripts written in Lua to manipulate components developed in Java. LuaJava allows Java components to be accessed from Lua using the same syntax that is used for accessing Lua's native objects, without any need for declarations or any kind of preprocessing.
+>
+> LuaJava also allows any Java interface to get implemented in Lua and passed as parameter to any method, and when called, the equivalent function will be called in Lua, the result passed back to Java.
+>
+> LuaJava is available under the same license as Lua 5.1, that is, it can be used at no cost for both academic and commercial purposes.
 
 ::: tip
 Try it out with [a pre-built console](./console.md)!
@@ -51,34 +53,36 @@ I try to keep up with the most recent version of Lua, that is, [the latest offic
 
 <div style="display:flex;justify-content:center">
 
-| Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 |   LuaJIT    |
-|:-------:|:-------:|:-------:|:-------:|:-----------:|
-|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.6  | [`0d313b2`] |
+| Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 | LuaJIT      | LuaJ     |
+|:-------:|:-------:|:-------:|:-------:|:-----------:|:--------:|
+| 5.1.5   | 5.2.4   | 5.3.6   | 5.4.6   | [`0d313b2`] | [A fork] |
 
 </div>
 
 [`0d313b2`]: https://github.com/LuaJIT/LuaJIT/commits/0d313b243194a0b8d2399d8b549ca5a0ff234db5
 
+[A fork]: https://github.com/wagyourtail/luaj
+
 [^jit]: LuaJIT no longer creates new releases. See [Project status · Issue #665](https://github.com/LuaJIT/LuaJIT/issues/665#issuecomment-784452583) for an explanation.
 
 ## Platforms
 
-Thanks to [jnigen](https://github.com/libgdx/gdx-jnigen), we have built Lua natives for almost all common platforms, readily available on [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava). [^android]
+Thanks to [jnigen](https://github.com/libgdx/gdx-jnigen), we have built Lua natives for almost all common platforms, readily available on [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava). [^android] [^luaj]
 
 <script setup>
-const columns = ['Lua 5.1', 'Lua 5.2', 'Lua 5.3', 'Lua 5.4', 'LuaJIT'];
+const columns = ['Lua 5.1', 'Lua 5.2', 'Lua 5.3', 'Lua 5.4', 'LuaJIT', 'LuaJ'];
 const android = 'Android <sup><a href="#fn2">[2]</a></sup>';
 const matrix = {
-  'Linux (x86_64)':   [2, 2, 2, 2, 2],
-  'Linux (x86)':      [1, 1, 1, 1, 1],
-  'Linux (ARM)':      [1, 1, 1, 1, 1],
-  'Linux (ARM64)':    [2, 2, 2, 2, 2],
-  'Windows (x86)':    [1, 1, 1, 1, 1],
-  'Windows (x86_64)': [2, 2, 2, 2, 2],
-  'MacOS (x86_64)':   [2, 2, 2, 2, 2],
-  'MacOS (ARM64)':    [2, 2, 2, 2, 2],
-  [android]:          [2, 2, 2, 2, 2],
-  'iOS':              [1, 1, 1, 1, 0],
+  'Linux (x86_64)':   [2, 2, 2, 2, 2, 2],
+  'Linux (x86)':      [1, 1, 1, 1, 1, 1],
+  'Linux (ARM)':      [1, 1, 1, 1, 1, 1],
+  'Linux (ARM64)':    [2, 2, 2, 2, 2, 2],
+  'Windows (x86)':    [1, 1, 1, 1, 1, 1],
+  'Windows (x86_64)': [2, 2, 2, 2, 2, 2],
+  'MacOS (x86_64)':   [2, 2, 2, 2, 2, 2],
+  'MacOS (ARM64)':    [2, 2, 2, 2, 2, 2],
+  [android]:          [2, 2, 2, 2, 2, 2],
+  'iOS':              [1, 1, 1, 1, 0, 1],
 };
 const classes = ['unsupported', 'available', 'tested'];
 </script>
@@ -136,3 +140,5 @@ ul li {
 [^android]: Android is available on many platforms, and we provide natives for `armeabi-v7a` `arm64-v8a` `x86` `x86_64`.
             It is tested against API levels 21, 24, 27, 30 and 33 on `x86_64` architectures
             (and on `x86` if a `default` emulator image is available) (and against my own phone of API level 30 on `arm64-v8a`).
+
+[^luaj]: Since LuaJ is written in Java, it should theoretically run on all platforms that supports Java.

@@ -2,8 +2,8 @@
 
 [![Build Status](https://github.com/gudzpoz/luajava/actions/workflows/build-natives.yml/badge.svg)](https://github.com/gudzpoz/luajava/actions/workflows/build-natives.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-![Codecov](https://img.shields.io/codecov/c/github/gudzpoz/luajava?label=Coverage)
-![Java 8](https://img.shields.io/badge/Java-8-brown)
+[![Codecov](https://img.shields.io/codecov/c/github/gudzpoz/luajava?label=Coverage)](https://app.codecov.io/gh/gudzpoz/luajava/)
+[![Java 8](https://img.shields.io/badge/Java-8-brown)](https://www.oracle.com/java/technologies/java8.html)
 [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/party.iroiro.luajava/luajava?server=https%3A%2F%2Fs01.oss.sonatype.org&label=Nexus&color=pink)](https://s01.oss.sonatype.org/content/repositories/snapshots/party/iroiro/luajava/)
 [![Maven Central](https://img.shields.io/maven-central/v/party.iroiro.luajava/luajava?color=blue&label=Maven%20Central)](https://mvnrepository.com/search?q=party.iroiro.luajava)
 
@@ -31,7 +31,7 @@ This is yet another fork of [the original LuaJava](https://github.com/jasonsanto
 
 > LuaJava is a scripting tool for Java. The goal of this tool is to allow scripts written in Lua to manipulate components developed in Java. LuaJava allows Java components to be accessed from Lua using the same syntax that is used for accessing Lua's native objects, without any need for declarations or any kind of preprocessing.
 >
-> LuaJava also allows Java to implement an interface using Lua. This way any interface can be implemented in Lua and passed as parameter to any method, and when called, the equivalent function will be called in Lua, and it's result passed back to Java.
+> LuaJava also allows any Java interface to get implemented in Lua and passed as parameter to any method, and when called, the equivalent function will be called in Lua, the result passed back to Java.
 >
 > LuaJava is available under the same license as Lua 5.1, that is, it can be used at no cost for both academic and commercial purposes.
 
@@ -43,24 +43,26 @@ since this library is more or less just a thin wrapper and requires some basic u
 
 <div style="display:flex;justify-content:center">
 
-| Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 |   LuaJIT    |
-|:-------:|:-------:|:-------:|:-------:|:-----------:|
-|  5.1.5  |  5.2.4  |  5.3.6  |  5.4.6  | [`0d313b2`] |
+| Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 | LuaJIT      | LuaJ     |
+|:-------:|:-------:|:-------:|:-------:|:-----------:|:--------:|
+| 5.1.5   | 5.2.4   | 5.3.6   | 5.4.6   | [`0d313b2`] | [A fork] |
 
 </div>
 
-
 [`0d313b2`]: https://github.com/LuaJIT/LuaJIT/commits/0d313b243194a0b8d2399d8b549ca5a0ff234db5
 
-Supported Lua versions: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4 and LuaJIT.
+[A fork]: https://github.com/wagyourtail/luaj
 
-Supported platforms: **Windows**, **Linux**, **MacOS**, **Android**, **iOS**. Compiled against both ARM and x32/x64. Binaries are not yet tested for iOS.
+Supported Lua versions: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4, LuaJ and LuaJIT.
 
-Compiled natives are available for most common platforms. Check out [LuaJava Platforms](https://gudzpoz.github.io/luajava/#platforms) for a platform matrix.
+Supported platforms: **Windows**, **Linux**, **MacOS** and **Android**. Compiled against both ARM and x32/x64. Binaries are not yet tested for iOS.
+
+Compiled natives are available for most common platforms. Check out [LuaJava Platforms](https://gudzpoz.github.io/luajava/#platforms) for a platform matrix. LuaJ bindings do not need native binaries and should run on all platforms theoretically.
 
 ### Artifacts
 
 To include LuaJava into your project, you need to include two artifacts, one for the Java bindings, the other for the compiled native binaries.
+(For LuaJ bindings, you don't need the latter one. However, you will need to add [JitPack](https://jitpack.io/) to your repositories.)
 
 ```groovy
 // Example: LuaJIT with Desktop natives
@@ -127,6 +129,7 @@ You may also have a look at [our tests](./example/src/test/resources).
  * [LibGDX](https://github.com/libgdx/libgdx)
  * [jnigen](https://github.com/libgdx/gdx-jnigen)
  * [Nonlua](https://github.com/deathbeam/jua)
+ * [LuaJ](https://github.com/wagyourtail/luaj)
 
 ## License ##
 

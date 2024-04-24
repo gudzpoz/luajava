@@ -18,9 +18,7 @@ public class LuaScriptEngineFactory implements ScriptEngineFactory {
         ArrayList<String> mimeTypes = new ArrayList<>(2);
         mimeTypes.add("text/x-lua");
         mimeTypes.add("application/x-lua");
-        //noinspection Java9CollectionFactory
         MIME_TYPES = Collections.unmodifiableList(mimeTypes);
-
         EXTENSIONS = Collections.singletonList("lua");
     }
 
@@ -168,6 +166,7 @@ public class LuaScriptEngineFactory implements ScriptEngineFactory {
             {"Lua 5.4", "5.4.4", "party.iroiro.luajava.lua54.Lua54", "54"},
             {"Lua 5.3", "5.3.6", "party.iroiro.luajava.lua53.Lua53", "53"},
             {"Lua 5.2", "5.2.4", "party.iroiro.luajava.lua52.Lua52", "52"},
+            {"LuaJ", "5.2.4", "party.iroiro.luajava.luaj.LuaJ", "j"},
             {"LuaJIT", "6c4826f12c4d33b8b978004bc681eb1eef2be977",
                     "party.iroiro.luajava.luajit.LuaJit", "jit"},
             {"Lua 5.1", "5.1.5", "party.iroiro.luajava.lua51.Lua51", "51"},
@@ -177,7 +176,7 @@ public class LuaScriptEngineFactory implements ScriptEngineFactory {
         String wanted = System.getProperty("luajava.jsr-223");
         if (wanted != null) {
             for (String[] engine : ENGINES) {
-                if (engine[3].equals(wanted)) {
+                if (engine[3].equals(wanted) || ("lua" + engine[3]).equals(wanted)) {
                     return engine;
                 }
             }

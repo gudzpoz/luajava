@@ -6,6 +6,9 @@ repositories {
     mavenLocal()
     google()
     mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 group = rootProject.group
@@ -14,6 +17,9 @@ version = rootProject.version
 ext {
     luaVersions = ['lua51', 'lua52', 'lua53', 'lua54', 'luajit']
 }
+
+// Lint involves an outdated version of Kotlin, which cause weird errors.
+lint.enabled = false
 
 android {
     namespace = project(':').group
@@ -35,7 +41,6 @@ android {
         }
     }
 
-
     buildFeatures {
         viewBinding true
     }
@@ -48,6 +53,11 @@ android {
     packagingOptions {
         excludes += 'META-INF/LICENSE*'
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -57,6 +67,7 @@ dependencies {
     androidTestImplementation project(':lua53')
     androidTestImplementation project(':lua54')
     androidTestImplementation project(':luajit')
+    androidTestImplementation project(':luaj')
     androidTestImplementation project(':example:suite')
     androidTestImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:core:1.5.0'

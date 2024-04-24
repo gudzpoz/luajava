@@ -83,3 +83,6 @@ luajit/.tags
 **/jni-headers/
 /scripts/.ipynb_checkpoints/
 /scripts/Untitled.ipynb
+
+# Random files
+bin/

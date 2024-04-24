@@ -18,5 +18,5 @@ String = lang.String
 assert(String ~= nil)
 assert(type(String) == 'userdata')
 
-assertThrows("bad argument #2 to",
+assertThrows("bad argument",
              function() print(lang[nil]) end)

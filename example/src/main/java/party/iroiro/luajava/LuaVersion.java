@@ -6,20 +6,20 @@ import party.iroiro.luajava.lua51.Lua51;
 import party.iroiro.luajava.lua52.Lua52;
 import party.iroiro.luajava.lua53.Lua53;
 import party.iroiro.luajava.lua54.Lua54;
+import party.iroiro.luajava.luaj.LuaJ;
 import party.iroiro.luajava.luajit.LuaJit;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.fail;
-
 public enum LuaVersion {
     v51("5.1", Lua51::new),
     v52("5.2", Lua52::new),
     v53("5.3", Lua53::new),
     v54("5.4", Lua54::new),
-    vjit("jit", LuaJit::new);
+    vjit("jit", LuaJit::new),
+    vj("j", LuaJ::new);
 
     public final String value;
     public final LuaTestSupplier<AbstractLua> supplier;
@@ -44,8 +44,14 @@ public enum LuaVersion {
             try {
                 return valueOf("v" + value);
             } catch (IllegalArgumentException ignored) {
-                return null;
             }
+            if (value.startsWith("lua")) {
+                try {
+                    return valueOf("v" + value.substring(3));
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+            return null;
         } else {
             return luaVersion;
         }

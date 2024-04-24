@@ -43,4 +43,13 @@ public class AndroidValueTest {
             new LuaValueSuite<>(L).test();
         }
     }
+
+    @Test
+    public void luaJTest() {
+        org.junit.Assume.assumeTrue(android.os.Build.VERSION.SDK_INT >= 30);
+        try (Lua L = AndroidLuaTest.getLuaJ()) {
+            new LuaValueSuite<>(L).test();
+        }
+    }
+
 }

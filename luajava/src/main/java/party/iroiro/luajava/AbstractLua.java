@@ -42,7 +42,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * An implementation that relys on {@link LuaNative} for most of the features independent of Lua versions
+ * An implementation that relies on {@link LuaNative} for most of the features independent of Lua versions
  */
 public abstract class AbstractLua implements Lua {
     private final static Object[] EMPTY = new Object[0];
@@ -80,7 +80,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     /**
-     * Adopts a Lua sub state, wrapping it up with the Lua interface
+     * Adopts a Lua sub-state, wrapping it up with the Lua interface
      *
      * @param luaNative  the Lua native wrapper
      * @param L          the new Lua state pointer
@@ -917,10 +917,11 @@ public abstract class AbstractLua implements Lua {
             params = EMPTY;
         }
         for (int i = params.length - 1; i >= 0; i--) {
-            if (params[i] == null) {
+            Object param = params[i];
+            if (param == null) {
                 pushNil();
             } else {
-                pushJavaObject(params[i]);
+                pushJavaObject(param);
             }
         }
         StringBuilder customSignature = new StringBuilder(params.length + 1);

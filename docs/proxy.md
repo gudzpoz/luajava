@@ -1,5 +1,9 @@
 # Proxy Caveats
 
+::: warning
+The following won't work when using LuaJ bindings.
+:::
+
 Both [the Java API](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class[],party.iroiro.luajava.Lua.Conversion))
 and [the Lua API](./api.md#proxy-jclass-table-function) provide a way
 to create Java proxies that delegate calls to an underlying Lua table.
@@ -44,12 +48,12 @@ Since Java 8, interfaces may choose to provide some `default` methods.
 As is mentioned above, methods, if not implemented in the provided Lua table,
 will call the default methods in the interfaces instead.
 
-Moreover, we provide a way to explicitly calling the default methods in the interface.
+Moreover, we provide a way to explicitly call the default methods in the interface.
 See [`java.method`](#method-jobject-method-signature-function) for more information.
 
 ::: danger Security Concerns
 This is dangerous because it provides a way to (somehow) work around the Java security manager.
-This library does not sandbox Lua code currently and JNI itself can be risky.
+This library does not sandbox Lua code currently, and JNI itself can be risky.
 Just don't execute unknown Lua code at all.
 
 (Or you may open an issue on this if you consider sandboxing necessary.)
@@ -114,4 +118,3 @@ Calling `Lua#createProxy` actually means that the target function will be execut
 on whose stack all the parameter conversions happen.
 
 Don't close a thread with proxies still in use.
-
