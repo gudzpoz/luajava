@@ -279,8 +279,6 @@ public class LuaTestSuite<T extends AbstractLua> {
         assertEquals(message, Objects.requireNonNull(L.getJavaError()).getMessage());
         L.run("java.import('java.lang.String')");
         assertNull(L.getJavaError());
-        if (!instanceOfLuaJ(L)) {
-        }
 
         assertEquals(-1, L.error(new RuntimeException(message)));
         assertEquals(expected, L.toString(-1));
