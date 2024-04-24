@@ -1,5 +1,6 @@
 package party.iroiro.luajava;
 
+import java.lang.reflect.Constructor;
 import org.junit.Test;
 import party.iroiro.luajava.lua51.Lua51;
 import party.iroiro.luajava.lua52.Lua52;
@@ -40,6 +41,24 @@ public class AndroidLuaTest {
     public void luaJitTest() {
         try (LuaJit L = new LuaJit()) {
             new LuaTestSuite<>(L, LuaJit::new).test();
+        }
+    }
+
+    @Test
+    public void luaJTest() {
+        org.junit.Assume.assumeTrue(android.os.Build.VERSION.SDK_INT >= 30);
+        try (AbstractLua L = getLuaJ()) {
+            new LuaTestSuite<>(L, AndroidLuaTest::getLuaJ).test();
+        }
+    }
+
+    public static AbstractLua getLuaJ() {
+        try {
+            Constructor<?> constructor = Class.forName("party.iroiro.luajava.luaj.LuaJ")
+                    .getConstructor();
+            return (AbstractLua) constructor.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

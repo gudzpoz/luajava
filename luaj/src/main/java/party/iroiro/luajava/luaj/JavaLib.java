@@ -1,9 +1,6 @@
 package party.iroiro.luajava.luaj;
 
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaThread;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
+import org.luaj.vm2.*;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.ThreeArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
@@ -23,6 +20,10 @@ public class JavaLib extends TwoArgFunction {
         if (nRet < 0) {
             LuaValue message = L.toLuaValue(-1);
             L.popFrame();
+            Throwable error = L.getError();
+            if (error != null) {
+                throw new LuaError(LuaJState.unwrapLuaError(error));
+            }
             return LuaValue.error(message.tojstring());
         }
         LuaValue[] results = new LuaValue[nRet];

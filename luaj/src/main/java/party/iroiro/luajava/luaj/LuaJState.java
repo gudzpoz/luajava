@@ -10,7 +10,15 @@ import static party.iroiro.luajava.luaj.LuaJConsts.LUA_REGISTRYINDEX;
 
 public class LuaJState {
     public static final int MAX_STACK_SLOTS = 2048;
+    /**
+     * A pseudo-address used by {@link LuaJNatives}.
+     * One may use it against {@link LuaJInstances} to fetch
+     * the corresponding {@link LuaJState}.
+     */
     protected final int address;
+    /**
+     * Lua ID used by the main LuaJava library.
+     */
     protected final int lid;
     protected final Globals globals;
     protected final LuaThread thread;
@@ -21,14 +29,15 @@ public class LuaJState {
     protected LuaTable jClassMetatable = JavaMetatables.classMetatable();
     protected LuaTable jArrayMetatable = JavaMetatables.arrayMetatable();
 
-    protected LuaJState(int address, int lid, Globals globals, LuaThread thread) {
+    protected LuaJState(int address, int lid, Globals globals,
+                        LuaThread thread, LuaJState parent) {
         this.address = address;
         this.lid = lid;
         this.globals = globals;
         this.thread = thread;
         luaStacks = new ArrayList<>();
         luaStacks.add(new ArrayList<>());
-        registry = LuaValue.tableOf();
+        registry = (parent == null ? LuaValue.tableOf() : parent.registry);
     }
 
     protected List<LuaValue> stack() {
@@ -157,6 +166,21 @@ public class LuaJState {
     }
 
     public void setError(Throwable e) {
-        globals.set("__jthrowable__", e == null ? LuaValue.NIL : new JavaObject(e, jObjectMetatable, address));
+        globals.set("__jthrowable__", e == null
+                ? LuaValue.NIL
+                : new JavaObject(unwrapLuaError(e), jObjectMetatable, address));
+    }
+
+    public static Throwable unwrapLuaError(Throwable e) {
+        if (e == null) {
+            return null;
+        }
+        if (e instanceof LuaError) {
+            LuaError err = (LuaError) e;
+            if (err.getCause() != null) {
+                return err.getCause();
+            }
+        }
+        return e;
     }
 }

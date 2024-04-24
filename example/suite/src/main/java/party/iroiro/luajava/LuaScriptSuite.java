@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.Assert.*;
-import static party.iroiro.luajava.DefaultProxyTest.isLuaJ;
+import static party.iroiro.luajava.DefaultProxyTest.instanceOfLuaJ;
 import static party.iroiro.luajava.Lua.LuaError.OK;
 import static party.iroiro.luajava.Lua.LuaError.RUNTIME;
 
@@ -53,9 +53,9 @@ public class LuaScriptSuite<T extends AbstractLua> {
         L.openLibrary("debug");
         L.openLibrary("table");
         assertEquals(OK, L.run(LUA_ASSERT_THROWS));
-        L.push(DefaultProxyTest.isDefaultAvailable() && !(isLuaJ(L)));
+        L.push(DefaultProxyTest.isDefaultAvailable() && !(instanceOfLuaJ(L)));
         L.setGlobal("JAVA8");
-        L.push(isLuaJ(L));
+        L.push(instanceOfLuaJ(L));
         L.setGlobal("LUAJ");
 
         // Android: desugar: default methods are separated into another class, failing the tests
@@ -284,6 +284,7 @@ public class LuaScriptSuite<T extends AbstractLua> {
     public static void memoryTest(Lua L) {
         L.openLibrary("package");
         L.openLibrary("coroutine");
+        L.openLibrary("string");
         L.setExternalLoader(new ClassPathLoader());
         L.loadExternal("luajava.testMemory");
         Lua.LuaError result = L.pCall(0, Consts.LUA_MULTRET);

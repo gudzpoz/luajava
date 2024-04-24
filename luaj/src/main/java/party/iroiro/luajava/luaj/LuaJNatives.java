@@ -222,9 +222,53 @@ public class LuaJNatives extends LuaNative {
         LuaJState L = instances.get((int) ptr);
         LuaThread thread = new LuaThread(L.globals, new FunctionInvoker());
         LuaInstances.Token<LuaJState> handle = instances.add();
-        handle.setter.accept(new LuaJState(handle.id, L.lid, L.globals, thread));
+        handle.setter.accept(new LuaJState(handle.id, L.lid, L.globals, thread, L));
         L.push(thread);
         return handle.id;
+    }
+
+    protected LuaThread lua_create_thread(long ptr, LuaValue func) {
+        LuaJState L = instances.get((int) ptr);
+        long J = lua_newthread(ptr);
+        LuaThread thread = (LuaThread) L.toLuaValue(-1);
+        L.pop(1);
+        FunctionInvoker.setFunction(instances.get((int) J), func.checkfunction());
+        return thread;
+    }
+    
+    protected void lua_require_coroutine(long ptr) {
+        LuaJState L = instances.get((int) ptr);
+        L.globals.load(new CoroutineLib() {
+            @Override
+            public LuaValue call(LuaValue modname, LuaValue env) {
+                LuaValue table = super.call(modname, env);
+                table.set("create", new LibFunction() {
+                    @Override
+                    public LuaValue call(LuaValue func) {
+                        return lua_create_thread(ptr, func);
+                    }
+                });
+                table.set("wrap", new LibFunction() {
+                    @Override
+                    public LuaValue call(LuaValue func) {
+                        LuaThread thread = lua_create_thread(ptr, func);
+                        return new VarArgFunction() {
+                            @Override
+                            public Varargs invoke(Varargs args) {
+                                // Copied from CoroutineLib.java from LuaJ
+                                Varargs result = thread.resume(args);
+                                if (result.arg1().toboolean()) {
+                                    return result.subargs(2);
+                                } else {
+                                    return error(result.arg(2).tojstring());
+                                }
+                            }
+                        };
+                    }
+                });
+                return table;
+            }
+        });
     }
 
     @Override
@@ -255,16 +299,18 @@ public class LuaJNatives extends LuaNative {
         L.setError(null);
         try {
             results = f.invoke(args);
-        } catch (Exception e) {
-            LuaValue message = LuaValue.valueOf(e.toString());
-            L.setError(e);
+        } catch (Exception luaError) {
+            Throwable err = LuaJState.unwrapLuaError(luaError);
+            L.setError(err);
+            LuaValue message = LuaValue.valueOf(err.toString());
             if (errorCallback != null) {
                 try {
                     message = errorCallback.call(message);
-                } catch (Exception ex) {
-                    L.setError(ex);
+                } catch (Exception innerLuaError) {
+                    err = LuaJState.unwrapLuaError(innerLuaError);
+                    L.setError(innerLuaError);
                     L.pop(nargs + 1);
-                    L.push(LuaValue.valueOf(ex.toString()));
+                    L.push(LuaValue.valueOf(err.toString()));
                     return LUA_ERRERR;
                 }
             }
@@ -654,7 +700,7 @@ public class LuaJNatives extends LuaNative {
         LuaC.install(globals);
         LoadState.install(globals);
         globals.load(new JavaLib(handle.id));
-        LuaJState state = new LuaJState(handle.id, lid, globals, null);
+        LuaJState state = new LuaJState(handle.id, lid, globals, null, null);
         handle.setter.accept(state);
         return handle.id;
     }
@@ -664,6 +710,7 @@ public class LuaJNatives extends LuaNative {
         LuaJState L = instances.get((int) ptr);
         L.globals.load(new PackageLib());
 
+        lua_require_coroutine(ptr);
         L.globals.load(new DebugLib());
         L.globals.load(new JseIoLib());
         L.globals.load(new MoreMathLib());
@@ -718,7 +765,7 @@ public class LuaJNatives extends LuaNative {
                 L.globals.load(new PackageLib());
                 break;
             case "coroutine":
-                L.globals.load(new CoroutineLib());
+                lua_require_coroutine(ptr);
                 break;
             case "debug":
                 L.globals.load(new DebugLib());
@@ -808,7 +855,7 @@ public class LuaJNatives extends LuaNative {
             L.thread.state.status = LuaThread.STATUS_INITIAL;
         }
         if (L.thread.state.status == LuaThread.STATUS_INITIAL) {
-            ((FunctionInvoker) L.thread.state.function).function = func;
+            FunctionInvoker.setFunction(L, func);
             L.pop(1);
         }
         Varargs results = L.thread.resume(LuaValue.varargsOf(args));
@@ -964,6 +1011,10 @@ public class LuaJNatives extends LuaNative {
         @Override
         public Varargs invoke(Varargs args) {
             return function.invoke(args);
+        }
+
+        public static void setFunction(LuaJState L, LuaValue func) {
+            ((FunctionInvoker) L.thread.state.function).function = func;
         }
     }
 

@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
-import static party.iroiro.luajava.DefaultProxyTest.isLuaJ;
+import static party.iroiro.luajava.DefaultProxyTest.instanceOfLuaJ;
 import static party.iroiro.luajava.Lua.Conversion.FULL;
 import static party.iroiro.luajava.Lua.Conversion.SEMI;
 import static party.iroiro.luajava.Lua.LuaError.*;
@@ -256,7 +256,7 @@ public class LuaTestSuite<T extends AbstractLua> {
             L.gc();
             assertEquals(OK, L.run("return collectgarbage('count')"));
             beforeGc.push();
-            if (!isLuaJ(L)) {
+            if (!instanceOfLuaJ(L)) {
                 // LuaJ uses Java GC
                 assertTrue(L.lessThan(-2, -1));
             }
@@ -278,8 +278,8 @@ public class LuaTestSuite<T extends AbstractLua> {
         assertInstanceOf(RuntimeException.class, L.getJavaError());
         assertEquals(message, Objects.requireNonNull(L.getJavaError()).getMessage());
         L.run("java.import('java.lang.String')");
-        if (!isLuaJ(L)) {
-            assertNull(L.getJavaError());
+        assertNull(L.getJavaError());
+        if (!instanceOfLuaJ(L)) {
         }
 
         assertEquals(-1, L.error(new RuntimeException(message)));

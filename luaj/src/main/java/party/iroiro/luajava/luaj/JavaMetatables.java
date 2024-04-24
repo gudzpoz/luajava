@@ -35,6 +35,7 @@ public abstract class JavaMetatables {
             public Varargs invoke(Varargs args) {
                 JavaClass o = (JavaClass) args.arg1();
                 LuaJState J = LuaJNatives.instances.get(o.L);
+                J.setError(null);
                 J.pushFrame();
                 J.pushAll(args);
                 return checkOrError(J, JuaAPI.classNew(J.lid, o.m_instance, args.narg() - 1));
@@ -57,6 +58,7 @@ public abstract class JavaMetatables {
             public LuaValue call(LuaValue object, LuaValue index) {
                 JavaArray array = (JavaArray) object;
                 LuaJState J = LuaJNatives.instances.get(array.L);
+                J.setError(null);
                 if (index.isnumber()) {
                     J.pushFrame();
                     return checkOrError(J,
@@ -70,6 +72,7 @@ public abstract class JavaMetatables {
             public LuaValue call(LuaValue object, LuaValue index, LuaValue value) {
                 JavaArray array = (JavaArray) object;
                 LuaJState J = LuaJNatives.instances.get(array.L);
+                J.setError(null);
                 J.pushFrame();
                 J.push(LuaValue.NIL);
                 J.push(LuaValue.NIL);
@@ -94,6 +97,7 @@ public abstract class JavaMetatables {
             JavaObject o = (JavaObject) object;
             String f = field.checkjstring();
             LuaJState J = LuaJNatives.instances.get(o.L);
+            J.setError(null);
             int result = clazz
                     ? JuaAPI.classIndex(J.lid, (Class<?>) o.m_instance, f)
                     : JuaAPI.objectIndex(J.lid, o.m_instance, f);
@@ -134,6 +138,7 @@ public abstract class JavaMetatables {
             JavaObject o = (JavaObject) object;
             String f = field.checkjstring();
             LuaJState J = LuaJNatives.instances.get(o.L);
+            J.setError(null);
             J.pushFrame();
             J.push(null);
             J.push(null);

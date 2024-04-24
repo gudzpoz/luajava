@@ -67,6 +67,7 @@ dependencies {
     androidTestImplementation project(':lua53')
     androidTestImplementation project(':lua54')
     androidTestImplementation project(':luajit')
+    androidTestImplementation project(':luaj')
     androidTestImplementation project(':example:suite')
     androidTestImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:core:1.5.0'
