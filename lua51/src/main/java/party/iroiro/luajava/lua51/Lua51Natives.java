@@ -366,7 +366,6 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * This function performs several tasks,
      * according to the value of the parameter <code>what</code>:
-     *
      * </p>
      *
      * <ul>
@@ -535,7 +534,6 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Pushes onto the stack the value of the global <code>name</code>.
      * It is defined as a macro:
-     *
      * </p>
      *
      * <pre>
@@ -566,7 +564,6 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Pushes onto the stack the value of the global <code>name</code>.
      * It is defined as a macro:
-     *
      * </p>
      *
      * <pre>
@@ -1211,7 +1208,7 @@ public class Lua51Natives extends LuaNative {
      * @param size size
      * @return see description
      */
-    protected native long lua_newuserdata(long ptr, int size); /*
+    protected native long lua_newuserdata(long ptr, long size); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) lua_newuserdata((lua_State *) L, (size_t) size);
@@ -1240,7 +1237,6 @@ public class Lua51Natives extends LuaNative {
      *
      * <p>
      * A typical traversal looks like this:
-     *
      * </p>
      *
      * <pre>
@@ -1301,10 +1297,10 @@ public class Lua51Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_objlen(long ptr, int index); /*
+    protected native long lua_objlen(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
-        jint returnValueReceiver = (jint) lua_objlen((lua_State *) L, (int) index);
+        jlong returnValueReceiver = (jlong) lua_objlen((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
 
@@ -1361,7 +1357,6 @@ public class Lua51Natives extends LuaNative {
      * The <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a> function returns 0 in case of success
      * or one of the following error codes
      * (defined in <code>lua.h</code>):
-     *
      * </p>
      *
      * <ul>
@@ -1450,7 +1445,6 @@ public class Lua51Natives extends LuaNative {
      * The <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a> function returns 0 in case of success
      * or one of the following error codes
      * (defined in <code>lua.h</code>):
-     *
      * </p>
      *
      * <ul>
@@ -1551,9 +1545,9 @@ public class Lua51Natives extends LuaNative {
      * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
-     * @param n the number of elements
+     * @param n the number / the number of elements
      */
-    protected native void lua_pushinteger(long ptr, int n); /*
+    protected native void lua_pushinteger(long ptr, long n); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_pushinteger((lua_State *) L, (lua_Integer) n);
@@ -1635,7 +1629,7 @@ public class Lua51Natives extends LuaNative {
      * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
-     * @param n the number of elements
+     * @param n the number / the number of elements
      */
     protected native void lua_pushnumber(long ptr, double n); /*
         lua_State * L = (lua_State *) ptr;
@@ -2147,7 +2141,6 @@ public class Lua51Natives extends LuaNative {
      * Pops a value from the stack and
      * sets it as the new value of global <code>name</code>.
      * It is defined as a macro:
-     *
      * </p>
      *
      * <pre>
@@ -2378,10 +2371,10 @@ public class Lua51Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_tointeger(long ptr, int index); /*
+    protected native long lua_tointeger(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
-        jint returnValueReceiver = (jint) lua_tointeger((lua_State *) L, (int) index);
+        jlong returnValueReceiver = (jlong) lua_tointeger((lua_State *) L, (int) index);
         return returnValueReceiver;
     */
 
@@ -2657,7 +2650,6 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * This function should only be called as the
      * return expression of a C&#160;function, as follows:
-     *
      * </p>
      *
      * <pre>
@@ -2883,7 +2875,6 @@ public class Lua51Natives extends LuaNative {
      * <p>
      * Loads and runs the given string.
      * It is defined as the following macro:
-     *
      * </p>
      *
      * <pre>
@@ -3280,7 +3271,6 @@ public class Lua51Natives extends LuaNative {
      *
      * <p>
      * Generates an error with a message like the following:
-     *
      * </p>
      *
      * <pre>
@@ -3356,7 +3346,6 @@ public class Lua51Natives extends LuaNative {
      * Pushes onto the stack a string identifying the current position
      * of the control at level <code>lvl</code> in the call stack.
      * Typically this string has the following format:
-     *
      * </p>
      *
      * <pre>

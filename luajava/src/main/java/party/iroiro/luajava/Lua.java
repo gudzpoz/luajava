@@ -83,7 +83,7 @@ public interface Lua extends AutoCloseable {
      *
      * @param integer the number
      */
-    void push(int integer);
+    void push(long integer);
 
     /**
      * Pushes a string onto the stack.
@@ -172,6 +172,20 @@ public interface Lua extends AutoCloseable {
      * @return the converted value, zero if not convertible
      */
     double toNumber(int index);
+
+    /**
+     * Converts the Lua value at the given acceptable index to the signed integral type lua_Integer
+     *
+     * <p>
+     * The Lua value must be a number or a string convertible to a number; otherwise,
+     * {@code lua_tointeger} returns 0. If the number is not an integer, it is truncated
+     * in some non-specified way.
+     * </p>
+     *
+     * @param index the stack index
+     * @return the converted value, zero if not convertible
+     */
+    long toInteger(int index);
 
     /**
      * Converts the Lua value at the given acceptable index to a boolean value

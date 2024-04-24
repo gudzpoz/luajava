@@ -43,6 +43,7 @@ public class LuaTestSuite<T extends AbstractLua> {
     public void test() {
         L.openLibraries();
         LuaScriptSuite.addAssertThrows(L);
+        test64BitInteger();
         testDump();
         testException();
         testExternalLoader();
@@ -63,6 +64,34 @@ public class LuaTestSuite<T extends AbstractLua> {
         testStackPositions();
         testTableOperations();
         testThreads();
+    }
+
+    private void test64BitInteger() {
+        try (T L = constructor.get()) {
+            assertEquals(OK, L.run("return _VERSION"));
+            String version = L.toString(-1);
+            assertEquals(OK, L.run("pow_2_60 = 1152921504606846976\nreturn pow_2_60 ~= pow_2_60 + 1"));
+            boolean supports64BitInteger = L.toBoolean(-1);
+            if (version != null && (version.equals("Lua 5.4") || version.equals("Lua 5.3"))) {
+                assertTrue(supports64BitInteger);
+            }
+            // Since pow_2_60 has trailing zero bits,
+            // for most 64-bit machines, (long) (double) pow_2_60 == pow_2_60, so we need a +1.
+            long i60Bits = 1152921504606846976L;
+            assertEquals(OK, L.run("return pow_2_60, pow_2_60 + 1"));
+            L.push(i60Bits);
+            L.push(i60Bits + 1);
+            assertTrue(L.equal(-4, -2));
+            assertTrue(L.equal(-3, -1));
+            assertEquals(supports64BitInteger, !L.equal(-2, -1));
+
+            L.toInteger(-2);
+            long converted = L.toInteger(-1);
+            assertEquals("actual: " + converted, supports64BitInteger, converted == i60Bits + 1);
+
+            L.push(converted);
+            assertTrue(L.equal(-2, -1));
+        }
     }
 
     private void testStackPositions() {
@@ -793,21 +822,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.setMetatable(-2);
         L.pushValue(-1);
         int ref = L.ref();
-        ArrayList<LuaTestConsumer<T>> stackIncrementingOperations = new ArrayList<>(Arrays.asList(
-                L -> L.createTable(0, 0),
-                L -> L.getGlobal("java"),
-                L -> L.refGet(ref),
-                L -> L.pushValue(testTableI),
-                L -> L.getMetatable(testTableI),
-                L -> L.getField(testTableI, "S"),
-                L -> L.rawGetI(testTableI, 1),
-                L -> L.getMetaField(testTableI, "F")
-        ));
-        for (Object[] data : DATA) {
-            for (Lua.Conversion conv : Lua.Conversion.values()) {
-                stackIncrementingOperations.add(L -> L.push(data[4], conv));
-            }
-        }
+        ArrayList<LuaTestConsumer<T>> stackIncrementingOperations = getLuaTestConsumers(ref, testTableI);
         for (LuaTestConsumer<T> t : stackIncrementingOperations) {
             assertThrows("No more stack space available", RuntimeException.class, () -> {
                 double i = 1.0;
@@ -826,6 +841,25 @@ public class LuaTestSuite<T extends AbstractLua> {
             L.setTop(testTableI);
         }
         L.pop(1);
+    }
+
+    private static <T extends AbstractLua> ArrayList<LuaTestConsumer<T>> getLuaTestConsumers(int ref, int testTableI) {
+        ArrayList<LuaTestConsumer<T>> stackIncrementingOperations = new ArrayList<>(Arrays.asList(
+                L -> L.createTable(0, 0),
+                L -> L.getGlobal("java"),
+                L -> L.refGet(ref),
+                L -> L.pushValue(testTableI),
+                L -> L.getMetatable(testTableI),
+                L -> L.getField(testTableI, "S"),
+                L -> L.rawGetI(testTableI, 1),
+                L -> L.getMetaField(testTableI, "F")
+        ));
+        for (Object[] data : DATA) {
+            for (Lua.Conversion conv : Lua.Conversion.values()) {
+                stackIncrementingOperations.add(L -> L.push(data[4], conv));
+            }
+        }
+        return stackIncrementingOperations;
     }
 
     private void testJavaToLuaConversions() {
@@ -892,8 +926,10 @@ public class LuaTestSuite<T extends AbstractLua> {
         }
 
         public void verify(Lua L, Object original) {
-            assertTrue(original == null ? "null" : original.getClass().getName(),
-                    verifier.test(original, L.toObject(-1)));
+            assertTrue(
+                    original == null ? "null" : (original.getClass().getName() + " " + original),
+                    verifier.test(original, L.toObject(-1))
+            );
         }
     }
 
@@ -925,15 +961,20 @@ public class LuaTestSuite<T extends AbstractLua> {
                             return true;
                         }
                         if (i instanceof Number) {
+                            Number i1 = (Number) i;
                             if (o instanceof BigInteger) {
                                 return !o.equals(i)
                                         && ((BigInteger) o).compareTo(
-                                        BigInteger.valueOf(((Number) i).longValue())) > 0;
-                            } else if (o instanceof Number) {
-                                return Math.abs(((Number) o).doubleValue() - ((Number) i).doubleValue())
-                                        < 0.00000001;
-                            } else if (o instanceof Character) {
-                                return ((Number) i).intValue() == (int) ((Character) o);
+                                        BigInteger.valueOf(i1.longValue())) > 0;
+                            } else {
+                                if (o instanceof Number) {
+                                    Number i2 = (Number) o;
+                                    return (Math.abs(i2.doubleValue() - i1.doubleValue()) < 0.00000001)
+                                            || i2.longValue() == i1.longValue()
+                                            || i2.intValue() == i1.intValue();
+                                } else if (o instanceof Character) {
+                                    return i1.intValue() == (int) ((Character) o);
+                                }
                             }
                         }
                         return false;

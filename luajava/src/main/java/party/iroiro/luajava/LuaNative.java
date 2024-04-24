@@ -486,7 +486,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * See <code>lua_compare</code>
+     * <p>See <code>lua_compare</code></p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param index1 the stack position of the first element
@@ -499,7 +499,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Run a direct buffer
+     * <p>Run a direct buffer</p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param buffer the buffer (expecting direct)
@@ -512,7 +512,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Append a searcher loading from Java side into <code>package.searchers / loaders</code>
+     * <p>Append a searcher loading from Java side into <code>package.searchers / loaders</code></p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
@@ -541,7 +541,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Is a Java object (including object, array or class)
+     * <p>Is a Java object (including object, array or class)</p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
@@ -552,7 +552,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Wrapper of <code>lua_(obj)len</code>
+     * <p>Wrapper of <code>lua_(obj)len</code></p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
@@ -563,7 +563,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Load a direct buffer
+     * <p>Load a direct buffer</p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param buffer the buffer (expecting direct)
@@ -576,7 +576,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Protected call
+     * <p>Protected call</p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param nargs the number of arguments that you pushed onto the stack
@@ -588,7 +588,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Resume a coroutine
+     * <p>Resume a coroutine</p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param nargs the number of arguments that you pushed onto the stack
@@ -642,7 +642,6 @@ public abstract class LuaNative {
      * <p>
      * Loads and runs the given string.
      * It is defined as the following macro:
-     *
      * </p>
      *
      * <pre>
@@ -809,7 +808,6 @@ public abstract class LuaNative {
      *
      * <p>
      * A typical traversal looks like this:
-     *
      * </p>
      *
      * <pre>
@@ -892,7 +890,6 @@ public abstract class LuaNative {
      * The <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a> function returns 0 in case of success
      * or one of the following error codes
      * (defined in <code>lua.h</code>):
-     *
      * </p>
      *
      * <ul>
@@ -1053,7 +1050,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_tointeger(long ptr, int index);
+    protected abstract long lua_tointeger(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_type"><code>lua_type</code></a>
@@ -1108,7 +1105,6 @@ public abstract class LuaNative {
      * <p>
      * This function should only be called as the
      * return expression of a C&#160;function, as follows:
-     *
      * </p>
      *
      * <pre>
@@ -1144,7 +1140,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Create a new thread
+     * <p>Create a new thread</p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param lid the id of the Lua state, to be used to identify between Java and Lua
@@ -1359,7 +1355,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Convert to Java object if it is one
+     * <p>Convert to Java object if it is one</p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
@@ -1682,7 +1678,6 @@ public abstract class LuaNative {
      * <p>
      * Pushes onto the stack the value of the global <code>name</code>.
      * It is defined as a macro:
-     *
      * </p>
      *
      * <pre>
@@ -1777,7 +1772,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Open a library indivisually, alternative to <code>luaL_openlibs</code>
+     * <p>Open a library indivisually, alternative to <code>luaL_openlibs</code></p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param lib library name
@@ -1836,7 +1831,6 @@ public abstract class LuaNative {
      * The <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a> function returns 0 in case of success
      * or one of the following error codes
      * (defined in <code>lua.h</code>):
-     *
      * </p>
      *
      * <ul>
@@ -1869,7 +1863,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Push a Java array
+     * <p>Push a Java array</p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param array the Java array
@@ -1879,7 +1873,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Push a Java class
+     * <p>Push a Java class</p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param clazz the Java class
@@ -1889,7 +1883,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Push a JFunction
+     * <p>Push a JFunction</p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param func the function object
@@ -1899,7 +1893,7 @@ public abstract class LuaNative {
     /**
      * A wrapper function
      *
-     * Push a Java object
+     * <p>Push a Java object</p>
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param obj the Java object
@@ -2074,7 +2068,6 @@ public abstract class LuaNative {
      * Pushes onto the stack a string identifying the current position
      * of the control at level <code>lvl</code> in the call stack.
      * Typically this string has the following format:
-     *
      * </p>
      *
      * <pre>
@@ -2172,9 +2165,9 @@ public abstract class LuaNative {
      * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
-     * @param n the number of elements
+     * @param i integer
      */
-    protected abstract void lua_pushinteger(long ptr, int n);
+    protected abstract void lua_pushinteger(long ptr, long i);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pushlightuserdata"><code>lua_pushlightuserdata</code></a>
@@ -2405,7 +2398,6 @@ public abstract class LuaNative {
      * Pops a value from the stack and
      * sets it as the new value of global <code>name</code>.
      * It is defined as a macro:
-     *
      * </p>
      *
      * <pre>

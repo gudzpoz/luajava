@@ -4,7 +4,7 @@
 # In[109]:
 
 # for i in {1..4}; do python scripts/jnigen-lua.py 5.$i party.iroiro.luajava.lua5${i} lua5${i}/src/main/java/; done
-# Do not forget to update LuaJit
+# Do not forget to update LuaJit and possibly LuaJ
 #
 # python scripts/jnigen-lua.py 5.1 party.iroiro.luajava.luajit luajit/src/main/java/
 # mv luajit/src/main/java/party/iroiro/luajava/luajit/Lua51Natives.java \
@@ -64,6 +64,7 @@ def getSignature(name, pre):
 
 dupNewline = re.compile('(\\s+\\n\\s+)+')
 javaComment = re.compile(re.escape('*/'))
+trailingNewline = re.compile('\\s+</p>')
 
 
 def strippedPrettyPrint(luaVersion, e):
@@ -79,7 +80,8 @@ def strippedPrettyPrint(luaVersion, e):
                 if not href.startswith(relative):
                     print(href)
     s = html.tostring(e, pretty_print=True).decode()
-    return javaComment.sub('*&#47;', dupNewline.sub('\n', s))
+    return javaComment.sub('*&#47;',
+        trailingNewline.sub('\n</p>', dupNewline.sub('\n', s)))
 
 
 def getDescription(luaVersion, pre):
@@ -172,8 +174,8 @@ paramTypedDescriptions = {
     'msgh': {'int': 'stack position of message handler'},
     'msg': {'const char *': 'a message'},
     'n': {'int': 'the number of elements',
-          'lua_Integer': 'the number of elements',
-          'lua_Number': 'the number of elements',
+          'lua_Integer': 'the number / the number of elements',
+          'lua_Number': 'the number / the number of elements',
           'lua_Unsigned': 'the value n'},
     'n1': {'int': 'n1'},
     'n2': {'int': 'n2'},
@@ -246,8 +248,8 @@ returnTypes = {
     'int': 'int',
     'lua_State *': 'long',
     'void *': 'long',
-    'size_t': 'int',
-    'lua_Integer': 'int',
+    'size_t': 'long',
+    'lua_Integer': 'long',
     'lua_Number': 'double',
     'const void *': 'long',
     'int *': 'long',

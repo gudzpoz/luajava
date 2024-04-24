@@ -199,7 +199,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void push(int integer) {
+    public void push(long integer) {
         checkStack(1);
         C.lua_pushinteger(L, integer);
     }
@@ -302,6 +302,11 @@ public abstract class AbstractLua implements Lua {
     @Override
     public double toNumber(int index) {
         return C.lua_tonumber(L, index);
+    }
+
+    @Override
+    public long toInteger(int index) {
+        return C.lua_tointeger(L, index);
     }
 
     @Override
