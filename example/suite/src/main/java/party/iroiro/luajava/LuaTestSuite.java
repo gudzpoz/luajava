@@ -71,29 +71,72 @@ public class LuaTestSuite<T extends AbstractLua> {
 
     private void test64BitInteger() {
         try (T L = constructor.get()) {
+            /*
+             * Although I expected casting (long) to (double) should be a reproducible operation,
+             * apparently it doesn't on some platforms, including the Android AVD emulator.
+             * We use `approx` (below) to handle possible double comparisons.
+             */
+            assertEquals(OK, L.run(
+                    "function approx(a, b)\n" +
+                            "if a == b then\n" +
+                            "  return true\n" +
+                            "end\n" +
+                            "local offset = a / b - 1\n" +
+                            "offset = offset < 0 and -offset or offset\n" +
+                            "return offset < 0.000001\n" +
+                            "end"));
+
             assertEquals(OK, L.run("return _VERSION"));
             String version = L.toString(-1);
             assertEquals(OK, L.run("pow_2_60 = 1152921504606846976\nreturn pow_2_60 ~= pow_2_60 + 1"));
             boolean supports64BitInteger = L.toBoolean(-1);
+            assertEquals(OK, L.run("double_int = 1099511627776\nreturn double_int ~= double_int + 1"));
+            boolean supportsDouble = L.toBoolean(-1); // double_int = 2 ^ 40.
+
+            L.push(I_60_BITS);
+            boolean truncatesTo32Bit = L.toInteger(-1) == 0;
+            if (supports64BitInteger || supportsDouble) {
+                assertFalse(truncatesTo32Bit);
+            }
+            if (truncatesTo32Bit) {
+                return;
+            }
+            /* Things seem rather complicated:
+             * - (64-bit machine + Lua 5.1 ~ 5.2): L.push(I_60_BITS) -> an approximated double value
+             * - (64-bit machine + Lua 5.3 ~ 5.4): L.push(I_60_BITS) -> exact integer value
+             * - (32-bit machine + Lua 5.1 ~ 5.2): L.push(I_60_BITS) -> truncates to int (0), then to double (0)
+             * - (32-bit machine + Lua 5.3 ~ 5.4): L.push(I_60_BITS) -> truncates to int (0), then to long (0)
+             */
+
             if (version != null && (version.equals("Lua 5.4") || version.equals("Lua 5.3"))) {
                 assertTrue(supports64BitInteger);
             }
-            // Since pow_2_60 has trailing zero bits,
+
+            // Since pow_2_60 contains trailing zero bits,
             // for most 64-bit machines, (long) (double) pow_2_60 == pow_2_60, so we need a +1.
             long i60Bits = I_60_BITS;
-            assertEquals(OK, L.run("return pow_2_60, pow_2_60 + 1"));
             L.push(i60Bits);
+            L.setGlobal("i_from_java");
             L.push(i60Bits + 1);
-            assertTrue(L.equal(-4, -2));
-            assertTrue(L.equal(-3, -1));
-            assertEquals(supports64BitInteger, !L.equal(-2, -1));
+            L.setGlobal("i_plus_from_java");
+            assertEquals(OK, L.run("return approx(pow_2_60, i_from_java)"));
+            assertTrue(L.toBoolean(-1));
+            assertEquals(OK, L.run("return approx(pow_2_60 + 1, i_plus_from_java)"));
+            assertTrue(L.toBoolean(-1));
+            assertEquals(OK, L.run("return approx(i_from_java, i_plus_from_java)"));
+            assertTrue(L.toBoolean(-1));
 
-            L.toInteger(-2);
+            assertEquals(OK, L.run("return pow_2_60 + 1, i_from_java, i_plus_from_java"));
+            if (supports64BitInteger) {
+                assertFalse(L.equal(-3, -2));
+                assertFalse(L.equal(-2, -1));
+                assertTrue(L.equal(-3, -1));
+            }
+
             long converted = L.toInteger(-1);
             assertEquals("actual: " + converted, supports64BitInteger, converted == i60Bits + 1);
-
-            L.push(converted);
-            assertTrue(L.equal(-2, -1));
+            converted = L.toInteger(-3);
+            assertEquals("actual: " + converted, supports64BitInteger, converted == i60Bits + 1);
 
             //noinspection Convert2Lambda
             L.push(new JFunction() {
@@ -104,14 +147,20 @@ public class LuaTestSuite<T extends AbstractLua> {
                 }
             });
             L.setGlobal("jfunc");
-            assertEquals(OK, L.run("return pow_2_60 + 1 == jfunc(pow_2_60 + 1)"));
+            assertEquals(OK, L.run("return approx(pow_2_60 + 1, jfunc(pow_2_60 + 1))"));
             assertTrue(L.toBoolean(-1));
 
             L.pushJavaClass(LuaTestSuite.class);
             L.setGlobal("suite");
-            assertEquals(OK, L.run("return pow_2_60 + 1 == suite:passAlong(pow_2_60 + 1)"));
-            assertEquals(BOOLEAN, L.type(-1));
+            assertEquals(OK, L.run("return approx(pow_2_60 + 1, suite:passAlong(pow_2_60 + 1))"));
             assertTrue(L.toBoolean(-1));
+
+            if (supports64BitInteger) {
+                assertEquals(OK, L.run("return " +
+                        "pow_2_60 + 1, jfunc(pow_2_60 + 1), suite:passAlong(pow_2_60 + 1)"));
+                assertTrue(L.equal(-3, -2));
+                assertTrue(L.equal(-2, -1));
+            }
 
             assertEquals(OK, L.run("return { passAlong = function(_, l) return l end }"));
             Object o = L.createProxy(new Class[]{PasserAlong.class}, FULL);
