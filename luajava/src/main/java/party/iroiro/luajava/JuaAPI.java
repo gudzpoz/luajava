@@ -205,7 +205,7 @@ public abstract class JuaAPI {
     }
 
     /**
-     * Pushed onto the stack a jclass or a package
+     * Pushes onto the stack a jclass or a package
      *
      * <p>
      * See the <code>java.import</code> API and <code>javaImport</code> in <code>jni/luajava/jualib.cpp</code>.
@@ -242,7 +242,7 @@ public abstract class JuaAPI {
     }
 
     /**
-     * Allocates an id for a thread created on the Lua side
+     * Allocates an ID for a thread created on the Lua side
      *
      * @param mainId the main thread id
      * @param ptr    the pointer to the lua state who does not have an id
@@ -284,7 +284,7 @@ public abstract class JuaAPI {
      * @param index  the id of {@link Jua} thread calling this method
      * @param object the object
      * @param name   the name of the field
-     * @return 1 if a field is found, 2 otherwise
+     * @return {@code 1} if a field is found, {@code 2} otherwise
      * @see #fieldIndex(Lua, Class, Object, String)
      */
     @SuppressWarnings("unused")

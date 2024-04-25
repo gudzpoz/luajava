@@ -71,6 +71,10 @@ public class LuaTestSuite<T extends AbstractLua> {
 
     private void test64BitInteger() {
         try (T L = constructor.get()) {
+            L.push((Number) I_60_BITS);
+            assertNotEquals(0, L.toInteger(-1));
+            assertNotEquals(0, L.toNumber(-1), 1);
+
             /*
              * Although I expected casting (long) to (double) should be a reproducible operation,
              * apparently it doesn't on some platforms, including the Android AVD emulator.
@@ -99,17 +103,15 @@ public class LuaTestSuite<T extends AbstractLua> {
 
             L.push(I_60_BITS);
             boolean truncatesTo32Bit = L.toInteger(-1) == 0;
-            if (truncatesTo32Bit) {
-                L.push((double) I_60_BITS);
-                assertNotEquals(0, L.toNumber(-1), 1);
-                return;
-            }
+            assertFalse(truncatesTo32Bit);
+
             /* Things seem rather complicated:
              * - (64-bit machine + Lua 5.1 ~ 5.2): L.push(I_60_BITS) -> an approximated double value
              * - (64-bit machine + Lua 5.3 ~ 5.4): L.push(I_60_BITS) -> exact integer value
              * - (32-bit machine + Lua 5.1 ~ 5.2): L.push(I_60_BITS) -> truncates to int (0), then to double (0)
              * - (32-bit machine + Lua 5.3 ~ 5.4): L.push(I_60_BITS) -> truncates to int (0), then to long (0)
              * All machines seem to use double.
+             * In the JNI code, we try to ensure that no truncation ever happens.
              */
 
             if (version != null && (version.equals("Lua 5.4") || version.equals("Lua 5.3"))) {

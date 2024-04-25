@@ -1844,8 +1844,23 @@ public class Lua54Natives extends LuaNative {
      */
     protected native void lua_pushinteger(long ptr, long n); /*
         lua_State * L = (lua_State *) ptr;
+        // What we want to achieve here is:
+        // Pushing any Java number (long or double) always results in an approximated number on the stack,
+        // unless the number is a Java long integer and the Lua version supports 64-bit integer,
+        // when we just push an 64-bit integer instead.
+        // The two cases either produce an approximated number or the exact integer value.
 
-        lua_pushinteger((lua_State *) L, (lua_Integer) n);
+        // The following code ensures that no truncation can happen,
+        // and the pushed number is either approximated or precise.
+
+        // If the compiler is smart enough, it will optimize
+        // the following code into a branch-less single push.
+        lua_Integer i = (lua_Integer) n;
+        if (i == n) {
+          lua_pushinteger((lua_State *) L, i);
+        } else {
+          lua_pushnumber((lua_State *) L, (lua_Number) n);
+        }
     */
 
 
@@ -2209,7 +2224,7 @@ public class Lua54Natives extends LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
-     * @param n the number / the number of elements
+     * @param n the number of elements
      */
     protected native void luaJ_rawgeti(long ptr, int index, int n); /*
         lua_State * L = (lua_State *) ptr;
