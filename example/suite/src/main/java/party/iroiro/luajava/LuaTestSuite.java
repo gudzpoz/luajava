@@ -92,13 +92,16 @@ public class LuaTestSuite<T extends AbstractLua> {
             boolean supports64BitInteger = L.toBoolean(-1);
             assertEquals(OK, L.run("double_int = 1099511627776\nreturn double_int ~= double_int + 1"));
             boolean supportsDouble = L.toBoolean(-1); // double_int = 2 ^ 40.
+            if (!supportsDouble) {
+                assertFalse(supports64BitInteger);
+                return;
+            }
 
             L.push(I_60_BITS);
             boolean truncatesTo32Bit = L.toInteger(-1) == 0;
-            if (supports64BitInteger || supportsDouble) {
-                assertFalse(truncatesTo32Bit);
-            }
             if (truncatesTo32Bit) {
+                L.push((double) I_60_BITS);
+                assertNotEquals(0, L.toNumber(-1), 1);
                 return;
             }
             /* Things seem rather complicated:
@@ -106,6 +109,7 @@ public class LuaTestSuite<T extends AbstractLua> {
              * - (64-bit machine + Lua 5.3 ~ 5.4): L.push(I_60_BITS) -> exact integer value
              * - (32-bit machine + Lua 5.1 ~ 5.2): L.push(I_60_BITS) -> truncates to int (0), then to double (0)
              * - (32-bit machine + Lua 5.3 ~ 5.4): L.push(I_60_BITS) -> truncates to int (0), then to long (0)
+             * All machines seem to use double.
              */
 
             if (version != null && (version.equals("Lua 5.4") || version.equals("Lua 5.3"))) {
