@@ -42,7 +42,7 @@ public class LuaValueSuite<T extends Lua> {
             int top = l.getTop();
             int sum = 0;
             for (int i = 1; i <= top; i++) {
-                sum += l.toNumber(i);
+                sum += (int) l.toNumber(i);
             }
             l.push(sum);
             return 1;
@@ -176,11 +176,6 @@ public class LuaValueSuite<T extends Lua> {
             public Lua.LuaType type() {
                 return NUMBER;
             }
-
-            @Override
-            public Lua state() {
-                return L;
-            }
         };
         assertNotEquals(L.from(1), mock);
 
@@ -212,13 +207,9 @@ public class LuaValueSuite<T extends Lua> {
                     public Lua.LuaType type() {
                         return TABLE;
                     }
-
-                    @Override
-                    public Lua state() {
-                        return L;
-                    }
                 };
                 assertNotEquals(l, mock1);
+                //noinspection EqualsWithItself
                 assertEquals(l, l);
             }
         }

@@ -94,6 +94,16 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
         }
     }
 
+    private static class ImmutableLong extends ImmutableLuaValue<Long> {
+        private ImmutableLong(Lua L, Long value) {
+            super(L, Lua.LuaType.NUMBER, value);
+        }
+
+        public void push() {
+            L.push((long) value);
+        }
+    }
+
     private static class ImmutableString extends ImmutableLuaValue<String> {
         private ImmutableString(Lua L, String value) {
             super(L, Lua.LuaType.STRING, value);
@@ -107,6 +117,10 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
 
     public static LuaValue NUMBER(Lua L, double n) {
         return new ImmutableNumber(L, n);
+    }
+
+    public static LuaValue LONG(Lua L, long n) {
+        return new ImmutableLong(L, n);
     }
 
     public static LuaValue STRING(Lua L, String s) {

@@ -1221,6 +1221,12 @@ public interface Lua extends AutoCloseable {
     LuaValue from(double n);
 
     /**
+     * @param n the number
+     * @return a number Lua value
+     */
+    LuaValue from(long n);
+
+    /**
      * @param s the string
      * @return a string Lua value
      */

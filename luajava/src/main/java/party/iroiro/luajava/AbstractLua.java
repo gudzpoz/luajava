@@ -1034,9 +1034,11 @@ public abstract class AbstractLua implements Lua {
                 pop(1);
                 return from(b);
             case NUMBER:
-                double n = toNumber(-1);
+                LuaValue value = isInteger(-1)
+                        ? from(toInteger(-1))
+                        : from(toNumber(-1));
                 pop(1);
-                return from(n);
+                return value;
             case STRING:
                 String s = toString(-1);
                 pop(1);
@@ -1062,6 +1064,11 @@ public abstract class AbstractLua implements Lua {
     @Override
     public LuaValue from(double n) {
         return ImmutableLuaValue.NUMBER(this, n);
+    }
+
+    @Override
+    public LuaValue from(long n) {
+        return ImmutableLuaValue.LONG(this, n);
     }
 
     @Override

@@ -174,6 +174,14 @@ public class LuaTestSuite<T extends AbstractLua> {
                     supports64BitInteger,
                     I_60_BITS + 1 == ((PasserAlong) o).passAlong(I_60_BITS + 1)
             );
+
+            if (supports64BitInteger) {
+                L.push(I_60_BITS + 1);
+                L.push(I_60_BITS + 1);
+                LuaValue v = L.get();
+                v.push();
+                assertTrue(L.equal(-2, -1));
+            }
         }
     }
 
