@@ -21,6 +21,9 @@ import static party.iroiro.luajava.Lua.LuaError.*;
 import static party.iroiro.luajava.Lua.LuaType.*;
 
 public class LuaTestSuite<T extends AbstractLua> {
+
+    public static final long I_60_BITS = 1152921504606846976L;
+
     @SuppressWarnings("UnusedReturnValue")
     public static <S> S assertInstanceOf(Class<S> sClass, Object o) {
         assertTrue(sClass.isInstance(o));
@@ -43,6 +46,7 @@ public class LuaTestSuite<T extends AbstractLua> {
     public void test() {
         L.openLibraries();
         LuaScriptSuite.addAssertThrows(L);
+        test64BitInteger();
         testDump();
         testException();
         testExternalLoader();
@@ -63,6 +67,122 @@ public class LuaTestSuite<T extends AbstractLua> {
         testStackPositions();
         testTableOperations();
         testThreads();
+    }
+
+    private void test64BitInteger() {
+        try (T L = constructor.get()) {
+            L.push((Number) I_60_BITS);
+            assertNotEquals(0, L.toInteger(-1));
+            assertNotEquals(0, L.toNumber(-1), 1);
+
+            /*
+             * Although I expected casting (long) to (double) should be a reproducible operation,
+             * apparently it doesn't on some platforms, including the Android AVD emulator.
+             * We use `approx` (below) to handle possible double comparisons.
+             */
+            assertEquals(OK, L.run(
+                    "function approx(a, b)\n" +
+                            "if a == b then\n" +
+                            "  return true\n" +
+                            "end\n" +
+                            "local offset = a / b - 1\n" +
+                            "offset = offset < 0 and -offset or offset\n" +
+                            "return offset < 0.000001\n" +
+                            "end"));
+
+            assertEquals(OK, L.run("return _VERSION"));
+            String version = L.toString(-1);
+            assertEquals(OK, L.run("pow_2_60 = 1152921504606846976\nreturn pow_2_60 ~= pow_2_60 + 1"));
+            boolean supports64BitInteger = L.toBoolean(-1);
+            assertEquals(OK, L.run("double_int = 1099511627776\nreturn double_int ~= double_int + 1"));
+            boolean supportsDouble = L.toBoolean(-1); // double_int = 2 ^ 40.
+            if (!supportsDouble) {
+                assertFalse(supports64BitInteger);
+                return;
+            }
+
+            L.push(I_60_BITS);
+            boolean truncatesTo32Bit = L.toInteger(-1) == 0;
+            assertFalse(truncatesTo32Bit);
+
+            /* Things seem rather complicated:
+             * - (64-bit machine + Lua 5.1 ~ 5.2): L.push(I_60_BITS) -> an approximated double value
+             * - (64-bit machine + Lua 5.3 ~ 5.4): L.push(I_60_BITS) -> exact integer value
+             * - (32-bit machine + Lua 5.1 ~ 5.2): L.push(I_60_BITS) -> truncates to int (0), then to double (0)
+             * - (32-bit machine + Lua 5.3 ~ 5.4): L.push(I_60_BITS) -> truncates to int (0), then to long (0)
+             * All machines seem to use double.
+             * In the JNI code, we try to ensure that no truncation ever happens.
+             */
+
+            if (version != null && (version.equals("Lua 5.4") || version.equals("Lua 5.3"))) {
+                assertTrue(supports64BitInteger);
+            }
+
+            // Since pow_2_60 contains trailing zero bits,
+            // for most 64-bit machines, (long) (double) pow_2_60 == pow_2_60, so we need a +1.
+            long i60Bits = I_60_BITS;
+            L.push(i60Bits);
+            L.setGlobal("i_from_java");
+            L.push(i60Bits + 1);
+            L.setGlobal("i_plus_from_java");
+            assertEquals(OK, L.run("return approx(pow_2_60, i_from_java)"));
+            assertTrue(L.toBoolean(-1));
+            assertEquals(OK, L.run("return approx(pow_2_60 + 1, i_plus_from_java)"));
+            assertTrue(L.toBoolean(-1));
+            assertEquals(OK, L.run("return approx(i_from_java, i_plus_from_java)"));
+            assertTrue(L.toBoolean(-1));
+
+            assertEquals(OK, L.run("return pow_2_60 + 1, i_from_java, i_plus_from_java"));
+            if (supports64BitInteger) {
+                assertFalse(L.equal(-3, -2));
+                assertFalse(L.equal(-2, -1));
+                assertTrue(L.equal(-3, -1));
+            }
+
+            long converted = L.toInteger(-1);
+            assertEquals("actual: " + converted, supports64BitInteger, converted == i60Bits + 1);
+            converted = L.toInteger(-3);
+            assertEquals("actual: " + converted, supports64BitInteger, converted == i60Bits + 1);
+
+            //noinspection Convert2Lambda
+            L.push(new JFunction() {
+                @Override
+                public int __call(Lua L) {
+                    L.push(L.toInteger(-1));
+                    return 1;
+                }
+            });
+            L.setGlobal("jfunc");
+            assertEquals(OK, L.run("return approx(pow_2_60 + 1, jfunc(pow_2_60 + 1))"));
+            assertTrue(L.toBoolean(-1));
+
+            L.pushJavaClass(LuaTestSuite.class);
+            L.setGlobal("suite");
+            assertEquals(OK, L.run("return approx(pow_2_60 + 1, suite:passAlong(pow_2_60 + 1))"));
+            assertTrue(L.toBoolean(-1));
+
+            if (supports64BitInteger) {
+                assertEquals(OK, L.run("return " +
+                        "pow_2_60 + 1, jfunc(pow_2_60 + 1), suite:passAlong(pow_2_60 + 1)"));
+                assertTrue(L.equal(-3, -2));
+                assertTrue(L.equal(-2, -1));
+            }
+
+            assertEquals(OK, L.run("return { passAlong = function(_, l) return l end }"));
+            Object o = L.createProxy(new Class[]{PasserAlong.class}, FULL);
+            assertEquals(
+                    supports64BitInteger,
+                    I_60_BITS + 1 == ((PasserAlong) o).passAlong(I_60_BITS + 1)
+            );
+
+            if (supports64BitInteger) {
+                L.push(I_60_BITS + 1);
+                L.push(I_60_BITS + 1);
+                LuaValue v = L.get();
+                v.push();
+                assertTrue(L.equal(-2, -1));
+            }
+        }
     }
 
     private void testStackPositions() {
@@ -793,21 +913,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.setMetatable(-2);
         L.pushValue(-1);
         int ref = L.ref();
-        ArrayList<LuaTestConsumer<T>> stackIncrementingOperations = new ArrayList<>(Arrays.asList(
-                L -> L.createTable(0, 0),
-                L -> L.getGlobal("java"),
-                L -> L.refGet(ref),
-                L -> L.pushValue(testTableI),
-                L -> L.getMetatable(testTableI),
-                L -> L.getField(testTableI, "S"),
-                L -> L.rawGetI(testTableI, 1),
-                L -> L.getMetaField(testTableI, "F")
-        ));
-        for (Object[] data : DATA) {
-            for (Lua.Conversion conv : Lua.Conversion.values()) {
-                stackIncrementingOperations.add(L -> L.push(data[4], conv));
-            }
-        }
+        ArrayList<LuaTestConsumer<T>> stackIncrementingOperations = getLuaTestConsumers(ref, testTableI);
         for (LuaTestConsumer<T> t : stackIncrementingOperations) {
             assertThrows("No more stack space available", RuntimeException.class, () -> {
                 double i = 1.0;
@@ -826,6 +932,25 @@ public class LuaTestSuite<T extends AbstractLua> {
             L.setTop(testTableI);
         }
         L.pop(1);
+    }
+
+    private static <T extends AbstractLua> ArrayList<LuaTestConsumer<T>> getLuaTestConsumers(int ref, int testTableI) {
+        ArrayList<LuaTestConsumer<T>> stackIncrementingOperations = new ArrayList<>(Arrays.asList(
+                L -> L.createTable(0, 0),
+                L -> L.getGlobal("java"),
+                L -> L.refGet(ref),
+                L -> L.pushValue(testTableI),
+                L -> L.getMetatable(testTableI),
+                L -> L.getField(testTableI, "S"),
+                L -> L.rawGetI(testTableI, 1),
+                L -> L.getMetaField(testTableI, "F")
+        ));
+        for (Object[] data : DATA) {
+            for (Lua.Conversion conv : Lua.Conversion.values()) {
+                stackIncrementingOperations.add(L -> L.push(data[4], conv));
+            }
+        }
+        return stackIncrementingOperations;
     }
 
     private void testJavaToLuaConversions() {
@@ -892,8 +1017,10 @@ public class LuaTestSuite<T extends AbstractLua> {
         }
 
         public void verify(Lua L, Object original) {
-            assertTrue(original == null ? "null" : original.getClass().getName(),
-                    verifier.test(original, L.toObject(-1)));
+            assertTrue(
+                    original == null ? "null" : (original.getClass().getName() + " " + original),
+                    verifier.test(original, L.toObject(-1))
+            );
         }
     }
 
@@ -925,15 +1052,20 @@ public class LuaTestSuite<T extends AbstractLua> {
                             return true;
                         }
                         if (i instanceof Number) {
+                            Number i1 = (Number) i;
                             if (o instanceof BigInteger) {
                                 return !o.equals(i)
                                         && ((BigInteger) o).compareTo(
-                                        BigInteger.valueOf(((Number) i).longValue())) > 0;
-                            } else if (o instanceof Number) {
-                                return Math.abs(((Number) o).doubleValue() - ((Number) i).doubleValue())
-                                        < 0.00000001;
-                            } else if (o instanceof Character) {
-                                return ((Number) i).intValue() == (int) ((Character) o);
+                                        BigInteger.valueOf(i1.longValue())) > 0;
+                            } else {
+                                if (o instanceof Number) {
+                                    Number i2 = (Number) o;
+                                    return (Math.abs(i2.doubleValue() - i1.doubleValue()) < 0.00000001)
+                                            || i2.longValue() == i1.longValue()
+                                            || i2.intValue() == i1.intValue();
+                                } else if (o instanceof Character) {
+                                    return i1.intValue() == (int) ((Character) o);
+                                }
                             }
                         }
                         return false;
@@ -1010,5 +1142,14 @@ public class LuaTestSuite<T extends AbstractLua> {
                     System.out, Runtime.getRuntime(), new IllegalAccessError()
             },
     };
+
+    @SuppressWarnings("unused")
+    public static long passAlong(long value) {
+        return value;
+    }
+
+    public interface PasserAlong {
+        long passAlong(long value);
+    }
 
 }

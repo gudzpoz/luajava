@@ -8,7 +8,7 @@
 /**
  * Opens individual libraries when one does not want them all
  */
-static inline void luaJ_openlib_call(lua_State * L, const char *libName, lua_CFunction loader) {
+static inline void luaJ_openlib_call(lua_State * L, const char * libName, lua_CFunction loader) {
     lua_pushcfunction(L, loader);
     lua_pushstring(L, libName);
     lua_call(L, 1, 0);
@@ -71,7 +71,7 @@ static int luaJ_resume(lua_State * L, int narg) {
     return lua_resume(L, narg);
 }
 
-static void *luaL_testudata(lua_State *L, int ud, const char *tname) {
+static void *luaL_testudata(lua_State * L, int ud, const char * tname) {
   void *p = lua_touserdata(L, ud);
   if (p != NULL) {  /* value is a userdata? */
     if (lua_getmetatable(L, ud)) {  /* does it have a metatable? */
@@ -89,8 +89,12 @@ static int luaJ_initloader(lua_State * L) {
   return luaJ_insertloader(L, "loaders");
 }
 
-static int luaJ_dump (lua_State *L, lua_Writer writer, void *data) {
+static int luaJ_dump(lua_State * L, lua_Writer writer, void * data) {
   return lua_dump (L, writer, data);
+}
+
+static int luaJ_isinteger(lua_State * L, int index) {
+  return 0;
 }
 
 #endif /* !LUACOMP_H */

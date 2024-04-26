@@ -199,7 +199,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void push(int integer) {
+    public void push(long integer) {
         checkStack(1);
         C.lua_pushinteger(L, integer);
     }
@@ -302,6 +302,11 @@ public abstract class AbstractLua implements Lua {
     @Override
     public double toNumber(int index) {
         return C.lua_tonumber(L, index);
+    }
+
+    @Override
+    public long toInteger(int index) {
+        return C.lua_tointeger(L, index);
     }
 
     @Override
@@ -466,6 +471,11 @@ public abstract class AbstractLua implements Lua {
     @Override
     public boolean isNumber(int index) {
         return C.lua_isnumber(L, index) != 0;
+    }
+
+    @Override
+    public boolean isInteger(int index) {
+        return C.luaJ_isinteger(L, index) != 0;
     }
 
     @Override
@@ -1024,9 +1034,11 @@ public abstract class AbstractLua implements Lua {
                 pop(1);
                 return from(b);
             case NUMBER:
-                double n = toNumber(-1);
+                LuaValue value = isInteger(-1)
+                        ? from(toInteger(-1))
+                        : from(toNumber(-1));
                 pop(1);
-                return from(n);
+                return value;
             case STRING:
                 String s = toString(-1);
                 pop(1);
@@ -1052,6 +1064,11 @@ public abstract class AbstractLua implements Lua {
     @Override
     public LuaValue from(double n) {
         return ImmutableLuaValue.NUMBER(this, n);
+    }
+
+    @Override
+    public LuaValue from(long n) {
+        return ImmutableLuaValue.LONG(this, n);
     }
 
     @Override

@@ -25,8 +25,6 @@ package party.iroiro.luajava.value;
 import org.jetbrains.annotations.Nullable;
 import party.iroiro.luajava.Lua;
 
-import java.util.Objects;
-
 /**
  * Basic {@link LuaValue} implementation wrapping immutable values
  * @param <T> the value type
@@ -47,12 +45,6 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
     @Override
     public @Nullable Object toJavaObject() {
         return value;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o) && o instanceof ImmutableLuaValue
-                && Objects.equals(value, ((ImmutableLuaValue<?>) o).value);
     }
 
     public static LuaValue NIL(Lua L) {
@@ -94,6 +86,21 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
         }
     }
 
+    private static class ImmutableLong extends ImmutableLuaValue<Long> {
+        private ImmutableLong(Lua L, Long value) {
+            super(L, Lua.LuaType.NUMBER, value);
+        }
+
+        public void push() {
+            L.push((long) value);
+        }
+
+        @Override
+        public @Nullable Object toJavaObject() {
+            return value.doubleValue();
+        }
+    }
+
     private static class ImmutableString extends ImmutableLuaValue<String> {
         private ImmutableString(Lua L, String value) {
             super(L, Lua.LuaType.STRING, value);
@@ -107,6 +114,10 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
 
     public static LuaValue NUMBER(Lua L, double n) {
         return new ImmutableNumber(L, n);
+    }
+
+    public static LuaValue LONG(Lua L, long n) {
+        return new ImmutableLong(L, n);
     }
 
     public static LuaValue STRING(Lua L, String s) {

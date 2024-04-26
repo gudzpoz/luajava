@@ -179,6 +179,11 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
+    protected int luaJ_isinteger(long ptr, int index) {
+        return 0;
+    }
+
+    @Override
     protected int lua_isstring(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
@@ -350,9 +355,9 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void lua_pushinteger(long ptr, int n) {
+    protected void lua_pushinteger(long ptr, long n) {
         LuaJState L = instances.get((int) ptr);
-        L.push(LuaValue.valueOf(n));
+        L.push(LuaInteger.valueOf(n));
     }
 
     @Override
@@ -518,10 +523,10 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int lua_tointeger(long ptr, int index) {
+    protected long lua_tointeger(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
-        return (int) value.tolong();
+        return value.tolong();
     }
 
     @Override

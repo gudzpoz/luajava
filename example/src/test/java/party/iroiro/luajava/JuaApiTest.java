@@ -70,7 +70,7 @@ public class JuaApiTest {
 
     private static class NativeTest extends Lua51Natives {
         @Override
-        public long lua_newuserdata(long ptr, int size) {
+        public long lua_newuserdata(long ptr, long size) {
             return super.lua_newuserdata(ptr, size);
         }
     }

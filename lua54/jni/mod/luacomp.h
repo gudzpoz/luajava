@@ -8,7 +8,7 @@
 /**
  * Opens individual libraries when one does not want them all
  */
-static inline void luaJ_openlib_call(lua_State * L, const char *libName, lua_CFunction loader) {
+static inline void luaJ_openlib_call(lua_State * L, const char * libName, lua_CFunction loader) {
     luaL_requiref(L, libName, loader, 1);
 }
 
@@ -71,8 +71,12 @@ static int luaJ_initloader(lua_State * L) {
   return luaJ_insertloader(L, "searchers");
 }
 
-static int luaJ_dump (lua_State *L, lua_Writer writer, void *data) {
+static int luaJ_dump (lua_State *L, lua_Writer writer, void * data) {
   return lua_dump (L, writer, data, true);
+}
+
+static int luaJ_isinteger(lua_State * L, int index) {
+  return lua_isinteger(L, index);
 }
 
 #endif /* !LUACOMP_H */

@@ -90,3 +90,29 @@ When calling Java methods from Lua, we `SEMI`-convert the return value. Currentl
 ::: warning
 Currently, you cannot convert a C closure back to a `JFunction`, even if the closure simply wraps around `JFunction`.
 :::
+
+## 64-Bit Integers
+
+To ensure compatibility across Lua versions, this library uses `double` for most numbers.
+However, [Lua 5.3](https://www.lua.org/manual/5.3/manual.html#8.1) introduced an integer subtype
+for numbers, which allows usage of 64-bit integers in Lua (on 64-bit machines mostly).
+This library ensures that no truncation ever happens when casting between `long` and `double`
+(which can happen on 32-bit machines where `long` values get truncated to 32-bit Lua integers).
+To retrieve or push integer values that exceed the safe integer range of `double` numbers,
+you will need to use
+[`party.iroiro.luajava.Lua#push(long)`](./javadoc/party/iroiro/luajava/Lua.html#push(long))
+and
+[`party.iroiro.luajava.Lua#toInteger`](./javadoc/party/iroiro/luajava/Lua.html#toInteger(int)).
+
+Also, when passing values via proxies or Java calls on the Lua side,
+the values will get auto converted to ensure maximal precision.
+For example, the following Lua snippet passes `2^60 + 1` around correctly
+(which cannot fit into a `double`) when running with 64-bit Lua 5.3:
+
+```lua
+POW_2_60 = 1152921504606846976
+Long = java.import('java.lang.Long')
+l = Long(POW_2_60 + 1)
+assert(l:toString() == "1152921504606846977")
+assert(l:longValue() == 1152921504606846977)
+```

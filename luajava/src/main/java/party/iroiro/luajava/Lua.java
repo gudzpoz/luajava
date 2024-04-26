@@ -72,18 +72,24 @@ public interface Lua extends AutoCloseable {
     void push(boolean bool);
 
     /**
-     * Pushes a number onto the stack
+     * Pushes a floating-point number onto the stack
      *
      * @param number the number, whose {@link Number#doubleValue()} will be pushed
      */
     void push(@NotNull Number number);
 
     /**
-     * Pushes a number onto the stack
+     * Pushes an integer onto the stack
+     *
+     * <p>
+     * Please note that on some 32-bit platforms, 64-bit integers are likely to get
+     * truncated instead of getting approximated into a floating-point number.
+     * If you want to approximate an integer, cast it to double and use {@link #push(Number)}.
+     * </p>
      *
      * @param integer the number
      */
-    void push(int integer);
+    void push(long integer);
 
     /**
      * Pushes a string onto the stack.
@@ -174,6 +180,20 @@ public interface Lua extends AutoCloseable {
     double toNumber(int index);
 
     /**
+     * Converts the Lua value at the given acceptable index to the signed integral type lua_Integer
+     *
+     * <p>
+     * The Lua value must be a number or a string convertible to a number; otherwise,
+     * {@code lua_tointeger} returns 0. If the number is not an integer, it is truncated
+     * in some non-specified way.
+     * </p>
+     *
+     * @param index the stack index
+     * @return the converted value, zero if not convertible
+     */
+    long toInteger(int index);
+
+    /**
      * Converts the Lua value at the given acceptable index to a boolean value
      *
      * <p>
@@ -204,7 +224,8 @@ public interface Lua extends AutoCloseable {
      * @param index the stack index
      * @return the converted object, {@code null} if unable to converted
      */
-    @Nullable Object toObject(int index);
+    @Nullable
+    Object toObject(int index);
 
     /**
      * Converts a value at the stack index
@@ -214,7 +235,8 @@ public interface Lua extends AutoCloseable {
      * @return the converted value, {@code null} if unable to converted
      * @see #toObject(int)
      */
-    @Nullable Object toObject(int index, Class<?> type);
+    @Nullable
+    Object toObject(int index, Class<?> type);
 
     /**
      * Converts the Lua value at the given acceptable index to a string
@@ -228,7 +250,8 @@ public interface Lua extends AutoCloseable {
      * @param index the stack index
      * @return the converted string
      */
-    @Nullable String toString(int index);
+    @Nullable
+    String toString(int index);
 
     /**
      * Creates a {@link java.nio.ByteBuffer} from the string at the specific index
@@ -241,7 +264,8 @@ public interface Lua extends AutoCloseable {
      * @param index the stack index
      * @return the created buffer
      */
-    @Nullable ByteBuffer toBuffer(int index);
+    @Nullable
+    ByteBuffer toBuffer(int index);
 
     /**
      * Creates a read-only direct {@link java.nio.ByteBuffer} from the string at the specific index
@@ -255,7 +279,8 @@ public interface Lua extends AutoCloseable {
      * @param index the stack index
      * @return the created read-only buffer
      */
-    @Nullable ByteBuffer toDirectBuffer(int index);
+    @Nullable
+    ByteBuffer toDirectBuffer(int index);
 
     /**
      * Get the element at the specified stack position, if the element is a Java object / array / class
@@ -263,7 +288,8 @@ public interface Lua extends AutoCloseable {
      * @param index the stack position of the element
      * @return the Java object or null
      */
-    @Nullable Object toJavaObject(int index);
+    @Nullable
+    Object toJavaObject(int index);
 
     /**
      * Get the element at the specified stack position, converted to a {@link Map}
@@ -275,7 +301,8 @@ public interface Lua extends AutoCloseable {
      * @param index the stack position of the element
      * @return the map or null
      */
-    @Nullable Map<?, ?> toMap(int index);
+    @Nullable
+    Map<?, ?> toMap(int index);
 
     /**
      * Get the element at the specified stack position, converted to {@link List}
@@ -287,7 +314,8 @@ public interface Lua extends AutoCloseable {
      * @param index the stack position of the element
      * @return the list or null
      */
-    @Nullable List<?> toList(int index);
+    @Nullable
+    List<?> toList(int index);
 
     /* Type-checking function */
 
@@ -358,6 +386,18 @@ public interface Lua extends AutoCloseable {
     boolean isNumber(int index);
 
     /**
+     * Returns true if the value at the given index is an integer, and false otherwise
+     *
+     * <p>
+     * (that is, the value is a number and is represented as an integer)
+     * </p>
+     *
+     * @param index the stack index
+     * @return true if the value is an integer, and false otherwise
+     */
+    boolean isInteger(int index);
+
+    /**
      * Returns true if the value at the given index is a string or a number
      *
      * @param index the stack index
@@ -393,7 +433,8 @@ public interface Lua extends AutoCloseable {
      * @param index the element to inspect
      * @return the lua type of the element, {@code null} if unrecognized (in, for example, incompatible lua versions)
      */
-    @Nullable LuaType type(int index);
+    @Nullable
+    LuaType type(int index);
 
     /* Measuring functions */
 
@@ -1110,7 +1151,8 @@ public interface Lua extends AutoCloseable {
      *
      * @return value of the Lua glboal {@link #GLOBAL_THROWABLE}
      */
-    @Nullable Throwable getJavaError();
+    @Nullable
+    Throwable getJavaError();
 
     /**
      * Sets the Lua global {@link #GLOBAL_THROWABLE} to the throwable
@@ -1158,7 +1200,8 @@ public interface Lua extends AutoCloseable {
      * @param command the command
      * @return the return values
      */
-    @Nullable LuaValue[] execute(String command);
+    @Nullable
+    LuaValue[] execute(String command);
 
     /**
      * @return a nil Lua value
@@ -1176,6 +1219,12 @@ public interface Lua extends AutoCloseable {
      * @return a number Lua value
      */
     LuaValue from(double n);
+
+    /**
+     * @param n the number
+     * @return a number Lua value
+     */
+    LuaValue from(long n);
 
     /**
      * @param s the string

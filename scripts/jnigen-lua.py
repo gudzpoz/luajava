@@ -1,139 +1,194 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[109]:
-
-# for i in {1..4}; do python scripts/jnigen-lua.py 5.$i party.iroiro.luajava.lua5${i} lua5${i}/src/main/java/; done
-# Do not forget to update LuaJit
+# Use the following command to update boilerplates:
 #
-# python scripts/jnigen-lua.py 5.1 party.iroiro.luajava.luajit luajit/src/main/java/
-# mv luajit/src/main/java/party/iroiro/luajava/luajit/Lua51Natives.java \
-#    luajit/src/main/java/party/iroiro/luajava/luajit/LuaJitNatives.java
+# for i in {1..4}; do python scripts/jnigen-lua.py 5.$i party.iroiro.luajava.lua5${i} lua5${i}/src/main/java/; done
+#
+# Do not forget to update LuaJit (by copying that of Lua5.1) and possibly LuaJ.
+# Use some diff tools to help determine what changes to keep.
 
-import requests
-from lxml import html
-import re
-import sys
+# In[1]:
+import dataclasses
 import os
+import re
+import requests
+import sys
+import typing
+
+from lxml import html
 
 
-# In[113]:
+# In[1]:
+class ParseError(Exception):
+    def __init__(self, name: str, message: str, culprit: str):
+        super().__init__(message)
+        self.name = name
+        self.culprit = culprit
+
+@dataclasses.dataclass
+class FunctionSignature:
+    returns: str
+
+    params: list[tuple[str, str]]
+
+    def __str__(self):
+        return f"({self.params}) -> {self.returns}"
+
+    def check(self, name: str):
+        if self.returns is None or self.params is None or None in self.params:
+            raise ParseError(name, "Invalid signature", f"{self}")
+
+@dataclasses.dataclass
+class LuaAPI:
+    name: str
+
+    signature: FunctionSignature
+
+    description: str
+    """HTML description."""
+
+    declaration: str | None = None
+
+    indicator: str | None = None
+    """Each function has an indicator like this: [-o, +p, x]"""
+
+    original: str | None = None
+
+    def __str__(self):
+        return f"{self.name}({self.signature})({self.indicator})"
+
+    def check(self):
+        if (
+            self.name is None
+            or self.signature is None
+            or self.description is None
+            or self.indicator is None
+        ):
+            raise ParseError(self.name, "Invalid function", f"{self}")
+        self.signature.check(self.name)
 
 
-def getUrl(luaVersion):
-    return 'https://www.lua.org/manual/' + luaVersion + '/manual.html'
-
-
-def getRelative(luaVersion):
-    return 'https://www.lua.org/manual/' + luaVersion + '/'
-
-
-def generate(luaVersion, transformHtml):
-    r = requests.get(getUrl(luaVersion))
-    if r.status_code == requests.codes.ok:
-        return transformHtml(luaVersion, html.fromstring(r.text))
-
-
-# In[223]:
-
-
+# In[1]:
 argSplit = re.compile('\\s*,\\s*')
 paramSplit = re.compile('^(.+?)(\\w+)$')
 
-
-def getParam(s):
-    param = paramSplit.findall(s)
-    if len(param) == 1:
-        return list(map(lambda s: s.strip(), param[0]))
-    else:
-        return None
-
-
-def getSignature(name, pre):
-    returnType, remaining = pre.strip().split(name)
-    remaining = remaining.strip()
-    if remaining.startswith('(') and remaining.endswith(');'):
-        remaining = remaining[1:-2]
-        params = [] if remaining == 'void' else list(map(getParam, argSplit.split(remaining)))
-        return {
-            'return': returnType.strip(),
-            'params': params,
-        }
-    return None
-
-
 dupNewline = re.compile('(\\s+\\n\\s+)+')
 javaComment = re.compile(re.escape('*/'))
+trailingNewline = re.compile('\\s+</p>')
 
+class LuaDocumentation:
+    luaVersion: str
 
-def strippedPrettyPrint(luaVersion, e):
-    relative = getUrl(luaVersion)
-    for a in e.xpath('.//a'):
-        if 'name' in a.attrib:
-            del a.attrib['name']
-        if 'href' in a.attrib:
-            href = a.attrib['href']
-            if href.startswith('#'):
-                a.attrib['href'] = relative + href
-            else:
-                if not href.startswith(relative):
-                    print(href)
-    s = html.tostring(e, pretty_print=True).decode()
-    return javaComment.sub('*&#47;', dupNewline.sub('\n', s))
+    errors: list[str]
 
+    def __init__(self, luaVersion):
+        self.luaVersion = luaVersion
+        self.errors = []
 
-def getDescription(luaVersion, pre):
-    e = pre
-    description = ''
-    while e.getnext().tag not in ['hr', 'h1']:
-        e = e.getnext()
-        description += '\n'
-        description += strippedPrettyPrint(luaVersion, e)
-    return description
+    @property
+    def manualUrl(self):
+        return f"https://www.lua.org/manual/{self.luaVersion}/manual.html"
 
+    @property
+    def rootUrl(self):
+        return f"https://www.lua.org/manual/{self.luaVersion}/"
 
-def getMethodInfo(luaVersion, apii):
-    parent = apii.getparent()
-    prev = parent.getprevious()
-    pre = parent.getnext()
-    info = {}
-    if parent.tag == 'p' and prev.tag == 'h3' and pre.tag == 'pre':
-        name = prev.text_content()
-        info['name'] = name
-        info['signature'] = getSignature(name, pre.text_content())
-        info['description'] = getDescription(luaVersion, pre)
-        info['pre'] = pre.text_content()
-        return info
-    else:
-        return None
+    def _fetch(self) -> html.HtmlElement:
+        r = requests.get(self.manualUrl)
+        if r.status_code == requests.codes.ok:
+            return html.fromstring(r.text)
+        raise Exception(f"Could not fetch {self.manualUrl}")
 
+    def parseFunctions(self) -> list[LuaAPI]:
+        dom = self._fetch()
+        functions: list[LuaAPI] = []
+        for indicator in dom.xpath('//span[@class="apii"]')[1:]:
+            try:
+                info = self.getMethodInfo(indicator)
+                info.check()
+                functions.append(info)
+            except ParseError as e:
+                assert any(expr in e.culprit for expr in [
+                    '...',
+                    'lst[]',
+                    'l[]',
+                    'L',
+                ]), f"{e}: {e.culprit} @ {e.name}"
+                self.errors.append(e.name)
+        return functions
 
-def transformIntoFunctionInfo(luaVersion, dom):
-    functions = []
-    errors = []
-    for apii in dom.xpath('//span[@class="apii"]')[1:]:
-        info = getMethodInfo(luaVersion, apii)
-        if (info == None or info['name'] == None or info['signature'] == None
-            or info['signature']['return'] == None or info['signature']['params'] == None
-            or info['description'] == None or (None in info['signature']['params'])):
-            errors.append(info['name'])
+    def getMethodInfo(self, indicator: html.HtmlElement):
+        parent: html.HtmlElement = indicator.getparent()
+        heading: html.HtmlElement = parent.getprevious()
+        funcDeclaration: html.HtmlElement = parent.getnext()
+        if parent.tag == 'p' and heading.tag == 'h3' and funcDeclaration.tag == 'pre':
+            name = heading.text_content()
+            func = funcDeclaration.text_content()
+            return LuaAPI(
+                name=name,
+                signature=self.parseSignature(name, func),
+                declaration=func,
+                description=self.getDescription(name, funcDeclaration),
+                indicator=indicator.text_content(),
+            )
         else:
-            info['apii'] = apii.text_content()
-            if info['name'] == 'luaL_newstate':
-                info['signature']['params'] = [['int', 'lid']]
-            functions.append(info)
-    return functions, errors
+            raise ParseError(f"{heading}", "Could not parse heading", f"{heading}")
+
+    @classmethod
+    def getParam(cls, name: str, paramString: str) -> tuple[str, str]:
+        param = paramSplit.search(paramString)
+        if param is not None:
+            return (param.group(1).strip(), param.group(2))
+        raise ParseError(name, "Could not parse param", paramString)
+
+    def parseSignature(self, name: str, func: str):
+        returnType, remaining = func.strip().split(name)
+        remaining = remaining.strip()
+        if remaining.startswith('(') and remaining.endswith(');'):
+            remaining = remaining[1:-2]
+            if remaining == 'void':
+                params = []
+            else:
+                params = [self.getParam(name, param) for param in argSplit.split(remaining)]
+            return FunctionSignature(returnType.strip(), params)
+        raise ParseError(name, "Could not parse signature", func)
+
+    def strippedPrettyPrint(self, name: str, e: html.HtmlElement):
+        relative = self.manualUrl
+        # Replaces relative links with absolute ones.
+        for a in e.xpath('.//a'):
+            if 'name' in a.attrib:
+                del a.attrib['name']
+            if 'href' in a.attrib:
+                href = a.attrib['href']
+                if href.startswith('#'):
+                    a.attrib['href'] = relative + href
+                else:
+                    if not href.startswith(relative):
+                        raise ParseError(name, "Unexpected href", href)
+        s = typing.cast(bytes, html.tostring(e, pretty_print=True)).decode()
+        return javaComment.sub(
+            '*&#47;',
+            trailingNewline.sub(
+                '\n</p>',
+                dupNewline.sub('\n', s),
+            ),
+        )
+
+    def getDescription(self, name: str, pre: html.HtmlElement):
+        e = pre
+        description = ''
+        while e.getnext().tag not in ['hr', 'h1']:
+            e: html.HtmlElement = e.getnext()
+            description += '\n'
+            description += self.strippedPrettyPrint(name, e)
+        return description
 
 
-# In[238]:
-
-
-def javadocQuote(des):
-    return '\n'.join(map(lambda line: '     * ' + line,
-                         des.strip().split('\n')))
-
-
+# In[1]:
 paramTypedDescriptions = {
+    'ptr': {'lua_State *': 'the <code>lua_State*</code> pointer'},
     'L': {'lua_State *': 'the <code>lua_State*</code> pointer'},
     'L1': {'lua_State *': 'a <code>lua_State*</code> pointer'},
     'arg': {'int': 'function argument index'},
@@ -172,8 +227,8 @@ paramTypedDescriptions = {
     'msgh': {'int': 'stack position of message handler'},
     'msg': {'const char *': 'a message'},
     'n': {'int': 'the number of elements',
-          'lua_Integer': 'the number of elements',
-          'lua_Number': 'the number of elements',
+          'lua_Integer': 'the number / the number of elements',
+          'lua_Number': 'the number / the number of elements',
           'lua_Unsigned': 'the value n'},
     'n1': {'int': 'n1'},
     'n2': {'int': 'n2'},
@@ -207,38 +262,6 @@ paramTypedDescriptions = {
     'tp': {'int': 'type id'},
     'what': {'int': 'what'},
 }
-
-
-def getParamDescription(param, f):
-    if 'upvalue' in f['name']:
-        if param[1] == 'n':
-            return 'the index in the upvalue'
-    if (param[1] in paramTypedDescriptions
-        and param[0] in paramTypedDescriptions[param[1]]):
-        return paramTypedDescriptions[param[1]][param[0]]
-    else:
-        print(f['name'], param)
-        return 'see description'
-
-
-def replaceL(param1):
-    return param1 if param1 != 'L' else 'ptr'
-
-
-def filterEnv(params):
-    return filter(lambda param: param[0] != 'JNIEnv *', params)
-
-
-def javadocSignature(sig, f):
-    return (
-        javadocQuote('\n'.join([('@param ' + replaceL(name[1])
-                                 + ' ' + getParamDescription(name, f))
-                                for name in filterEnv(sig['params'])])) +
-        (('\n' + '     * @return see description')
-         if sig['return'] != 'void' else '')
-    )
-
-
 returnTypes = {
     'const char *': 'String',
     'unsigned char *': 'Buffer',
@@ -246,8 +269,8 @@ returnTypes = {
     'int': 'int',
     'lua_State *': 'long',
     'void *': 'long',
-    'size_t': 'int',
-    'lua_Integer': 'int',
+    'size_t': 'long',
+    'lua_Integer': 'long',
     'lua_Number': 'double',
     'const void *': 'long',
     'int *': 'long',
@@ -257,121 +280,198 @@ returnTypes = {
     'jobject': 'Object',
     'jclass': 'Class',
 }
+overrideFunctions = {
+    'luaL_newstate': [
+        'long luaL_newstate(int lid)',
+        '''lua_State* L = luaL_newstate();
+luaJavaSetup(L, env, lid);
+return (jlong) L;''',
+        'int', 'lid',
+    ],
+    'lua_pushinteger': [
+        'void lua_pushinteger(long ptr, long n)',
+        '''lua_State * L = (lua_State *) ptr;
+// What we want to achieve here is:
+// Pushing any Java number (long or double) always results in an approximated number on the stack,
+// unless the number is a Java long integer and the Lua version supports 64-bit integer,
+// when we just push an 64-bit integer instead.
+// The two cases either produce an approximated number or the exact integer value.
+
+// The following code ensures that no truncation can happen,
+// and the pushed number is either approximated or precise.
+
+// If the compiler is smart enough, it will optimize
+// the following code into a branch-less single push.
+if (sizeof(lua_Integer) == 4) {
+  lua_pushnumber((lua_State *) L, (lua_Number) n);
+} else {
+  lua_pushinteger((lua_State *) L, (lua_Integer) n);
+}
+''',
+        'lua_State *', 'L',
+        'lua_Integer', 'n',
+    ],
+    'lua_tointeger': [
+        'long lua_tointeger(long ptr, int index)',
+        '''lua_State * L = (lua_State *) ptr;
+// See lua_pushinteger for comments.
+if (sizeof(lua_Integer) == 4) {
+  return (jlong) lua_tonumber(L, index);
+} else {
+  return (jlong) lua_tointeger(L, index);
+}
+''',
+        'lua_State *', 'L',
+        'int', 'index',
+    ],
+}
+paramNormalizations = {
+    'luaJ_rawgeti': {
+        'i': 'int',
+        'n': 'int',
+    },
+    'lua_rawseti': {
+        'i': 'int',
+        'n': 'int',
+    },
+}
 
 
-def javaReturnType(cType):
-    return returnTypes[cType]
-
-
-def javaSignature(f):
-    return (
-        '    protected native ' + javaReturnType(f['signature']['return'])
-        + ' ' + (f['jname'] if ('jname' in f) else f['name']) +
-        '(' + ', '.join([javaReturnType(param[0]) + ' '
-                         + replaceL(param[1]) for param
-                         in filterEnv(f['signature']['params'])]) +
-        ');'
-    )
-
-
-def indent(s):
-    return '\n'.join(map(lambda s: '        ' + s, s.strip().split('\n')))
-
-
-def acceptJniType(cType):
-    if javaReturnType(cType) == 'String':
-        return 'const char *'
-    elif javaReturnType(cType) == 'Object':
-        return 'jobject'
-    else:
-        return 'j' + javaReturnType(cType)
-
-
-def callLua(f):
-    return (
-        f['name'] + '(' + (', '.join([
-            ('(' + param[0] + ') ' + param[1])
-            for param
-            in f['signature']['params']])) + ');'
-    )
-
-
-def callingJni(f):
-    if f['signature']['return'] == 'void':
-        return callLua(f)
-    else:
-        t = acceptJniType(f['signature']['return'])
-        acceptJniType(f['signature']['return'])
-        return (
-            t + ' returnValueReceiver = (' + t + ') ' + callLua(f) + '\n' +
-            'return ' + ('env->NewStringUTF(returnValueReceiver)'
-                         if t == 'const char *' else 'returnValueReceiver')
-            + ';'
-        )
-
-
-def jniStatePointerConv(f):
-    s = ''
-    for param in f['signature']['params']:
-        if param[0] == 'lua_State *' and param[1] == 'L':
-            s += 'lua_State * L = (lua_State *) ptr;\n'
-    return s
-
-
-def jniGen(f):
-    if f['name'] == 'luaL_newstate':
-        return indent(
-            'lua_State* L = luaL_newstate();\n' +
-            'luaJavaSetup(L, env, lid);\n' +
-            'return (jlong) L;'
-        )
-    else:
-        return indent(
-            jniStatePointerConv(f) + '\n' +
-            callingJni(f)
-        ).replace('\n        \n', '\n\n')
-
-
+# In[1]:
 emptyPattern = re.compile('(     \\*( )?\n){2,}')
 
+class JavaBoilerplate:
+    luaApis: list[LuaAPI]
 
-def formatJavadoc(luaVersion, f):
-    luaWrapper = f'Wrapper of <a href="{getUrl(luaVersion)}#{f["name"]}"><code>{f["name"]}</code></a>'
-    quote = f"""<pre><code>
-{f['apii']}
-</code></pre>""" if 'apii' in f else ''
-    pre = f"""<pre><code>
-{f['pre']}
-</code></pre>""" if 'pre' in f else ''
-    nl = "\n"
-    return emptyPattern.sub('     *\n', (
+    doc: LuaDocumentation
+
+    errors: list[str]
+
+    def __init__(self, doc: LuaDocumentation, luaApis: list[LuaAPI]) -> None:
+        self.luaApis = luaApis
+        self.doc = doc
+        self.errors = doc.errors
+
+    def formatJavadoc(self, f: LuaAPI):
+        luaWrapper = (
+            'A wrapper function' if 'luaJ' in f.name and f.original is None
+            else f'''Wrapper of <a href="{self.doc.manualUrl}#{
+                f.original or f.name
+            }"><code>{f.original or f.name}</code></a>'''
+        )
+        quote = "" if f.indicator is None else f"<pre><code>\n{f.indicator}\n</code></pre>"
+        pre = "" if f.declaration is None else f"<pre><code>\n{f.declaration}\n</code></pre>"
+        description = (
+            f.description if '<p>' in f.description
+            else f'<p>\n{f.description}\n</p>'
+        )
+        return emptyPattern.sub('     *\n', (
 f"""    /**
-     * {'A wrapper function' if 'luaJ' in f['name'] else luaWrapper}
+{self._quote_javadoc(luaWrapper)}
      *
-{javadocQuote(quote)}
+{self._quote_javadoc(quote)}
      *
-{javadocQuote(pre)}
+{self._quote_javadoc(pre)}
      *
-{javadocQuote(f['description'] if ('<p>' in f['description']) else (f'<p>{nl}{f["description"]}{nl}</p>'))}
+{self._quote_javadoc(description)}
      *
-{javadocSignature(f['signature'], f)}
+{self._quote_javadoc(self._javadocSignature(f))}
      */
-{javaSignature(f)} /*
-{jniGen(f)}
+{self._javaSignature(f)} /*
+{self._jniGen(f)}
     */
 """
-    )).replace('* \n', '*\n')
+        )).replace('* \n', '*\n')
+
+    @classmethod
+    def _quote_javadoc(cls, s: str):
+        return '\n'.join(('     * ' + line) for line in s.strip().split('\n'))
+
+    def _getParamDescription(self, paramType: str, paramName: str, f: LuaAPI):
+        if 'upvalue' in f.name:
+            if paramName == 'n':
+                return 'the index in the upvalue'
+        desc = paramTypedDescriptions.get(paramName, {}).get(paramType)
+        if desc is None:
+            raise Exception(f'Unknown param {paramType} {paramName}')
+        return desc
+
+    def _normalizeParams(self, f: LuaAPI):
+        if f.name in overrideFunctions:
+            p = overrideFunctions[f.name][2:]
+            fParams = list(zip(p[::2], p[1::2]))
+        else:
+            fParams = f.signature.params
+        params = []
+        for paramType, name in fParams:
+            if paramType == 'JNIEnv *':
+                continue
+            if name == "L":
+                name = "ptr"
+            normedType = paramNormalizations.get(f.name, {}).get(name)
+            if normedType is not None:
+                paramType = normedType
+            params.append((paramType, name))
+        return params
+
+    def _javadocSignature(self, f: LuaAPI):
+        doc = "\n".join(
+            f"@param {name} {self._getParamDescription(paramType, name, f)}"
+            for paramType, name in self._normalizeParams(f)
+        )
+        if f.signature.returns != "void":
+            doc += f"\n@return see description"
+        return doc
+
+    def _javaSignature(self, f: LuaAPI):
+        if f.name in overrideFunctions:
+            return f"    protected native {overrideFunctions[f.name][0]};"
+        params = ', '.join(
+            f"{returnTypes[paramType]} {name}"
+            for paramType, name in self._normalizeParams(f)
+        )
+        returns = returnTypes[f.signature.returns]
+        return f"    protected native {returns} {f.name}({params});"
+
+    def _jniGen(self, f: LuaAPI):
+        if f.name in overrideFunctions:
+            jni = overrideFunctions[f.name][1]
+        else:
+            jni = ""
+            if any(t == 'lua_State *' and n == 'L' for t, n in f.signature.params):
+                jni += "lua_State * L = (lua_State *) ptr;\n"
+            params = ', '.join(f"({t}) {n}" for t, n in f.signature.params)
+            call = f"{f.original or f.name}({params});"
+            if f.signature.returns != "void":
+                returns = returnTypes[f.signature.returns]
+                if returns == 'Object':
+                    returns = 'jobject'
+                elif returns == 'String':
+                    returns = 'const char *'
+                else:
+                    returns = f"j{returns}"
+                call = f"{returns} returnValueReceiver = ({returns}) {call}\n"
+                if returns == 'const char *':
+                    call += f"return env->NewStringUTF(returnValueReceiver);"
+                else:
+                    call += f"return returnValueReceiver;"
+            jni += f"\n{call}"
+        return '\n'.join(
+            f"        {l}" for l in jni.strip().split('\n')
+        ).replace('\n        \n', '\n\n')
+
+    def filter(self, predicate: typing.Callable[[LuaAPI], bool]):
+        self.errors.extend(f.name for f in self.luaApis if not predicate(f))
+        self.luaApis = [f for f in self.luaApis if predicate(f)]
+
+    def extend(self, functions: list[LuaAPI]):
+        self.luaApis.extend(functions)
+
+    def generate(self):
+        return [self.formatJavadoc(f) for f in self.luaApis]
 
 
-def functionHas(f, noGo):
-    if noGo in f['signature']['return']:
-        return True
-    for param in f['signature']['params']:
-        if noGo in param[0] or noGo in param[1]:
-            return True
-    return False
-
-
+# In[1]:
 filtered = [
     'lua_pushlstring',
     'lua_tolstring',
@@ -387,8 +487,14 @@ filtered = [
     'luaL_typeerror',
 ]
 
+def functionHas(f: LuaAPI, noGo: str):
+    if noGo in f.signature.returns or any(
+        (noGo in t or noGo in n) for t, n in f.signature.params
+    ):
+        return True
+    return False
 
-def filterFunction(f):
+def filterFunction(f: LuaAPI):
     if (
         functionHas(f, 'lua_CFunction')
         or functionHas(f, 'lua_Reader')
@@ -401,17 +507,274 @@ def filterFunction(f):
         or functionHas(f, 'lua_KFunction')
         or functionHas(f, 'lua_WarnFunction')
         or functionHas(f, 'fmt')
-        or f['name'] in filtered
-        or f['name'].startswith('luaL_check')
-        or f['name'].startswith('luaL_opt')
-        or f['name'].startswith('luaL_arg')
+        or f.name in filtered
+        or f.name.startswith('luaL_check')
+        or f.name.startswith('luaL_opt')
+        or f.name.startswith('luaL_arg')
     ):
         return False
     else:
         return True
 
 
-inconsistencies = [
+# In[1]:
+extraFunctions = [
+    LuaAPI(
+        name='luaJ_openlib',
+        description='Open a library indivisually, alternative to <code>luaL_openlibs</code>',
+        signature=FunctionSignature(
+            returns='void',
+            params=[
+                ('lua_State *', 'L'),
+                ('const char *', 'lib'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_compare',
+        description='See <code>lua_compare</code>',
+        signature=FunctionSignature(
+            returns='int',
+            params=[
+                ('lua_State *', 'L'),
+                ('int', 'index1'),
+                ('int', 'index2'),
+                ('int', 'op'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_len',
+        description='Wrapper of <code>lua_(obj)len</code>',
+        signature=FunctionSignature(
+            returns='int',
+            params=[
+                ('lua_State *', 'L'),
+                ('int', 'index'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_loadbuffer',
+        description='Load a direct buffer',
+        signature=FunctionSignature(
+            returns='int',
+            params=[
+                ('lua_State *', 'L'),
+                ('unsigned char *', 'buffer'),
+                ('int', 'size'),
+                ('const char *', 'name'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_dobuffer',
+        description='Run a direct buffer',
+        signature=FunctionSignature(
+            returns='int',
+            params=[
+                ('lua_State *', 'L'),
+                ('unsigned char *', 'buffer'),
+                ('int', 'size'),
+                ('const char *', 'name'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_pcall',
+        description='Protected call',
+        signature=FunctionSignature(
+            returns='int',
+            params=[
+                ('lua_State *', 'L'),
+                ('int', 'nargs'),
+                ('int', 'nresults'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_resume',
+        description='Resume a coroutine',
+        signature=FunctionSignature(
+            returns='int',
+            params=[
+                ('lua_State *', 'L'),
+                ('int', 'nargs'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_pushobject',
+        description='Push a Java object',
+        signature=FunctionSignature(
+            returns='void',
+            params=[
+                ('JNIEnv *', 'env'),
+                ('lua_State *', 'L'),
+                ('jobject', 'obj'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_pushclass',
+        description='Push a Java class',
+        signature=FunctionSignature(
+            returns='void',
+            params=[
+                ('JNIEnv *', 'env'),
+                ('lua_State *', 'L'),
+                ('jobject', 'clazz'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_pusharray',
+        description='Push a Java array',
+        signature=FunctionSignature(
+            returns='void',
+            params=[
+                ('JNIEnv *', 'env'),
+                ('lua_State *', 'L'),
+                ('jobject', 'array'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_pushfunction',
+        description='Push a JFunction',
+        signature=FunctionSignature(
+            returns='void',
+            params=[
+                ('JNIEnv *', 'env'),
+                ('lua_State *', 'L'),
+                ('jobject', 'func'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_isobject',
+        description='Is a Java object (including object, array or class)',
+        signature=FunctionSignature(
+            returns='int',
+            params=[
+                ('lua_State *', 'L'),
+                ('int', 'index'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_toobject',
+        description='Convert to Java object if it is one',
+        signature=FunctionSignature(
+            returns='jobject',
+            params=[
+                ('lua_State *', 'L'),
+                ('int', 'index'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_newthread',
+        description='Create a new thread',
+        signature=FunctionSignature(
+            returns='lua_State *',
+            params=[
+                ('lua_State *', 'L'),
+                ('int', 'lid'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_initloader',
+        description='Append a searcher loading from Java side into <code>package.searchers / loaders</code>',
+        signature=FunctionSignature(
+            returns='int',
+            params=[
+                ('lua_State *', 'L'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_invokespecial',
+        description='Runs {@code CallNonvirtual<type>MethodA}. See AbstractLua for usages.\nParameters should be boxed and pushed on stack.',
+        signature=FunctionSignature(
+            returns='int',
+            params=[
+                ('JNIEnv *', 'env'),
+                ('lua_State *', 'L'),
+                ('jclass', 'clazz'),
+                ('const char *', 'method'),
+                ('const char *', 'sig'),
+                ('jobject', 'obj'),
+                ('const char *', 'params'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_isinteger',
+        description='See <code>lua_isinteger</code>',
+        signature=FunctionSignature(
+            returns='int',
+            params=[
+                ('lua_State *', 'L'),
+                ('int', 'index'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_removestateindex',
+        description='Removes the thread from the global registry, thus allowing it to get garbage collected',
+        signature=FunctionSignature(
+            returns='void',
+            params=[
+                ('lua_State *', 'L'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_gc',
+        description='Performs a full garbage-collection cycle',
+        signature=FunctionSignature(
+            returns='void',
+            params=[
+                ('lua_State *', 'L'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_dumptobuffer',
+        description='See <code>lua_dump</code>',
+        signature=FunctionSignature(
+            returns='jobject',
+            params=[
+                ('lua_State *', 'L'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_tobuffer',
+        description='See <code>lua_tolstring</code>',
+        signature=FunctionSignature(
+            returns='jobject',
+            params=[
+                ('lua_State *', 'L'),
+                ('int', 'index'),
+            ],
+        ),
+    ),
+    LuaAPI(
+        name='luaJ_todirectbuffer',
+        description='See <code>lua_tolstring</code>',
+        signature=FunctionSignature(
+            returns='jobject',
+            params=[
+                ('lua_State *', 'L'),
+                ('int', 'index'),
+            ],
+        ),
+    ),
+]
+returnValueInconsistencies = [
     'lua_pcall',
     'lua_getfield',
     'lua_getglobal',
@@ -425,266 +788,25 @@ inconsistencies = [
     'luaL_newmetatable',
 ]
 
+def gatherFunctions(existing: list[LuaAPI]):
+    functions = []
+    for f in existing:
+        functions.append(f)
+        if f.name in returnValueInconsistencies:
+            functions.append(LuaAPI(
+                name=f.name.replace('lua_', 'luaJ_').replace('luaL_', 'luaJ_'),
+                declaration=f.declaration,
+                description=f.description,
+                signature=FunctionSignature(
+                    returns='void',
+                    params=f.signature.params,
+                ),
+                indicator=f.indicator,
+                original=f.name,
+            ))
+    return functions
 
-def wantBridging(f):
-    if f['name'] in inconsistencies:
-        f['jname'] = f['name'].replace('lua_',
-                                       'luaJ_').replace('luaL_', 'luaJ_')
-        f['signature']['return'] = 'void'
-        return f
-    else:
-        return None
-
-
-def addExtra(functions):
-    functions.append({
-        'name': 'luaJ_openlib',
-        'description': 'Open a library indivisually, '
-        + 'alternative to <code>luaL_openlibs</code>',
-        'signature': {
-            'return': 'void',
-            'params': [
-                ['lua_State *', 'L'],
-                ['const char *', 'lib'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_compare',
-        'description': 'See <code>lua_compare</code>',
-        'signature': {
-            'return': 'int',
-            'params': [
-                ['lua_State *', 'L'],
-                ['int', 'index1'],
-                ['int', 'index2'],
-                ['int', 'op'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_len',
-        'description': 'Wrapper of <code>lua_(obj)len</code>',
-        'signature': {
-            'return': 'int',
-            'params': [
-                ['lua_State *', 'L'],
-                ['int', 'index'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_loadbuffer',
-        'description': 'Load a direct buffer',
-        'signature': {
-            'return': 'int',
-            'params': [
-                ['lua_State *', 'L'],
-                ['unsigned char *', 'buffer'],
-                ['int', 'size'],
-                ['const char *', 'name'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_dobuffer',
-        'description': 'Run a direct buffer',
-        'signature': {
-            'return': 'int',
-            'params': [
-                ['lua_State *', 'L'],
-                ['unsigned char *', 'buffer'],
-                ['int', 'size'],
-                ['const char *', 'name'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_pcall',
-        'description': 'Protected call',
-        'signature': {
-            'return': 'int',
-            'params': [
-                ['lua_State *', 'L'],
-                ['int', 'nargs'],
-                ['int', 'nresults'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_resume',
-        'description': 'Resume a coroutine',
-        'signature': {
-            'return': 'int',
-            'params': [
-                ['lua_State *', 'L'],
-                ['int', 'nargs'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_pushobject',
-        'description': 'Push a Java object',
-        'signature': {
-            'return': 'void',
-            'params': [
-                ['JNIEnv *', 'env'],
-                ['lua_State *', 'L'],
-                ['jobject', 'obj'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_pushclass',
-        'description': 'Push a Java class',
-        'signature': {
-            'return': 'void',
-            'params': [
-                ['JNIEnv *', 'env'],
-                ['lua_State *', 'L'],
-                ['jobject', 'clazz'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_pusharray',
-        'description': 'Push a Java array',
-        'signature': {
-            'return': 'void',
-            'params': [
-                ['JNIEnv *', 'env'],
-                ['lua_State *', 'L'],
-                ['jobject', 'array'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_pushfunction',
-        'description': 'Push a JFunction',
-        'signature': {
-            'return': 'void',
-            'params': [
-                ['JNIEnv *', 'env'],
-                ['lua_State *', 'L'],
-                ['jobject', 'func'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_isobject',
-        'description': 'Is a Java object (including object, array or class)',
-        'signature': {
-            'return': 'int',
-            'params': [
-                ['lua_State *', 'L'],
-                ['int', 'index'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_toobject',
-        'description': 'Convert to Java object if it is one',
-        'signature': {
-            'return': 'jobject',
-            'params': [
-                ['lua_State *', 'L'],
-                ['int', 'index'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_newthread',
-        'description': 'Create a new thread',
-        'signature': {
-            'return': 'lua_State *',
-            'params': [
-                ['lua_State *', 'L'],
-                ['int', 'lid'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_initloader',
-        'description': 'Append a searcher loading from Java side into <code>package.searchers / loaders</code>',
-        'signature': {
-            'return': 'int',
-            'params': [
-                ['lua_State *', 'L'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_invokespecial',
-        'description': 'Runs {@code CallNonvirtual<type>MethodA}. See AbstractLua for usages.\nParameters should be boxed and pushed on stack.',
-        'signature': {
-            'return': 'int',
-            'params': [
-                ['JNIEnv *', 'env'],
-                ['lua_State *', 'L'],
-                ['jclass', 'clazz'],
-                ['const char *', 'method'],
-                ['const char *', 'sig'],
-                ['jobject', 'obj'],
-                ['const char *', 'params'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_removestateindex',
-        'description': 'Removes the thread from the global registry, thus allowing it to get garbage collected',
-        'signature': {
-            'return': 'void',
-            'params': [
-                ['lua_State *', 'L'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_gc',
-        'description': 'Performs a full garbage-collection cycle',
-        'signature': {
-            'return': 'void',
-            'params': [
-                ['lua_State *', 'L'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_dumptobuffer',
-        'description': 'See <code>lua_dump</code>',
-        'signature': {
-            'return': 'jobject',
-            'params': [
-                ['lua_State *', 'L'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_tobuffer',
-        'description': 'See <code>lua_tolstring</code>',
-        'signature': {
-            'return': 'jobject',
-            'params': [
-                ['lua_State *', 'L'],
-                ['int', 'index'],
-            ],
-        },
-    })
-    functions.append({
-        'name': 'luaJ_todirectbuffer',
-        'description': 'See <code>lua_tolstring</code>',
-        'signature': {
-            'return': 'jobject',
-            'params': [
-                ['lua_State *', 'L'],
-                ['int', 'index'],
-            ],
-        },
-    })
-
-
-def getWhole(luaVersion, package):
-    functions, errors = generate(luaVersion, transformIntoFunctionInfo)
+def getWhole(luaVersion: str, package: str):
     className = f"Lua{luaVersion.replace('.', '')}Natives"
     inner = (
         f'''@SuppressWarnings({{"unused", "rawtypes"}})
@@ -754,16 +876,13 @@ public class {className} extends LuaNative {{
 
 '''
     )
-    addExtra(functions)
-    for f in functions:
-        if filterFunction(f):
-            inner += formatJavadoc(luaVersion, f) + '\n\n'
-            bridged = wantBridging(f)
-            if bridged != None:
-                inner += formatJavadoc(luaVersion, bridged) + '\n\n'
-        else:
-            errors.append(f['name'])
-    inner += '}'
+    doc = LuaDocumentation(luaVersion)
+    java = JavaBoilerplate(doc, doc.parseFunctions())
+    java.luaApis = gatherFunctions(java.luaApis)
+    java.extend(extraFunctions)
+    java.filter(filterFunction)
+    inner += "\n\n".join(java.generate())
+    inner += "\n\n}\n"
     newline = "\n"
     comment = (
 f"""/*
@@ -800,12 +919,12 @@ import party.iroiro.luajava.util.GlobalLibraryLoader;
  * Lua C API wrappers
  *
  * <p>
- * This file is programmatically generated from <a href="{getUrl(luaVersion)}">the Lua {luaVersion} Reference Manual</a>.
+ * This file is programmatically generated from <a href="{doc.manualUrl}">the Lua {luaVersion} Reference Manual</a>.
  * </p>
  * <p>
  * The following functions are excluded:
  * <ul>
-{newline.join(map(lambda name: ' * <li><code>' + name + '</code></li>', sorted(errors)))}
+{newline.join(f' * <li><code>{name}</code></li>' for name in sorted(java.errors))}
  * </ul>
  */"""
     )
@@ -813,7 +932,7 @@ import party.iroiro.luajava.util.GlobalLibraryLoader;
     return className, output
 
 
-# In[240]:
+# In[1]:
 
 
 if len(sys.argv) != 4:
