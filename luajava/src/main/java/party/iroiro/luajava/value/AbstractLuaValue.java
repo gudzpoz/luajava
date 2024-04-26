@@ -64,7 +64,16 @@ public abstract class AbstractLuaValue<T extends Lua> implements LuaValue {
     public boolean equals(Object o) {
         if (o instanceof AbstractLuaValue) {
             AbstractLuaValue<?> value = (AbstractLuaValue<?>) o;
-            return state().getMainState() == value.state().getMainState() && type == value.type();
+            Lua J = state();
+            if (J.getMainState() != value.state().getMainState() || type != value.type()) {
+                return false;
+            }
+            int top = J.getTop();
+            push(J);
+            value.push(J);
+            boolean equal = J.equal(-2, -1);
+            J.setTop(top);
+            return equal;
         }
         return false;
     }

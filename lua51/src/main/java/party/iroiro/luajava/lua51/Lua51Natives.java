@@ -1560,11 +1560,10 @@ public class Lua51Natives extends LuaNative {
 
         // If the compiler is smart enough, it will optimize
         // the following code into a branch-less single push.
-        lua_Integer i = (lua_Integer) n;
-        if (i == n) {
-          lua_pushinteger((lua_State *) L, i);
-        } else {
+        if (sizeof(lua_Integer) == 4) {
           lua_pushnumber((lua_State *) L, (lua_Number) n);
+        } else {
+          lua_pushinteger((lua_State *) L, (lua_Integer) n);
         }
     */
 
@@ -2388,9 +2387,12 @@ public class Lua51Natives extends LuaNative {
      */
     protected native long lua_tointeger(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
-
-        jlong returnValueReceiver = (jlong) lua_tointeger((lua_State *) L, (int) index);
-        return returnValueReceiver;
+        // See lua_pushinteger for comments.
+        if (sizeof(lua_Integer) == 4) {
+          return (jlong) lua_tonumber(L, index);
+        } else {
+          return (jlong) lua_tointeger(L, index);
+        }
     */
 
 
