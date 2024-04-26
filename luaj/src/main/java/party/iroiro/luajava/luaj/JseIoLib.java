@@ -12,17 +12,17 @@ import java.util.Objects;
  */
 public class JseIoLib extends IoLib {
     @Override
-    protected File wrapStdin() throws IOException {
+    protected File wrapStdin() {
         return new FileImpl(globals.STDIN, true);
     }
 
     @Override
-    protected File wrapStdout() throws IOException {
+    protected File wrapStdout() {
         return new FileImpl(globals.STDOUT, true);
     }
 
     @Override
-    protected File wrapStderr() throws IOException {
+    protected File wrapStderr() {
         return new FileImpl(globals.STDERR, true);
     }
 
@@ -40,12 +40,12 @@ public class JseIoLib extends IoLib {
     }
 
     @Override
-    protected File tmpFile() throws IOException {
+    protected File tmpFile() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected File openProgram(String prog, String mode) throws IOException {
+    protected File openProgram(String prog, String mode) {
         throw new UnsupportedOperationException();
     }
 
@@ -100,7 +100,7 @@ public class JseIoLib extends IoLib {
         }
 
         @Override
-        public int seek(String option, int bytecount) throws IOException {
+        public int seek(String option, int bytecount) {
             throw new UnsupportedOperationException();
         }
 
@@ -110,12 +110,12 @@ public class JseIoLib extends IoLib {
         }
 
         @Override
-        public int remaining() throws IOException {
+        public int remaining() {
             return -1;
         }
 
         @Override
-        public int peek() throws IOException, EOFException {
+        public int peek() throws IOException {
             if (peeked < 0) {
                 peeked = Objects.requireNonNull(in).read();
             }
@@ -123,7 +123,7 @@ public class JseIoLib extends IoLib {
         }
 
         @Override
-        public int read() throws IOException, EOFException {
+        public int read() throws IOException {
             if (peeked >= 0) {
                 int next = peeked;
                 peeked = -1;
@@ -133,22 +133,8 @@ public class JseIoLib extends IoLib {
         }
 
         @Override
-        public int read(byte[] bytes, int offset, int length) throws IOException {
-            Objects.requireNonNull(in);
-            if (length == 0) {
-                return 0;
-            }
-            // Reads first char and resets peeked char
-            try {
-                bytes[offset] = (byte) read();
-            } catch (EOFException e) {
-                return -1;
-            }
-            int i, n = 0;
-            for (i = 1; i < length && n >= 0; i += n) {
-                n = in.read(bytes, offset + i, length - i);
-            }
-            return i;
+        public int read(byte[] bytes, int offset, int length) {
+            throw new UnsupportedOperationException();
         }
     }
 }

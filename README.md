@@ -10,7 +10,7 @@
 [![Build Status](https://github.com/gudzpoz/luajava/actions/workflows/docs.yml/badge.svg)](https://github.com/gudzpoz/luajava/actions/workflows/docs.yml)
 [![Document Version](https://img.shields.io/github/package-json/v/gudzpoz/luajava?filename=docs%2Fpackage.json&label=Documentation)](https://gudzpoz.github.io/luajava/)
 
-[![Tests: macOS on M1](https://img.shields.io/bitrise/ace86394e12a32ad/main?label=macOS%20on%20M1&token=t-lcEHLpUl_xT-CeJYzagg)](https://app.bitrise.io/app/ace86394e12a32ad)
+[![Tests: macOS on M1](https://img.shields.io/github/actions/workflow/status/gudzpoz/luajava/build-natives.yml?label=macOS%20on%20M1)](https://github.com/gudzpoz/luajava/actions/workflows/build-natives.yml)
 [![Tests: Linux on arm64](https://img.shields.io/circleci/build/github/gudzpoz/luajava/main?label=Linux%20on%20arm64)](https://app.circleci.com/pipelines/github/gudzpoz/luajava)
 
 [![Hello World Example](./docs/.vuepress/public/hello.svg)](https://gudzpoz.github.io/luajava/examples/hello-world-mod.html)

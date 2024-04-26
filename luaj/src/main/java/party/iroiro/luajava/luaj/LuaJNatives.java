@@ -632,7 +632,12 @@ public class LuaJNatives extends LuaNative {
     @Override
     protected int luaL_dostring(long ptr, String str) {
         LuaJState L = instances.get((int) ptr);
-        L.push(L.globals.load(str));
+        try {
+            L.push(L.globals.load(str));
+        } catch (LuaError e) {
+            L.push(LuaValue.valueOf(e.getMessage()));
+            return LUA_ERRSYNTAX;
+        }
         return lua_pcall(ptr, 0, LUA_MULTRET, 0);
     }
 
@@ -986,7 +991,6 @@ public class LuaJNatives extends LuaNative {
             buffer.flip();
             return buffer;
         } catch (IOException e) {
-            lua_error(ptr);
             return null;
         }
     }

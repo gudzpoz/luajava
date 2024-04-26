@@ -187,6 +187,12 @@ public class LuaTestSuite<T extends AbstractLua> {
 
     private void testStackPositions() {
         try (T L = constructor.get()) {
+            assertThrows(IllegalArgumentException.class, () -> L.toAbsoluteIndex(0));
+            assertEquals(
+                    L.getLuaNative().getRegistryIndex(),
+                    L.toAbsoluteIndex(L.getLuaNative().getRegistryIndex())
+            );
+
             Random random = new Random();
             // Relative stack positions
             for (int i = 0; i < 1024; i++) {
@@ -599,6 +605,9 @@ public class LuaTestSuite<T extends AbstractLua> {
     private void testStackOperations() {
         Lua sub = L.newThread();
         int top = L.getTop();
+        L.setTop(top + 1);
+        assertEquals(NIL, L.type(-1));
+        L.setTop(top);
         Enumeration<Object> objectEnumeration = new Enumeration<Object>() {
             @Override
             public boolean hasMoreElements() {
@@ -700,6 +709,8 @@ public class LuaTestSuite<T extends AbstractLua> {
 
         luaNative.lua_pushlightuserdata(L.getPointer(), 0);
         assertEquals(LIGHTUSERDATA, L.type(-1));
+        String typename = L.getLuaNative().luaL_typename(L.L, -1);
+        assertTrue("lightuserdata".equals(typename) || "userdata".equals(typename));
         //noinspection resource
         assertInstanceOf(LuaValue.class, L.toObject(-1));
         assertNull(L.toObject(-1, Void.class));
@@ -966,6 +977,10 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.setGlobal("object3");
         assertEquals(OK, L.run("assert(object1 == object2)"));
         assertEquals(OK, L.run("assert(object2 ~= object3)"));
+        assertEquals(OK, L.run("assert(object2 ~= 1)"));
+        assertEquals(OK, L.run("return object1, object2"));
+        assertFalse(L.rawEqual(-2, -1));
+        assertTrue(L.rawEqual(-1, -1));
 
         L.push(l -> {
             l.push(1024);
