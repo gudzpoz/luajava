@@ -159,7 +159,7 @@ public class LuaValueSuite<T extends Lua> {
         AbstractLuaValue<Lua> mock = new AbstractLuaValue<Lua>(L, NUMBER) {
             @Override
             public void push() {
-
+                L.push(2);
             }
 
             @Override
@@ -190,7 +190,7 @@ public class LuaValueSuite<T extends Lua> {
                 AbstractLuaValue<Lua> mock1 = new AbstractLuaValue<Lua>(L, TABLE) {
                     @Override
                     public void push() {
-
+                        state().push(Collections.emptyList());
                     }
 
                     @Override
