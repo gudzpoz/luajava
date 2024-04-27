@@ -21,30 +21,23 @@ jobs:
   apple-natives:
     runs-on: macos-13
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
       - name: Set up JDK 8
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '8'
       - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
       - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Build natives
         run: |
           ./gradlew jniGen jnigenBuild
@@ -52,24 +45,26 @@ jobs:
         run: |
           ./gradlew :example:test :jsr223:test :jpms-example:run
       - name: Upload macOS/iOS natives
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: apple-natives
           path: ./*/libs
+          retention-days: 5
   most-natives:
+    environment: Codecov
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
       - name: Set up JDK 8
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '8'
       - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
@@ -97,15 +92,8 @@ jobs:
           make check
           `pwd`/src/patchelf --version
           echo "`pwd`/src" >> $GITHUB_PATH
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Build natives
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
@@ -119,54 +107,51 @@ jobs:
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
           ./gradlew jacocoTestReport
       - name: Upload test result
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
-          files: ./lua51/build/reports/jacoco/report.xml,./lua52/build/reports/jacoco/report.xml,./lua53/build/reports/jacoco/report.xml,./lua54/build/reports/jacoco/report.xml,./luajit/build/reports/jacoco/report.xml,./luajava/build/reports/jacoco/report.xml,./jsr223/build/reports/jacoco/report.xml
+          files: >-
+            ./lua51/build/reports/jacoco/report.xml,
+            ./lua52/build/reports/jacoco/report.xml,
+            ./lua53/build/reports/jacoco/report.xml,
+            ./lua54/build/reports/jacoco/report.xml,
+            ./luajit/build/reports/jacoco/report.xml,
+            ./luaj/build/reports/jacoco/report.xml,
+            ./luajava/build/reports/jacoco/report.xml,
+            ./jsr223/build/reports/jacoco/report.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
       - name: Upload all output libs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: most-natives
           path: ./*/libs
-      - name: Cleanup Gradle Cache
-        run: |
-          rm -f ~/.gradle/caches/modules-2/modules-2.lock
-          rm -f ~/.gradle/caches/modules-2/gc.properties
+          retention-days: 5
   linux-testing:
     runs-on: ubuntu-latest
     needs:
       - most-natives
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
       - name: Set up JDK 8
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '8'
       - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
       - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Download most-natives artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: most-natives
-      - name: Gradle cache
-        uses: gradle/gradle-build-action@v2.4.2
       - name: JniGen
         run: |
           ./gradlew jniGen
@@ -186,32 +171,25 @@ jobs:
     needs:
       - most-natives
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
       - name: Set up JDK 8
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '8'
       - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
       - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Download most-natives artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: most-natives
       - name: JniGen
@@ -236,36 +214,27 @@ jobs:
     needs:
       - most-natives
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
       - name: Set up JDK 8
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '8'
       - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
       - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Download most-natives artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: most-natives
-      - name: Gradle cache
-        uses: gradle/gradle-build-action@v2.4.2
       - name: JniGen
         run: |
           ./gradlew jniGen
@@ -273,7 +242,7 @@ jobs:
         run: |
           ./gradlew :android:assemble
       - name: AVD cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: avd-cache
         with:
           path: |
@@ -314,36 +283,29 @@ jobs:
       - linux-testing
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
       - name: Set up JDK 8
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '8'
       - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
       - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Download apple-natives artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: apple-natives
       - name: Download most-natives artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: most-natives
       - name: JniGen
@@ -360,7 +322,7 @@ jobs:
         run: |
           ./gradlew :android:assemble
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: natives
           path: ./*/libs
@@ -384,7 +346,7 @@ jobs:
         run: |
           ./gradlew :example:shadowJar
       - name: Upload example
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: example
           path: example/build/libs/example-all.jar
@@ -394,17 +356,24 @@ jobs:
         with:
           draft: true
           files: example/build/libs/example-all.jar
-  arm-tests:
+  mac-arm-test:
+    needs:
+      - pack-natives
+    runs-on: macos-14
+    steps:
+      - name: Download example tests
+        uses: actions/download-artifact@v4
+        with:
+          name: example
+      - name: Run example tests
+        run: |
+          java -jar example-all.jar --test
+  linux-arm-test:
     environment: Bitrise
     needs:
       - pack-natives
     runs-on: ubuntu-20.04
     steps:
-      - name: Trigger Bitrise tests for macOS on M1
-        env:
-          BITRISE_TOKEN: ${{ secrets.BITRISE_TOKEN }}
-        run: |
-          curl -X POST -H "Authorization: $BITRISE_TOKEN" -d '{"hook_info":{"type":"bitrise"},"build_params":{"branch":"main","workflow_id":"primary"}}' https://app.bitrise.io/app/ace86394e12a32ad/build/start.json
       - name: Trigger CircleCI tests for Linux on arm64
         env:
           CIRCLECI_TOKEN: ${{ secrets.CIRCLECI_TOKEN }}

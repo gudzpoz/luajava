@@ -53,22 +53,6 @@ public class RefLuaValue extends AbstractLuaValue<Lua> implements LuaReferable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (super.equals(o) && o instanceof RefLuaValue) {
-            RefLuaValue o2 = (RefLuaValue) o;
-            if (ref == o2.ref) {
-                return true;
-            }
-            push();
-            o2.push(L);
-            boolean equal = L.equal(-1, -2);
-            L.pop(2);
-            return equal;
-        }
-        return false;
-    }
-
-    @Override
     public int getReference() {
         return ref;
     }
