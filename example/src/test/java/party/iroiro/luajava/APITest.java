@@ -11,8 +11,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static party.iroiro.luajava.Lua.LuaError.MEMORY;
-import static party.iroiro.luajava.Lua.LuaError.OK;
+import static party.iroiro.luajava.LuaTestSuite.assertThrowsLua;
 
 @Testable
 public class APITest {
@@ -21,34 +20,34 @@ public class APITest {
     }
 
     @Test
-    public void apiTest51() throws Exception {
+    public void apiTest51() {
         apiTest(new Lua51());
     }
 
     @Test
-    public void apiTestJ() throws Exception {
+    public void apiTestJ() {
         apiTest(new LuaJ());
     }
 
-    public void apiTest(Lua L) throws Exception {
+    public void apiTest(Lua L) {
         L.openLibrary("string");
         L.push(sum);
         L.setGlobal("sum");
-        ResourceLoader loader = new ResourceLoader();
-        loader.load("/tests/apiTest.lua", L);
-        assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
-        assertEquals(OK, L.run("System.out:println(instance.testPrivate)"));
-        assertEquals(OK, L.run("System.out:println(instance.testFriendly)"));
-        assertEquals(Lua.LuaError.RUNTIME, L.run("APITest:assert(false)"));
+        L.setExternalLoader(new ClassPathLoader());
+        L.loadExternal("tests.apiTest");
+        L.pCall(0, Consts.LUA_MULTRET);
+        L.run("System.out:println(instance.testPrivate)");
+        L.run("System.out:println(instance.testFriendly)");
+        assertThrows(LuaException.class, () -> L.run("APITest:assert(false)"));
 
         byte[] bytes = "System.out:println('OK')".getBytes(StandardCharsets.UTF_8);
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(bytes.length);
         byteBuffer.put(bytes);
-        assertEquals(OK, L.run(byteBuffer, "ok"));
-        assertEquals(MEMORY, L.run(ByteBuffer.allocate(0), "notOk"));
-        assertEquals(MEMORY, L.load(ByteBuffer.allocate(0), "notOk"));
+        L.run(byteBuffer, "ok");
+        assertThrowsLua(LuaException.LuaError.MEMORY, () -> L.run(ByteBuffer.allocate(0), "notOk"));
+        assertThrowsLua(LuaException.LuaError.MEMORY, () -> L.load(ByteBuffer.allocate(0), "notOk"));
 
-        assertEquals(OK, L.status());
+        assertEquals(LuaException.LuaError.OK, L.status());
 
         assertThrows(UnsupportedOperationException.class,
                 () -> L.yield(1));

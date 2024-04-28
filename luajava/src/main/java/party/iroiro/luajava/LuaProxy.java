@@ -65,20 +65,13 @@ public final class LuaProxy implements InvocationHandler, LuaReferable {
 
             int nResults = method.getReturnType() == Void.TYPE ? 0 : 1;
 
-            Lua.LuaError code;
             if (objects == null) {
-                code = L.pCall(1, nResults);
+                L.pCall(1, nResults);
             } else {
                 for (Object o : objects) {
                     L.push(o, degree);
                 }
-                code = L.pCall(objects.length + 1, nResults);
-            }
-
-            if (code != Lua.LuaError.OK) {
-                RuntimeException t = new LuaException(L.toString(-1));
-                L.setTop(top);
-                throw t;
+                L.pCall(objects.length + 1, nResults);
             }
 
             try {
@@ -114,7 +107,7 @@ public final class LuaProxy implements InvocationHandler, LuaReferable {
         if (methodEquals(method, String.class, "toString")) {
             return "LuaProxy" + Arrays.toString(interfaces) + "@" + Integer.toHexString(hashCode());
         }
-        throw new LuaException("method not implemented: " + method);
+        throw new LuaException(LuaException.LuaError.JAVA, "method not implemented: " + method);
     }
 
     public static boolean methodEquals(Method method, Class<?> returnType,

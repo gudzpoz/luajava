@@ -91,9 +91,10 @@ public abstract class JuaAPI {
      */
     public static int load(int id, String module) {
         AbstractLua L = Jua.get(id);
-        Lua.LuaError error = L.loadExternal(module);
-        if (error != Lua.LuaError.OK) {
-            L.push("\n  no module '" + module + "': " + error);
+        try {
+            L.loadExternal(module);
+        } catch (LuaException e) {
+            L.push("\n  no module '" + module + "': " + e);
         }
         return 1;
     }
@@ -266,7 +267,7 @@ public abstract class JuaAPI {
             L.close();
             return 0;
         } else {
-            throw new LuaException("unable to detach a main state");
+            throw new LuaException(LuaException.LuaError.MEMORY, "unable to detach a main state");
         }
     }
 

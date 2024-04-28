@@ -28,6 +28,7 @@ import party.iroiro.luajava.Lua;
 
 /**
  * Basic implementation of a {@link LuaValue} on some Lua thread
+ *
  * @param <T> the Lua thread type
  */
 public abstract class AbstractLuaValue<T extends Lua> implements LuaValue {
@@ -41,6 +42,7 @@ public abstract class AbstractLuaValue<T extends Lua> implements LuaValue {
 
     /**
      * Checks whether the other value is accessible from the current Lua thread
+     *
      * @param value the other value
      * @throws IllegalArgumentException if inaccessible
      */
@@ -142,22 +144,19 @@ public abstract class AbstractLuaValue<T extends Lua> implements LuaValue {
         L.pop(1);
     }
 
-    public @Nullable LuaValue[] call(Object... parameters) {
+    public LuaValue[] call(Object... parameters) {
         int top = L.getTop();
         push();
         for (Object o : parameters) {
             L.push(o, Lua.Conversion.SEMI);
         }
-        if (L.pCall(parameters.length, Consts.LUA_MULTRET) == Lua.LuaError.OK) {
-            int returnCount = L.getTop() - top;
-            LuaValue[] values = new LuaValue[returnCount];
-            for (int i = 0; i < returnCount; i++) {
-                values[returnCount - i - 1] = L.get();
-            }
-            return values;
-        } else {
-            return null;
+        L.pCall(parameters.length, Consts.LUA_MULTRET);
+        int returnCount = L.getTop() - top;
+        LuaValue[] values = new LuaValue[returnCount];
+        for (int i = 0; i < returnCount; i++) {
+            values[returnCount - i - 1] = L.get();
         }
+        return values;
     }
 
     @Override

@@ -35,7 +35,6 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static party.iroiro.luajava.Lua.LuaError.OK;
 
 @Testable
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -52,9 +51,9 @@ public class ThreadTest {
     @RepeatedTest(REPEATED)
     public void threadTest() throws Exception {
         final Lua L = new Lua51();
-        ResourceLoader loader = new ResourceLoader();
-        assertEquals(0, loader.load("/tests/threadTest.lua", L));
-        assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
+        L.setExternalLoader(new ClassPathLoader());
+        L.loadExternal("tests.threadTest");
+        L.pCall(0, Consts.LUA_MULTRET);
         ArrayList<Thread> threads = new ArrayList<>();
         threads.ensureCapacity(count);
 
@@ -90,7 +89,6 @@ public class ThreadTest {
 
     @AfterAll
     public void endCapture() {
-        System.out.println();
         long time = System.currentTimeMillis() - startTime;
         assertTrue(time >= count * REPEATED);
     }

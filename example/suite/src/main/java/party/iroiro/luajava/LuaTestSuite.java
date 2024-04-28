@@ -1,5 +1,6 @@
 package party.iroiro.luajava;
 
+import party.iroiro.luajava.LuaException.LuaError;
 import party.iroiro.luajava.interfaces.*;
 import party.iroiro.luajava.lua51.Lua51;
 import party.iroiro.luajava.value.LuaValue;
@@ -17,7 +18,6 @@ import static org.junit.Assert.*;
 import static party.iroiro.luajava.DefaultProxyTest.instanceOfLuaJ;
 import static party.iroiro.luajava.Lua.Conversion.FULL;
 import static party.iroiro.luajava.Lua.Conversion.SEMI;
-import static party.iroiro.luajava.Lua.LuaError.*;
 import static party.iroiro.luajava.Lua.LuaType.*;
 
 public class LuaTestSuite<T extends AbstractLua> {
@@ -26,7 +26,7 @@ public class LuaTestSuite<T extends AbstractLua> {
 
     @SuppressWarnings("UnusedReturnValue")
     public static <S> S assertInstanceOf(Class<S> sClass, Object o) {
-        assertTrue(sClass.isInstance(o));
+        assertTrue("Expecting " + sClass + ", got " + o.getClass(), sClass.isInstance(o));
         return sClass.cast(o);
     }
 
@@ -35,6 +35,45 @@ public class LuaTestSuite<T extends AbstractLua> {
             r.run();
         } catch (Throwable e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static LuaException assertThrowsLua(Lua L, String lua, LuaException.LuaError error) {
+        return assertThrowsLua(L, lua, error, (String) null);
+    }
+
+    public static LuaException assertThrowsLua(Lua L, String lua,
+                                               LuaException.LuaError error, Class<? extends Throwable> cause) {
+        LuaException e = assertThrowsLua(L, lua, error);
+        assertInstanceOf(cause, e.getCause());
+        return e;
+    }
+
+    public static LuaException assertThrowsLua(Lua L, String lua, LuaError error, String message) {
+        return assertThrowsLua(error, new Runnable() {
+            @Override
+            public void run() {
+                L.run(lua);
+            }
+        }, message);
+    }
+
+    public static LuaException assertThrowsLua(LuaError error, Runnable f) {
+        return assertThrowsLua(error, f, null);
+    }
+
+    public static LuaException assertThrowsLua(LuaException.LuaError error, Runnable f, String message) {
+        try {
+            f.run();
+            fail("Expecting an exception thrown");
+            //noinspection UnreachableCode
+            return new LuaException(LuaError.UNKNOWN, "");
+        } catch (LuaException e) {
+            assertEquals(error, e.type);
+            if (message != null) {
+                assertTrue(e.getMessage(), e.getMessage().contains(message));
+            }
+            return e;
         }
     }
 
@@ -80,7 +119,7 @@ public class LuaTestSuite<T extends AbstractLua> {
              * apparently it doesn't on some platforms, including the Android AVD emulator.
              * We use `approx` (below) to handle possible double comparisons.
              */
-            assertEquals(OK, L.run(
+            L.run(
                     "function approx(a, b)\n" +
                             "if a == b then\n" +
                             "  return true\n" +
@@ -88,13 +127,13 @@ public class LuaTestSuite<T extends AbstractLua> {
                             "local offset = a / b - 1\n" +
                             "offset = offset < 0 and -offset or offset\n" +
                             "return offset < 0.000001\n" +
-                            "end"));
+                            "end");
 
-            assertEquals(OK, L.run("return _VERSION"));
+            L.run("return _VERSION");
             String version = L.toString(-1);
-            assertEquals(OK, L.run("pow_2_60 = 1152921504606846976\nreturn pow_2_60 ~= pow_2_60 + 1"));
+            L.run("pow_2_60 = 1152921504606846976\nreturn pow_2_60 ~= pow_2_60 + 1");
             boolean supports64BitInteger = L.toBoolean(-1);
-            assertEquals(OK, L.run("double_int = 1099511627776\nreturn double_int ~= double_int + 1"));
+            L.run("double_int = 1099511627776\nreturn double_int ~= double_int + 1");
             boolean supportsDouble = L.toBoolean(-1); // double_int = 2 ^ 40.
             if (!supportsDouble) {
                 assertFalse(supports64BitInteger);
@@ -125,14 +164,14 @@ public class LuaTestSuite<T extends AbstractLua> {
             L.setGlobal("i_from_java");
             L.push(i60Bits + 1);
             L.setGlobal("i_plus_from_java");
-            assertEquals(OK, L.run("return approx(pow_2_60, i_from_java)"));
+            L.run("return approx(pow_2_60, i_from_java)");
             assertTrue(L.toBoolean(-1));
-            assertEquals(OK, L.run("return approx(pow_2_60 + 1, i_plus_from_java)"));
+            L.run("return approx(pow_2_60 + 1, i_plus_from_java)");
             assertTrue(L.toBoolean(-1));
-            assertEquals(OK, L.run("return approx(i_from_java, i_plus_from_java)"));
+            L.run("return approx(i_from_java, i_plus_from_java)");
             assertTrue(L.toBoolean(-1));
 
-            assertEquals(OK, L.run("return pow_2_60 + 1, i_from_java, i_plus_from_java"));
+            L.run("return pow_2_60 + 1, i_from_java, i_plus_from_java");
             if (supports64BitInteger) {
                 assertFalse(L.equal(-3, -2));
                 assertFalse(L.equal(-2, -1));
@@ -153,22 +192,22 @@ public class LuaTestSuite<T extends AbstractLua> {
                 }
             });
             L.setGlobal("jfunc");
-            assertEquals(OK, L.run("return approx(pow_2_60 + 1, jfunc(pow_2_60 + 1))"));
+            L.run("return approx(pow_2_60 + 1, jfunc(pow_2_60 + 1))");
             assertTrue(L.toBoolean(-1));
 
             L.pushJavaClass(LuaTestSuite.class);
             L.setGlobal("suite");
-            assertEquals(OK, L.run("return approx(pow_2_60 + 1, suite:passAlong(pow_2_60 + 1))"));
+            L.run("return approx(pow_2_60 + 1, suite:passAlong(pow_2_60 + 1))");
             assertTrue(L.toBoolean(-1));
 
             if (supports64BitInteger) {
-                assertEquals(OK, L.run("return " +
-                        "pow_2_60 + 1, jfunc(pow_2_60 + 1), suite:passAlong(pow_2_60 + 1)"));
+                L.run("return " +
+                        "pow_2_60 + 1, jfunc(pow_2_60 + 1), suite:passAlong(pow_2_60 + 1)");
                 assertTrue(L.equal(-3, -2));
                 assertTrue(L.equal(-2, -1));
             }
 
-            assertEquals(OK, L.run("return { passAlong = function(_, l) return l end }"));
+            L.run("return { passAlong = function(_, l) return l end }");
             Object o = L.createProxy(new Class[]{PasserAlong.class}, FULL);
             assertEquals(
                     supports64BitInteger,
@@ -179,7 +218,7 @@ public class LuaTestSuite<T extends AbstractLua> {
                 L.push(I_60_BITS + 1);
                 L.push(I_60_BITS + 1);
                 LuaValue v = L.get();
-                v.push();
+                v.push(L);
                 assertTrue(L.equal(-2, -1));
             }
         }
@@ -250,14 +289,14 @@ public class LuaTestSuite<T extends AbstractLua> {
                 assertEquals(16, L.rawLength(absTableIndex));
                 assertEquals(16, L.rawLength(tableIndex));
 
-                for (List<?> l : new List[]{ L.toList(absTableIndex), L.toList(tableIndex) }) {
+                for (List<?> l : new List[]{L.toList(absTableIndex), L.toList(tableIndex)}) {
                     assertNotNull(l);
                     for (int j = 0; j < l.size(); j++) {
                         assertEquals(j + 1, (int) (double) (Double) l.get(j));
                     }
                 }
 
-                for (Map<?, ?> m : new Map[]{ L.toMap(absTableIndex), L.toMap(tableIndex) }) {
+                for (Map<?, ?> m : new Map[]{L.toMap(absTableIndex), L.toMap(tableIndex)}) {
                     assertNotNull(m);
                     for (int j = 0; j < 16; j++) {
                         assertEquals(j + 1, (int) (double) (Double) m.get((double) j + 1));
@@ -271,8 +310,7 @@ public class LuaTestSuite<T extends AbstractLua> {
     private void testRequire() {
         try (T L = constructor.get()) {
             L.openLibrary("package");
-            Lua.LuaError res = L.run("assert(1024 == require('party.iroiro.luajava.JavaLibTest.open').getNumber())");
-            assertEquals(L.toString(-1), OK, res);
+            L.run("assert(1024 == require('party.iroiro.luajava.JavaLibTest.open').getNumber())");
         }
     }
 
@@ -280,15 +318,15 @@ public class LuaTestSuite<T extends AbstractLua> {
         try (T L = constructor.get();
              T J = constructor.get()) {
             // Simple functions
-            assertEquals(OK, L.run("return function(a, b) return a + b end"));
+            L.run("return function(a, b) return a + b end");
             ByteBuffer add = L.dump();
             assertNotNull(add);
             for (int i = 0; i < 100; i += 17) {
                 for (int j = 0; j < 100; j += 37) {
-                    assertEquals(OK, J.load(add, "addition.lua"));
+                    J.load(add, "addition.lua");
                     J.push(i);
                     J.push(j);
-                    assertEquals(OK, J.pCall(2, 1));
+                    J.pCall(2, 1);
                     assertEquals(i + j, J.toNumber(-1), 0.000001);
                     J.pop(1);
                     add.position(0);
@@ -298,15 +336,15 @@ public class LuaTestSuite<T extends AbstractLua> {
 
             // toBuffer with string.dump
             L.openLibrary("string");
-            assertEquals(OK, L.run("return string.dump(function(a, b) return a + b end)"));
+            L.run("return string.dump(function(a, b) return a + b end)");
             ByteBuffer dumpedAdd = L.toBuffer(-1);
             assertNotNull(dumpedAdd);
             for (int i = 0; i < 100; i += 17) {
                 for (int j = 0; j < 100; j += 37) {
-                    assertEquals(OK, J.load(dumpedAdd, "stringDumpedAdd.lua"));
+                    J.load(dumpedAdd, "stringDumpedAdd.lua");
                     J.push(i);
                     J.push(j);
-                    assertEquals(OK, J.pCall(2, 1));
+                    J.pCall(2, 1);
                     assertEquals(i + j, J.toNumber(-1), 0.000001);
                     J.pop(1);
                     dumpedAdd.position(0);
@@ -323,24 +361,29 @@ public class LuaTestSuite<T extends AbstractLua> {
             L.pop(1);
 
             // C functions
-            assertEquals(OK, L.run("return java.new"));
+            L.run("return java.new");
             assertTrue(L.isFunction(-1));
             assertNull(L.dump());
             L.pop(1);
 
             // Functions with up-values
-            assertEquals(OK, L.run("value = 1000"));
-            assertEquals(OK, L.run("return function(b) return b + value end"));
+            L.run("value = 1000");
+            L.run("return function(b) return b + value end");
             ByteBuffer upAdd = L.dump();
             assertNotNull(upAdd);
-            assertEquals(OK, J.load(upAdd, "upAdd.lua"));
+            J.load(upAdd, "upAdd.lua");
             J.push(24);
-            assertEquals(RUNTIME, J.pCall(1, 1));
-            assertEquals(OK, J.run("value = 1000"));
+            assertThrowsLua(LuaError.RUNTIME, new Runnable() {
+                @Override
+                public void run() {
+                    J.pCall(1, 1);
+                }
+            });
+            J.run("value = 1000");
             upAdd.position(0);
-            assertEquals(OK, J.load(upAdd, "upAdd.lua"));
+            J.load(upAdd, "upAdd.lua");
             J.push(24);
-            assertEquals(OK, J.pCall(1, 1));
+            J.pCall(1, 1);
             assertEquals(1024., J.toNumber(-1), 0.000001);
             L.pop(1);
 
@@ -374,14 +417,14 @@ public class LuaTestSuite<T extends AbstractLua> {
         try (T L = constructor.get()) {
             L.createTable(0, 100000);
             L.setGlobal("a");
-            assertEquals(OK, L.run("for i = 1, 100000 do a[tostring(i)] = true end"));
+            L.run("for i = 1, 100000 do a[tostring(i)] = true end");
             LuaValue beforeGc = L.execute("return collectgarbage('count')")[0];
             L.pushNil();
             L.setGlobal("a");
             L.gc();
             L.gc();
-            assertEquals(OK, L.run("return collectgarbage('count')"));
-            beforeGc.push();
+            L.run("return collectgarbage('count')");
+            beforeGc.push(L);
             if (!instanceOfLuaJ(L)) {
                 // LuaJ uses Java GC
                 assertTrue(L.lessThan(-2, -1));
@@ -397,18 +440,15 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.push(L -> {
             throw new RuntimeException(message);
         });
-        assertNull(L.get().call());
         String expected = "java.lang.RuntimeException: " + message;
-        assertEquals(expected, L.toString(-1));
-        L.pop(1);
-        assertInstanceOf(RuntimeException.class, L.getJavaError());
-        assertEquals(message, Objects.requireNonNull(L.getJavaError()).getMessage());
+        assertInstanceOf(RuntimeException.class,
+                assertThrowsLua(LuaError.RUNTIME, () -> L.get().call(),
+                        expected));
         L.run("java.import('java.lang.String')");
         assertNull(L.getJavaError());
 
         assertEquals(-1, L.error(new RuntimeException(message)));
         assertEquals(expected, L.toString(-1));
-        assertInstanceOf(RuntimeException.class, L.getJavaError());
         L.error((Throwable) null);
         assertNull(L.getJavaError());
         L.pop(1);
@@ -417,18 +457,33 @@ public class LuaTestSuite<T extends AbstractLua> {
     private void testExternalLoader() {
         try (T t = constructor.get()) {
             LuaScriptSuite.addAssertThrows(t);
-            assertEquals(RUNTIME, t.loadExternal("some.module"));
+            assertThrowsLua(LuaError.RUNTIME, new Runnable() {
+                @Override
+                public void run() {
+                    t.loadExternal("some.module");
+                }
+            });
             assertDoesNotThrow(
                     () -> t.setExternalLoader((module, L) -> ByteBuffer.allocate(0)));
             t.openLibrary("package");
             assertDoesNotThrow(
                     () -> t.setExternalLoader((module, L) -> ByteBuffer.allocate(0)));
-            assertEquals(MEMORY, t.loadExternal("some.module"));
+            assertThrowsLua(LuaError.MEMORY, new Runnable() {
+                @Override
+                public void run() {
+                    t.loadExternal("some.module");
+                }
+            });
             assertDoesNotThrow(
                     () -> t.setExternalLoader(new ClassPathLoader()));
-            assertEquals(FILE, t.loadExternal("some.module"));
-            assertEquals(OK, t.loadExternal("suite.importTest"));
-            assertEquals(OK, t.pCall(0, Consts.LUA_MULTRET));
+            assertThrowsLua(LuaError.FILE, new Runnable() {
+                @Override
+                public void run() {
+                    t.loadExternal("some.module");
+                }
+            });
+            t.loadExternal("suite.importTest");
+            t.pCall(0, Consts.LUA_MULTRET);
         }
     }
 
@@ -450,11 +505,11 @@ public class LuaTestSuite<T extends AbstractLua> {
         assertThrows(IllegalArgumentException.class, () -> L.createProxy(new Class[0], Lua.Conversion.NONE));
         L.push(true);
         assertThrows(IllegalArgumentException.class, () -> L.createProxy(new Class[]{Runnable.class}, Lua.Conversion.NONE));
-        assertEquals(OK, L.run("proxyMap = { run = function()\n" +
+        L.run("proxyMap = { run = function()\n" +
                 "clazz = java.import('party.iroiro.luajava.LuaTestSuite')\n" +
                 "clazz.proxyIntegerTest:set(-1024)\n" +
                 "end" +
-                "}"));
+                "}");
         L.getGlobal("proxyMap");
         Object proxy = L.createProxy(new Class[]{Runnable.class}, Lua.Conversion.NONE);
         proxyIntegerTest.set(0);
@@ -482,13 +537,13 @@ public class LuaTestSuite<T extends AbstractLua> {
 
     private void testOthers() {
         L.openLibrary("math");
-        assertEquals(OK, L.run("assert(1.0 == math.abs(-1.0))"));
+        L.run("assert(1.0 == math.abs(-1.0))");
 
         L.register("testOthersFunction", l -> {
             l.push("Hello");
             return 1;
         });
-        assertEquals(OK, L.run("assert('Hello' == testOthersFunction())"));
+        L.run("assert('Hello' == testOthersFunction())");
 
         L.newRegisteredMetatable("myusertype");
         L.push(l -> {
@@ -506,11 +561,11 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.getRegisteredMetatable("myusertype");
         L.setMetatable(-2);
         L.setGlobal("testOthersTable");
-        assertEquals(OK, L.run("assert(1 == testOthersTable.a)"));
-        assertEquals(OK, L.run("assert(1 == testOthersTable.b)"));
-        assertEquals(OK, L.run("assert(1 == testOthersTable.whatever)"));
-        assertEquals(OK, L.run("assert(1 == testOthersTable.__index)"));
-        assertEquals(OK, L.run("assert(1 == testOthersTable[10])"));
+        L.run("assert(1 == testOthersTable.a)");
+        L.run("assert(1 == testOthersTable.b)");
+        L.run("assert(1 == testOthersTable.whatever)");
+        L.run("assert(1 == testOthersTable.__index)");
+        L.run("assert(1 == testOthersTable[10])");
 
         AbstractLua lua = new AbstractLua(L.getLuaNative()) {
             @Override
@@ -536,30 +591,30 @@ public class LuaTestSuite<T extends AbstractLua> {
     private void testThreads() {
         L.openLibrary("coroutine");
         Lua sub = L.newThread();
-        assertEquals(OK, sub.status());
+        assertEquals(LuaError.OK, sub.status());
         sub.getGlobal("print");
         sub.push(true);
-        assertEquals(OK, sub.resume(1));
-        assertEquals(OK, sub.run("function threadCoroutineTest()\n" +
+        assertFalse(sub.resume(1));
+        sub.run("function threadCoroutineTest()\n" +
                 "coroutine.yield(1)\n" +
                 "coroutine.yield(2)\n" +
-                "end"));
+                "end");
         sub.getGlobal("threadCoroutineTest");
-        assertEquals(YIELD, sub.resume(0));
+        assertTrue(sub.resume(0));
         assertEquals(1.0, sub.toNumber(-1), 0.000001);
         sub.pop(1);
-        assertEquals(YIELD, sub.resume(0));
+        assertTrue(sub.resume(0));
         assertEquals(2.0, sub.toNumber(-1), 0.000001);
         sub.pop(1);
-        assertEquals(OK, sub.resume(0));
+        sub.resume(0);
         sub.close();
 
         integer.set(0);
         L.run("i = java.import('party.iroiro.luajava.LuaTestSuite').integer");
         L.getGlobal("i");
-        assertEquals(OK, L.run("coroutine.resume(coroutine.create(\n" +
+        L.run("coroutine.resume(coroutine.create(\n" +
                 "function() java.import('party.iroiro.luajava.LuaTestSuite').integer:set(1024) end\n" +
-                "))"));
+                "))");
         assertEquals(1024, integer.get());
 
         T O = constructor.get();
@@ -572,20 +627,35 @@ public class LuaTestSuite<T extends AbstractLua> {
 
     private void testRunners() {
         String s = "testRunnersString = 'Not OK'";
-        assertEquals(OK, L.load(s));
+        L.load(s);
         L.pop(1);
         byte[] bytes = s.getBytes();
         ByteBuffer wrap = ByteBuffer.wrap(bytes);
         assertFalse(wrap.isDirect());
-        assertEquals(MEMORY, L.load(wrap, "notDirectBuffer"));
-        assertEquals(MEMORY, L.run(wrap, "notDirectBuffer"));
-        assertEquals(OK, L.run(getDirect(s), "directBuffer"));
-        assertEquals(RUNTIME, L.run(getDirect("print("), "directBuffer"));
+        assertThrowsLua(LuaError.MEMORY, new Runnable() {
+            @Override
+            public void run() {
+                L.load(wrap, "notDirectBuffer");
+            }
+        });
+        assertThrowsLua(LuaError.MEMORY, new Runnable() {
+            @Override
+            public void run() {
+                L.run(wrap, "notDirectBuffer");
+            }
+        });
+        L.run(getDirect(s), "directBuffer");
+        assertThrowsLua(LuaError.RUNTIME, new Runnable() {
+            @Override
+            public void run() {
+                L.run(getDirect("print("), "directBuffer");
+            }
+        });
         L.getGlobal("testRunnersString");
         assertEquals("Not OK", L.toString(-1));
         L.pop(1);
-        assertEquals(OK, L.load(getDirect(s), "directBuffer"));
-        assertEquals(OK, L.pCall(0, 0));
+        L.load(getDirect(s), "directBuffer");
+        L.pCall(0, 0);
     }
 
     private Buffer getDirect(String s) {
@@ -658,7 +728,12 @@ public class LuaTestSuite<T extends AbstractLua> {
         assertFalse(L.equal(-1, -2));
         assertFalse(L.rawEqual(-1, -2));
         assertFalse(L.lessThan(-1, -2));
-        assertEquals(RUNTIME, L.run("a = 1 \n print(#a)"));
+        assertThrowsLua(LuaError.RUNTIME, new Runnable() {
+            @Override
+            public void run() {
+                L.run("a = 1 \n print(#a)");
+            }
+        });
         L.push(Arrays.asList(1, 2, 3));
         assertEquals(3, L.rawLength(-1));
         L.pop(3);
@@ -712,7 +787,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         String typename = L.getLuaNative().luaL_typename(L.L, -1);
         assertTrue("lightuserdata".equals(typename) || "userdata".equals(typename));
         //noinspection resource
-        assertInstanceOf(LuaValue.class, L.toObject(-1));
+        assertInstanceOf(LuaValue.class, Objects.requireNonNull(L.toObject(-1)));
         assertNull(L.toObject(-1, Void.class));
         assertNull(L.toObject(-1, Integer.class));
         L.pop(1);
@@ -735,7 +810,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         for (int i = 0; i < classes.size(); i += 3) {
             for (int j = 0; j < 3; j++) {
                 Object o = L.toObject(-1, classes.get(i + j));
-                assertInstanceOf(classes.get(i + 2), o);
+                assertInstanceOf(classes.get(i + 2), Objects.requireNonNull(o));
                 assertInstanceOf(Number.class, o);
                 assertEquals(127.0, ((Number) Objects.requireNonNull(o)).doubleValue(), 0.000001);
             }
@@ -754,7 +829,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         assertSame(l, L.toList(-1));
         L.push(true);
         assertNull(L.toList(-1));
-        assertEquals(OK, L.run("testToListList = {1, 2, 3, 4, 5}"));
+        L.run("testToListList = {1, 2, 3, 4, 5}");
         L.getGlobal("testToListList");
         assertIterableEquals(Arrays.asList(1., 2., 3., 4., 5.), Objects.requireNonNull(L.toList(-1)));
         L.pop(3);
@@ -945,7 +1020,8 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.pop(1);
     }
 
-    private static <T extends AbstractLua> ArrayList<LuaTestConsumer<T>> getLuaTestConsumers(int ref, int testTableI) {
+    private static <T extends AbstractLua> ArrayList<LuaTestConsumer<T>> getLuaTestConsumers(int ref,
+                                                                                             int testTableI) {
         ArrayList<LuaTestConsumer<T>> stackIncrementingOperations = new ArrayList<>(Arrays.asList(
                 L -> L.createTable(0, 0),
                 L -> L.getGlobal("java"),
@@ -975,10 +1051,10 @@ public class LuaTestSuite<T extends AbstractLua> {
         assertNotSame(integer, another);
         L.push(another, Lua.Conversion.NONE);
         L.setGlobal("object3");
-        assertEquals(OK, L.run("assert(object1 == object2)"));
-        assertEquals(OK, L.run("assert(object2 ~= object3)"));
-        assertEquals(OK, L.run("assert(object2 ~= 1)"));
-        assertEquals(OK, L.run("return object1, object2"));
+        L.run("assert(object1 == object2)");
+        L.run("assert(object2 ~= object3)");
+        L.run("assert(object2 ~= 1)");
+        L.run("return object1, object2");
         assertFalse(L.rawEqual(-2, -1));
         assertTrue(L.rawEqual(-1, -1));
 
@@ -987,16 +1063,15 @@ public class LuaTestSuite<T extends AbstractLua> {
             return 1;
         });
         L.setGlobal("l2jConvTest");
-        assertEquals(OK, L.run("assert(1024 == l2jConvTest())"));
+        L.run("assert(1024 == l2jConvTest())");
         ConcurrentSkipListSet<Object> set = new ConcurrentSkipListSet<>();
         L.push(set, Lua.Conversion.NONE);
-        try (LuaValue v = L.get()) {
-            assertSame(set, v.toJavaObject());
-            v.push();
-            assertSame(set, ((LuaValue) Objects.requireNonNull(JuaAPI
-                    .convertFromLua(L, LuaValue.class, -1))).toJavaObject());
-            L.pop(1);
-        }
+        LuaValue v = L.get();
+        assertSame(set, v.toJavaObject());
+        v.push(L);
+        assertSame(set, ((LuaValue) Objects.requireNonNull(JuaAPI
+                .convertFromLua(L, LuaValue.class, -1))).toJavaObject());
+        L.pop(1);
 
         for (Object[] data : DATA) {
             Lua.Conversion[] conversions = {Lua.Conversion.NONE, SEMI, FULL};
@@ -1013,7 +1088,7 @@ public class LuaTestSuite<T extends AbstractLua> {
                         assertEquals("Testing " + o, USERDATA, L.type(-1));
                         assertTrue("Testing " + o, L.isJavaObject(-1));
                         Object actualValue = L.toJavaObject(-1);
-                        assertInstanceOf(((Class<?>) expected), actualValue);
+                        assertInstanceOf(((Class<?>) expected), Objects.requireNonNull(actualValue));
                         assertEquals("Testing " + o, o, actualValue);
                     } else {
                         fail("Test data incorrect");

@@ -4,9 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 import party.iroiro.luajava.lua51.Lua51;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static party.iroiro.luajava.Lua.LuaError.OK;
-
 @Testable
 public class SimpleTest {
     @Test
@@ -14,8 +11,8 @@ public class SimpleTest {
         Lua L = new Lua51();
         L.push("Hello World from Lua");
         L.setGlobal("message");
-        assertEquals(OK, L.run("print(message)"));
-        assertEquals(OK, L.run("java.import('java.lang.System').out:println(message)"));
+        L.run("print(message)");
+        L.run("java.import('java.lang.System').out:println(message)");
         L.close();
     }
 }

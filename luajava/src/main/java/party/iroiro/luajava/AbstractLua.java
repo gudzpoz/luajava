@@ -28,9 +28,7 @@ import party.iroiro.luajava.cleaner.LuaReferable;
 import party.iroiro.luajava.cleaner.LuaReference;
 import party.iroiro.luajava.util.ClassUtils;
 import party.iroiro.luajava.util.Type;
-import party.iroiro.luajava.value.ImmutableLuaValue;
-import party.iroiro.luajava.value.LuaValue;
-import party.iroiro.luajava.value.RefLuaValue;
+import party.iroiro.luajava.value.*;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.reflect.Array;
@@ -578,34 +576,34 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public LuaError load(String script) {
+    public void load(String script) throws LuaException {
         checkStack(1);
-        return convertError(C.luaL_loadstring(L, script));
+        checkError(C.luaL_loadstring(L, script), false);
     }
 
     @Override
-    public LuaError load(Buffer buffer, String name) {
+    public void load(Buffer buffer, String name) throws LuaException {
         if (buffer.isDirect()) {
             checkStack(1);
-            return convertError(C.luaJ_loadbuffer(L, buffer, buffer.limit(), name));
+            checkError(C.luaJ_loadbuffer(L, buffer, buffer.limit(), name), false);
         } else {
-            return LuaError.MEMORY;
+            throw new LuaException(LuaException.LuaError.MEMORY, "Expecting a direct buffer");
         }
     }
 
     @Override
-    public LuaError run(String script) {
+    public void run(String script) throws LuaException {
         checkStack(1);
-        return C.luaL_dostring(L, script) == 0 ? LuaError.OK : LuaError.RUNTIME;
+        checkError(C.luaL_dostring(L, script), true);
     }
 
     @Override
-    public LuaError run(Buffer buffer, String name) {
+    public void run(Buffer buffer, String name) throws LuaException {
         if (buffer.isDirect()) {
             checkStack(1);
-            return C.luaJ_dobuffer(L, buffer, buffer.limit(), name) == 0 ? LuaError.OK : LuaError.RUNTIME;
+            checkError(C.luaJ_dobuffer(L, buffer, buffer.limit(), name), true);
         } else {
-            return LuaError.MEMORY;
+            throw new LuaException(LuaException.LuaError.MEMORY, "Expecting a direct buffer");
         }
     }
 
@@ -615,9 +613,9 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public LuaError pCall(int nArgs, int nResults) {
+    public void pCall(int nArgs, int nResults) throws LuaException {
         checkStack(Math.max(nResults - nArgs - 1, 0));
-        return convertError(C.luaJ_pcall(L, nArgs, nResults));
+        checkError(C.luaJ_pcall(L, nArgs, nResults), false);
     }
 
     @Override
@@ -638,12 +636,17 @@ public abstract class AbstractLua implements Lua {
     protected abstract AbstractLua newThread(long L, int id, AbstractLua mainThread);
 
     @Override
-    public LuaError resume(int nArgs) {
-        return convertError(C.luaJ_resume(L, nArgs));
+    public boolean resume(int nArgs) throws LuaException {
+        int code = C.luaJ_resume(L, nArgs);
+        if (convertError(code) == LuaException.LuaError.YIELD) {
+            return true;
+        }
+        checkError(code, false);
+        return false;
     }
 
     @Override
-    public LuaError status() {
+    public LuaException.LuaError status() {
         return convertError(C.lua_status(L));
     }
 
@@ -841,22 +844,16 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public LuaError loadExternal(String module) {
+    public void loadExternal(String module) throws LuaException {
         ExternalLoader loader = mainThread.loader;
-        if (loader != null) {
-            Buffer buffer = loader.load(module, this);
-            if (buffer != null) {
-                if (buffer.isDirect()) {
-                    return load(buffer, module);
-                } else {
-                    return LuaError.MEMORY;
-                }
-            } else {
-                return LuaError.FILE;
-            }
-        } else {
-            return LuaError.RUNTIME;
+        if (loader == null) {
+            throw new LuaException(LuaException.LuaError.RUNTIME, "External loader not set");
         }
+        Buffer buffer = loader.load(module, this);
+        if (buffer == null) {
+            throw new LuaException(LuaException.LuaError.FILE, "Loader returned null");
+        }
+        load(buffer, module);
     }
 
     @Override
@@ -1001,7 +998,42 @@ public abstract class AbstractLua implements Lua {
         unRef(C.getRegistryIndex(), ref);
     }
 
-    public abstract LuaError convertError(int code);
+    /**
+     * Throws {@link LuaException} if the code is not {@link LuaException.LuaError#OK}.
+     *
+     * <p>
+     * Most Lua C API functions attaches along an error message on the stack.
+     * If this method finds a string on the top of the stack, it pops the string
+     * and uses it as the exception message.
+     * </p>
+     *
+     * @param code the error code returned by Lua C API
+     * @param runtime if {@code true}, treat non-zero code values as runtime errors
+     */
+    protected void checkError(int code, boolean runtime) throws LuaException {
+        LuaException.LuaError error = runtime
+                ? (code == 0 ? LuaException.LuaError.OK : LuaException.LuaError.RUNTIME)
+                : convertError(code);
+        if (error == LuaException.LuaError.OK) {
+            return;
+        }
+        String message;
+        if (type(-1) == LuaType.STRING) {
+            message = toString(-1);
+            pop(1);
+        } else {
+            message = "Lua-side error";
+        }
+        LuaException e = new LuaException(error, message);
+        Throwable javaError = getJavaError();
+        if (javaError != null) {
+            e.initCause(javaError);
+            error((Throwable) null);
+        }
+        throw e;
+    }
+
+    public abstract LuaException.LuaError convertError(int code);
 
     public abstract LuaType convertType(int code);
 
@@ -1012,13 +1044,9 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public @Nullable LuaValue[] execute(String command) {
-        if (load(command) == LuaError.OK) {
-            try (LuaValue function = get()) {
-                return function.call();
-            }
-        }
-        return null;
+    public @Nullable LuaValue[] execute(String command) throws LuaException {
+        load(command);
+        return get().call();
     }
 
     @Override

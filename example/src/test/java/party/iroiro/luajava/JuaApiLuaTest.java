@@ -4,11 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import party.iroiro.luajava.lua51.Lua51;
 
-import java.io.IOException;
-import java.util.Objects;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static party.iroiro.luajava.Lua.LuaError.OK;
+import static party.iroiro.luajava.LuaTestSuite.assertThrowsLua;
 
 /**
  * Testing {@link JuaAPI} from lua side
@@ -31,9 +28,9 @@ public class JuaApiLuaTest {
             L.push(array, Lua.Conversion.NONE);
             L.setGlobal("arr");
             LuaScriptSuite.addAssertThrows(L);
-            ResourceLoader loader = new ResourceLoader();
-            loader.load("/tests/juaApiTest.lua", L);
-            assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET), () -> L.toString(-1));
+            L.setExternalLoader(new ClassPathLoader());
+            L.loadExternal("tests.juaApiTest");
+            L.pCall(0, Consts.LUA_MULTRET);
 
             assertEquals(100, staticField);
             assertEquals(1024, privateField);
@@ -45,23 +42,18 @@ public class JuaApiLuaTest {
             assertError(L, "t:nonexistentMethod()", "no matching method found");
             assertError(L, "t:privateMethod()", "no matching method found");
             assertError(L, "t:staticMethod({a = 1})", "no matching method found");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
     private void adoptTest(Lua L) {
-        assertEquals(OK, L.run("" +
-                "coroutine.resume(coroutine.create(function()" +
+        L.run("coroutine.resume(coroutine.create(function()" +
                 "java.import('party.iroiro.luajava.JuaApiLuaTest').staticField = 200 end" +
-                "))"));
+                "))");
         assertEquals(200, staticField);
     }
 
-    private void assertError(Lua L, String lua, String message) {
-        assertEquals(OK, L.load(lua));
-        assertEquals(Lua.LuaError.RUNTIME, L.pCall(0, Consts.LUA_MULTRET));
-        assertTrue(Objects.requireNonNull(L.toString(-1)).contains(message));
+    private void assertError(Lua L, String lua, @SuppressWarnings("SameParameterValue") String message) {
+        assertThrowsLua(L, lua, LuaException.LuaError.RUNTIME, message);
         L.setTop(0);
     }
 
@@ -76,15 +68,27 @@ public class JuaApiLuaTest {
     public static int staticMethod(int a, int b, int c) {
         return a + b + c;
     }
-    public static void staticMethod() {}
-    public static int staticMethod(int a) { return a; }
 
-    public static void getVoid() {}
-    public static Object getNull() { return null; }
+    public static void staticMethod() {
+    }
 
-    private static int privateMethod() { return -1; }
+    public static int staticMethod(int a) {
+        return a;
+    }
 
-    public void method() {}
+    public static void getVoid() {
+    }
 
-    public static int[] array = new int[] {1, 2, 3, 4, 5};
+    public static Object getNull() {
+        return null;
+    }
+
+    private static int privateMethod() {
+        return -1;
+    }
+
+    public void method() {
+    }
+
+    public static int[] array = new int[]{1, 2, 3, 4, 5};
 }

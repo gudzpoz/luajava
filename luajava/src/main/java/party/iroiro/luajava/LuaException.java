@@ -26,7 +26,69 @@ package party.iroiro.luajava;
  * A wrapper around a Lua error message
  */
 public class LuaException extends RuntimeException {
-    public LuaException(String message) {
+    public final LuaError type;
+
+    public LuaException(LuaError type, String message) {
         super(message);
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return type + ": " + super.toString();
+    }
+
+    /**
+     * Lua-relevant error types.
+     *
+     * <p>
+     * Integer values of Lua error codes may vary between Lua versions.
+     * This library handles the conversion from the Lua integers to interpretable Java enum values.
+     * </p>
+     */
+    public enum LuaError {
+        /**
+         * a file-related error
+         */
+        FILE,
+        /**
+         * error while running a __gc metamethod
+         */
+        GC,
+        /**
+         * error while running the message handler
+         */
+        HANDLER,
+        /**
+         * memory allocation error
+         */
+        MEMORY,
+        /**
+         * no errors
+         */
+        OK,
+        /**
+         * a runtime error
+         */
+        RUNTIME,
+        /**
+         * syntax error during precompilation
+         */
+        SYNTAX,
+
+        /**
+         * the thread (coroutine) yields
+         */
+        YIELD,
+
+        /**
+         * unknown error code
+         */
+        UNKNOWN,
+
+        /**
+         * a Java-side error
+         */
+        JAVA,
     }
 }

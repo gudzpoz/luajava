@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import party.iroiro.luajava.Lua;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static party.iroiro.luajava.Lua.LuaError.OK;
 import static party.iroiro.luajava.Lua.LuaType.TABLE;
 
 public class LuaJTest {
@@ -66,16 +65,16 @@ public class LuaJTest {
             long p = L.getPointer();
             assertEquals("BBB", natives.luaL_gsub(p, "AAA", "A", "B"));
 
-            assertEquals(OK, L.run("local a = 'up'; return function() return a end"));
+            L.run("local a = 'up'; return function() return a end");
             assertEquals("", natives.lua_getupvalue(p, -1, 0));
             assertEquals("up", L.toString(-1));
             L.pop(1);
             L.push("down");
             assertEquals("", natives.lua_setupvalue(p, -2, 0));
-            assertEquals(OK, L.pCall(0, 1));
+            L.pCall(0, 1);
             assertEquals("down", L.toString(-1));
 
-            assertEquals(OK, L.run("local t = {}; setmetatable(t, { a = function() return 100 end }); return t"));
+            L.run("local t = {}; setmetatable(t, { a = function() return 100 end }); return t");
             assertEquals(1, natives.luaL_callmeta(p, -1, "a"));
             assertEquals(100, L.toNumber(-1));
         }

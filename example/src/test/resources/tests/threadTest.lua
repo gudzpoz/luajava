@@ -30,4 +30,4 @@ function run(this)
     t:sleep(1)
 end
 
-tb={run=run}
+tb = { run = run }

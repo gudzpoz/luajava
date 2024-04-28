@@ -26,6 +26,10 @@ import party.iroiro.luajava.Lua;
 
 /**
  * An object keeping a reference (via {@link Lua#ref()}) to a Lua value
+ *
+ * <p>
+ * Used to automatically clean up unused references.
+ * </p>
  */
 public interface LuaReferable {
     /**

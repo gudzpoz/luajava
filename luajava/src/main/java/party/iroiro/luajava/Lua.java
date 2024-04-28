@@ -605,9 +605,8 @@ public interface Lua extends AutoCloseable {
      * </p>
      *
      * @param script the Lua chunck
-     * @return {@link LuaError#OK} or other error types
      */
-    LuaError load(String script);
+    void load(String script) throws LuaException;
 
 
     /**
@@ -619,9 +618,8 @@ public interface Lua extends AutoCloseable {
      *
      * @param buffer the buffer, must be a direct buffer
      * @param name   the chunk name, used for debug information and error messages
-     * @return {@link LuaError#OK} or {@link LuaError#MEMORY} when buffer is not direct, or other error types
      */
-    LuaError load(Buffer buffer, String name);
+    void load(Buffer buffer, String name) throws LuaException;
 
     /**
      * Loads and runs the given string
@@ -631,9 +629,8 @@ public interface Lua extends AutoCloseable {
      * </p>
      *
      * @param script the Lua chunck
-     * @return {@link LuaError#OK} or {@link LuaError#RUNTIME}
      */
-    LuaError run(String script);
+    void run(String script) throws LuaException;
 
     /**
      * Loads and runa a buffer
@@ -645,9 +642,8 @@ public interface Lua extends AutoCloseable {
      *
      * @param buffer the buffer, must be a direct buffer
      * @param name   the chunk name, used for debug information and error messages
-     * @return {@link LuaError#OK} or {@link LuaError#MEMORY} or {@link LuaError#RUNTIME}
      */
-    LuaError run(Buffer buffer, String name);
+    void run(Buffer buffer, String name) throws LuaException;
 
     /**
      * Dumps a function as a binary chunk
@@ -683,9 +679,8 @@ public interface Lua extends AutoCloseable {
      *
      * @param nArgs    the number of arguments that you pushed onto the stack
      * @param nResults the number of results to adjust to
-     * @return {@link LuaError#OK} or {@link LuaError#RUNTIME}
      */
-    LuaError pCall(int nArgs, int nResults);
+    void pCall(int nArgs, int nResults) throws LuaException;
 
     /* Thread functions */
 
@@ -722,16 +717,16 @@ public interface Lua extends AutoCloseable {
      * </p>
      *
      * @param nArgs the number of arguments
-     * @return {@link LuaError#YIELD}, {@link LuaError#OK} or other error code
+     * @return {@code true} if the thread yielded, or {@code false} if it ended execution
      */
-    LuaError resume(int nArgs);
+    boolean resume(int nArgs) throws LuaException;
 
     /**
      * Returns the status of the thread
      *
      * @return the status of the thread
      */
-    LuaError status();
+    LuaException.LuaError status();
 
     /**
      * Yields a coroutine
@@ -1122,9 +1117,8 @@ public interface Lua extends AutoCloseable {
      * Loads a chunk from a {@link ExternalLoader} set by {@link #setExternalLoader(ExternalLoader)}
      *
      * @param module the module
-     * @return the return code from {@link #load(Buffer, String)}
      */
-    LuaError loadExternal(String module);
+    void loadExternal(String module) throws LuaException;
 
     /**
      * @return the underlying {@link LuaNative} natives
@@ -1201,7 +1195,7 @@ public interface Lua extends AutoCloseable {
      * @return the return values
      */
     @Nullable
-    LuaValue[] execute(String command);
+    LuaValue[] execute(String command) throws LuaException;
 
     /**
      * @return a nil Lua value
@@ -1289,44 +1283,5 @@ public interface Lua extends AutoCloseable {
         TABLE(),
         THREAD(),
         USERDATA()
-    }
-
-    /**
-     * Integer values of Lua error codes may vary between version
-     */
-    enum LuaError {
-        /**
-         * a file-related error
-         */
-        FILE,
-        /**
-         * error while running a __gc metamethod
-         */
-        GC,
-        /**
-         * error while running the message handler
-         */
-        HANDLER,
-        /**
-         * memory allocation error
-         */
-        MEMORY,
-        /**
-         * no errors
-         */
-        OK,
-        /**
-         * a runtime error
-         */
-        RUNTIME,
-        /**
-         * syntax error during precompilation
-         */
-        SYNTAX,
-
-        /**
-         * the thread (coroutine) yields
-         */
-        YIELD,
     }
 }

@@ -68,32 +68,9 @@ public class TestLuaMap {
         Lua L = new Lua51();
         L.openLibrary("io");
         L.openLibrary("os");
-        ResourceLoader loader = new ResourceLoader();
-        loader.load("/tests/testMap.lua", L);
-        Lua.LuaError err = L.pCall(0, Consts.LUA_MULTRET);
-        if (err != Lua.LuaError.OK) {
-            switch (err) {
-                case RUNTIME:
-                    System.out.println("Runtime error. " + L.toString(-1));
-                    break;
-
-                case FILE:
-                    System.out.println("File not found. " + L.toString(-1));
-                    break;
-
-                case SYNTAX:
-                    System.out.println("Syntax error. " + L.toString(-1));
-                    break;
-
-                case MEMORY:
-                    System.out.println("Memory error. " + L.toString(-1));
-                    break;
-
-                default:
-                    System.out.println("Error. " + L.toString(-1));
-                    break;
-            }
-        }
+        L.setExternalLoader(new ClassPathLoader());
+        L.loadExternal("tests.testMap");
+        L.pCall(0, Consts.LUA_MULTRET);
 
         L.getGlobal("map");
         Object proxy = L.createProxy(new Class[]{Map.class, AutoCloseable.class}, Lua.Conversion.SEMI);
@@ -123,9 +100,7 @@ public class TestLuaMap {
         //noinspection ConstantConditions
         assertEquals(luaMap.size(), 0);
 
-        //noinspection ResultOfMethodCallIgnored
-        assertThrows(IllegalArgumentException.class,
-                luaMap::isEmpty);
+        assertThrows(IllegalArgumentException.class, luaMap::isEmpty);
 
         raw.close();
     }
@@ -136,6 +111,7 @@ public class TestLuaMap {
  *
  * @author thiago
  */
+@SuppressWarnings("NullableProblems")
 class LuaMap implements Map<Object, Object>, AutoCloseable {
     private final Lua L;
     private int table;

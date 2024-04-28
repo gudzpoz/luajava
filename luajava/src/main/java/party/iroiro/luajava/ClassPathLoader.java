@@ -35,8 +35,10 @@ import java.util.Objects;
 public class ClassPathLoader implements ExternalLoader {
     @Override
     public @Nullable Buffer load(String module, Lua ignored) {
-        try (InputStream resource =
-                     Objects.requireNonNull(getClass().getResourceAsStream(getPath(module)))) {
+        try (InputStream resource = Objects.requireNonNull(
+                // We use the class loader to load resources support loading from other Java modules.
+                getClass().getClassLoader().getResourceAsStream(getPath(module))
+        )) {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             byte[] bytes = new byte[4096];
             int i;
@@ -56,7 +58,7 @@ public class ClassPathLoader implements ExternalLoader {
     }
 
     protected String getPath(String module) {
-        return "/" + module.replace('.', '/') + ".lua";
+        return module.replace('.', '/') + ".lua";
     }
 
     public static class BufferOutputStream extends OutputStream {

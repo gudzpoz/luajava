@@ -1,6 +1,7 @@
 package party.iroiro.luajava.value;
 
 import party.iroiro.luajava.Lua;
+import party.iroiro.luajava.LuaException;
 import party.iroiro.luajava.lua51.Lua51;
 
 import java.util.Collections;
@@ -9,6 +10,7 @@ import java.util.Objects;
 
 import static org.junit.Assert.*;
 import static party.iroiro.luajava.Lua.LuaType.*;
+import static party.iroiro.luajava.LuaTestSuite.assertThrowsLua;
 
 public class LuaValueSuite<T extends Lua> {
     private final T L;
@@ -31,10 +33,9 @@ public class LuaValueSuite<T extends Lua> {
     }
 
     private void luaStateTest() {
-        try (LuaValue value = L.get("java")) {
-            assertEquals(TABLE, value.type());
-        }
-        assertNull(L.execute("("));
+        LuaValue value = L.get("java");
+        assertEquals(TABLE, value.type());
+        assertThrowsLua(LuaException.LuaError.SYNTAX, () -> L.execute("("));
     }
 
     private void callTest() {
@@ -56,9 +57,8 @@ public class LuaValueSuite<T extends Lua> {
             l.push("Some error");
             return -1;
         });
-        try (LuaValue func2 = L.get()) {
-            assertNull(func2.call());
-        }
+        LuaValue func2 = L.get();
+        assertThrowsLua(LuaException.LuaError.RUNTIME, func2::call, "Some error");
     }
 
     private void nilTest() {
@@ -66,7 +66,7 @@ public class LuaValueSuite<T extends Lua> {
         LuaValue value = L.get();
         assertEquals(NIL, value.type());
         L.pushNil();
-        value.push();
+        value.push(L);
         assertTrue(L.equal(-1, -2));
         L.pop(2);
     }
@@ -131,12 +131,11 @@ public class LuaValueSuite<T extends Lua> {
             L.pop(1);
         }
         L.createTable(0, 0);
-        try (LuaValue value = L.get()) {
-            value.push(L);
-            value.push();
-            assertTrue(L.equal(-1, -2));
-            L.pop(2);
-        }
+        LuaValue value = L.get();
+        value.push(L);
+        value.push(L);
+        assertTrue(L.equal(-1, -2));
+        L.pop(2);
     }
 
     private void equalityTest(Lua K, boolean equals) {
@@ -181,39 +180,36 @@ public class LuaValueSuite<T extends Lua> {
 
         L.push(Collections.emptyList());
         K.push(Collections.emptyList());
-        try (LuaValue l = L.get(); LuaValue k = K.get()) {
-            l.push();
-            try (LuaValue j = L.get()) {
-                assertEquals(l, j);
-                assertNotEquals(j, k);
-                assertNotEquals(l, L.from(1));
-                AbstractLuaValue<Lua> mock1 = new AbstractLuaValue<Lua>(L, TABLE) {
-                    @Override
-                    public void push() {
-                        state().push(Collections.emptyList());
-                    }
-
-                    @Override
-                    public Object toJavaObject() {
-                        return null;
-                    }
-
-                    @Override
-                    public void close() {
-
-                    }
-
-                    @Override
-                    public Lua.LuaType type() {
-                        return TABLE;
-                    }
-                };
-                assertNotEquals(l, mock1);
-                //noinspection EqualsWithItself
-                assertEquals(l, l);
+        LuaValue l = L.get();
+        LuaValue k = K.get();
+        l.push(L);
+        LuaValue j = L.get();
+        assertEquals(l, j);
+        assertNotEquals(j, k);
+        assertNotEquals(l, L.from(1));
+        AbstractLuaValue<Lua> mock1 = new AbstractLuaValue<Lua>(L, TABLE) {
+            @Override
+            public void push() {
+                L.push(Collections.emptyList());
             }
-        }
 
+            @Override
+            public Object toJavaObject() {
+                return null;
+            }
+
+            @Override
+            public void close() {
+            }
+
+            @Override
+            public Lua.LuaType type() {
+                return TABLE;
+            }
+        };
+        assertNotEquals(l, mock1);
+        //noinspection EqualsWithItself
+        assertEquals(l, l);
         assertEquals(top, L.getTop());
     }
 }

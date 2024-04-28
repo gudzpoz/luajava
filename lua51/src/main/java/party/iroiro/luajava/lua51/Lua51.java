@@ -23,6 +23,8 @@
 package party.iroiro.luajava.lua51;
 
 import party.iroiro.luajava.AbstractLua;
+import party.iroiro.luajava.LuaException;
+import party.iroiro.luajava.LuaException.LuaError;
 import party.iroiro.luajava.LuaNative;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -82,7 +84,7 @@ public class Lua51 extends AbstractLua {
             case LUA_ERRERR:
                 return LuaError.HANDLER;
             default:
-                return null;
+                throw new LuaException(LuaError.RUNTIME, "Unrecognized error code");
         }
     }
 
@@ -110,7 +112,7 @@ public class Lua51 extends AbstractLua {
             case LUA_TUSERDATA:
                 return LuaType.USERDATA;
             default:
-                return null;
+                throw new LuaException(LuaError.RUNTIME, "Unrecognized type code");
         }
     }
 }

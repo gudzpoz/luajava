@@ -15,8 +15,7 @@ import java.util.Objects;
 
 import static org.junit.Assert.*;
 import static party.iroiro.luajava.DefaultProxyTest.instanceOfLuaJ;
-import static party.iroiro.luajava.Lua.LuaError.OK;
-import static party.iroiro.luajava.Lua.LuaError.RUNTIME;
+import static party.iroiro.luajava.LuaTestSuite.assertThrowsLua;
 
 public class LuaScriptSuite<T extends AbstractLua> {
     private static final String LUA_ASSERT_THROWS = "\n" +
@@ -52,7 +51,7 @@ public class LuaScriptSuite<T extends AbstractLua> {
         L.openLibrary("string");
         L.openLibrary("debug");
         L.openLibrary("table");
-        assertEquals(OK, L.run(LUA_ASSERT_THROWS));
+        L.run(LUA_ASSERT_THROWS);
         L.push(DefaultProxyTest.isDefaultAvailable() && !(instanceOfLuaJ(L)));
         L.setGlobal("JAVA8");
         L.push(instanceOfLuaJ(L));
@@ -163,7 +162,7 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 L.openLibrary("package");
                 L.openLibraries();
                 L.setExternalLoader(new ClassPathLoader());
-                assertEquals(RUNTIME, L.run("require('suite.not.a.module')"));
+                assertThrowsLua(L, "require('suite.not.a.module')", LuaException.LuaError.RUNTIME);
             }),
             new ScriptTester("/suite/apiTest.lua", L -> {
                 L.pushThread();
@@ -209,9 +208,9 @@ public class LuaScriptSuite<T extends AbstractLua> {
         public void test(AbstractLua L) throws IOException {
             init.accept(L);
             assertTrue(file.endsWith(".lua"));
-            assertEquals(OK, L.loadExternal(file.substring(1, file.length() - 4).replace('/', '.')));
+            L.loadExternal(file.substring(1, file.length() - 4).replace('/', '.'));
             try {
-                assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET));
+                L.pCall(0, Consts.LUA_MULTRET);
             } catch (Throwable e) {
                 throw new RuntimeException(L.toString(-1), e);
             }
@@ -288,7 +287,6 @@ public class LuaScriptSuite<T extends AbstractLua> {
         L.openLibrary("string");
         L.setExternalLoader(new ClassPathLoader());
         L.loadExternal("luajava.testMemory");
-        Lua.LuaError result = L.pCall(0, Consts.LUA_MULTRET);
-        assertEquals(L.toString(-1), Lua.LuaError.OK, result);
+        L.pCall(0, Consts.LUA_MULTRET);
     }
 }

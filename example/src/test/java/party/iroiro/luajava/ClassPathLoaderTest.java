@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static party.iroiro.luajava.Lua.LuaError.OK;
 
 public class ClassPathLoaderTest {
     @Test
@@ -34,8 +33,8 @@ public class ClassPathLoaderTest {
             assertEquals(0, buffer.position());
             assertNotEquals(0, buffer.limit());
             LuaScriptSuite.addAssertThrows(L);
-            assertEquals(OK, L.load(buffer, "suite.importTest"));
-            assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET), L.toString(-1));
+            L.load(buffer, "suite.importTest");
+            L.pCall(0, Consts.LUA_MULTRET);
 
             ByteBuffer b = ByteBuffer.allocate(3);
             ClassPathLoader.BufferOutputStream out = new ClassPathLoader.BufferOutputStream(b);
