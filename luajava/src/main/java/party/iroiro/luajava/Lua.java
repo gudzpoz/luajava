@@ -24,6 +24,7 @@ package party.iroiro.luajava;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import party.iroiro.luajava.value.LuaThread;
 import party.iroiro.luajava.value.LuaValue;
 
 import java.nio.Buffer;
@@ -33,7 +34,7 @@ import java.util.*;
 /**
  * A {@code lua_State *} wrapper, representing a Lua thread
  */
-public interface Lua extends AutoCloseable {
+public interface Lua extends AutoCloseable, LuaThread {
     String GLOBAL_THROWABLE = "__jthrowable__";
 
     /**
@@ -1086,14 +1087,6 @@ public interface Lua extends AutoCloseable {
     Object createProxy(Class<?>[] interfaces, Conversion degree) throws IllegalArgumentException;
 
     /**
-     * Registers the function to a global name
-     *
-     * @param name     the global name
-     * @param function the function
-     */
-    void register(String name, JFunction function);
-
-    /**
      * Sets a {@link ExternalLoader} for the main state
      *
      * <p>
@@ -1179,52 +1172,6 @@ public interface Lua extends AutoCloseable {
      * @return a reference to the value
      */
     LuaValue get();
-
-    /**
-     * Gets a references to a global object
-     *
-     * @param globalName the global name
-     * @return a reference to the value
-     */
-    LuaValue get(String globalName);
-
-    /**
-     * Executes a command
-     *
-     * @param command the command
-     * @return the return values
-     */
-    @Nullable
-    LuaValue[] execute(String command) throws LuaException;
-
-    /**
-     * @return a nil Lua value
-     */
-    LuaValue fromNull();
-
-    /**
-     * @param b the boolean
-     * @return a boolean Lua value
-     */
-    LuaValue from(boolean b);
-
-    /**
-     * @param n the number
-     * @return a number Lua value
-     */
-    LuaValue from(double n);
-
-    /**
-     * @param n the number
-     * @return a number Lua value
-     */
-    LuaValue from(long n);
-
-    /**
-     * @param s the string
-     * @return a string Lua value
-     */
-    LuaValue from(String s);
 
     /**
      * Controls the degree of conversion from Java to Lua

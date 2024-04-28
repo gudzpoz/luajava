@@ -127,13 +127,7 @@ public abstract class AbstractLua implements Lua {
             pushNil();
         } else if (object instanceof LuaValue) {
             LuaValue value = (LuaValue) object;
-            if (value.state() == this) {
-                value.push();
-            } else if (value.state().getMainState() == mainThread) {
-                value.push(this);
-            } else {
-                pushJavaObject(value);
-            }
+            value.push(this);
         } else if (degree == Conversion.NONE) {
             pushJavaObjectOrArray(object);
         } else {
@@ -1007,7 +1001,7 @@ public abstract class AbstractLua implements Lua {
      * and uses it as the exception message.
      * </p>
      *
-     * @param code the error code returned by Lua C API
+     * @param code    the error code returned by Lua C API
      * @param runtime if {@code true}, treat non-zero code values as runtime errors
      */
     protected void checkError(int code, boolean runtime) throws LuaException {
@@ -1044,6 +1038,12 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
+    public void set(String key, Object value) {
+        push(value, Conversion.SEMI);
+        setGlobal(key);
+    }
+
+    @Override
     public @Nullable LuaValue[] execute(String command) throws LuaException {
         load(command);
         return get().call();
@@ -1072,7 +1072,9 @@ public abstract class AbstractLua implements Lua {
                 pop(1);
                 return from(s);
             default:
-                RefLuaValue ref = new RefLuaValue(this, type);
+                AbstractRefLuaValue ref = type == LuaType.TABLE
+                        ? new LuaTableValue(this, type)
+                        : new RefLuaValue(this, type);
                 mainThread.recordedReferences.put(ref.getReference(),
                         new LuaReference<>(ref, mainThread.recyclableReferences));
                 return ref;

@@ -20,10 +20,10 @@ public class LuaValueSuite<T extends Lua> {
     }
 
     public void test() {
-        equalityTest(L, true);
-        equalityTest(L.newThread(), true);
+        equalityTest(L);
+        equalityTest(L.newThread());
         try (Lua K = new Lua51()) {
-            equalityTest(K, false);
+            equalityTest(K);
         }
         differentThreadTest();
         tableTest();
@@ -113,14 +113,14 @@ public class LuaValueSuite<T extends Lua> {
         try (Lua K = new Lua51()) {
             L.pushNil();
             K.pushNil();
-            assertThrows(IllegalArgumentException.class, () -> L.get().get(K.get()));
+            assertThrows(UnsupportedOperationException.class, () -> L.get().get(K.get()));
             K.pushNil();
-            assertThrows(UnsupportedOperationException.class, () -> K.get().push(L));
+            K.get().push(L);
 
             K.pushNil();
             LuaValue nil = K.get();
             L.push(nil, Lua.Conversion.NONE);
-            assertTrue(L.isUserdata(-1));
+            assertTrue(L.isNil(-1));
             L.pop(1);
             Lua J = L.newThread();
             J.pushNil();
@@ -138,18 +138,18 @@ public class LuaValueSuite<T extends Lua> {
         L.pop(2);
     }
 
-    private void equalityTest(Lua K, boolean equals) {
+    private void equalityTest(Lua K) {
         int top = L.getTop();
         L.pushNil();
-        assertEquals(equals, ImmutableLuaValue.NIL(K).equals(L.get()));
+        assertNotEquals(ImmutableLuaValue.NIL(K), L.get());
         L.push(true);
-        assertEquals(equals, ImmutableLuaValue.TRUE(K).equals(L.get()));
+        assertNotEquals(ImmutableLuaValue.TRUE(K), L.get());
         L.push(false);
-        assertEquals(equals, ImmutableLuaValue.FALSE(K).equals(L.get()));
+        assertNotEquals(ImmutableLuaValue.FALSE(K), L.get());
         L.push(100);
-        assertEquals(equals, ImmutableLuaValue.NUMBER(K, 100).equals(L.get()));
+        assertNotEquals(ImmutableLuaValue.NUMBER(K, 100), L.get());
         L.push("string content");
-        assertEquals(equals, ImmutableLuaValue.STRING(K, "string content").equals(L.get()));
+        assertNotEquals(ImmutableLuaValue.STRING(K, "string content"), L.get());
 
         assertNotEquals(K.from(1), L.from(false));
         assertNotEquals(L.from(1), L.from(2));
@@ -157,18 +157,13 @@ public class LuaValueSuite<T extends Lua> {
 
         AbstractLuaValue<Lua> mock = new AbstractLuaValue<Lua>(L, NUMBER) {
             @Override
-            public void push() {
+            public void push(Lua L) {
                 L.push(2);
             }
 
             @Override
             public Object toJavaObject() {
                 return null;
-            }
-
-            @Override
-            public void close() {
-
             }
 
             @Override
@@ -184,22 +179,18 @@ public class LuaValueSuite<T extends Lua> {
         LuaValue k = K.get();
         l.push(L);
         LuaValue j = L.get();
-        assertEquals(l, j);
+        assertNotEquals(l, j);
         assertNotEquals(j, k);
         assertNotEquals(l, L.from(1));
         AbstractLuaValue<Lua> mock1 = new AbstractLuaValue<Lua>(L, TABLE) {
             @Override
-            public void push() {
+            public void push(Lua L) {
                 L.push(Collections.emptyList());
             }
 
             @Override
             public Object toJavaObject() {
                 return null;
-            }
-
-            @Override
-            public void close() {
             }
 
             @Override

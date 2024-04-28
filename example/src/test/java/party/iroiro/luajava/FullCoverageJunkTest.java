@@ -9,7 +9,7 @@ import party.iroiro.luajava.lua54.Lua54Consts;
 import party.iroiro.luajava.luajit.LuaJitConsts;
 import party.iroiro.luajava.value.ImmutableLuaValue;
 import party.iroiro.luajava.value.LuaValue;
-import party.iroiro.luajava.value.RefLuaValue;
+import party.iroiro.luajava.value.AbstractRefLuaValue;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -29,12 +29,9 @@ public class FullCoverageJunkTest {
         assertNull(JuaAPI.CONSTRUCTOR_WRAPPER.getName(FullCoverageJunkTest.class.getConstructor()));
 
         Lua51 L = new Lua51();
-        //noinspection deprecation
-        ImmutableLuaValue.NIL(L).close();
+        ImmutableLuaValue.NIL(L);
         L.createTable(0, 0);
         LuaValue v = L.get();
-        assertInstanceOf(RefLuaValue.class, v);
-        //noinspection deprecation
-        v.close();
+        assertInstanceOf(AbstractRefLuaValue.class, v);
     }
 }

@@ -24,78 +24,28 @@ package party.iroiro.luajava.value;
 
 import org.jetbrains.annotations.Nullable;
 import party.iroiro.luajava.Lua;
+import party.iroiro.luajava.LuaException;
 
 /**
  * A simple wrapper of references to Lua values
- *
- * <p>
- * You will need to manually close values of complex types. See {@link #close()}.
- * </p>
  */
-public interface LuaValue extends AutoCloseable {
+public interface LuaValue extends LuaTableTrait {
     /**
      * @return the type of the Lua value
      */
     Lua.LuaType type();
 
     /**
-     * @return the Lua state
+     * @return the Lua state where this Lua value lives
      */
     Lua state();
 
     /**
-     * Pushes the Lua value onto the Lua stack
-     */
-    void push();
-
-    /**
-     * Pushes the Lua value onto the Lua stack of another thread sharing a same main state
+     * Pushes the Lua value onto the Lua stack of another thread sharing the same main state
      *
      * @param L another thread
      */
-    void push(Lua L);
-
-    /**
-     * @param i the index
-     * @return {@code thisLuaValue[i]}
-     */
-    LuaValue get(int i);
-
-    /**
-     * @param key the key
-     * @return {@code thisLuaValue[key]}
-     */
-    LuaValue get(String key);
-
-    /**
-     * @param key the key
-     * @return {@code thisLuaValue[key]}
-     */
-    LuaValue get(LuaValue key);
-
-    /**
-     * Performs {@code thisLuaValue[i] = value}
-     *
-     * @param i     the index
-     * @param value the value
-     */
-    void set(int i, LuaValue value);
-
-    /**
-     * Performs {@code thisLuaValue[key] = value}
-     *
-     * @param key   the key
-     * @param value the value
-     */
-    void set(String key, LuaValue value);
-
-    /**
-     * Performs {@code thisLuaValue[key] = value}
-     *
-     * @param key   the key
-     * @param value the value
-     */
-    void set(LuaValue key, LuaValue value);
+    void push(Lua L) throws LuaException;
 
     /**
      * Performs {@code thisLuaValue(parameter1, parameter2, ...)}
@@ -103,19 +53,21 @@ public interface LuaValue extends AutoCloseable {
      * @param parameters the parameters
      * @return the return values, {@code null} on error
      */
-    @Nullable LuaValue[] call(Object... parameters);
+    LuaValue[] call(Object... parameters);
 
     /**
      * @return a Java value converted from this Lua value
      * @see Lua#toObject(int)
      */
-    @Nullable Object toJavaObject();
+    @Nullable
+    Object toJavaObject();
 
-    /**
-     * Does nothing
-     * @deprecated the value now clears Lua-side references on finalization
-     */
-    @Override
-    @Deprecated
-    void close();
+    boolean toBoolean();
+
+    long toInteger();
+
+    double toNumber();
+
+    String toString();
+
 }
