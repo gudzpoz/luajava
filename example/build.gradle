@@ -30,6 +30,7 @@ dependencies {
     implementation project(':lua54')
     implementation project(':luajit')
     implementation project(':luaj')
+    implementation 'com.github.wagyourtail.luaj:luaj-core:f062b53a34'
     implementation project(':example:suite')
     implementation project(path: ':lua51', configuration: 'desktopNatives')
     implementation project(path: ':lua52', configuration: 'desktopNatives')

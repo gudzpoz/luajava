@@ -621,6 +621,9 @@ public class LuaJNatives extends LuaNative {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(obj);
         LuaValue metatable = value.getmetatable();
+        if (metatable == null) {
+            return 0;
+        }
         LuaValue meta = metatable.get(e);
         if (!meta.isfunction()) {
             return 0;
@@ -855,16 +858,20 @@ public class LuaJNatives extends LuaNative {
     @Override
     protected int luaJ_resume(long ptr, int nargs) {
         LuaJState L = instances.get((int) ptr);
+        if (L.thread == null) {
+            throw new LuaException(LuaException.LuaError.RUNTIME,
+                    "resuming the main thread is not supported with luaj");
+        }
         LuaValue[] args = new LuaValue[nargs];
         for (int i = 0; i < nargs; i++) {
             args[i] = L.toLuaValue(-nargs + i);
         }
-        LuaValue func = L.toLuaValue(-nargs - 1);
         L.pop(nargs);
         if (L.thread.state.status == LuaThread.STATUS_DEAD) {
             L.thread.state.status = LuaThread.STATUS_INITIAL;
         }
         if (L.thread.state.status == LuaThread.STATUS_INITIAL) {
+            LuaValue func = L.toLuaValue(-nargs - 1);
             FunctionInvoker.setFunction(L, func);
             L.pop(1);
         }

@@ -122,6 +122,16 @@ public class LuaScriptSuite<T extends AbstractLua> {
             new ScriptTester("/suite/proxyTest.lua", L -> {
             }),
             new ScriptTester("/suite/importTest.lua", L -> {
+                OtherTypes others = new OtherTypes();
+                others.array1 = new Object[] {
+                        new Object[] { 1., 2., 3. },
+                        new Object[] { 4., 5., 6. },
+                        7.,
+                };
+                others.array2 = new int[] {
+                        8, 9, 10, 11, 12,
+                };
+                L.set("others", others);
             }),
             new ScriptTester("/suite/luaifyTest.lua", L -> {
             }),

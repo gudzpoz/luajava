@@ -41,7 +41,9 @@ public class LuaJState {
     }
 
     protected List<LuaValue> stack() {
-        assert !luaStacks.isEmpty();
+        if (luaStacks.isEmpty()) {
+            throw new IllegalStateException();
+        }
         int size = luaStacks.size();
         return luaStacks.get(size - 1);
     }
@@ -103,7 +105,6 @@ public class LuaJState {
     }
 
     public LuaValue toLuaValue(int stackIndex) {
-        assert !luaStacks.isEmpty();
         if (stackIndex == LUA_REGISTRYINDEX) {
             return registry;
         }

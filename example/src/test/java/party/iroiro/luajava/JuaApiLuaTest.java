@@ -65,28 +65,35 @@ public class JuaApiLuaTest {
     @SuppressWarnings("FieldMayBeFinal")
     private int p = 1024;
 
+    @SuppressWarnings("unused")
     public static int staticMethod(int a, int b, int c) {
         return a + b + c;
     }
 
+    @SuppressWarnings("unused")
     public static void staticMethod() {
     }
 
+    @SuppressWarnings("unused")
     public static int staticMethod(int a) {
         return a;
     }
 
+    @SuppressWarnings("unused")
     public static void getVoid() {
     }
 
+    @SuppressWarnings("unused")
     public static Object getNull() {
         return null;
     }
 
+    @SuppressWarnings("unused")
     private static int privateMethod() {
         return -1;
     }
 
+    @SuppressWarnings("unused")
     public void method() {
     }
 

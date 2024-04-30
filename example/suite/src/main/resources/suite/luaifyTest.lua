@@ -11,3 +11,23 @@ assert(t.a == 2)
 
 assert(type(java.luaify(java.import('java.lang.String')())) == 'string')
 assert(type(java.luaify(java.import('java.util.HashMap')())) == 'table')
+
+big = java.luaify(others.big)
+assert(type(big) == 'userdata')
+assert(big:getClass():getSimpleName() == 'BigInteger')
+
+oArr = java.luaify(others.array1) -- Object[] of { Double[], Double[], Double }
+assert(type(oArr) == 'table')
+assert(type(oArr[1]) == 'table')
+assert(type(oArr[2]) == 'table')
+assert(oArr[3] == 7)
+for i = 1, 3 do
+    assert(oArr[1][i] == i)
+    assert(oArr[2][i] == i + 3)
+end
+
+iArr = java.luaify(others.array2) -- int[]
+assert(type(iArr) == 'table')
+for i = 8, 12 do
+    assert(iArr[i - 7] == i)
+end

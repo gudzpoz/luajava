@@ -31,7 +31,7 @@ public class LuaTableValue extends AbstractRefLuaValue implements LuaValue {
         push(L);
         L.push(key, Lua.Conversion.SEMI);
         L.getTable(-2);
-        boolean containsKey = L.isNil(-1);
+        boolean containsKey = !L.isNil(-1);
         L.pop(2);
         return containsKey;
     }
@@ -113,7 +113,7 @@ public class LuaTableValue extends AbstractRefLuaValue implements LuaValue {
         Lua L = state();
         push(L);
         L.push(key, Lua.Conversion.SEMI);
-        L.getTable(-1);
+        L.getTable(-2);
         LuaValue value = L.get();
         L.pop(1);
         return value;
@@ -125,10 +125,8 @@ public class LuaTableValue extends AbstractRefLuaValue implements LuaValue {
         @Override
         public Iterator<Entry<LuaValue, LuaValue>> iterator() {
             Lua L = state();
-            L.pushNil();
-            LuaValue nilRef = L.get();
             return new Iterator<Entry<LuaValue, LuaValue>>() {
-                LuaValue keyRef = nilRef;
+                LuaValue keyRef = L.fromNull();
 
                 @Override
                 public boolean hasNext() {
@@ -136,7 +134,7 @@ public class LuaTableValue extends AbstractRefLuaValue implements LuaValue {
                     keyRef.push(L);
                     boolean ended = L.next(-2) == 0;
                     L.pop(ended ? 1 : 3);
-                    return ended;
+                    return !ended;
                 }
 
                 @Override
@@ -164,7 +162,6 @@ public class LuaTableValue extends AbstractRefLuaValue implements LuaValue {
                     L.pushNil();
                     L.setTable(-3);
                     L.pop(1);
-                    Iterator.super.remove();
                 }
             };
         }

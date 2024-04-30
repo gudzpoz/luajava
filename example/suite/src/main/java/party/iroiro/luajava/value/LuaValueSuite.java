@@ -6,6 +6,7 @@ import party.iroiro.luajava.lua51.Lua51;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import static org.junit.Assert.*;
@@ -20,6 +21,8 @@ public class LuaValueSuite<T extends Lua> {
     }
 
     public void test() {
+        L.openLibraries();
+
         equalityTest(L);
         equalityTest(L.newThread());
         try (Lua K = new Lua51()) {
@@ -27,9 +30,66 @@ public class LuaValueSuite<T extends Lua> {
         }
         differentThreadTest();
         tableTest();
+        tableMapTest();
         nilTest();
+        stringTest();
+        toStringTest();
         callTest();
         luaStateTest();
+    }
+
+    @SuppressWarnings("SuspiciousMethodCalls")
+    private void tableMapTest() {
+        LuaValue map = L.execute("t = { 1, 2, 3, 4, a = 5, b = 6, c = 7, d = 8 }; return t")[0];
+        assertEquals(8, map.entrySet().size());
+        assertEquals(4, map.length());
+        assertTrue(map.containsKey("a"));
+        map.entrySet().removeIf(next -> next.getKey().toString().equals("a"));
+        assertEquals(7, map.entrySet().size());
+        assertEquals(4, map.length());
+        L.run("assert(not t.a)");
+        assertFalse(map.containsKey("a"));
+        assertEquals(7, map.remove("c").toInteger());
+        assertEquals(6, Objects.requireNonNull(map.put(L.from("b"), L.from(10))).toInteger());
+        assertEquals(10, map.get("b").toInteger());
+        assertEquals(1, map.get((Number) 1).toInteger());
+
+        assertThrows(NoSuchElementException.class, () -> L.execute("return {}")[0].entrySet().iterator().next());
+        assertThrows(IllegalStateException.class, () -> L.execute("return {}")[0].entrySet().iterator().remove());
+
+        L.push(1);
+        LuaValue i = L.get();
+        assertThrows(UnsupportedOperationException.class, i::entrySet);
+        assertThrows(UnsupportedOperationException.class, i::length);
+        assertThrows(UnsupportedOperationException.class, () -> i.get(1));
+        assertThrows(UnsupportedOperationException.class, () -> i.get("a"));
+        assertThrows(UnsupportedOperationException.class, () -> i.get(L.from(1)));
+        assertThrows(UnsupportedOperationException.class, () -> i.set(1, new Object()));
+        assertThrows(UnsupportedOperationException.class, () -> i.set("", new Object()));
+        assertThrows(UnsupportedOperationException.class, i::call);
+
+        assertEquals(1, i.toNumber(), 0.000001);
+        assertEquals(1, i.toInteger());
+        assertTrue(i.toBoolean());
+        L.push(0);
+        LuaValue j = L.get();
+        assertFalse(j.toBoolean());
+    }
+
+    private void toStringTest() {
+        L.pushNil();
+        assertEquals("nil", L.get().toString());
+        L.push("string");
+        assertEquals("string", L.get().toString());
+    }
+
+    private void stringTest() {
+        LuaValue value = L.get("_VERSION");
+        //noinspection SizeReplaceableByIsEmpty
+        assertTrue(value.length() > 0);
+        L.push(10);
+        LuaValue i = L.get();
+        assertThrows(UnsupportedOperationException.class, i::length);
     }
 
     private void luaStateTest() {
@@ -136,6 +196,10 @@ public class LuaValueSuite<T extends Lua> {
         value.push(L);
         assertTrue(L.equal(-1, -2));
         L.pop(2);
+        try (Lua K = new Lua51()) {
+            assertThrowsLua(LuaException.LuaError.MEMORY, () -> value.push(K),
+                    "Unable to pass Lua values between different Lua states");
+        }
     }
 
     private void equalityTest(Lua K) {
