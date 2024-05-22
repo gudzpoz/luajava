@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class AbstractLua implements Lua {
     private final static Object[] EMPTY = new Object[0];
-    protected static LuaInstances<AbstractLua> instances = new LuaInstances<>();
+    protected final static LuaInstances<AbstractLua> instances = new LuaInstances<>();
     protected volatile ExternalLoader loader;
     protected final ReferenceQueue<LuaReferable> recyclableReferences;
     protected final ConcurrentHashMap<Integer, LuaReference<?>> recordedReferences;
@@ -81,7 +81,7 @@ public abstract class AbstractLua implements Lua {
      * @param luaNative  the Lua native wrapper
      * @param L          the new Lua state pointer
      * @param id         the Lua state id (see {@link LuaInstances})
-     * @param mainThread the main state of this sub state
+     * @param mainThread the main state of this sub-state
      */
     protected AbstractLua(LuaNative luaNative, long L, int id, @NotNull AbstractLua mainThread) {
         loader = null;
@@ -95,7 +95,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     /**
-     * Adopts a created sub state
+     * Adopts a created sub-state
      *
      * @param mainId the main Lua state
      * @param ptr    the pointer to the newly created Lua state

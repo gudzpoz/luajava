@@ -33,15 +33,9 @@ public class LuaScriptSuite<T extends AbstractLua> {
             "  assert(false, debug.traceback('Expecting ' .. message .. ': Received \"' .. msg .. '\"'))\n" +
             "end";
     private final T L;
-    private final LuaTestConsumer<String> logger;
 
     public LuaScriptSuite(T L) {
-        this(L, System.err::println);
-    }
-
-    public LuaScriptSuite(T L, LuaTestConsumer<String> logger) {
         this.L = L;
-        this.logger = logger;
         addAssertThrows(L);
         L.openLibrary("package");
         L.setExternalLoader(new ClassPathLoader());
@@ -198,7 +192,6 @@ public class LuaScriptSuite<T extends AbstractLua> {
         L.openLibrary("coroutine");
         for (ScriptTester tester : TESTERS) {
             try {
-                logger.accept("Testing " + tester.file);
                 tester.test(L);
             } catch (Throwable e) {
                 throw new RuntimeException(tester.file + "\n" + L.toString(-1), e);

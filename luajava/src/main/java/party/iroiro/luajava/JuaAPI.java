@@ -79,7 +79,7 @@ public abstract class JuaAPI {
     }
 
     /**
-     * Loads a Lua chunck according with {@link Lua#loadExternal(String)}
+     * Loads a Lua chunk according with {@link Lua#loadExternal(String)}
      *
      * <p>
      * Used in <code>jmoduleLoad</code> in <code>jni/luajava/juaapi.cpp</code>

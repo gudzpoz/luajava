@@ -1,6 +1,7 @@
 package party.iroiro.luajava.luaj;
 
 import org.luaj.vm2.*;
+import party.iroiro.luajava.Lua;
 import party.iroiro.luajava.luaj.values.JavaObject;
 
 import java.util.ArrayList;
@@ -25,9 +26,9 @@ public class LuaJState {
     protected final List<List<LuaValue>> luaStacks;
     protected final LuaTable registry;
 
-    protected LuaTable jObjectMetatable = JavaMetatables.objectMetatable();
-    protected LuaTable jClassMetatable = JavaMetatables.classMetatable();
-    protected LuaTable jArrayMetatable = JavaMetatables.arrayMetatable();
+    protected final LuaTable jObjectMetatable = JavaMetatables.objectMetatable();
+    protected final LuaTable jClassMetatable = JavaMetatables.classMetatable();
+    protected final LuaTable jArrayMetatable = JavaMetatables.arrayMetatable();
 
     protected LuaJState(int address, int lid, Globals globals,
                         LuaThread thread, LuaJState parent) {
@@ -163,11 +164,11 @@ public class LuaJState {
     }
 
     public Throwable getError() {
-        return (Throwable) globals.get("__jthrowable__").touserdata();
+        return (Throwable) globals.get(Lua.GLOBAL_THROWABLE).touserdata();
     }
 
     public void setError(Throwable e) {
-        globals.set("__jthrowable__", e == null
+        globals.set(Lua.GLOBAL_THROWABLE, e == null
                 ? LuaValue.NIL
                 : new JavaObject(unwrapLuaError(e), jObjectMetatable, address));
     }

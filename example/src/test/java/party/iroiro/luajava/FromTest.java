@@ -32,18 +32,14 @@ public class FromTest {
 
             L.run("a = function () print('a') end");
             L.getGlobal("a");
-            //noinspection resource
             assertInstanceOf(LuaValue.class, L.toObject(-1));
 
             L.run("b = {[a] = 'value'}");
             L.getGlobal("b");
             Object map = L.toObject(-1);
             assertInstanceOf(Map.class, map);
-            System.out.println(map);
-            //noinspection unchecked
-            assertEquals(1, ((Map<Object, Object>) Objects.requireNonNull(map)).size());
-            //noinspection rawtypes,resource
-            assertInstanceOf(LuaValue.class, ((Map) map).keySet().iterator().next());
+            assertEquals(1, ((Map<?, ?>) Objects.requireNonNull(map)).size());
+            assertInstanceOf(LuaValue.class, ((Map<?, ?>) map).keySet().iterator().next());
 
             L.pushNil();
             assertNull(L.toObject(-1, Class.class));

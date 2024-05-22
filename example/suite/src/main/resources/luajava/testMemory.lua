@@ -30,22 +30,24 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 local runtime = java.import('java.lang.Runtime'):getRuntime()
 
-function doGc()
+function doGc(should_print)
   collectgarbage()
   runtime:gc()
   collectgarbage()
-  k, _ = collectgarbage('count')
-  print('(kB)\t\tTotal Memory\tFree Memory\tMax Memory')
-  print('Lua\t\t' .. tostring(k))
-  print('Java\t\t' ..
-        tostring(runtime:totalMemory()/1024) .. "\t\t" ..
-        tostring(runtime:freeMemory()/1024) .. "\t" ..
-        tostring(runtime:maxMemory()/1024))
+  if should_print then
+    k, _ = collectgarbage('count')
+    print('(kB)\t\tTotal Memory\tFree Memory\tMax Memory')
+    print('Lua\t\t' .. tostring(k))
+    print('Java\t\t' ..
+          tostring(runtime:totalMemory()/1024) .. "\t\t" ..
+          tostring(runtime:freeMemory()/1024) .. "\t" ..
+          tostring(runtime:maxMemory()/1024))
+  end
 end
 
 local testMemory = function()
 
-  doGc()
+  doGc(true)
 
   print ('-----------------------------')
   print('testing java.new')
@@ -60,6 +62,8 @@ local testMemory = function()
     doGc()
   end
 
+  doGc(true)
+
   print ('-----------------------------')
   print('testing java.proxy')
   -- Proxy uses references (with luaL_ref)
@@ -73,6 +77,8 @@ local testMemory = function()
     doGc()
   end
 
+  doGc(true)
+
   print ('-----------------------------')
   print('testing threads')
   for j = 1, 10 do
@@ -85,9 +91,10 @@ local testMemory = function()
     end
     doGc()
   end
+
+  doGc(true)
 end
 
 testMemory()
-doGc()
 
 return testMemory

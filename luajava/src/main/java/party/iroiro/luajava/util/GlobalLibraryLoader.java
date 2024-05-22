@@ -32,7 +32,7 @@ import java.io.InputStream;
  *             <li>{@code ./.temp/{crc}/{filename}}</li>
  *         </ul>
  *         </li>
- *         <li>Defautls to {@code {java.library.path}/{filename}}</li>
+ *         <li>Defaults to {@code {java.library.path}/{filename}}</li>
  *     </ul>
  *     </li>
  * </ul>

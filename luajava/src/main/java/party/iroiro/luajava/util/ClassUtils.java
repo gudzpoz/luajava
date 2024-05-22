@@ -67,7 +67,7 @@ public abstract class ClassUtils {
 
     /**
      * Map with primitive wrapper type as key and corresponding primitive
-     * type as value, for example: Integer.class -> int.class.
+     * type as value, for example: {@code Integer.class -> int.class}.
      */
     private static final Map<Class<?>, Class<?>> primitiveWrapperTypeMap = new IdentityHashMap<>(9);
 

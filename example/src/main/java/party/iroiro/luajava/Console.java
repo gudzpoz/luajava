@@ -70,7 +70,7 @@ public class Console implements Callable<Integer> {
     private static void injectLicense(Lua L, LineReader reader) {
         reader.printAbove("Use license() to print licensing info.");
         L.push(l -> {
-            reader.printAbove("This appliation is licensed under GPL 3.0.");
+            reader.printAbove("This application is licensed under GPL 3.0.");
             reader.printAbove("Use license_gpl() to read full text of GPL 3.0.");
             printAll(Lua.class, reader, "/LICENSE-luajava-console");
             printAll(Lua.class, reader, "/META-INF/LICENSE-luajava");
@@ -78,7 +78,7 @@ public class Console implements Callable<Integer> {
         });
         L.setGlobal("license");
         L.push(l -> {
-            reader.printAbove("This appliation is licensed under GPL 3.0.");
+            reader.printAbove("This application is licensed under GPL 3.0.");
             reader.printAbove("Use license_gpl() to read full text of GPL 3.0.");
             printAll(Console.class, reader, "/gpl-3.0.txt");
             return 0;

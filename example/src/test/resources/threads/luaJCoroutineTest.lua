@@ -1,5 +1,5 @@
 local f = coroutine.wrap(function()
-    java.import('java.lang.System').out:println("Hello Coroutines!!!")
+    assert(java.import('java.lang.String')('string'):toString() == 'string')
 end)
 
 f()

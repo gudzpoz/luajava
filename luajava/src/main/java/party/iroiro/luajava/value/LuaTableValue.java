@@ -67,13 +67,7 @@ public class LuaTableValue extends AbstractRefLuaValue implements LuaValue {
 
     @Override
     public LuaValue set(int key, Object value) {
-        Lua L = state();
-        push(L);
-        L.push(key);
-        L.push(value, Lua.Conversion.SEMI);
-        L.setTable(-3);
-        L.pop(1);
-        return null;
+        return putRaw(key, value);
     }
 
     @Override

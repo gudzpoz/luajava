@@ -273,7 +273,7 @@ public interface Lua extends AutoCloseable, LuaThread {
      *
      * <p>
      * The memory of this buffer is managed by Lua.
-     * So you should never use the buffer after poping the corresponding value
+     * So you should never use the buffer after popping the corresponding value
      * from the Lua stack.
      * </p>
      *
@@ -605,7 +605,7 @@ public interface Lua extends AutoCloseable, LuaThread {
      * This function uses {@code luaL_loadstring} to load the chunk.
      * </p>
      *
-     * @param script the Lua chunck
+     * @param script the Lua chunk
      */
     void load(String script) throws LuaException;
 
@@ -629,7 +629,7 @@ public interface Lua extends AutoCloseable, LuaThread {
      * This function uses {@code luaL_dostring} to run the chunk.
      * </p>
      *
-     * @param script the Lua chunck
+     * @param script the Lua chunk
      */
     void run(String script) throws LuaException;
 
@@ -1136,7 +1136,7 @@ public interface Lua extends AutoCloseable, LuaThread {
     /**
      * Fetches the most recent Java {@link Throwable} passed to Lua
      *
-     * @return value of the Lua glboal {@link #GLOBAL_THROWABLE}
+     * @return value of the Lua global {@link #GLOBAL_THROWABLE}
      */
     @Nullable
     Throwable getJavaError();
