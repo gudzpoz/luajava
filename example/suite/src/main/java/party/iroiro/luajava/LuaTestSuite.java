@@ -50,12 +50,7 @@ public class LuaTestSuite<T extends AbstractLua> {
     }
 
     public static LuaException assertThrowsLua(Lua L, String lua, LuaError error, String message) {
-        return assertThrowsLua(error, new Runnable() {
-            @Override
-            public void run() {
-                L.run(lua);
-            }
-        }, message);
+        return assertThrowsLua(error, () -> L.run(lua), message);
     }
 
     public static LuaException assertThrowsLua(LuaError error, Runnable f) {
@@ -402,12 +397,7 @@ public class LuaTestSuite<T extends AbstractLua> {
             assertNotNull(upAdd);
             J.load(upAdd, "upAdd.lua");
             J.push(24);
-            assertThrowsLua(LuaError.RUNTIME, new Runnable() {
-                @Override
-                public void run() {
-                    J.pCall(1, 1);
-                }
-            });
+            assertThrowsLua(LuaError.RUNTIME, () -> J.pCall(1, 1));
             J.run("value = 1000");
             upAdd.position(0);
             J.load(upAdd, "upAdd.lua");
@@ -486,31 +476,16 @@ public class LuaTestSuite<T extends AbstractLua> {
     private void testExternalLoader() {
         try (T t = constructor.get()) {
             LuaScriptSuite.addAssertThrows(t);
-            assertThrowsLua(LuaError.RUNTIME, new Runnable() {
-                @Override
-                public void run() {
-                    t.loadExternal("some.module");
-                }
-            });
+            assertThrowsLua(LuaError.RUNTIME, () -> t.loadExternal("some.module"));
             assertDoesNotThrow(
                     () -> t.setExternalLoader((module, L) -> ByteBuffer.allocate(0)));
             t.openLibrary("package");
             assertDoesNotThrow(
                     () -> t.setExternalLoader((module, L) -> ByteBuffer.allocate(0)));
-            assertThrowsLua(LuaError.MEMORY, new Runnable() {
-                @Override
-                public void run() {
-                    t.loadExternal("some.module");
-                }
-            });
+            assertThrowsLua(LuaError.MEMORY, () -> t.loadExternal("some.module"));
             assertDoesNotThrow(
                     () -> t.setExternalLoader(new ClassPathLoader()));
-            assertThrowsLua(LuaError.FILE, new Runnable() {
-                @Override
-                public void run() {
-                    t.loadExternal("some.module");
-                }
-            });
+            assertThrowsLua(LuaError.FILE, () -> t.loadExternal("some.module"));
             t.loadExternal("suite.importTest");
             t.pCall(0, Consts.LUA_MULTRET);
         }
@@ -661,25 +636,10 @@ public class LuaTestSuite<T extends AbstractLua> {
         byte[] bytes = s.getBytes();
         ByteBuffer wrap = ByteBuffer.wrap(bytes);
         assertFalse(wrap.isDirect());
-        assertThrowsLua(LuaError.MEMORY, new Runnable() {
-            @Override
-            public void run() {
-                L.load(wrap, "notDirectBuffer");
-            }
-        });
-        assertThrowsLua(LuaError.MEMORY, new Runnable() {
-            @Override
-            public void run() {
-                L.run(wrap, "notDirectBuffer");
-            }
-        });
+        assertThrowsLua(LuaError.MEMORY, () -> L.load(wrap, "notDirectBuffer"));
+        assertThrowsLua(LuaError.MEMORY, () -> L.run(wrap, "notDirectBuffer"));
         L.run(getDirect(s), "directBuffer");
-        assertThrowsLua(LuaError.RUNTIME, new Runnable() {
-            @Override
-            public void run() {
-                L.run(getDirect("print("), "directBuffer");
-            }
-        });
+        assertThrowsLua(LuaError.RUNTIME, () -> L.run(getDirect("print("), "directBuffer"));
         L.getGlobal("testRunnersString");
         assertEquals("Not OK", L.toString(-1));
         L.pop(1);
@@ -757,12 +717,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         assertFalse(L.equal(-1, -2));
         assertFalse(L.rawEqual(-1, -2));
         assertFalse(L.lessThan(-1, -2));
-        assertThrowsLua(LuaError.RUNTIME, new Runnable() {
-            @Override
-            public void run() {
-                L.run("a = 1 \n print(#a)");
-            }
-        });
+        assertThrowsLua(LuaError.RUNTIME, () -> L.run("a = 1 \n print(#a)"));
         L.push(Arrays.asList(1, 2, 3));
         assertEquals(3, L.rawLength(-1));
         L.pop(3);

@@ -132,13 +132,17 @@ public abstract class JuaAPI {
             Class<?> clazz = ClassUtils.forName(className, null);
             Method method = clazz.getDeclaredMethod(methodName, Lua.class);
             if (method.getReturnType() == int.class) {
-                L.push(l -> {
-                    try {
-                        return (Integer) method.invoke(null, l);
-                    } catch (IllegalAccessException e) {
-                        return l.error(e);
-                    } catch (InvocationTargetException e) {
-                        return l.error(e.getCause());
+                //noinspection Convert2Lambda
+                L.push(new JFunction() {
+                    @Override
+                    public int __call(Lua l) {
+                        try {
+                            return (Integer) method.invoke(null, l);
+                        } catch (IllegalAccessException e) {
+                            return l.error(e);
+                        } catch (InvocationTargetException e) {
+                            return l.error(e.getCause());
+                        }
                     }
                 });
                 return 1;

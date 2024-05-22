@@ -67,7 +67,13 @@ public class LuaInstances<T> {
 
     protected synchronized Token<T> add() {
         int id = addNullable(null);
-        return new Token<>(id, lua -> set(id, lua));
+        //noinspection Convert2Lambda
+        return new Token<>(id, new Token.Consumer<T>() {
+            @Override
+            public void accept(T lua) {
+                LuaInstances.this.set(id, lua);
+            }
+        });
     }
 
     private synchronized void set(int id, @Nullable T instance) {
