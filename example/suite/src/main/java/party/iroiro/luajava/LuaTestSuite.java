@@ -596,7 +596,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.openLibrary("coroutine");
         Lua sub = L.newThread();
         assertEquals(LuaError.OK, sub.status());
-        sub.getGlobal("print");
+        sub.getGlobal("assert");
         sub.push(true);
         assertFalse(sub.resume(1));
         sub.run("function threadCoroutineTest()\n" +
