@@ -14,11 +14,6 @@ import party.iroiro.luajava.luajit.LuaJit;
  * Tests creating threads from the Lua side.
  */
 public class ThreadCreatingTest {
-    @Test
-    public void threadCreatingTestJ() {
-        testLuaCreatingThreads(new LuaJ(), false);
-    }
-
     @SuppressWarnings("resource")
     @Test
     public void threadCreatingTestLua() {
@@ -28,12 +23,13 @@ public class ThreadCreatingTest {
                 new Lua53(),
                 new Lua54(),
                 new LuaJit(),
+                new LuaJ(),
         }) {
-            testLuaCreatingThreads(L, true);
+            testLuaCreatingThreads(L);
         }
     }
 
-    public void testLuaCreatingThreads(Lua L, boolean sync) {
+    public void testLuaCreatingThreads(Lua L) {
         try {
             L.openLibraries();
             L.setExternalLoader(new ClassPathLoader());
@@ -41,13 +37,6 @@ public class ThreadCreatingTest {
             K.loadExternal("threads.threadCreating");
             while (true) {
                 synchronized (K.getMainState()) {
-                    if (sync) {
-                        if (!K.resume(0)) {
-                            break;
-                        }
-                    }
-                }
-                if (!sync) {
                     if (!K.resume(0)) {
                         break;
                     }
