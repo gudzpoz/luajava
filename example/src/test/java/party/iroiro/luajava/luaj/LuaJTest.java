@@ -4,10 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
-import org.opentest4j.AssertionFailedError;
 import party.iroiro.luajava.*;
 
-import java.time.Duration;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,7 +52,7 @@ public class LuaJTest {
             assertEquals("", L.toString(-1));
 
             assertLuaThrows(L, "java.array(1)",
-                            "bad argument #1 to 'java.array': __jclass__ or __jobject__ expected");
+                    "bad argument #1 to 'java.array': __jclass__ or __jobject__ expected");
             assertLuaThrows(L, "java.unwrap(1)", "bad argument #1 to java.unwrap");
             L.run("s = java.import('java.lang.String')('new string')");
             assertLuaThrows(L, "java.new(1)", "bad argument #1 to 'java.new': __jclass__ or __jobject__ expected");
@@ -183,17 +181,14 @@ public class LuaJTest {
 
     @Test
     public void testLuaJCoroutine() {
-        // FIXME: Re-implement LuaJ coroutine/threads using a single-threaded executor.
-        assertThrows(AssertionFailedError.class, () -> assertTimeoutPreemptively(Duration.ofSeconds(3), () -> {
-            try (Lua L = new LuaJ()) {
-                synchronized (L.getMainState()) {
-                    L.openLibraries();
-                    L.setExternalLoader(new ClassPathLoader());
-                    L.loadExternal("threads.luaJCoroutineTest");
-                    L.pCall(0, Consts.LUA_MULTRET);
-                }
+        try (Lua L = new LuaJ()) {
+            synchronized (L.getMainState()) {
+                L.openLibraries();
+                L.setExternalLoader(new ClassPathLoader());
+                L.loadExternal("threads.luaJCoroutineTest");
+                L.pCall(0, Consts.LUA_MULTRET);
             }
-        }));
+        }
     }
 
     @Test

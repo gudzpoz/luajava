@@ -33,7 +33,6 @@ import java.nio.Buffer;
  * Lua documentation to confirm.
  * </p>
  */
-@SuppressWarnings("unused")
 public abstract class LuaNative {
 
     /**

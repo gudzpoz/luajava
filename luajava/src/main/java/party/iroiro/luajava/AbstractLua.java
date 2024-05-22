@@ -50,9 +50,7 @@ public abstract class AbstractLua implements Lua {
     protected final ConcurrentHashMap<Integer, LuaReference<?>> recordedReferences;
 
     static AbstractLua getInstance(int lid) {
-        AbstractLua L = instances.get(lid);
-        L.recycleReferences();
-        return L;
+        return instances.get(lid);
     }
 
     protected final LuaNative C;
@@ -623,8 +621,10 @@ public abstract class AbstractLua implements Lua {
         return lua;
     }
 
-    public synchronized void addSubThread(Lua lua) {
-        subThreads.add(lua);
+    protected void addSubThread(Lua lua) {
+        synchronized (subThreads) {
+            subThreads.add(lua);
+        }
     }
 
     protected abstract AbstractLua newThread(long L, int id, AbstractLua mainThread);
@@ -780,9 +780,7 @@ public abstract class AbstractLua implements Lua {
     @Override
     public void gc() {
         recycleReferences();
-        synchronized (getMainState()) {
-            C.luaJ_gc(L);
-        }
+        C.luaJ_gc(L);
     }
 
     @Override
@@ -960,15 +958,17 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void close() {
-        synchronized (mainThread) {
-            if (mainThread == this) {
+        if (mainThread == this) {
+            synchronized (subThreads) {
                 for (Lua lua : subThreads) {
                     instances.remove(lua.getId());
                 }
                 subThreads.clear();
                 instances.remove(id);
                 C.lua_close(L);
-            } else {
+            }
+        } else {
+            synchronized (mainThread.subThreads) {
                 if (mainThread.subThreads.remove(this)) {
                     C.luaJ_removestateindex(L);
                     instances.remove(getId());
@@ -1110,13 +1110,11 @@ public abstract class AbstractLua implements Lua {
      * Do {@link #unref(int)} on all references in {@link #recyclableReferences}
      */
     private void recycleReferences() {
-        synchronized (getMainState()) {
-            LuaReference<?> ref = (LuaReference<?>) mainThread.recyclableReferences.poll();
-            while (ref != null) {
-                mainThread.recordedReferences.remove(ref.getReference());
-                unref(ref.getReference());
-                ref = (LuaReference<?>) mainThread.recyclableReferences.poll();
-            }
+        LuaReference<?> ref = (LuaReference<?>) mainThread.recyclableReferences.poll();
+        while (ref != null) {
+            mainThread.recordedReferences.remove(ref.getReference());
+            unref(ref.getReference());
+            ref = (LuaReference<?>) mainThread.recyclableReferences.poll();
         }
     }
 
