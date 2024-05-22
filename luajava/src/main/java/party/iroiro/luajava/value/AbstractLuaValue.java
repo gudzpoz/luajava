@@ -120,4 +120,14 @@ public abstract class AbstractLuaValue<T extends Lua>
     public boolean toBoolean() {
         return toInteger() != 0;
     }
+
+    public Object toProxy(Class<?>... interfaces) {
+        return toProxy(interfaces, Lua.Conversion.SEMI);
+    }
+
+    @Override
+    public Object toProxy(Class<?>[] interfaces, Lua.Conversion degree) {
+        push(L);
+        return L.createProxy(interfaces, degree);
+    }
 }

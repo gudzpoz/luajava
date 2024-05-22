@@ -92,4 +92,9 @@ public class LuaJ extends AbstractLua {
                 throw new LuaException(LuaError.RUNTIME, "Unrecognized type code");
         }
     }
+
+    @Override
+    protected boolean shouldSynchronize() {
+        return !LuaJNatives.FunctionInvoker.isInsideCoroutine();
+    }
 }

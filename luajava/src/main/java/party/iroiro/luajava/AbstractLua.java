@@ -1118,4 +1118,30 @@ public abstract class AbstractLua implements Lua {
         }
     }
 
+    /**
+     * A method specifically for working around deadlocks caused by LuaJ.
+     *
+     * <p>
+     * In LuaJ bindings, without this work-around, deadlocks can happen when:
+     * </p>
+     * <pre><code>
+     * 1. (Thread#A) The user synchronizes on mainThread as is required by LuaJava when used
+     *    in multi-threaded environment.
+     * 2. (Thread#A) The user calls {@link #run(String)} for example, to run a Lua snippet.
+     * 3. The snippet creates a coroutine, mandating LuaJ to create a Java thread (#B).
+     * 4. Inside the coroutine (i.e., the Java thread#B), the code calls a Lua proxy object.
+     * 5. (Thread#B) {@link LuaProxy#invoke(Object, Method, Object[])} tries to synchronizes
+     *    on mainThread.
+     * 6. Since thread#A is already inside a synchronization block, the two threads deadlocks.
+     * </code></pre>
+     * <p>
+     * This work-around asks {@link LuaProxy#invoke(Object, Method, Object[])} to avoid synchronization
+     * when it detects that it is called from a coroutine thread created by LuaJ.
+     * </p>
+     *
+     * @return {@code false} only when invoke within a coroutine thread created by LuaJ
+     */
+    protected boolean shouldSynchronize() {
+        return true;
+    }
 }

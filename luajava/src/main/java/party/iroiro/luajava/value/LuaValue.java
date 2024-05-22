@@ -70,4 +70,21 @@ public interface LuaValue extends LuaTableTrait {
 
     String toString();
 
+    /**
+     * Creates a proxy from this value with {@link Lua#createProxy(Class[], Lua.Conversion)}.
+     *
+     * @param interfaces the interfaces the proxy should implement.
+     * @return the proxy object
+     */
+    Object toProxy(Class<?>... interfaces);
+
+    /**
+     * Creates a proxy from this value with {@link Lua#createProxy(Class[], Lua.Conversion)}.
+     *
+     * @param interfaces the interfaces the proxy should implement.
+     * @param degree the conversion used
+     * @return the proxy object
+     */
+    Object toProxy(Class<?>[] interfaces, Lua.Conversion degree);
+
 }

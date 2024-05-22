@@ -1021,11 +1021,19 @@ public class LuaJNatives extends LuaNative {
         return luaJ_tobuffer(ptr, index);
     }
 
-    private static class FunctionInvoker extends VarArgFunction {
+    protected static class FunctionInvoker extends VarArgFunction {
+        public final static ThreadLocal<Boolean> insideCoroutine = new ThreadLocal<>();
+
+        public static boolean isInsideCoroutine() {
+            Boolean b = insideCoroutine.get();
+            return b != null && b;
+        }
+
         LuaValue function;
 
         @Override
         public Varargs invoke(Varargs args) {
+            insideCoroutine.set(true);
             return function.invoke(args);
         }
 

@@ -86,6 +86,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.openLibraries();
         LuaScriptSuite.addAssertThrows(L);
         test64BitInteger();
+        testCoroutineDeadlock();
         testDump();
         testException();
         testExternalLoader();
@@ -106,6 +107,34 @@ public class LuaTestSuite<T extends AbstractLua> {
         testStackPositions();
         testTableOperations();
         testThreads();
+    }
+
+    private void testCoroutineDeadlock() {
+        Thread t = new Thread(() -> {
+            try (T L = constructor.get()) {
+                synchronized (L.getMainState()) {
+                    L.openLibrary("coroutine");
+                    Object proxy = L.execute("return { run = function() end }")[0]
+                            .toProxy(Runnable.class);
+                    L.set("proxy", proxy);
+                    L.run("\n" +
+                            "c = coroutine.wrap(function()\n" +
+                            "  proxy:run()\n" +
+                            "end)\n" +
+                            "return c()\n");
+                }
+            }
+        });
+        t.start();
+        try {
+            t.join(10000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        if (t.isAlive()) {
+            t.interrupt();
+            fail("Coroutine deadlocks");
+        }
     }
 
     private void test64BitInteger() {
@@ -786,7 +815,6 @@ public class LuaTestSuite<T extends AbstractLua> {
         assertEquals(LIGHTUSERDATA, L.type(-1));
         String typename = L.getLuaNative().luaL_typename(L.L, -1);
         assertTrue("lightuserdata".equals(typename) || "userdata".equals(typename));
-        //noinspection resource
         assertInstanceOf(LuaValue.class, Objects.requireNonNull(L.toObject(-1)));
         assertNull(L.toObject(-1, Void.class));
         assertNull(L.toObject(-1, Integer.class));
