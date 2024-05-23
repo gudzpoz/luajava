@@ -764,7 +764,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         }
         L.pop(expected.length);
 
-        LuaNative luaNative = L.getLuaNative();
+        LuaNatives luaNative = L.getLuaNative();
 
         luaNative.lua_pushlightuserdata(L.getPointer(), 0);
         assertEquals(LIGHTUSERDATA, L.type(-1));
@@ -832,7 +832,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         }
     }
 
-    private void testToMap(LuaNative luaNative) {
+    private void testToMap(LuaNatives luaNative) {
         L.push(true);
         assertNull(L.toMap(-1));
         HashMap<Object, Object> emptyMap = new HashMap<>();

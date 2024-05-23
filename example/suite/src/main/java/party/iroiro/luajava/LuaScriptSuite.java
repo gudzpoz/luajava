@@ -73,37 +73,17 @@ public class LuaScriptSuite<T extends AbstractLua> {
             new ScriptTester("/suite/otherConvTest.lua", L -> {
                 L.push(new OtherTypes(), Lua.Conversion.NONE);
                 L.setGlobal("others");
-                LuaNative C = L.getLuaNative();
+                LuaNatives C = L.getLuaNative();
                 if (C instanceof Lua51Natives) {
-                    new Lua51Natives() {
-                        {
-                            lua_newuserdata(L.getPointer(), 1024);
-                        }
-                    };
+                    ((Lua51Natives) C).lua_newuserdata(L.getPointer(), 1024);
                 } else if (C instanceof Lua52Natives) {
-                    new Lua52Natives() {
-                        {
-                            lua_newuserdata(L.getPointer(), 1024);
-                        }
-                    };
+                    ((Lua52Natives) C).lua_newuserdata(L.getPointer(), 1024);
                 } else if (C instanceof Lua53Natives) {
-                    new Lua53Natives() {
-                        {
-                            lua_newuserdata(L.getPointer(), 1024);
-                        }
-                    };
+                    ((Lua53Natives) C).lua_newuserdata(L.getPointer(), 1024);
                 } else if (C instanceof Lua54Natives) {
-                    new Lua54Natives() {
-                        {
-                            lua_newuserdatauv(L.getPointer(), 1024, 0);
-                        }
-                    };
+                    ((Lua54Natives) C).lua_newuserdatauv(L.getPointer(), 1024, 0);
                 } else if (C instanceof LuaJitNatives) {
-                    new LuaJitNatives() {
-                        {
-                            lua_newuserdata(L.getPointer(), 1024);
-                        }
-                    };
+                    ((LuaJitNatives) C).lua_newuserdata(L.getPointer(), 1024);
                 } else if (C.getClass().getName().endsWith("LuaJNatives")) {
                     // This is tested instead in NativesTest,
                     // because our Android build has trouble desugaring and cannot run LuaJ.

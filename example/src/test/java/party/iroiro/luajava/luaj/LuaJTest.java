@@ -128,11 +128,11 @@ public class LuaJTest {
             assertEquals("message", L.toString(-1));
             L.run("return function() assert(false) end");
             L.run("return function() local t = nil; return t.msg end");
-            C.luaJ_pcall(ptr, 0, 0, -2);
+            C.lua_pcall(ptr, 0, 0, -2);
             assertTrue(Objects.requireNonNull(L.toString(-1)).contains("assertion failed"));
 
             L.run("return function() return 3 end");
-            C.luaJ_pcall(ptr, 0, 3, 0);
+            C.lua_pcall(ptr, 0, 3, 0);
             assertTrue(L.isNil(-1));
             assertTrue(L.isNil(-2));
             assertTrue(L.isNumber(-3));
@@ -162,7 +162,6 @@ public class LuaJTest {
         try (Lua L = new LuaJ()) {
             LuaJNatives natives = (LuaJNatives) L.getLuaNative();
             long p = L.getPointer();
-            assertEquals("BBB", natives.luaL_gsub(p, "AAA", "A", "B"));
 
             L.run("local a = 'up'; return function() return a end");
             assertEquals("", natives.lua_getupvalue(p, -1, 0));
@@ -195,13 +194,10 @@ public class LuaJTest {
     public void luaJNativesUserDataTest() {
         try (LuaJ L = new LuaJ()) {
             Object object = new Object();
-            new LuaJNatives() {
-                {
-                    lua_newuserdata(L.getPointer(), object);
-                    assertEquals(USERDATA, L.type(-1));
-                    L.setGlobal("customObject");
-                }
-            };
+            LuaJNatives C = (LuaJNatives) L.getLuaNative();
+            C.lua_newuserdata(L.getPointer(), object);
+            assertEquals(USERDATA, L.type(-1));
+            L.setGlobal("customObject");
             L.set("object", object);
             L.run("assert(object ~= customObject)");
         }

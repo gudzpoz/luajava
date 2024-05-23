@@ -25,7 +25,7 @@ package party.iroiro.luajava.lua52;
 import party.iroiro.luajava.AbstractLua;
 import party.iroiro.luajava.LuaException;
 import party.iroiro.luajava.LuaException.LuaError;
-import party.iroiro.luajava.LuaNative;
+import party.iroiro.luajava.LuaNatives;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -50,7 +50,7 @@ public class Lua52 extends AbstractLua {
         super(main.getLuaNative(), L, id, main);
     }
 
-    private static LuaNative getNatives() throws LinkageError {
+    private static LuaNatives getNatives() throws LinkageError {
         synchronized (natives) {
             if (natives.get() == null) {
                 try {

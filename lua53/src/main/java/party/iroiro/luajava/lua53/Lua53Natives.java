@@ -25,7 +25,7 @@ package party.iroiro.luajava.lua53;
 import java.util.concurrent.atomic.AtomicReference;
 import java.nio.Buffer;
 
-import party.iroiro.luajava.LuaNative;
+import party.iroiro.luajava.LuaNatives;
 import party.iroiro.luajava.util.GlobalLibraryLoader;
 
 /**
@@ -103,7 +103,7 @@ import party.iroiro.luajava.util.GlobalLibraryLoader;
  * </ul>
  */
 @SuppressWarnings({"unused", "rawtypes"})
-public class Lua53Natives extends LuaNative {
+public class Lua53Natives implements LuaNatives {
         /*JNI
             #include "luacustomamalg.h"
 
@@ -163,7 +163,7 @@ public class Lua53Natives extends LuaNative {
     /**
      * Get <code>LUA_REGISTRYINDEX</code>, which is a computed compile time constant
      */
-    protected native int getRegistryIndex(); /*
+    public native int getRegistryIndex(); /*
         return LUA_REGISTRYINDEX;
     */
 
@@ -188,7 +188,7 @@ public class Lua53Natives extends LuaNative {
      * @param idx the stack position
      * @return see description
      */
-    protected native int lua_absindex(long ptr, int idx); /*
+    public native int lua_absindex(long ptr, int idx); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_absindex((lua_State *) L, (int) idx);
@@ -257,7 +257,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param op the operator
      */
-    protected native void lua_arith(long ptr, int op); /*
+    public native void lua_arith(long ptr, int op); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_arith((lua_State *) L, (int) op);
@@ -292,7 +292,7 @@ public class Lua53Natives extends LuaNative {
      * @param n the number of elements
      * @return see description
      */
-    protected native int lua_checkstack(long ptr, int n); /*
+    public native int lua_checkstack(long ptr, int n); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_checkstack((lua_State *) L, (int) n);
@@ -324,7 +324,7 @@ public class Lua53Natives extends LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      */
-    protected native void lua_close(long ptr); /*
+    public native void lua_close(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_close((lua_State *) L);
@@ -373,7 +373,7 @@ public class Lua53Natives extends LuaNative {
      * @param op the operator
      * @return see description
      */
-    protected native int lua_compare(long ptr, int index1, int index2, int op); /*
+    public native int lua_compare(long ptr, int index1, int index2, int op); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_compare((lua_State *) L, (int) index1, (int) index2, (int) op);
@@ -405,7 +405,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param n the number of elements
      */
-    protected native void lua_concat(long ptr, int n); /*
+    public native void lua_concat(long ptr, int n); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_concat((lua_State *) L, (int) n);
@@ -434,7 +434,7 @@ public class Lua53Natives extends LuaNative {
      * @param fromidx a stack position
      * @param toidx another stack position
      */
-    protected native void lua_copy(long ptr, int fromidx, int toidx); /*
+    public native void lua_copy(long ptr, int fromidx, int toidx); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_copy((lua_State *) L, (int) fromidx, (int) toidx);
@@ -468,7 +468,7 @@ public class Lua53Natives extends LuaNative {
      * @param narr the number of pre-allocated array elements
      * @param nrec the number of pre-allocated non-array elements
      */
-    protected native void lua_createtable(long ptr, int narr, int nrec); /*
+    public native void lua_createtable(long ptr, int narr, int nrec); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_createtable((lua_State *) L, (int) narr, (int) nrec);
@@ -497,7 +497,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected native int lua_error(long ptr); /*
+    public native int lua_error(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_error((lua_State *) L);
@@ -590,7 +590,7 @@ public class Lua53Natives extends LuaNative {
      * @param data data
      * @return see description
      */
-    protected native int lua_gc(long ptr, int what, int data); /*
+    public native int lua_gc(long ptr, int what, int data); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_gc((lua_State *) L, (int) what, (int) data);
@@ -625,7 +625,7 @@ public class Lua53Natives extends LuaNative {
      * @param k the field name
      * @return see description
      */
-    protected native int lua_getfield(long ptr, int index, String k); /*
+    public native int lua_getfield(long ptr, int index, String k); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_getfield((lua_State *) L, (int) index, (const char *) k);
@@ -659,7 +659,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @param k the field name
      */
-    protected native void luaJ_getfield(long ptr, int index, String k); /*
+    public native void luaJ_getfield(long ptr, int index, String k); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_getfield((lua_State *) L, (int) index, (const char *) k);
@@ -698,7 +698,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected native long lua_getextraspace(long ptr); /*
+    public native long lua_getextraspace(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) lua_getextraspace((lua_State *) L);
@@ -726,7 +726,7 @@ public class Lua53Natives extends LuaNative {
      * @param name the name
      * @return see description
      */
-    protected native int lua_getglobal(long ptr, String name); /*
+    public native int lua_getglobal(long ptr, String name); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_getglobal((lua_State *) L, (const char *) name);
@@ -753,7 +753,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param name the name
      */
-    protected native void luaJ_getglobal(long ptr, String name); /*
+    public native void luaJ_getglobal(long ptr, String name); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_getglobal((lua_State *) L, (const char *) name);
@@ -787,7 +787,7 @@ public class Lua53Natives extends LuaNative {
      * @param i i
      * @return see description
      */
-    protected native int lua_geti(long ptr, int index, long i); /*
+    public native int lua_geti(long ptr, int index, long i); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_geti((lua_State *) L, (int) index, (lua_Integer) i);
@@ -821,7 +821,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @param i i
      */
-    protected native void luaJ_geti(long ptr, int index, long i); /*
+    public native void luaJ_geti(long ptr, int index, long i); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_geti((lua_State *) L, (int) index, (lua_Integer) i);
@@ -850,7 +850,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_getmetatable(long ptr, int index); /*
+    public native int lua_getmetatable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_getmetatable((lua_State *) L, (int) index);
@@ -890,7 +890,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_gettable(long ptr, int index); /*
+    public native int lua_gettable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_gettable((lua_State *) L, (int) index);
@@ -929,7 +929,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected native void luaJ_gettable(long ptr, int index); /*
+    public native void luaJ_gettable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_gettable((lua_State *) L, (int) index);
@@ -957,7 +957,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected native int lua_gettop(long ptr); /*
+    public native int lua_gettop(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_gettop((lua_State *) L);
@@ -989,7 +989,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_getuservalue(long ptr, int index); /*
+    public native int lua_getuservalue(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_getuservalue((lua_State *) L, (int) index);
@@ -1018,7 +1018,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected native void lua_insert(long ptr, int index); /*
+    public native void lua_insert(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_insert((lua_State *) L, (int) index);
@@ -1045,7 +1045,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_isboolean(long ptr, int index); /*
+    public native int lua_isboolean(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_isboolean((lua_State *) L, (int) index);
@@ -1073,7 +1073,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_iscfunction(long ptr, int index); /*
+    public native int lua_iscfunction(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_iscfunction((lua_State *) L, (int) index);
@@ -1101,7 +1101,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_isfunction(long ptr, int index); /*
+    public native int lua_isfunction(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_isfunction((lua_State *) L, (int) index);
@@ -1130,7 +1130,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_isinteger(long ptr, int index); /*
+    public native int lua_isinteger(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_isinteger((lua_State *) L, (int) index);
@@ -1158,7 +1158,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_islightuserdata(long ptr, int index); /*
+    public native int lua_islightuserdata(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_islightuserdata((lua_State *) L, (int) index);
@@ -1186,7 +1186,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_isnil(long ptr, int index); /*
+    public native int lua_isnil(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_isnil((lua_State *) L, (int) index);
@@ -1214,7 +1214,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_isnone(long ptr, int index); /*
+    public native int lua_isnone(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_isnone((lua_State *) L, (int) index);
@@ -1243,7 +1243,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_isnoneornil(long ptr, int index); /*
+    public native int lua_isnoneornil(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_isnoneornil((lua_State *) L, (int) index);
@@ -1272,7 +1272,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_isnumber(long ptr, int index); /*
+    public native int lua_isnumber(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_isnumber((lua_State *) L, (int) index);
@@ -1301,7 +1301,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_isstring(long ptr, int index); /*
+    public native int lua_isstring(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_isstring((lua_State *) L, (int) index);
@@ -1329,7 +1329,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_istable(long ptr, int index); /*
+    public native int lua_istable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_istable((lua_State *) L, (int) index);
@@ -1357,7 +1357,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_isthread(long ptr, int index); /*
+    public native int lua_isthread(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_isthread((lua_State *) L, (int) index);
@@ -1385,7 +1385,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_isuserdata(long ptr, int index); /*
+    public native int lua_isuserdata(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_isuserdata((lua_State *) L, (int) index);
@@ -1412,7 +1412,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected native int lua_isyieldable(long ptr); /*
+    public native int lua_isyieldable(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_isyieldable((lua_State *) L);
@@ -1441,7 +1441,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected native void lua_len(long ptr, int index); /*
+    public native void lua_len(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_len((lua_State *) L, (int) index);
@@ -1466,7 +1466,7 @@ public class Lua53Natives extends LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      */
-    protected native void lua_newtable(long ptr); /*
+    public native void lua_newtable(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_newtable((lua_State *) L);
@@ -1501,7 +1501,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected native long lua_newthread(long ptr); /*
+    public native long lua_newthread(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) lua_newthread((lua_State *) L);
@@ -1531,7 +1531,7 @@ public class Lua53Natives extends LuaNative {
      * @param size size
      * @return see description
      */
-    protected native long lua_newuserdata(long ptr, long size); /*
+    public native long lua_newuserdata(long ptr, long size); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) lua_newuserdata((lua_State *) L, (size_t) size);
@@ -1593,7 +1593,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_next(long ptr, int index); /*
+    public native int lua_next(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_next((lua_State *) L, (int) index);
@@ -1693,109 +1693,11 @@ public class Lua53Natives extends LuaNative {
      * @param msgh stack position of message handler
      * @return see description
      */
-    protected native int lua_pcall(long ptr, int nargs, int nresults, int msgh); /*
+    public native int lua_pcall(long ptr, int nargs, int nresults, int msgh); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_pcall((lua_State *) L, (int) nargs, (int) nresults, (int) msgh);
         return returnValueReceiver;
-    */
-
-
-    /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.3/manual.html#lua_pcall"><code>lua_pcall</code></a>
-     *
-     * <pre><code>
-     * [-(nargs + 1), +(nresults|1), –]
-     * </code></pre>
-     *
-     * <pre><code>
-     * int lua_pcall (lua_State *L, int nargs, int nresults, int msgh);
-     * </code></pre>
-     *
-     * <p>
-     * Calls a function in protected mode.
-     * </p>
-     *
-     * <p>
-     * Both <code>nargs</code> and <code>nresults</code> have the same meaning as
-     * in <a href="https://www.lua.org/manual/5.3/manual.html#lua_call"><code>lua_call</code></a>.
-     * If there are no errors during the call,
-     * <a href="https://www.lua.org/manual/5.3/manual.html#lua_pcall"><code>lua_pcall</code></a> behaves exactly like <a href="https://www.lua.org/manual/5.3/manual.html#lua_call"><code>lua_call</code></a>.
-     * However, if there is any error,
-     * <a href="https://www.lua.org/manual/5.3/manual.html#lua_pcall"><code>lua_pcall</code></a> catches it,
-     * pushes a single value on the stack (the error object),
-     * and returns an error code.
-     * Like <a href="https://www.lua.org/manual/5.3/manual.html#lua_call"><code>lua_call</code></a>,
-     * <a href="https://www.lua.org/manual/5.3/manual.html#lua_pcall"><code>lua_pcall</code></a> always removes the function
-     * and its arguments from the stack.
-     * </p>
-     *
-     * <p>
-     * If <code>msgh</code> is 0,
-     * then the error object returned on the stack
-     * is exactly the original error object.
-     * Otherwise, <code>msgh</code> is the stack index of a
-     * <em>message handler</em>.
-     * (This index cannot be a pseudo-index.)
-     * In case of runtime errors,
-     * this function will be called with the error object
-     * and its return value will be the object
-     * returned on the stack by <a href="https://www.lua.org/manual/5.3/manual.html#lua_pcall"><code>lua_pcall</code></a>.
-     * </p>
-     *
-     * <p>
-     * Typically, the message handler is used to add more debug
-     * information to the error object, such as a stack traceback.
-     * Such information cannot be gathered after the return of <a href="https://www.lua.org/manual/5.3/manual.html#lua_pcall"><code>lua_pcall</code></a>,
-     * since by then the stack has unwound.
-     * </p>
-     *
-     * <p>
-     * The <a href="https://www.lua.org/manual/5.3/manual.html#lua_pcall"><code>lua_pcall</code></a> function returns one of the following constants
-     * (defined in <code>lua.h</code>):
-     * </p>
-     *
-     * <ul>
-     *
-     * <li>
-     * <b><a><code>LUA_OK</code></a> (0): </b>
-     * success.</li>
-     *
-     * <li>
-     * <b><a><code>LUA_ERRRUN</code></a>: </b>
-     * a runtime error.
-     * </li>
-     *
-     * <li>
-     * <b><a><code>LUA_ERRMEM</code></a>: </b>
-     * memory allocation error.
-     * For such errors, Lua does not call the message handler.
-     * </li>
-     *
-     * <li>
-     * <b><a><code>LUA_ERRERR</code></a>: </b>
-     * error while running the message handler.
-     * </li>
-     *
-     * <li>
-     * <b><a><code>LUA_ERRGCMM</code></a>: </b>
-     * error while running a <code>__gc</code> metamethod.
-     * For such errors, Lua does not call the message handler
-     * (as this kind of error typically has no relation
-     * with the function being called).
-     * </li>
-     *
-     * </ul>
-     *
-     * @param ptr the <code>lua_State*</code> pointer
-     * @param nargs the number of arguments that you pushed onto the stack
-     * @param nresults the number of results, or <code>LUA_MULTRET</code>
-     * @param msgh stack position of message handler
-     */
-    protected native void luaJ_pcall(long ptr, int nargs, int nresults, int msgh); /*
-        lua_State * L = (lua_State *) ptr;
-
-        lua_pcall((lua_State *) L, (int) nargs, (int) nresults, (int) msgh);
     */
 
 
@@ -1817,7 +1719,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param n the number of elements
      */
-    protected native void lua_pop(long ptr, int n); /*
+    public native void lua_pop(long ptr, int n); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_pop((lua_State *) L, (int) n);
@@ -1842,7 +1744,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param b boolean
      */
-    protected native void lua_pushboolean(long ptr, int b); /*
+    public native void lua_pushboolean(long ptr, int b); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_pushboolean((lua_State *) L, (int) b);
@@ -1866,7 +1768,7 @@ public class Lua53Natives extends LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      */
-    protected native void lua_pushglobaltable(long ptr); /*
+    public native void lua_pushglobaltable(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_pushglobaltable((lua_State *) L);
@@ -1891,7 +1793,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param n the number / the number of elements
      */
-    protected native void lua_pushinteger(long ptr, long n); /*
+    public native void lua_pushinteger(long ptr, long n); /*
         lua_State * L = (lua_State *) ptr;
         // What we want to achieve here is:
         // Pushing any Java number (long or double) always results in an approximated number on the stack,
@@ -1940,7 +1842,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param p the pointer
      */
-    protected native void lua_pushlightuserdata(long ptr, long p); /*
+    public native void lua_pushlightuserdata(long ptr, long p); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_pushlightuserdata((lua_State *) L, (void *) p);
@@ -1964,7 +1866,7 @@ public class Lua53Natives extends LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      */
-    protected native void lua_pushnil(long ptr); /*
+    public native void lua_pushnil(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_pushnil((lua_State *) L);
@@ -1989,7 +1891,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param n the number / the number of elements
      */
-    protected native void lua_pushnumber(long ptr, double n); /*
+    public native void lua_pushnumber(long ptr, double n); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_pushnumber((lua_State *) L, (lua_Number) n);
@@ -2027,7 +1929,7 @@ public class Lua53Natives extends LuaNative {
      * @param s the string
      * @return see description
      */
-    protected native String lua_pushstring(long ptr, String s); /*
+    public native String lua_pushstring(long ptr, String s); /*
         lua_State * L = (lua_State *) ptr;
 
         const char * returnValueReceiver = (const char *) lua_pushstring((lua_State *) L, (const char *) s);
@@ -2065,7 +1967,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param s the string
      */
-    protected native void luaJ_pushstring(long ptr, String s); /*
+    public native void luaJ_pushstring(long ptr, String s); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_pushstring((lua_State *) L, (const char *) s);
@@ -2091,7 +1993,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected native int lua_pushthread(long ptr); /*
+    public native int lua_pushthread(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_pushthread((lua_State *) L);
@@ -2118,7 +2020,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected native void lua_pushvalue(long ptr, int index); /*
+    public native void lua_pushvalue(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_pushvalue((lua_State *) L, (int) index);
@@ -2149,7 +2051,7 @@ public class Lua53Natives extends LuaNative {
      * @param index2 the stack position of the second element
      * @return see description
      */
-    protected native int lua_rawequal(long ptr, int index1, int index2); /*
+    public native int lua_rawequal(long ptr, int index1, int index2); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_rawequal((lua_State *) L, (int) index1, (int) index2);
@@ -2177,7 +2079,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_rawget(long ptr, int index); /*
+    public native int lua_rawget(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_rawget((lua_State *) L, (int) index);
@@ -2204,7 +2106,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected native void luaJ_rawget(long ptr, int index); /*
+    public native void luaJ_rawget(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_rawget((lua_State *) L, (int) index);
@@ -2238,7 +2140,7 @@ public class Lua53Natives extends LuaNative {
      * @param n the number / the number of elements
      * @return see description
      */
-    protected native int lua_rawgeti(long ptr, int index, long n); /*
+    public native int lua_rawgeti(long ptr, int index, long n); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_rawgeti((lua_State *) L, (int) index, (lua_Integer) n);
@@ -2272,7 +2174,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @param n the number of elements
      */
-    protected native void luaJ_rawgeti(long ptr, int index, int n); /*
+    public native void luaJ_rawgeti(long ptr, int index, int n); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_rawgeti((lua_State *) L, (int) index, (lua_Integer) n);
@@ -2307,7 +2209,7 @@ public class Lua53Natives extends LuaNative {
      * @param p the lightuserdata
      * @return see description
      */
-    protected native int lua_rawgetp(long ptr, int index, long p); /*
+    public native int lua_rawgetp(long ptr, int index, long p); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_rawgetp((lua_State *) L, (int) index, (const void *) p);
@@ -2340,7 +2242,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native long lua_rawlen(long ptr, int index); /*
+    public native long lua_rawlen(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) lua_rawlen((lua_State *) L, (int) index);
@@ -2367,7 +2269,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected native void lua_rawset(long ptr, int index); /*
+    public native void lua_rawset(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_rawset((lua_State *) L, (int) index);
@@ -2401,7 +2303,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @param i i
      */
-    protected native void lua_rawseti(long ptr, int index, int i); /*
+    public native void lua_rawseti(long ptr, int index, int i); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_rawseti((lua_State *) L, (int) index, (lua_Integer) i);
@@ -2436,7 +2338,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @param p the lightuserdata
      */
-    protected native void lua_rawsetp(long ptr, int index, long p); /*
+    public native void lua_rawsetp(long ptr, int index, long p); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_rawsetp((lua_State *) L, (int) index, (const void *) p);
@@ -2464,7 +2366,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected native void lua_remove(long ptr, int index); /*
+    public native void lua_remove(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_remove((lua_State *) L, (int) index);
@@ -2492,7 +2394,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected native void lua_replace(long ptr, int index); /*
+    public native void lua_replace(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_replace((lua_State *) L, (int) index);
@@ -2555,7 +2457,7 @@ public class Lua53Natives extends LuaNative {
      * @param nargs the number of arguments that you pushed onto the stack
      * @return see description
      */
-    protected native int lua_resume(long ptr, long from, int nargs); /*
+    public native int lua_resume(long ptr, long from, int nargs); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_resume((lua_State *) L, (lua_State *) from, (int) nargs);
@@ -2591,7 +2493,7 @@ public class Lua53Natives extends LuaNative {
      * @param idx the stack position
      * @param n the number of elements
      */
-    protected native void lua_rotate(long ptr, int idx, int n); /*
+    public native void lua_rotate(long ptr, int idx, int n); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_rotate((lua_State *) L, (int) idx, (int) n);
@@ -2625,7 +2527,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @param k the field name
      */
-    protected native void lua_setfield(long ptr, int index, String k); /*
+    public native void lua_setfield(long ptr, int index, String k); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_setfield((lua_State *) L, (int) index, (const char *) k);
@@ -2651,7 +2553,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param name the name
      */
-    protected native void lua_setglobal(long ptr, String name); /*
+    public native void lua_setglobal(long ptr, String name); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_setglobal((lua_State *) L, (const char *) name);
@@ -2685,7 +2587,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @param n the number / the number of elements
      */
-    protected native void lua_seti(long ptr, int index, long n); /*
+    public native void lua_seti(long ptr, int index, long n); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_seti((lua_State *) L, (int) index, (lua_Integer) n);
@@ -2711,7 +2613,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected native void lua_setmetatable(long ptr, int index); /*
+    public native void lua_setmetatable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_setmetatable((lua_State *) L, (int) index);
@@ -2737,7 +2639,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected native void luaJ_setmetatable(long ptr, int index); /*
+    public native void luaJ_setmetatable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_setmetatable((lua_State *) L, (int) index);
@@ -2771,7 +2673,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected native void lua_settable(long ptr, int index); /*
+    public native void lua_settable(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_settable((lua_State *) L, (int) index);
@@ -2800,7 +2702,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected native void lua_settop(long ptr, int index); /*
+    public native void lua_settop(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_settop((lua_State *) L, (int) index);
@@ -2826,7 +2728,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected native void lua_setuservalue(long ptr, int index); /*
+    public native void lua_setuservalue(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_setuservalue((lua_State *) L, (int) index);
@@ -2865,7 +2767,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected native int lua_status(long ptr); /*
+    public native int lua_status(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_status((lua_State *) L);
@@ -2902,7 +2804,7 @@ public class Lua53Natives extends LuaNative {
      * @param s the string
      * @return see description
      */
-    protected native long lua_stringtonumber(long ptr, String s); /*
+    public native long lua_stringtonumber(long ptr, String s); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) lua_stringtonumber((lua_State *) L, (const char *) s);
@@ -2936,7 +2838,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_toboolean(long ptr, int index); /*
+    public native int lua_toboolean(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_toboolean((lua_State *) L, (int) index);
@@ -2963,7 +2865,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native long lua_tointeger(long ptr, int index); /*
+    public native long lua_tointeger(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
         // See lua_pushinteger for comments.
         if (sizeof(lua_Integer) == 4) {
@@ -3004,7 +2906,7 @@ public class Lua53Natives extends LuaNative {
      * @param isnum pointer to a boolean to be assigned
      * @return see description
      */
-    protected native long lua_tointegerx(long ptr, int index, long isnum); /*
+    public native long lua_tointegerx(long ptr, int index, long isnum); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) lua_tointegerx((lua_State *) L, (int) index, (int *) isnum);
@@ -3031,7 +2933,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native double lua_tonumber(long ptr, int index); /*
+    public native double lua_tonumber(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jdouble returnValueReceiver = (jdouble) lua_tonumber((lua_State *) L, (int) index);
@@ -3069,7 +2971,7 @@ public class Lua53Natives extends LuaNative {
      * @param isnum pointer to a boolean to be assigned
      * @return see description
      */
-    protected native double lua_tonumberx(long ptr, int index, long isnum); /*
+    public native double lua_tonumberx(long ptr, int index, long isnum); /*
         lua_State * L = (lua_State *) ptr;
 
         jdouble returnValueReceiver = (jdouble) lua_tonumberx((lua_State *) L, (int) index, (int *) isnum);
@@ -3105,7 +3007,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native long lua_topointer(long ptr, int index); /*
+    public native long lua_topointer(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) lua_topointer((lua_State *) L, (int) index);
@@ -3132,7 +3034,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native String lua_tostring(long ptr, int index); /*
+    public native String lua_tostring(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         const char * returnValueReceiver = (const char *) lua_tostring((lua_State *) L, (int) index);
@@ -3162,7 +3064,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native long lua_tothread(long ptr, int index); /*
+    public native long lua_tothread(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) lua_tothread((lua_State *) L, (int) index);
@@ -3193,7 +3095,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native long lua_touserdata(long ptr, int index); /*
+    public native long lua_touserdata(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) lua_touserdata((lua_State *) L, (int) index);
@@ -3233,7 +3135,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int lua_type(long ptr, int index); /*
+    public native int lua_type(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_type((lua_State *) L, (int) index);
@@ -3261,7 +3163,7 @@ public class Lua53Natives extends LuaNative {
      * @param tp type id
      * @return see description
      */
-    protected native String lua_typename(long ptr, int tp); /*
+    public native String lua_typename(long ptr, int tp); /*
         lua_State * L = (lua_State *) ptr;
 
         const char * returnValueReceiver = (const char *) lua_typename((lua_State *) L, (int) tp);
@@ -3288,7 +3190,7 @@ public class Lua53Natives extends LuaNative {
      * @param i i
      * @return see description
      */
-    protected native int lua_upvalueindex(int i); /*
+    public native int lua_upvalueindex(int i); /*
         jint returnValueReceiver = (jint) lua_upvalueindex((int) i);
         return returnValueReceiver;
     */
@@ -3318,7 +3220,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected native long lua_version(long ptr); /*
+    public native long lua_version(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) lua_version((lua_State *) L);
@@ -3350,7 +3252,7 @@ public class Lua53Natives extends LuaNative {
      * @param to another thread
      * @param n the number of elements
      */
-    protected native void lua_xmove(long from, long to, int n); /*
+    public native void lua_xmove(long from, long to, int n); /*
         lua_xmove((lua_State *) from, (lua_State *) to, (int) n);
     */
 
@@ -3378,7 +3280,7 @@ public class Lua53Natives extends LuaNative {
      * @param nresults the number of results, or <code>LUA_MULTRET</code>
      * @return see description
      */
-    protected native int lua_yield(long ptr, int nresults); /*
+    public native int lua_yield(long ptr, int nresults); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_yield((lua_State *) L, (int) nresults);
@@ -3404,7 +3306,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected native int lua_gethookcount(long ptr); /*
+    public native int lua_gethookcount(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_gethookcount((lua_State *) L);
@@ -3430,7 +3332,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected native int lua_gethookmask(long ptr); /*
+    public native int lua_gethookmask(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) lua_gethookmask((lua_State *) L);
@@ -3477,7 +3379,7 @@ public class Lua53Natives extends LuaNative {
      * @param n the index in the upvalue
      * @return see description
      */
-    protected native String lua_getupvalue(long ptr, int funcindex, int n); /*
+    public native String lua_getupvalue(long ptr, int funcindex, int n); /*
         lua_State * L = (lua_State *) ptr;
 
         const char * returnValueReceiver = (const char *) lua_getupvalue((lua_State *) L, (int) funcindex, (int) n);
@@ -3517,7 +3419,7 @@ public class Lua53Natives extends LuaNative {
      * @param n the index in the upvalue
      * @return see description
      */
-    protected native String lua_setupvalue(long ptr, int funcindex, int n); /*
+    public native String lua_setupvalue(long ptr, int funcindex, int n); /*
         lua_State * L = (lua_State *) ptr;
 
         const char * returnValueReceiver = (const char *) lua_setupvalue((lua_State *) L, (int) funcindex, (int) n);
@@ -3559,7 +3461,7 @@ public class Lua53Natives extends LuaNative {
      * @param n the index in the upvalue
      * @return see description
      */
-    protected native long lua_upvalueid(long ptr, int funcindex, int n); /*
+    public native long lua_upvalueid(long ptr, int funcindex, int n); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) lua_upvalueid((lua_State *) L, (int) funcindex, (int) n);
@@ -3590,7 +3492,7 @@ public class Lua53Natives extends LuaNative {
      * @param funcindex2 the stack position of the closure
      * @param n2 n2
      */
-    protected native void lua_upvaluejoin(long ptr, int funcindex1, int n1, int funcindex2, int n2); /*
+    public native void lua_upvaluejoin(long ptr, int funcindex1, int n1, int funcindex2, int n2); /*
         lua_State * L = (lua_State *) ptr;
 
         lua_upvaluejoin((lua_State *) L, (int) funcindex1, (int) n1, (int) funcindex2, (int) n2);
@@ -3627,7 +3529,7 @@ public class Lua53Natives extends LuaNative {
      * @param e field name
      * @return see description
      */
-    protected native int luaL_callmeta(long ptr, int obj, String e); /*
+    public native int luaL_callmeta(long ptr, int obj, String e); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaL_callmeta((lua_State *) L, (int) obj, (const char *) e);
@@ -3664,7 +3566,7 @@ public class Lua53Natives extends LuaNative {
      * @param str string
      * @return see description
      */
-    protected native int luaL_dostring(long ptr, String str); /*
+    public native int luaL_dostring(long ptr, String str); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaL_dostring((lua_State *) L, (const char *) str);
@@ -3693,7 +3595,7 @@ public class Lua53Natives extends LuaNative {
      * @param stat (I have no idea)
      * @return see description
      */
-    protected native int luaL_execresult(long ptr, int stat); /*
+    public native int luaL_execresult(long ptr, int stat); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaL_execresult((lua_State *) L, (int) stat);
@@ -3723,7 +3625,7 @@ public class Lua53Natives extends LuaNative {
      * @param fname the filename
      * @return see description
      */
-    protected native int luaL_fileresult(long ptr, int stat, String fname); /*
+    public native int luaL_fileresult(long ptr, int stat, String fname); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaL_fileresult((lua_State *) L, (int) stat, (const char *) fname);
@@ -3755,7 +3657,7 @@ public class Lua53Natives extends LuaNative {
      * @param e field name
      * @return see description
      */
-    protected native int luaL_getmetafield(long ptr, int obj, String e); /*
+    public native int luaL_getmetafield(long ptr, int obj, String e); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaL_getmetafield((lua_State *) L, (int) obj, (const char *) e);
@@ -3785,7 +3687,7 @@ public class Lua53Natives extends LuaNative {
      * @param tname type name
      * @return see description
      */
-    protected native int luaL_getmetatable(long ptr, String tname); /*
+    public native int luaL_getmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaL_getmetatable((lua_State *) L, (const char *) tname);
@@ -3814,7 +3716,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param tname type name
      */
-    protected native void luaJ_getmetatable(long ptr, String tname); /*
+    public native void luaJ_getmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
 
         luaL_getmetatable((lua_State *) L, (const char *) tname);
@@ -3846,7 +3748,7 @@ public class Lua53Natives extends LuaNative {
      * @param fname the filename
      * @return see description
      */
-    protected native int luaL_getsubtable(long ptr, int idx, String fname); /*
+    public native int luaL_getsubtable(long ptr, int idx, String fname); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaL_getsubtable((lua_State *) L, (int) idx, (const char *) fname);
@@ -3881,7 +3783,7 @@ public class Lua53Natives extends LuaNative {
      * @param r the replacing string
      * @return see description
      */
-    protected native String luaL_gsub(long ptr, String s, String p, String r); /*
+    public native String luaL_gsub(long ptr, String s, String p, String r); /*
         lua_State * L = (lua_State *) ptr;
 
         const char * returnValueReceiver = (const char *) luaL_gsub((lua_State *) L, (const char *) s, (const char *) p, (const char *) r);
@@ -3912,7 +3814,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native long luaL_len(long ptr, int index); /*
+    public native long luaL_len(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) luaL_len((lua_State *) L, (int) index);
@@ -3950,7 +3852,7 @@ public class Lua53Natives extends LuaNative {
      * @param s the string
      * @return see description
      */
-    protected native int luaL_loadstring(long ptr, String s); /*
+    public native int luaL_loadstring(long ptr, String s); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaL_loadstring((lua_State *) L, (const char *) s);
@@ -3989,7 +3891,7 @@ public class Lua53Natives extends LuaNative {
      * @param tname type name
      * @return see description
      */
-    protected native int luaL_newmetatable(long ptr, String tname); /*
+    public native int luaL_newmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaL_newmetatable((lua_State *) L, (const char *) tname);
@@ -4027,7 +3929,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param tname type name
      */
-    protected native void luaJ_newmetatable(long ptr, String tname); /*
+    public native void luaJ_newmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
 
         luaL_newmetatable((lua_State *) L, (const char *) tname);
@@ -4062,7 +3964,7 @@ public class Lua53Natives extends LuaNative {
      * @param lid the id of the Lua state, to be used to identify between Java and Lua
      * @return see description
      */
-    protected native long luaL_newstate(int lid); /*
+    public native long luaL_newstate(int lid); /*
         lua_State* L = luaL_newstate();
         luaJavaSetup(L, env, lid);
         return (jlong) L;
@@ -4086,7 +3988,7 @@ public class Lua53Natives extends LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      */
-    protected native void luaL_openlibs(long ptr); /*
+    public native void luaL_openlibs(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         luaL_openlibs((lua_State *) L);
@@ -4130,7 +4032,7 @@ public class Lua53Natives extends LuaNative {
      * @param t the stack index
      * @return see description
      */
-    protected native int luaL_ref(long ptr, int t); /*
+    public native int luaL_ref(long ptr, int t); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaL_ref((lua_State *) L, (int) t);
@@ -4158,7 +4060,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param tname type name
      */
-    protected native void luaL_setmetatable(long ptr, String tname); /*
+    public native void luaL_setmetatable(long ptr, String tname); /*
         lua_State * L = (lua_State *) ptr;
 
         luaL_setmetatable((lua_State *) L, (const char *) tname);
@@ -4187,7 +4089,7 @@ public class Lua53Natives extends LuaNative {
      * @param tname type name
      * @return see description
      */
-    protected native long luaL_testudata(long ptr, int arg, String tname); /*
+    public native long luaL_testudata(long ptr, int arg, String tname); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) luaL_testudata((lua_State *) L, (int) arg, (const char *) tname);
@@ -4227,7 +4129,7 @@ public class Lua53Natives extends LuaNative {
      * @param len pointer to length
      * @return see description
      */
-    protected native String luaL_tolstring(long ptr, int idx, long len); /*
+    public native String luaL_tolstring(long ptr, int idx, long len); /*
         lua_State * L = (lua_State *) ptr;
 
         const char * returnValueReceiver = (const char *) luaL_tolstring((lua_State *) L, (int) idx, (size_t *) len);
@@ -4260,7 +4162,7 @@ public class Lua53Natives extends LuaNative {
      * @param msg a message
      * @param level the running level
      */
-    protected native void luaL_traceback(long ptr, long L1, String msg, int level); /*
+    public native void luaL_traceback(long ptr, long L1, String msg, int level); /*
         lua_State * L = (lua_State *) ptr;
 
         luaL_traceback((lua_State *) L, (lua_State *) L1, (const char *) msg, (int) level);
@@ -4286,7 +4188,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native String luaL_typename(long ptr, int index); /*
+    public native String luaL_typename(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         const char * returnValueReceiver = (const char *) luaL_typename((lua_State *) L, (int) index);
@@ -4322,7 +4224,7 @@ public class Lua53Natives extends LuaNative {
      * @param t the stack index
      * @param ref the reference
      */
-    protected native void luaL_unref(long ptr, int t, int ref); /*
+    public native void luaL_unref(long ptr, int t, int ref); /*
         lua_State * L = (lua_State *) ptr;
 
         luaL_unref((lua_State *) L, (int) t, (int) ref);
@@ -4363,7 +4265,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param lvl the running level
      */
-    protected native void luaL_where(long ptr, int lvl); /*
+    public native void luaL_where(long ptr, int lvl); /*
         lua_State * L = (lua_State *) ptr;
 
         luaL_where((lua_State *) L, (int) lvl);
@@ -4380,7 +4282,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param lib library name
      */
-    protected native void luaJ_openlib(long ptr, String lib); /*
+    public native void luaJ_openlib(long ptr, String lib); /*
         lua_State * L = (lua_State *) ptr;
 
         luaJ_openlib((lua_State *) L, (const char *) lib);
@@ -4400,7 +4302,7 @@ public class Lua53Natives extends LuaNative {
      * @param op the operator
      * @return see description
      */
-    protected native int luaJ_compare(long ptr, int index1, int index2, int op); /*
+    public native int luaJ_compare(long ptr, int index1, int index2, int op); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaJ_compare((lua_State *) L, (int) index1, (int) index2, (int) op);
@@ -4419,7 +4321,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int luaJ_len(long ptr, int index); /*
+    public native int luaJ_len(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaJ_len((lua_State *) L, (int) index);
@@ -4440,7 +4342,7 @@ public class Lua53Natives extends LuaNative {
      * @param name the name
      * @return see description
      */
-    protected native int luaJ_loadbuffer(long ptr, Buffer buffer, int size, String name); /*
+    public native int luaJ_loadbuffer(long ptr, Buffer buffer, int size, String name); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaJ_loadbuffer((lua_State *) L, (unsigned char *) buffer, (int) size, (const char *) name);
@@ -4461,30 +4363,10 @@ public class Lua53Natives extends LuaNative {
      * @param name the name
      * @return see description
      */
-    protected native int luaJ_dobuffer(long ptr, Buffer buffer, int size, String name); /*
+    public native int luaJ_dobuffer(long ptr, Buffer buffer, int size, String name); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaJ_dobuffer((lua_State *) L, (unsigned char *) buffer, (int) size, (const char *) name);
-        return returnValueReceiver;
-    */
-
-
-    /**
-     * A wrapper function
-     *
-     * <p>
-     * Protected call
-     * </p>
-     *
-     * @param ptr the <code>lua_State*</code> pointer
-     * @param nargs the number of arguments that you pushed onto the stack
-     * @param nresults the number of results, or <code>LUA_MULTRET</code>
-     * @return see description
-     */
-    protected native int luaJ_pcall(long ptr, int nargs, int nresults); /*
-        lua_State * L = (lua_State *) ptr;
-
-        jint returnValueReceiver = (jint) luaJ_pcall((lua_State *) L, (int) nargs, (int) nresults);
         return returnValueReceiver;
     */
 
@@ -4500,7 +4382,7 @@ public class Lua53Natives extends LuaNative {
      * @param nargs the number of arguments that you pushed onto the stack
      * @return see description
      */
-    protected native int luaJ_resume(long ptr, int nargs); /*
+    public native int luaJ_resume(long ptr, int nargs); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaJ_resume((lua_State *) L, (int) nargs);
@@ -4518,7 +4400,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param obj the Java object
      */
-    protected native void luaJ_pushobject(long ptr, Object obj); /*
+    public native void luaJ_pushobject(long ptr, Object obj); /*
         lua_State * L = (lua_State *) ptr;
 
         luaJ_pushobject((JNIEnv *) env, (lua_State *) L, (jobject) obj);
@@ -4535,7 +4417,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param clazz the Java class
      */
-    protected native void luaJ_pushclass(long ptr, Object clazz); /*
+    public native void luaJ_pushclass(long ptr, Object clazz); /*
         lua_State * L = (lua_State *) ptr;
 
         luaJ_pushclass((JNIEnv *) env, (lua_State *) L, (jobject) clazz);
@@ -4552,7 +4434,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param array the Java array
      */
-    protected native void luaJ_pusharray(long ptr, Object array); /*
+    public native void luaJ_pusharray(long ptr, Object array); /*
         lua_State * L = (lua_State *) ptr;
 
         luaJ_pusharray((JNIEnv *) env, (lua_State *) L, (jobject) array);
@@ -4569,7 +4451,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param func the function object
      */
-    protected native void luaJ_pushfunction(long ptr, Object func); /*
+    public native void luaJ_pushfunction(long ptr, Object func); /*
         lua_State * L = (lua_State *) ptr;
 
         luaJ_pushfunction((JNIEnv *) env, (lua_State *) L, (jobject) func);
@@ -4587,7 +4469,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int luaJ_isobject(long ptr, int index); /*
+    public native int luaJ_isobject(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaJ_isobject((lua_State *) L, (int) index);
@@ -4606,7 +4488,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native Object luaJ_toobject(long ptr, int index); /*
+    public native Object luaJ_toobject(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jobject returnValueReceiver = (jobject) luaJ_toobject((lua_State *) L, (int) index);
@@ -4625,7 +4507,7 @@ public class Lua53Natives extends LuaNative {
      * @param lid the id of the Lua state, to be used to identify between Java and Lua
      * @return see description
      */
-    protected native long luaJ_newthread(long ptr, int lid); /*
+    public native long luaJ_newthread(long ptr, int lid); /*
         lua_State * L = (lua_State *) ptr;
 
         jlong returnValueReceiver = (jlong) luaJ_newthread((lua_State *) L, (int) lid);
@@ -4643,7 +4525,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected native int luaJ_initloader(long ptr); /*
+    public native int luaJ_initloader(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaJ_initloader((lua_State *) L);
@@ -4667,7 +4549,7 @@ public class Lua53Natives extends LuaNative {
      * @param params encoded parameter types
      * @return see description
      */
-    protected native int luaJ_invokespecial(long ptr, Class clazz, String method, String sig, Object obj, String params); /*
+    public native int luaJ_invokespecial(long ptr, Class clazz, String method, String sig, Object obj, String params); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaJ_invokespecial((JNIEnv *) env, (lua_State *) L, (jclass) clazz, (const char *) method, (const char *) sig, (jobject) obj, (const char *) params);
@@ -4686,7 +4568,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native int luaJ_isinteger(long ptr, int index); /*
+    public native int luaJ_isinteger(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jint returnValueReceiver = (jint) luaJ_isinteger((lua_State *) L, (int) index);
@@ -4703,7 +4585,7 @@ public class Lua53Natives extends LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      */
-    protected native void luaJ_removestateindex(long ptr); /*
+    public native void luaJ_removestateindex(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         luaJ_removestateindex((lua_State *) L);
@@ -4719,7 +4601,7 @@ public class Lua53Natives extends LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      */
-    protected native void luaJ_gc(long ptr); /*
+    public native void luaJ_gc(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         luaJ_gc((lua_State *) L);
@@ -4736,7 +4618,7 @@ public class Lua53Natives extends LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected native Object luaJ_dumptobuffer(long ptr); /*
+    public native Object luaJ_dumptobuffer(long ptr); /*
         lua_State * L = (lua_State *) ptr;
 
         jobject returnValueReceiver = (jobject) luaJ_dumptobuffer((lua_State *) L);
@@ -4755,7 +4637,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native Object luaJ_tobuffer(long ptr, int index); /*
+    public native Object luaJ_tobuffer(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jobject returnValueReceiver = (jobject) luaJ_tobuffer((lua_State *) L, (int) index);
@@ -4774,7 +4656,7 @@ public class Lua53Natives extends LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected native Object luaJ_todirectbuffer(long ptr, int index); /*
+    public native Object luaJ_todirectbuffer(long ptr, int index); /*
         lua_State * L = (lua_State *) ptr;
 
         jobject returnValueReceiver = (jobject) luaJ_todirectbuffer((lua_State *) L, (int) index);

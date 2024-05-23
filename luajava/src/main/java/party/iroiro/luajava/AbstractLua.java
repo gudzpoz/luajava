@@ -40,7 +40,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * An implementation that relies on {@link LuaNative} for most of the features independent of Lua versions
+ * An implementation that relies on {@link LuaNatives} for most of the features independent of Lua versions
  */
 public abstract class AbstractLua implements Lua {
     private final static Object[] EMPTY = new Object[0];
@@ -53,7 +53,7 @@ public abstract class AbstractLua implements Lua {
         return instances.get(lid);
     }
 
-    protected final LuaNative C;
+    protected final LuaNatives C;
     protected final long L;
     protected final int id;
     protected final AbstractLua mainThread;
@@ -64,7 +64,7 @@ public abstract class AbstractLua implements Lua {
      *
      * @param luaNative the Lua native wrapper
      */
-    protected AbstractLua(LuaNative luaNative) {
+    protected AbstractLua(LuaNatives luaNative) {
         this.C = luaNative;
         id = instances.add(this);
         L = luaNative.luaL_newstate(id);
@@ -83,7 +83,7 @@ public abstract class AbstractLua implements Lua {
      * @param id         the Lua state id (see {@link LuaInstances})
      * @param mainThread the main state of this sub-state
      */
-    protected AbstractLua(LuaNative luaNative, long L, int id, @NotNull AbstractLua mainThread) {
+    protected AbstractLua(LuaNatives luaNative, long L, int id, @NotNull AbstractLua mainThread) {
         loader = null;
         this.C = luaNative;
         this.L = L;
@@ -607,7 +607,7 @@ public abstract class AbstractLua implements Lua {
     @Override
     public void pCall(int nArgs, int nResults) throws LuaException {
         checkStack(Math.max(nResults - nArgs - 1, 0));
-        checkError(C.luaJ_pcall(L, nArgs, nResults), false);
+        checkError(C.lua_pcall(L, nArgs, nResults, 0), false);
     }
 
     @Override
@@ -849,7 +849,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public LuaNative getLuaNative() {
+    public LuaNatives getLuaNative() {
         return C;
     }
 
@@ -897,7 +897,7 @@ public abstract class AbstractLua implements Lua {
      * Calls a method on an object, equivalent to <a href="https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html#jvms-6.5.invokespecial">invokespecial</a>
      *
      * <p>
-     * Internally it uses {@link LuaNative#luaJ_invokespecial(long, Class, String, String, Object, String)} which then uses
+     * Internally it uses {@link LuaNatives#luaJ_invokespecial(long, Class, String, String, Object, String)} which then uses
      * {@code CallNonvirtual<Type>MethodA} functions to avoid tons of restrictions imposed by the JVM.
      * </p>
      *

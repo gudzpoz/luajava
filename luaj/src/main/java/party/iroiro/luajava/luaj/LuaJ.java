@@ -3,7 +3,7 @@ package party.iroiro.luajava.luaj;
 import party.iroiro.luajava.AbstractLua;
 import party.iroiro.luajava.LuaException;
 import party.iroiro.luajava.LuaException.LuaError;
-import party.iroiro.luajava.LuaNative;
+import party.iroiro.luajava.LuaNatives;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -27,7 +27,7 @@ public class LuaJ extends AbstractLua {
         super(mainThread.getLuaNative(), L, id, mainThread);
     }
 
-    private static LuaNative getNatives() {
+    private static LuaNatives getNatives() {
         synchronized (natives) {
             if (natives.get() == null) {
                 natives.set(new LuaJNatives());

@@ -1114,9 +1114,9 @@ public interface Lua extends AutoCloseable, LuaThread {
     void loadExternal(String module) throws LuaException;
 
     /**
-     * @return the underlying {@link LuaNative} natives
+     * @return the underlying {@link LuaNatives} natives
      */
-    LuaNative getLuaNative();
+    LuaNatives getLuaNative();
 
     /**
      * @return the main Lua state
