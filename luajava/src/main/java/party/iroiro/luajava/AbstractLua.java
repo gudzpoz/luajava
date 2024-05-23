@@ -126,6 +126,9 @@ public abstract class AbstractLua implements Lua {
         } else if (object instanceof LuaValue) {
             LuaValue value = (LuaValue) object;
             value.push(this);
+        } else if (object instanceof LuaFunction) {
+            LuaFunction function = (LuaFunction) object;
+            this.push(function);
         } else if (degree == Conversion.NONE) {
             pushJavaObjectOrArray(object);
         } else {
@@ -242,6 +245,18 @@ public abstract class AbstractLua implements Lua {
     public void push(@NotNull JFunction function) {
         checkStack(1);
         C.luaJ_pushfunction(L, function);
+    }
+
+    @Override
+    public void push(@NotNull LuaValue value) {
+        checkStack(1);
+        value.push(this);
+    }
+
+    @Override
+    public void push(@NotNull LuaFunction function) {
+        checkStack(1);
+        push(new LuaFunctionWrapper(function));
     }
 
     @Override
@@ -825,7 +840,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void register(String name, JFunction function) {
+    public void register(String name, LuaFunction function) {
         push(function);
         setGlobal(name);
     }
@@ -1143,5 +1158,28 @@ public abstract class AbstractLua implements Lua {
      */
     protected boolean shouldSynchronize() {
         return true;
+    }
+
+    private static class LuaFunctionWrapper implements JFunction {
+        private final @NotNull LuaFunction function;
+
+        public LuaFunctionWrapper(@NotNull LuaFunction function) {
+            this.function = function;
+        }
+
+        @Override
+        public int __call(Lua L) {
+            LuaValue[] args = new LuaValue[L.getTop()];
+            for (int i = 0; i < args.length; i++) {
+                args[args.length - i - 1] = L.get();
+            }
+            LuaValue[] results = function.call(L, args);
+            if (results != null) {
+                for (LuaValue result : results) {
+                    L.push(result);
+                }
+            }
+            return results == null ? 0 : results.length;
+        }
     }
 }

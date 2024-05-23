@@ -24,6 +24,7 @@ package party.iroiro.luajava;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import party.iroiro.luajava.value.LuaFunction;
 import party.iroiro.luajava.value.LuaThread;
 import party.iroiro.luajava.value.LuaValue;
 
@@ -148,6 +149,21 @@ public interface Lua extends AutoCloseable, LuaThread {
      * @param clazz the class
      */
     void pushJavaClass(@NotNull Class<?> clazz);
+
+    /**
+     * Push a {@link LuaValue} onto the stack, equivalent to {@link LuaValue#push(Lua)}
+     *
+     * @param value the value
+     */
+    void push(@NotNull LuaValue value);
+
+    /**
+     * Push the function onto the stack, converted to a callable element
+     *
+     * @param value the function
+     * @see #push(JFunction)
+     */
+    void push(@NotNull LuaFunction value);
 
     /**
      * Push the element onto the stack, converted as is to Java objects

@@ -1,7 +1,6 @@
 package party.iroiro.luajava.value;
 
 import org.jetbrains.annotations.Nullable;
-import party.iroiro.luajava.JFunction;
 import party.iroiro.luajava.LuaException;
 
 public interface LuaThread {
@@ -27,7 +26,7 @@ public interface LuaThread {
      * @param name     the global name
      * @param function the function
      */
-    void register(String name, JFunction function);
+    void register(String name, LuaFunction function);
 
     /**
      * Executes Lua code

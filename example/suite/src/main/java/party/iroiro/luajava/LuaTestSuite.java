@@ -542,12 +542,14 @@ public class LuaTestSuite<T extends AbstractLua> {
     private void testOthers() {
         L.openLibrary("math");
         L.run("assert(1.0 == math.abs(-1.0))");
-
-        L.register("testOthersFunction", l -> {
+        L.push(l -> {
             l.push("Hello");
             return 1;
         });
-        L.run("assert('Hello' == testOthersFunction())");
+        L.setGlobal("testOthersFunction1");
+        L.register("testOthersFunction2", (l, args) -> new LuaValue[]{ l.from("Hello") });
+        L.run("assert('Hello' == testOthersFunction1())");
+        L.run("assert('Hello' == testOthersFunction2())");
 
         L.newRegisteredMetatable("myusertype");
         L.push(l -> {

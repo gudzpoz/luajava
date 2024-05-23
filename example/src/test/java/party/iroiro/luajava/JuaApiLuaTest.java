@@ -1,6 +1,5 @@
 package party.iroiro.luajava;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import party.iroiro.luajava.lua51.Lua51;
 
@@ -15,16 +14,12 @@ import static party.iroiro.luajava.LuaTestSuite.assertThrowsLua;
  * </p>
  */
 public class JuaApiLuaTest {
-    public static void assertTrue(boolean bool) {
-        Assertions.assertTrue(bool);
-    }
-
     @Test
     public void juaApiLuaTest() {
         try (Lua L = new Lua51()) {
-            L.register("jfun", L1 -> 0);
+            L.register("jfun", (l, args) -> null);
             L.openLibraries();
-            L.register("juafun", l -> 0);
+            L.register("juafun", (l, args) -> null);
             L.push(array, Lua.Conversion.NONE);
             L.setGlobal("arr");
             LuaScriptSuite.addAssertThrows(L);

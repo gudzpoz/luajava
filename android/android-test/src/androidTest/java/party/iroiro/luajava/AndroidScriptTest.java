@@ -1,6 +1,5 @@
 package party.iroiro.luajava;
 
-import android.util.Log;
 import org.junit.Test;
 import party.iroiro.luajava.lua51.Lua51;
 import party.iroiro.luajava.lua52.Lua52;
@@ -40,7 +39,7 @@ public class AndroidScriptTest {
     @Test
     public void luaJitTest() {
         try (LuaJit L = new LuaJit()) {
-            new LuaScriptSuite<>(L, s -> Log.i("test", s)).test();
+            new LuaScriptSuite<>(L).test();
         }
     }
 
@@ -48,7 +47,7 @@ public class AndroidScriptTest {
     public void luaJTest() {
         org.junit.Assume.assumeTrue(android.os.Build.VERSION.SDK_INT >= 30);
         try (AbstractLua L = AndroidLuaTest.getLuaJ()) {
-            new LuaScriptSuite<>(L, s -> Log.i("test", s)).test();
+            new LuaScriptSuite<>(L).test();
         }
     }
 
