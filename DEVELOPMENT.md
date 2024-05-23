@@ -136,3 +136,16 @@ After compiling, things should work fine (including tests and bundling or whatso
 The tests lie in [`example/suite`](./example/suite) and [`example/src/test`](./example/src/test).
 The former one is bundled into the example JAR to allow easier testing on different platforms.
 However, to run the tests, try `./gradlew :example:test` or start tests in the latter from an IDE.
+
+## Coding Caveats
+
+### Java 8 Feature Usages
+
+The major obstacle against using Java 8 features in the codebase is Android compatibility.
+Theoretically, however, with Java 8 desugaring in Android SDK,
+one can use such features as default methods in interfaces or lambda functions.
+But requiring the user to set up desugaring only to use this library is just too much.  
+Therefore, for now:
+- We just disallow using any Java 8 features in the codebase.
+- For tests, since we have control over the testing environment (and build config),
+  using Java 8 lambdas, default functions, etc. are acceptable to some degree.
