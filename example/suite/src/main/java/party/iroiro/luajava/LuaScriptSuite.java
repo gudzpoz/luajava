@@ -73,7 +73,7 @@ public class LuaScriptSuite<T extends AbstractLua> {
             new ScriptTester("/suite/otherConvTest.lua", L -> {
                 L.push(new OtherTypes(), Lua.Conversion.NONE);
                 L.setGlobal("others");
-                LuaNatives C = L.getLuaNative();
+                LuaNatives C = L.getLuaNatives();
                 if (C instanceof Lua51Natives) {
                     ((Lua51Natives) C).lua_newuserdata(L.getPointer(), 1024);
                 } else if (C instanceof Lua52Natives) {

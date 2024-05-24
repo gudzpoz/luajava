@@ -43,17 +43,15 @@ since this library is more or less just a thin wrapper and requires some basic u
 
 <div style="display:flex;justify-content:center">
 
-| Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 | LuaJIT      | LuaJ     |
-|:-------:|:-------:|:-------:|:-------:|:-----------:|:--------:|
-| 5.1.5   | 5.2.4   | 5.3.6   | 5.4.6   | [`0d313b2`] | [A fork] |
+| Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 | LuaJIT      |    LuaJ     |
+|:-------:|:-------:|:-------:|:-------:|:-----------:|:-----------:|
+| 5.1.5   | 5.2.4   | 5.3.6   | 5.4.6   | [`0d313b2`] | [LuaJ fork] |
 
 </div>
 
 [`0d313b2`]: https://github.com/LuaJIT/LuaJIT/commits/0d313b243194a0b8d2399d8b549ca5a0ff234db5
 
-[A fork]: https://github.com/wagyourtail/luaj
-
-Supported Lua versions: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4, LuaJ and LuaJIT.
+[LuaJ fork]: https://github.com/wagyourtail/luaj
 
 Supported platforms: **Windows**, **Linux**, **MacOS** and **Android**. Compiled against both ARM and x32/x64. Binaries are not yet tested for iOS.
 
@@ -79,7 +77,7 @@ Optionally, you may include `party.iroiro.luajava:jsr223` to provide JSR 223 fun
 [The `java` module](https://gudzpoz.github.io/luajava/api.html#java-module) provides these functions:
 
 - `array`: Create a Java array.
-- `catched`: Return the latest captured Java `Throwable`
+- `caught`: Return the latest captured Java `Throwable`
 - `detach`: Detach the sub-thread from registry to allow for GC
 - `import`: Import classes from Java
 - `loadlib`: Load a Java method, similar to `package.loadlib`

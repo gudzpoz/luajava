@@ -864,7 +864,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public LuaNatives getLuaNative() {
+    public LuaNatives getLuaNatives() {
         return C;
     }
 

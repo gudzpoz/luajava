@@ -24,11 +24,14 @@ When pushing a Java value onto the Lua stack, you can choose from doing a `FULL`
 | Example: `AtomicInteger`      |                                |                                |                                | Proxied to the Java side           |
 
 ::: tip
-For a `SEMI`-conversion, roughly speaking, **immutable** types are converted, while mutable types, as well as those types not having Lua counterparts, are not.
+For a `SEMI`-conversion, roughly speaking, **immutable** types are converted,
+while mutable types, as well as those types not having Lua counterparts, are not.
 
-For a `FULL`-conversion, all values are **recursively** converted if possible. Note that we ignore entries in `Map<?>` with a `null` key or a `null` value.
+For a `FULL`-conversion, all values are **recursively** converted if possible.
+Note that we ignore entries in `Map<?>` with a `null` key or a `null` value.
 
-When calling Java methods from Lua, we `SEMI`-convert the return value. Currently there is no way to specify how you want the return value converted.
+When calling Java methods from Lua, we `SEMI`-convert the return value.
+Currently, there is no way to specify how you want the return value converted.
 :::
 
 ::: warning Examples

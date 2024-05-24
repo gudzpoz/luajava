@@ -111,7 +111,7 @@ public class LuaTestSuite<T extends AbstractLua> {
             L.pushValue(-1);
             assertEquals(
                     LuaError.HANDLER,
-                    L.convertError(L.getLuaNative().lua_pcall(L.getPointer(), 0, 0, -2))
+                    L.convertError(L.getLuaNatives().lua_pcall(L.getPointer(), 0, 0, -2))
             );
         }
     }
@@ -264,8 +264,8 @@ public class LuaTestSuite<T extends AbstractLua> {
         try (T L = constructor.get()) {
             assertThrows(IllegalArgumentException.class, () -> L.toAbsoluteIndex(0));
             assertEquals(
-                    L.getLuaNative().getRegistryIndex(),
-                    L.toAbsoluteIndex(L.getLuaNative().getRegistryIndex())
+                    L.getLuaNatives().getRegistryIndex(),
+                    L.toAbsoluteIndex(L.getLuaNatives().getRegistryIndex())
             );
 
             Random random = new Random();
@@ -588,7 +588,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.run("assert(1 == testOthersTable.__index)");
         L.run("assert(1 == testOthersTable[10])");
 
-        AbstractLua lua = new AbstractLua(L.getLuaNative()) {
+        AbstractLua lua = new AbstractLua(L.getLuaNatives()) {
             @Override
             protected AbstractLua newThread(long L, int id, AbstractLua mainThread) {
                 return null;
@@ -782,11 +782,11 @@ public class LuaTestSuite<T extends AbstractLua> {
         }
         L.pop(expected.length);
 
-        LuaNatives luaNative = L.getLuaNative();
+        LuaNatives luaNative = L.getLuaNatives();
 
         luaNative.lua_pushlightuserdata(L.getPointer(), 0);
         assertEquals(LIGHTUSERDATA, L.type(-1));
-        String typename = L.getLuaNative().luaL_typename(L.L, -1);
+        String typename = L.getLuaNatives().luaL_typename(L.L, -1);
         assertTrue("lightuserdata".equals(typename) || "userdata".equals(typename));
         assertInstanceOf(LuaValue.class, Objects.requireNonNull(L.toObject(-1)));
         assertNull(L.toObject(-1, Void.class));

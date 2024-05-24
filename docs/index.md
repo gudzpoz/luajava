@@ -41,33 +41,47 @@ Try it out with [a pre-built console](./console.md)!
 
 ## Prerequisites
 
-The Java API of this library is a thin wrapper around the Lua C API.
-So you will need some basic understanding of the [Lua C API](https://www.lua.org/manual/5.1/manual.html#3).
-Most API names are renamed in CamelCases with the `lua_` or `luaL_` prefix removed.
+This library includes two sets of Java API:
+
+1. A thin wrapper around the Lua C API.
+   So you will need some basic understanding of the [Lua C API](https://www.lua.org/manual/5.1/manual.html#3).
+   Most API names are renamed in CamelCases with the `lua_` or `luaL_` prefix removed.
+
+   Additionally, if you are not satisfied with the API (which is an intersection between Lua 5.* versions),
+   you can use the Lua C API bindings directly via [`Lua#getLuaNatives`](./javadoc/party/iroiro/luajava/Lua.html#getLuaNatives()).
+
+2. A more Java-ish API. This requires significantly less Lua knowledge. See [Java API](./examples/java.md).
 
 ## Supported Lua Versions
 
-Supported Lua versions are: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4 and LuaJIT.
+Supported Lua versions are: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4, LuaJ and LuaJIT.
 
-I try to keep up with the most recent version of Lua, that is, [the latest official release of Lua](https://www.lua.org/versions.html), and the tip of [the v2.1 branch of LuaJIT](https://github.com/LuaJIT/LuaJIT/tree/v2.1).[^jit] Currently:
+I try to keep up with the most recent version of Lua, that is,
+[the latest official release of Lua](https://www.lua.org/versions.html),
+and the tip of [the v2.1 branch of LuaJIT](https://github.com/LuaJIT/LuaJIT/tree/v2.1) [^jit]
+as well as the tip of a [LuaJ fork] that has no official release yet.
+Currently:
 
 <div style="display:flex;justify-content:center">
 
-| Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 | LuaJIT      | LuaJ     |
-|:-------:|:-------:|:-------:|:-------:|:-----------:|:--------:|
-| 5.1.5   | 5.2.4   | 5.3.6   | 5.4.6   | [`0d313b2`] | [A fork] |
+| Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 | LuaJIT      |    LuaJ     |
+|:-------:|:-------:|:-------:|:-------:|:-----------:|:-----------:|
+| 5.1.5   | 5.2.4   | 5.3.6   | 5.4.6   | [`0d313b2`] | [LuaJ fork] |
 
 </div>
 
 [`0d313b2`]: https://github.com/LuaJIT/LuaJIT/commits/0d313b243194a0b8d2399d8b549ca5a0ff234db5
 
-[A fork]: https://github.com/wagyourtail/luaj
+[LuaJ fork]: https://github.com/wagyourtail/luaj
 
 [^jit]: LuaJIT no longer creates new releases. See [Project status · Issue #665](https://github.com/LuaJIT/LuaJIT/issues/665#issuecomment-784452583) for an explanation.
 
 ## Platforms
 
-Thanks to [jnigen](https://github.com/libgdx/gdx-jnigen), we have built Lua natives for almost all common platforms, readily available on [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava). [^android] [^luaj]
+Thanks to [jnigen](https://github.com/libgdx/gdx-jnigen),
+we have built Lua natives for almost all common platforms,
+readily available on [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava).
+[^android] [^luaj]
 
 <script setup>
 const columns = ['Lua 5.1', 'Lua 5.2', 'Lua 5.3', 'Lua 5.4', 'LuaJIT', 'LuaJ'];

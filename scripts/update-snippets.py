@@ -11,7 +11,7 @@ from pathlib import Path
 
 hintRegex = re.compile('^\\s*<!-- @code:(\\w+) -->$')
 snippetRegex = re.compile(
-    '^(\\s*)@\\[code[\\d{},\\-]* (java|lua)([\\w\\d\\-,: {}]*)\\]\\(([\\./\\w\\-]+)\\)$'
+    '^(\\s*)@\\[code[\\d{},\\-]* (java|lua|\\w+)([\\w\\d\\-,: {}]*)\\]\\(([\\./\\w\\-]+)\\)$'
 )
 
 java_files: set[Path] = set()
@@ -54,6 +54,9 @@ for n, md in enumerate(files):
         lang = snippet.group(2)
         extra = snippet.group(3)
         link = snippet.group(4)
+        if lang != 'java' and lang != 'lua':
+            assert lang in ['dockerfile']
+            continue
         code_file = md.parent.joinpath(link)
 
         if lang == 'java':

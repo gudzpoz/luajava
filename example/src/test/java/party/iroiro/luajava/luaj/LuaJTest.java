@@ -22,7 +22,7 @@ public class LuaJTest {
     @Test
     public void testLuaJGlobalNop() {
         try (Lua L = new LuaJ()) {
-            L.getLuaNative().loadAsGlobal();
+            L.getLuaNatives().loadAsGlobal();
         }
     }
 
@@ -39,7 +39,7 @@ public class LuaJTest {
     @Test
     public void testLuaJUnsupported() {
         try (Lua L = new LuaJ()) {
-            LuaJNatives natives = (LuaJNatives) L.getLuaNative();
+            LuaJNatives natives = (LuaJNatives) L.getLuaNatives();
             long p = L.getPointer();
             assertThrows(UnsupportedOperationException.class, () -> natives.lua_topointer(p, 1));
             assertThrows(UnsupportedOperationException.class, () -> natives.lua_tothread(p, 1));
@@ -104,7 +104,7 @@ public class LuaJTest {
     @Test
     public void testLuaJNatives() {
         try (LuaJ L = new LuaJ()) {
-            LuaJNatives C = (LuaJNatives) L.getLuaNative();
+            LuaJNatives C = (LuaJNatives) L.getLuaNatives();
             long ptr = L.getPointer();
             assertThrows(UnsupportedOperationException.class, () -> C.lua_error(ptr));
 
@@ -150,7 +150,7 @@ public class LuaJTest {
     @Test
     public void testLuaJTypes() {
         try (Lua L = new LuaJ()) {
-            LuaJNatives natives = (LuaJNatives) L.getLuaNative();
+            LuaJNatives natives = (LuaJNatives) L.getLuaNatives();
             L.push((J) -> 0);
             natives.lua_pushlightuserdata(L.getPointer(), 1000);
             assertEquals(1, natives.lua_islightuserdata(L.getPointer(), -1));
@@ -167,7 +167,7 @@ public class LuaJTest {
     @Test
     public void testLuaJMisc() {
         try (Lua L = new LuaJ()) {
-            LuaJNatives natives = (LuaJNatives) L.getLuaNative();
+            LuaJNatives natives = (LuaJNatives) L.getLuaNatives();
             long p = L.getPointer();
 
             L.run("local a = 'up'; return function() return a end");
@@ -201,7 +201,7 @@ public class LuaJTest {
     public void luaJNativesUserDataTest() {
         try (LuaJ L = new LuaJ()) {
             Object object = new Object();
-            LuaJNatives C = (LuaJNatives) L.getLuaNative();
+            LuaJNatives C = (LuaJNatives) L.getLuaNatives();
             C.lua_newuserdata(L.getPointer(), object);
             assertEquals(USERDATA, L.type(-1));
             L.setGlobal("customObject");

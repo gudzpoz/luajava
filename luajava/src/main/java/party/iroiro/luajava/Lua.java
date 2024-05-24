@@ -1132,7 +1132,7 @@ public interface Lua extends AutoCloseable, LuaThread {
     /**
      * @return the underlying {@link LuaNatives} natives
      */
-    LuaNatives getLuaNative();
+    LuaNatives getLuaNatives();
 
     /**
      * @return the main Lua state

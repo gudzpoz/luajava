@@ -10,7 +10,7 @@ public class RtldExampleTest {
     @Test
     public void loadAsGlobalTest() {
 try (Lua L = new Lua54()) {
-    L.getLuaNative().loadAsGlobal();
+    L.getLuaNatives().loadAsGlobal();
     L.run("require('lfs')");
 }
     }

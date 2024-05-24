@@ -24,7 +24,7 @@ public class LuaJ extends AbstractLua {
     private final static AtomicReference<LuaJNatives> natives = new AtomicReference<>();
 
     public LuaJ(long L, int id, AbstractLua mainThread) {
-        super(mainThread.getLuaNative(), L, id, mainThread);
+        super(mainThread.getLuaNatives(), L, id, mainThread);
     }
 
     private static LuaNatives getNatives() {

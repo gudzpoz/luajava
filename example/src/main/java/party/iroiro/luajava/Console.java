@@ -176,7 +176,7 @@ public class Console implements Callable<Integer> {
         } else {
             Lua L = luaVersion.supplier.get();
             if (global) {
-                L.getLuaNative().loadAsGlobal();
+                L.getLuaNatives().loadAsGlobal();
             }
             return L;
         }

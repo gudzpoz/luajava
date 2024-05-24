@@ -70,7 +70,7 @@ public class JuaApiTest {
 
     private void convertUserdataTest() {
         Lua L = new Lua51();
-        assertNotEquals(0, ((Lua51Natives) L.getLuaNative())
+        assertNotEquals(0, ((Lua51Natives) L.getLuaNatives())
                 .lua_newuserdata(L.getPointer(), 1024));
         assertThrows(IllegalArgumentException.class,
                 () -> JuaAPI.convertFromLua(L, Integer.class, -1),

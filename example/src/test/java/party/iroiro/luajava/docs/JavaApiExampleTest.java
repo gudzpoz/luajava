@@ -14,11 +14,22 @@ public class JavaApiExampleTest {
     @Test
     public void luaValueTest() {
 try (Lua L = new Lua54()) {
-    LuaValue[] returnValues = L.eval("return { a = 1 }, 1024, 'string'");
+    LuaValue[] returnValues = L.eval("return { a = 1 }, 1024, 'my string value'");
     assertEquals(3, returnValues.length);
     assertEquals(1, returnValues[0].get("a").toInteger());
     assertEquals(1024, returnValues[1].toInteger());
-    assertEquals("string", returnValues[2].toString());
+    assertEquals("my string value", returnValues[2].toString());
+}
+    }
+
+    @Test
+    public void luaValueEvalTest() {
+try (Lua L = new Lua54()) {
+    L.openLibraries();
+    LuaValue[] values1 = L.eval("string.sub('abcdefg', 0, 3)");
+    assertEquals(0, values1.length);
+    LuaValue[] values2 = L.eval("return string.sub('abcdefg', 0, 3)");
+    assertEquals("abc", values2[0].toString());
 }
     }
 

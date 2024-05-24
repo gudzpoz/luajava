@@ -11,6 +11,26 @@ The [`party.iroiro.luajava.value.LuaValue`](../javadoc/party/iroiro/luajava/valu
 
 Internally, for complex values (for example, Lua tables), it uses [references](#creating-references) to refer to the Lua value.
 
+### `LuaValue` interface features
+
+- A `Map` implementation to allow direct manipulation of Lua tables.
+- Garbage collected references to avoid memory leaks on the Lua side.
+- Proxy creation with [`LuaValue::toProxy`](../javadoc/party/iroiro/luajava/value/LuaValue.html#toProxy(java.lang.Class))
+
+### Obtaining a `LuaValue`
+
+- [`Lua::get(java.lang.String)`](../javadoc/party/iroiro/luajava/Lua.html#get(java.lang.String)):
+  Returns a global variable of the supplied name as a `LuaValue`
+- [`Lua::eval(java.lang.String)`](../javadoc/party/iroiro/luajava/Lua.html#eval(java.lang.String)):
+  Executes the supplied Lua code and returns the returned value or values.
+
+  ::: tip
+  With `Lua::eval`, you will need an explicit Lua `return` statement to have `Lua::eval` return the values.
+
+  <!-- @code:luaValueEvalTest -->
+  @[code{27-33} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+  :::
+
 ## `Lua` <Badge>interface</Badge>
 
 The [`party.iroiro.luajava.Lua`](../javadoc/party/iroiro/luajava/Lua.html) interface is a wrapper around the `lua_State` pointer. It extracts the common parts from APIs of Lua 5.1 ~ 5.4 and LuaJIT. You may refer to the Javadoc for more information.
@@ -22,7 +42,7 @@ Some common patterns are listed below to help you get started.
 Just like the C API, you will need to [`close`](../javadoc/party/iroiro/luajava/Lua.html#close()) the state after you are done with it:
 
 <!-- @code:closableTest -->
-@[code{28-35} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+@[code{39-46} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 ::: warning
 Currently the sub-threads (created with [`mainState.newThread()`](../javadoc/party/iroiro/luajava/Lua.html#newThread()))
@@ -46,7 +66,7 @@ Lua API bases on a Lua stack. You need to push the value onto the stack before a
 to a global value with [`setGlobal`](../javadoc/party/iroiro/luajava/Lua.html#setGlobal(java.lang.String)).
 
 <!-- @code:globalSetTest -->
-@[code{40-48} java{6-7}](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+@[code{51-59} java{6-7}](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 ### Getting a global value
 
@@ -54,7 +74,7 @@ Similarly, [`getGlobal`](../javadoc/party/iroiro/luajava/Lua.html#getGlobal(java
 pushes a value onto the stack, instead of returning it.
 
 <!-- @code:globalGetTest -->
-@[code{53-60} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+@[code{64-71} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 ### Querying a table
 
@@ -68,25 +88,25 @@ or [`rawGetI`](../javadoc/party/iroiro/luajava/Lua.html#rawGetI(int,int)).
 ::: code-group-item getField
 
 <!-- @code:getFieldTest -->
-@[code{65-69} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+@[code{76-80} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 :::
 ::: code-group-item rawGetI
 
 <!-- @code:rawGetITest -->
-@[code{74-78} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+@[code{85-89} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 :::
 ::: code-group-item getTable
 
 <!-- @code:getTableTest -->
-@[code{83-88} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+@[code{94-99} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 :::
 ::: code-group-item rawGet
 
 <!-- @code:rawGetTest -->
-@[code{93-98} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+@[code{104-109} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 :::
 ::::
@@ -103,25 +123,25 @@ and [`rawSetI`](../javadoc/party/iroiro/luajava/Lua.html#rawSetI(int,int)).
 ::: code-group-item setField
 
 <!-- @code:setFieldTest -->
-@[code{103-107} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+@[code{114-118} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 :::
 ::: code-group-item rawSetI
 
 <!-- @code:rawSetITest -->
-@[code{112-116} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+@[code{123-127} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 :::
 ::: code-group-item setTable
 
 <!-- @code:setTableTest -->
-@[code{121-126} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+@[code{132-137} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 :::
 ::: code-group-item rawSet
 
 <!-- @code:rawSetTest -->
-@[code{131-136} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+@[code{142-147} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 :::
 ::::
@@ -166,13 +186,13 @@ Here is a tiny example for the second approach:
 ::: code-group-item Use lua_dump
 
 <!-- @code:luaDumpTest -->
-@[code{149-156} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+@[code{160-167} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 :::
 ::: code-group-item Use `string.dump`
 
 <!-- @code:stringDumpTest -->
-@[code{161-168} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+@[code{172-179} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 :::
 ::::

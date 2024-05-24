@@ -47,7 +47,7 @@ public class Lua53 extends AbstractLua {
     }
 
     protected Lua53(long L, int id, AbstractLua main) {
-        super(main.getLuaNative(), L, id, main);
+        super(main.getLuaNatives(), L, id, main);
     }
 
     private static LuaNatives getNatives() throws LinkageError {
