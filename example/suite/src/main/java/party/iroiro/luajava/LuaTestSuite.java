@@ -3,6 +3,7 @@ package party.iroiro.luajava;
 import party.iroiro.luajava.LuaException.LuaError;
 import party.iroiro.luajava.interfaces.*;
 import party.iroiro.luajava.lua51.Lua51;
+import party.iroiro.luajava.value.LuaFunction;
 import party.iroiro.luajava.value.LuaValue;
 
 import java.lang.reflect.Array;
@@ -1170,9 +1171,15 @@ public class LuaTestSuite<T extends AbstractLua> {
                     USERDATA, STRING, STRING, "", "String"
             },
             {
-                    V(((o, o2) -> o == null || o2 == null || o.equals(o2) || o2 instanceof LuaValue)),
+                    V((o, o2) -> o == null || o2 == null || o.equals(o2) || o2 instanceof LuaValue),
                     USERDATA, FUNCTION, FUNCTION,
                     (JFunction) l -> 0, (JFunction) l -> 1,
+            },
+            {
+                    V((o, o2) -> o2 instanceof LuaValue
+                            && ((LuaValue) o2).call(1)[0].toInteger() == 0xBEEF + 1),
+                    FUNCTION, FUNCTION, FUNCTION,
+                    (LuaFunction) (L, args) -> new LuaValue[]{L.from(args[0].toInteger() + 0xBEEF)},
             },
             {
                     V((o, list) -> {

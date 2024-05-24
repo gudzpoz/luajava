@@ -81,6 +81,9 @@ public class LuaValueSuite<T extends Lua> {
         assertEquals("nil", L.get().toString());
         L.push("string");
         assertEquals("string", L.get().toString());
+        L.push((L, args) -> null);
+        LuaValue v = L.get();
+        assertTrue(v.toString(), v.toString().startsWith("RefLuaValue$FUNCTION@party.iroiro.luajava.lua"));
     }
 
     private void stringTest() {
