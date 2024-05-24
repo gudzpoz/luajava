@@ -109,7 +109,7 @@ public class LuaTestSuite<T extends AbstractLua> {
             try (T L = constructor.get()) {
                 synchronized (L.getMainState()) {
                     L.openLibrary("coroutine");
-                    Object proxy = L.eval("return { run = function() end }")[0]
+                    Runnable proxy = L.eval("return { run = function() end }")[0]
                             .toProxy(Runnable.class);
                     L.set("proxy", proxy);
                     L.run("\n" +

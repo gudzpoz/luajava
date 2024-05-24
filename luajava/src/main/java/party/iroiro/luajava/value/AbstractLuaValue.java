@@ -121,8 +121,11 @@ public abstract class AbstractLuaValue<T extends Lua>
         return toInteger() != 0;
     }
 
-    public Object toProxy(Class<?>... interfaces) {
-        return toProxy(interfaces, Lua.Conversion.SEMI);
+    @Override
+    public <I> I toProxy(Class<I> targetInterface) {
+        @SuppressWarnings("unchecked")
+        I proxy = (I) toProxy(new Class[]{targetInterface}, Lua.Conversion.SEMI);
+        return proxy;
     }
 
     @Override
