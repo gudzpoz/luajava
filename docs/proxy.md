@@ -22,14 +22,9 @@ If you want to get the backing Lua table, use [`java.unwrap`](./api.md#unwrap-jo
 
 :::: code-group
 ::: code-group-item Lua API
-```lua
-r = java.proxy('java.lang.Runnable', {
-  run = function(this)
-    assert(type(java.unwrap(this)) == table)
-    print('Hello')
-  end
-})
-```
+
+@[code lua](../example/src/test/resources/docs/proxyExampleTest.lua)
+
 :::
 ::::
 
@@ -59,24 +54,7 @@ Just don't execute unknown Lua code at all.
 :::
 
 ::: details A Lua snippet to try things out
-```lua
-iterImpl = {
-  next = function()
-    i = i - 1
-    return i
-  end,
-  hasNext = function()
-    return i > 0
-  end
-}
-
-iter = java.proxy('java.util.Iterator', iterImpl)
-
--- The default `remove` throws an UnsupportedOperationException
-iter:remove()
--- Or explicitly calling `remove`
-java.method(iter, 'java.util.Iterator:remove')()
-```
+@[code lua](../example/src/test/resources/docs/apiMethodExample3.lua)
 :::
 
 ### And Android...

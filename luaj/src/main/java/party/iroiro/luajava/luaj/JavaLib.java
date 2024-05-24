@@ -78,7 +78,8 @@ public class JavaLib extends TwoArgFunction {
                 LuaJState L = LuaJNatives.instances.get(address);
                 String clazz = arg.checkjstring();
                 if (clazz.endsWith(".*")) {
-                    String packagePath = clazz.substring(0, clazz.length() - 2);
+                    int depth = countDepth(clazz);
+                    String packagePath = clazz.substring(0, clazz.length() - depth * 2);
                     return new PackageImporter(packagePath);
                 }
                 L.pushFrame();
@@ -161,6 +162,13 @@ public class JavaLib extends TwoArgFunction {
         });
         env.set("java", lib);
         return lib;
+    }
+
+    private static int countDepth(String clazz) {
+        if (!clazz.endsWith(".*")) {
+            return 0;
+        }
+        return countDepth(clazz.substring(0, clazz.length() - 2)) + 1;
     }
 
     private class PackageImporter extends LuaTable {

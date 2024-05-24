@@ -20,10 +20,9 @@ For more flexibility, just extend `ClassPathLoader` or write your own `ExternalL
 
 :::
 ::: code-group-item Lua Side
-```lua
--- Loads classpath:/lua/MyModule.lua
-local MyModule = require('lua.MyModule')
-```
+
+@[code lua](../../example/src/test/resources/docs/modulesRequireExample.lua)
+
 :::
 ::::
 
@@ -52,13 +51,11 @@ This provides an approach to loading libraries written in Java, similar to Lua's
 <!-- @code:javaSideModuleTest -->
 @[code{19-23} java](../../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java)
 
-```
 :::
 ::: code-group-item Lua Side
-```lua
-local LuaLib = require('com.example.LuaLib.open')
-assert(1024 == LuaLib.getNumber())
-```
+
+@[code lua](../../example/src/test/resources/docs/apiLoadlibExample.lua)
+
 :::
 ::::
 
