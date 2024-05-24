@@ -1721,36 +1721,6 @@ public interface LuaNatives {
     void luaJ_gettable(long ptr, int index);
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_newmetatable"><code>luaL_newmetatable</code></a>
-     *
-     * <pre><code>
-     * [-0, +1, m]
-     * </code></pre>
-     *
-     * <pre><code>
-     * int luaL_newmetatable (lua_State *L, const char *tname);
-     * </code></pre>
-     *
-     * <p>
-     * If the registry already has the key <code>tname</code>,
-     * returns 0.
-     * Otherwise,
-     * creates a new table to be used as a metatable for userdata,
-     * adds it to the registry with key <code>tname</code>,
-     * and returns 1.
-     * </p>
-     *
-     * <p>
-     * In both cases pushes onto the stack the final value associated
-     * with <code>tname</code> in the registry.
-     * </p>
-     *
-     * @param ptr the <code>lua_State*</code> pointer
-     * @param tname type name
-     */
-    void luaJ_newmetatable(long ptr, String tname);
-
-    /**
      * A wrapper function
      *
      * <p>Open a library indivisually, alternative to <code>luaL_openlibs</code></p>

@@ -547,11 +547,14 @@ public class LuaTestSuite<T extends AbstractLua> {
             return 1;
         });
         L.setGlobal("testOthersFunction1");
-        L.register("testOthersFunction2", (l, args) -> new LuaValue[]{ l.from("Hello") });
+        L.register("testOthersFunction2", (l, args) -> new LuaValue[]{l.from("Hello")});
         L.run("assert('Hello' == testOthersFunction1())");
         L.run("assert('Hello' == testOthersFunction2())");
 
         L.newRegisteredMetatable("myusertype");
+        L.newRegisteredMetatable("myusertype");
+        assertTrue(L.equal(-1, -2));
+        L.pop(1);
         L.push(l -> {
             l.push(1);
             return 1;

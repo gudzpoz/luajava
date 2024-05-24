@@ -772,7 +772,6 @@ returnValueInconsistencies = [
     'lua_pushstring',
     'lua_gettable',
     'luaL_getmetatable',
-    'luaL_newmetatable',
 ]
 
 def gatherFunctions(existing: list[LuaAPI]):

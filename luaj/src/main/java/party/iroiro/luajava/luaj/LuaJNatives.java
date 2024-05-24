@@ -688,11 +688,6 @@ public class LuaJNatives implements LuaNatives {
     }
 
     @Override
-    public void luaJ_newmetatable(long ptr, String tname) {
-        luaL_newmetatable(ptr, tname);
-    }
-
-    @Override
     public long luaL_newstate(int lid) {
         LuaInstances.Token<LuaJState> handle = instances.add();
         Globals globals = new Globals();

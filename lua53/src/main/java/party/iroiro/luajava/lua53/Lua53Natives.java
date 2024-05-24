@@ -3900,43 +3900,6 @@ public class Lua53Natives implements LuaNatives {
 
 
     /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.3/manual.html#luaL_newmetatable"><code>luaL_newmetatable</code></a>
-     *
-     * <pre><code>
-     * [-0, +1, m]
-     * </code></pre>
-     *
-     * <pre><code>
-     * int luaL_newmetatable (lua_State *L, const char *tname);
-     * </code></pre>
-     *
-     * <p>
-     * If the registry already has the key <code>tname</code>,
-     * returns 0.
-     * Otherwise,
-     * creates a new table to be used as a metatable for userdata,
-     * adds to this new table the pair <code>__name = tname</code>,
-     * adds to the registry the pair <code>[tname] = new table</code>,
-     * and returns 1.
-     * (The entry <code>__name</code> is used by some error-reporting functions.)
-     * </p>
-     *
-     * <p>
-     * In both cases pushes onto the stack the final value associated
-     * with <code>tname</code> in the registry.
-     * </p>
-     *
-     * @param ptr the <code>lua_State*</code> pointer
-     * @param tname type name
-     */
-    public native void luaJ_newmetatable(long ptr, String tname); /*
-        lua_State * L = (lua_State *) ptr;
-
-        luaL_newmetatable((lua_State *) L, (const char *) tname);
-    */
-
-
-    /**
      * Wrapper of <a href="https://www.lua.org/manual/5.3/manual.html#luaL_newstate"><code>luaL_newstate</code></a>
      *
      * <pre><code>
