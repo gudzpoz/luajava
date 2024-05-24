@@ -103,7 +103,7 @@ jobs:
       - name: Test (Desktop)
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
-          ./gradlew :example:test :jsr223:test
+          ./gradlew :example:test :jsr223:test :jpms-example:run
       - name: Jacoco Test Report
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
@@ -199,7 +199,7 @@ jobs:
           ./gradlew jniGen
       - name: Test
         run: |
-          ./gradlew :example:test :jsr223:test
+          ./gradlew :example:test :jsr223:test :jpms-example:run
   android-testing:
     runs-on: ubuntu-latest
     strategy:
