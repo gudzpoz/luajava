@@ -204,12 +204,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        api-level: [ 21, 24 ]
+        api-level: [ 21 ]
         android-arch: [ 'x86_64', 'x86' ]
         include:
+          - api-level: 24
+            android-arch: 'x86'
           - api-level: 27
-            android-arch: 'x86_64'
-          - api-level: 30
             android-arch: 'x86_64'
           - api-level: 33
             android-arch: 'x86_64'
