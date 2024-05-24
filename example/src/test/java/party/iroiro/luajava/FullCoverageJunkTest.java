@@ -3,11 +3,16 @@ package party.iroiro.luajava;
 import org.junit.jupiter.api.Test;
 import party.iroiro.luajava.lua51.Lua51;
 import party.iroiro.luajava.lua51.Lua51Consts;
+import party.iroiro.luajava.lua52.Lua52;
 import party.iroiro.luajava.lua52.Lua52Consts;
+import party.iroiro.luajava.lua53.Lua53;
 import party.iroiro.luajava.lua53.Lua53Consts;
+import party.iroiro.luajava.lua54.Lua54;
 import party.iroiro.luajava.lua54.Lua54Consts;
 import party.iroiro.luajava.luaj.JavaMetatables;
+import party.iroiro.luajava.luaj.LuaJ;
 import party.iroiro.luajava.luaj.LuaJConsts;
+import party.iroiro.luajava.luajit.LuaJit;
 import party.iroiro.luajava.luajit.LuaJitConsts;
 import party.iroiro.luajava.value.ImmutableLuaValue;
 import party.iroiro.luajava.value.LuaValue;
@@ -57,6 +62,23 @@ public class FullCoverageJunkTest {
     private static class LuaForTests extends Lua51 {
         public void checkError(int code) {
             super.checkError(code, false);
+        }
+    }
+
+    @Test
+    public void enumConversionTest() {
+        //noinspection resource
+        for (AbstractLua L : new AbstractLua[]{
+                new Lua51(),
+                new Lua52(),
+                new Lua53(),
+                new Lua54(),
+                new LuaJit(),
+                new LuaJ(),
+        }) {
+            assertThrows(LuaException.class, () -> L.convertError(10000));
+            assertThrows(LuaException.class, () -> L.convertType(10000));
+            L.close();
         }
     }
 }

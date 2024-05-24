@@ -93,6 +93,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         testNotSupported();
         testOthers();
         testOverflow();
+        testPCall();
         testProxy();
         testPushChecks();
         testRef();
@@ -102,6 +103,17 @@ public class LuaTestSuite<T extends AbstractLua> {
         testStackPositions();
         testTableOperations();
         testThreads();
+    }
+
+    private void testPCall() {
+        try (T L = constructor.get()) {
+            L.run("return function() error('err') end");
+            L.pushValue(-1);
+            assertEquals(
+                    LuaError.HANDLER,
+                    L.convertError(L.getLuaNative().lua_pcall(L.getPointer(), 0, 0, -2))
+            );
+        }
     }
 
     private void testCoroutineDeadlock() {
@@ -610,6 +622,7 @@ public class LuaTestSuite<T extends AbstractLua> {
                 "end");
         sub.getGlobal("threadCoroutineTest");
         assertTrue(sub.resume(0));
+        assertEquals(LuaError.YIELD, sub.status());
         assertEquals(1.0, sub.toNumber(-1), 0.000001);
         sub.pop(1);
         assertTrue(sub.resume(0));

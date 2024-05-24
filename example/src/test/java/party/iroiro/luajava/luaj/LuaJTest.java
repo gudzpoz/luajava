@@ -95,6 +95,13 @@ public class LuaJTest {
     }
 
     @Test
+    public void memoryErrorCodeTest() {
+        try (LuaJ L = new LuaJ()) {
+            assertEquals(LuaException.LuaError.MEMORY, L.convertError(LuaJConsts.LUA_ERRMEM));
+        }
+    }
+
+    @Test
     public void testLuaJNatives() {
         try (LuaJ L = new LuaJ()) {
             LuaJNatives C = (LuaJNatives) L.getLuaNative();
