@@ -69,4 +69,3 @@ RUN apk add libstdc++
 RUN ldd --version || true
 CMD ["java", "-jar", "/opt/app/example-all.jar", "--test"]
 ```
-

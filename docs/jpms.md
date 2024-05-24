@@ -5,83 +5,17 @@ is a built-in way to express relationships between Java _modules_, starting from
 
 To use LuaJava in your Java module, simply place the follow `requires` statements in your `module-info.java`:
 
-:::: code-group
-::: code-group-item *
-```java
+```java ignored
 module my.java.module {
     // ...
 
     requires party.iroiro.luajava;
-    requires party.iroiro.luajava.<replace with your Lua version>;
-
-    // ...
-}
-```
-:::
-::: code-group-item Lua 5.1
-```java
-module my.java.module {
-    // ...
-
-    requires party.iroiro.luajava;
+    // Replace lua51 with your Lua version: lua51/lua52/lua53/lua54/luajit/luaj
     requires party.iroiro.luajava.lua51;
 
     // ...
 }
 ```
-:::
-::: code-group-item Lua 5.2
-```java
-module my.java.module {
-    // ...
-
-    requires party.iroiro.luajava;
-    requires party.iroiro.luajava.lua52;
-
-    // ...
-}
-```
-:::
-
-::: code-group-item Lua 5.3
-```java
-module my.java.module {
-    // ...
-
-    requires party.iroiro.luajava;
-    requires party.iroiro.luajava.lua53;
-
-    // ...
-}
-```
-:::
-
-::: code-group-item Lua 5.4
-```java
-module my.java.module {
-    // ...
-
-    requires party.iroiro.luajava;
-    requires party.iroiro.luajava.lua54;
-
-    // ...
-}
-```
-:::
-
-::: code-group-item LuaJIT
-```java
-module my.java.module {
-    // ...
-
-    requires party.iroiro.luajava;
-    requires party.iroiro.luajava.luajit;
-
-    // ...
-}
-```
-:::
-::::
 
 ## Modules
 

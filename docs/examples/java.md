@@ -6,14 +6,8 @@ The Java API is mostly a wrapper around [The Application Program Interface of Lu
 
 The [`party.iroiro.luajava.value.LuaValue`](../javadoc/party/iroiro/luajava/value/LuaValue.html) interface is a wrapper around a Lua value.
 
-```java
-Lua L = new Lua54();
-LuaValue[] returnValues = L.execute("return { a = 1 }, 1024, 'string'");
-assertEquals(3, returnValues.length);
-assertEquals(L.from(1.0),      returnValues[0].get("a"));
-assertEquals(L.from(1024),     returnValues[1]);
-assertEquals(L.from("string"), returnValues[2]);
-```
+<!-- @code:luaValueTest -->
+@[code{16-22} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 Internally, for complex values (for example, Lua tables), it uses [references](#creating-references) to refer to the Lua value.
 
@@ -27,16 +21,8 @@ Some common patterns are listed below to help you get started.
 
 Just like the C API, you will need to [`close`](../javadoc/party/iroiro/luajava/Lua.html#close()) the state after you are done with it:
 
-```java
-Lua L = new Lua51();
-// Operations
-L.close();
-
-// Or
-try (Lua J = new Lua51()) {
-  // Operations
-}
-```
+<!-- @code:closableTest -->
+@[code{28-35} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 ::: warning
 Currently the sub-threads (created with [`mainState.newThread()`](../javadoc/party/iroiro/luajava/Lua.html#newThread()))
@@ -59,25 +45,16 @@ You need to explicitly open the libraries you use.
 Lua API bases on a Lua stack. You need to push the value onto the stack before assigning it
 to a global value with [`setGlobal`](../javadoc/party/iroiro/luajava/Lua.html#setGlobal(java.lang.String)).
 
-```java {2,3}
-Lua L = new Lua54();
-L.push("string value");
-L.setGlobal("myStr");
-
-L.run("assert(myStr == 'string value')");
-```
+<!-- @code:globalSetTest -->
+@[code{40-48} java{6-7}](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 ### Getting a global value
 
 Similarly, [`getGlobal`](../javadoc/party/iroiro/luajava/Lua.html#getGlobal(java.lang.String))
 pushes a value onto the stack, instead of returning it.
 
-```java
-L.run("a = 1024");
-L.getGlobal("a");
-
-L.toNumber(-1); // 1024.0 (double)
-```
+<!-- @code:globalGetTest -->
+@[code{53-60} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
 
 ### Querying a table
 
@@ -89,38 +66,28 @@ or [`rawGetI`](../javadoc/party/iroiro/luajava/Lua.html#rawGetI(int,int)).
 
 :::: code-group
 ::: code-group-item getField
-```java
-Lua L = new Lua54();
-L.run("return { a = 1 }"); // Pushes a table on stack
-L.getField(-1, "a");       // Retrieves the value
-L.toNumber(-1);            // 1.0
-```
+
+<!-- @code:getFieldTest -->
+@[code{65-69} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+
 :::
 ::: code-group-item rawGetI
-```java
-Lua L = new Lua54();
-L.run("return { [20] = 1 }"); // Pushes a table on stack
-L.rawGetI(-1, 20);            // Retrieves the value
-L.toNumber(-1);               // 1.0
-```
+
+<!-- @code:rawGetITest -->
+@[code{74-78} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+
 :::
 ::: code-group-item getTable
-```java
-Lua L = new Lua54();
-L.run("return { a = 1 }"); // Pushes a table on stack
-L.push("a");               // Pushes the key to look up
-L.getTable(-2);            // Retrieves the value
-L.toNumber(-1);            // 1.0
-```
+
+<!-- @code:getTableTest -->
+@[code{83-88} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+
 :::
 ::: code-group-item rawGet
-```java
-Lua L = new Lua54();
-L.run("return { a = 1 }"); // Pushes a table on stack
-L.push("a");               // Pushes the key to look up
-L.rawGet(-2);              // Retrieves the value
-L.toNumber(-1);            // 1.0
-```
+
+<!-- @code:rawGetTest -->
+@[code{93-98} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+
 :::
 ::::
 
@@ -134,38 +101,28 @@ and [`rawSetI`](../javadoc/party/iroiro/luajava/Lua.html#rawSetI(int,int)).
 
 :::: code-group
 ::: code-group-item setField
-```java
-Lua L = new Lua54();
-L.run("return { a = 1 }"); // Pushes a table on stack
-L.push(2);                 // Pushes the new value
-L.setField(-2, "a");       // Updates the value
-```
+
+<!-- @code:setFieldTest -->
+@[code{103-107} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+
 :::
 ::: code-group-item rawSetI
-```java
-Lua L = new Lua54();
-L.run("return { [20] = 1 }"); // Pushes a table on stack
-L.push(2);                    // Pushes the new value
-L.rawSetI(-2, 20);            // Updates the value
-```
+
+<!-- @code:rawSetITest -->
+@[code{112-116} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+
 :::
 ::: code-group-item setTable
-```java
-Lua L = new Lua54();
-L.run("return { a = 1 }"); // Pushes a table on stack
-L.push("a");               // Pushes the key
-L.push(2);                 // Pushes the new value
-L.getTable(-3);            // Updates the value
-```
+
+<!-- @code:setTableTest -->
+@[code{121-126} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+
 :::
 ::: code-group-item rawSet
-```java
-Lua L = new Lua54();
-L.run("return { a = 1 }"); // Pushes a table on stack
-L.push("a");               // Pushes the key
-L.push(2);                 // Pushes the new value
-L.rawSet(-3);              // Updates the value
-```
+
+<!-- @code:rawSetTest -->
+@[code{131-136} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+
 :::
 ::::
 
@@ -207,24 +164,16 @@ Here is a tiny example for the second approach:
 
 :::: code-group
 ::: code-group-item Use lua_dump
-```java
-Lua L = getYourLuaInstance();
-ByteBuffer code = readFromFile("MyScript.lua");
-// L.load(...) pushes on stack a precompiled function
-L.load(code, "MyScript.lua");
-// L.dump() calls lua_dump, dumping the precompiled binary
-ByteBuffer precompiledChunk = L.dump();
-```
+
+<!-- @code:luaDumpTest -->
+@[code{149-156} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+
 :::
-::: code-group-item Use string.dump
-```java
-Lua L = getYourLuaInstance();
-L.openLibrary("string");
-// string.dump(...) returns the precompiled binary as a Lua string
-L.run("return string.dump(function(a, b) return a + b end)");
-// L.toBuffer(...) stores the precompiled binary into a buffer and returns it
-ByteBuffer precompiledChunk = L.toBuffer(-1);
-```
+::: code-group-item Use `string.dump`
+
+<!-- @code:stringDumpTest -->
+@[code{161-168} java](../../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+
 :::
 ::::
 

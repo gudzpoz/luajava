@@ -36,26 +36,16 @@ When calling Java methods from Lua, we `SEMI`-convert the return value. Currentl
 
   You cannot add `jobject` types up, even if their underlying class is `Integer`.
 
-  ```java {5}
-  Lua L = new Lua51();
-  L.push(1, Lua.Conversion.NONE);
-  L.setGlobal("i");
-  assert OK == L.run("print(i:hashCode())");
-  assert OK != L.run("print(i + 1)");
-  assert OK == L.run("print(java.luaify(i) + 1)");
-  ```
+  <!-- @code:noAutoUnboxingTest -->
+  @[code{13-19} java{5}](../example/src/test/java/party/iroiro/luajava/docs/ConversionExampleTest.java)
 
 - **`FULL`**:
 
   Changes in converted Lua objects are not propagated back to the original Java object.
 
-  ```java {4-5}
-  int[] array = new int[] { 100 };
-  L.push(array, Lua.Conversion.FULL);
-  L.setGlobal("array");
-  assert L.run("array[1] = 1024") == OK;
-  assert 100 == array[0];
-  ```
+  <!-- @code:fullConversionTest -->
+  @[code{24-30} java{5-6}](../example/src/test/java/party/iroiro/luajava/docs/ConversionExampleTest.java)
+
 :::
 
 ## Lua to Java

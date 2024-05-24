@@ -37,9 +37,7 @@ You've been warned. But issues are welcome if you encounter any problems.
 
 To re-open the Lua library as global, you may do something like this:
 
-```java
-Lua L = getLua();
-L.getLuaNative().loadAsGlobal();
-```
+<!-- @code:loadAsGlobalTest -->
+@[code{12-15} java](../example/src/test/java/party/iroiro/luajava/docs/RtldExampleTest.java)
 
 You only need to do this once per JVM, but it is safe to `loadAsGlobal` more than once.

@@ -237,27 +237,16 @@ You might also want to check out [Java-Side Modules](./examples/modules.md) to s
 
 :::: code-group
 ::: code-group-item Java Library
-```java
-package com.example;
 
-public class LuaLib {
-    public static int open(Lua L) {
-        L.createTable(0, 1);
-        L.push(l -> {
-            l.push(1024);
-            return 1;
-        });
-        L.setField(-2, "getNumber");
-        return 1;
-    }
-}
-```
+<!-- @code:class -->
+@[code java](../example/src/test/java/party/iroiro/luajava/docs/JavaSideExampleModule.java)
+
 :::
 ::: code-group-item Java Side
-```java
-Lua L = new Lua51();
-L.openLibrary("package");
-```
+
+<!-- @code:javaSideModuleTest -->
+@[code{19-23} java](../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java)
+
 :::
 ::: code-group-item Lua Side
 ```lua

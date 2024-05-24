@@ -13,11 +13,10 @@ If you want to get the backing Lua table, use [`java.unwrap`](./api.md#unwrap-jo
 
 :::: code-group
 ::: code-group-item Java API
-```java
-Lua L = new Lua54();
-L.run("return { run = function() print('Hello') end }");
-Runnable r = (Runnable) L.createProxy(new Class[] {Runnable.class}, Lua.Conversion.SEMI);
-```
+
+<!-- @code:runnableTest -->
+@[code{10-21} java](../example/src/test/java/party/iroiro/luajava/docs/ProxyExampleTest.java)
+
 :::
 ::::
 
@@ -99,7 +98,7 @@ I am not going to detail on this. In short, if you have `minSdkVersion` lower th
 your interfaces with default methods will get transformed into a normal interface
 *and* an abstract class containing the implementation:
 
-```java
+```java ignored
 // Written code:
 interface DefaultedInterface { default int answer() { return 42; } }
 // Transformed:
