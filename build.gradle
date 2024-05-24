@@ -41,7 +41,7 @@ ext {
 apply from: 'publish.gradle'
 apply from: 'jacoco.gradle'
 
-task allJavadoc(type: Javadoc) {
+tasks.register('allJavadoc', Javadoc) {
     Set<String> projects = [
             'lua51',
             'lua52',

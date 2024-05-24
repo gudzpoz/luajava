@@ -1,6 +1,5 @@
 package party.iroiro.luajava.value;
 
-import org.jetbrains.annotations.Nullable;
 import party.iroiro.luajava.LuaException;
 
 public interface LuaThread {
@@ -34,8 +33,7 @@ public interface LuaThread {
      * @param command the command
      * @return the return values
      */
-    @Nullable
-    LuaValue[] execute(String command) throws LuaException;
+    LuaValue[] eval(String command) throws LuaException;
 
     /**
      * @return a nil Lua value

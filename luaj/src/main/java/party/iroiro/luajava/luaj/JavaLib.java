@@ -51,14 +51,16 @@ public class JavaLib extends TwoArgFunction {
                         L.lid, o.m_instance, args.narg() > 2 ? 1 - args.narg() : args.arg(2).checkint()));
             }
         });
-        lib.set("catched", new VarArgFunction() {
+        VarArgFunction javaCaught = new VarArgFunction() {
             @Override
             public Varargs invoke(Varargs args) {
                 LuaJState L = LuaJNatives.instances.get(address);
                 Throwable error = L.getError();
                 return error == null ? LuaValue.NIL : new JavaObject(error, L.jObjectMetatable, L.address);
             }
-        });
+        };
+        lib.set("caught", javaCaught);
+        lib.set("catched", javaCaught);
         lib.set("detach", new OneArgFunction() {
             @Override
             public LuaValue call(LuaValue arg) {

@@ -54,7 +54,7 @@ public final class LuaScriptEngine extends AbstractScriptEngine implements Scrip
         assertNotNull(scriptContext, "context");
         try (Lua L = getLua()) {
             putContext(L, scriptContext);
-            LuaValue[] values = L.execute(script);
+            LuaValue[] values = L.eval(script);
             return values.length == 0 ? null : values;
         } catch (LuaException e) {
             throw new ScriptException(e);

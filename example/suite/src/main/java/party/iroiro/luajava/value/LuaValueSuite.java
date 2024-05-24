@@ -40,7 +40,7 @@ public class LuaValueSuite<T extends Lua> {
 
     @SuppressWarnings("SuspiciousMethodCalls")
     private void tableMapTest() {
-        LuaValue map = L.execute("t = { 1, 2, 3, 4, a = 5, b = 6, c = 7, d = 8 }; return t")[0];
+        LuaValue map = L.eval("t = { 1, 2, 3, 4, a = 5, b = 6, c = 7, d = 8 }; return t")[0];
         assertEquals(8, map.entrySet().size());
         assertEquals(4, map.length());
         assertTrue(map.containsKey("a"));
@@ -54,8 +54,8 @@ public class LuaValueSuite<T extends Lua> {
         assertEquals(10, map.get("b").toInteger());
         assertEquals(1, map.get((Number) 1).toInteger());
 
-        assertThrows(NoSuchElementException.class, () -> L.execute("return {}")[0].entrySet().iterator().next());
-        assertThrows(IllegalStateException.class, () -> L.execute("return {}")[0].entrySet().iterator().remove());
+        assertThrows(NoSuchElementException.class, () -> L.eval("return {}")[0].entrySet().iterator().next());
+        assertThrows(IllegalStateException.class, () -> L.eval("return {}")[0].entrySet().iterator().remove());
 
         L.push(1);
         LuaValue i = L.get();
@@ -95,7 +95,7 @@ public class LuaValueSuite<T extends Lua> {
     private void luaStateTest() {
         LuaValue value = L.get("java");
         assertEquals(TABLE, value.type());
-        assertThrowsLua(LuaException.LuaError.SYNTAX, () -> L.execute("("));
+        assertThrowsLua(LuaException.LuaError.SYNTAX, () -> L.eval("("));
     }
 
     private void callTest() {
@@ -133,7 +133,7 @@ public class LuaValueSuite<T extends Lua> {
 
     private void tableTest() {
         int top = L.getTop();
-        LuaValue[] values = L.execute("return {1, 2, 3, a = 'b', c = 'd'}, 1024");
+        LuaValue[] values = L.eval("return {1, 2, 3, a = 'b', c = 'd'}, 1024");
         assertEquals(2, values.length);
         LuaValue value = values[0];
 
@@ -151,7 +151,7 @@ public class LuaValueSuite<T extends Lua> {
         assertEquals(3., value.get(3).toJavaObject());
         assertEquals("b", value.get("a").toJavaObject());
         assertEquals("d", value.get(L.from("c")).toJavaObject());
-        value = L.execute("return {}")[0];
+        value = L.eval("return {}")[0];
         value.set(1, L.from(1));
         value.set(2, L.from(2));
         value.set(L.from(3), L.from(3));

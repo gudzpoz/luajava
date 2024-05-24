@@ -18,30 +18,31 @@ ext {
 android {
     namespace = project(':').group
 
-    compileSdk 33
-    buildToolsVersion '30.0.3'
-
     defaultConfig {
         minSdk 21
-        targetSdk 31
+        targetSdk 34
+        compileSdk 33
         versionCode 1
         versionName '3.1'
     }
 
     sourceSets { container ->
-        luaVersions.forEach { ver ->
+        luaVersions.each { v ->
+            String ver = v
             container.create(ver) {
+                namespace "${project(':').group}.${ver}"
                 manifest.srcFile 'AndroidManifest.xml'
                 jniLibs.srcDirs = ["${ver}-libs"]
             }
         }
     }
 
-    flavorDimensions 'lua'
+    flavorDimensions += 'lua'
 
     productFlavors { container ->
-        luaVersions.forEach { ver ->
-            container.create(ver) {
+        luaVersions.each { ver ->
+            String v = ver
+            container.create(v) {
                 dimension 'lua'
             }
         }
@@ -53,7 +54,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            matchingFallbacks = 'release'
+            matchingFallbacks ['release']
         }
     }
 
@@ -63,7 +64,7 @@ android {
     }
 }
 
-task copyAndroidNatives {
+tasks.register('copyAndroidNatives') {
     doFirst {
         List<String> platforms = ['armeabi-v7a', 'arm64-v8a', 'x86_64', 'x86']
         luaVersions.forEach { ver ->
@@ -82,7 +83,7 @@ task copyAndroidNatives {
     }
 }
 
-tasks.whenTaskAdded { packageTask ->
+tasks.configureEach { packageTask ->
     if (packageTask.name.contains("merge") && packageTask.name.contains("JniLibFolders")) {
         packageTask.dependsOn 'copyAndroidNatives'
     }
@@ -102,9 +103,10 @@ afterEvaluate {
 
     publishing {
         publications {
-            'default'(MavenPublication) { container ->
+            create('default', MavenPublication) { container ->
                 setPom(pom, '')
-                luaVersions.forEach { ver ->
+                luaVersions.each { v ->
+                    String ver = v
                     String path = "${buildDir}/outputs/aar/android-${ver}-release.aar"
                     file(path).getParentFile().mkdirs()
                     file(path).createNewFile()
@@ -140,7 +142,7 @@ afterEvaluate {
     }
 }
 
-tasks.whenTaskAdded { packageTask ->
+tasks.configureEach { packageTask ->
     if (packageTask.name.toLowerCase().contains("maven")) {
         packageTask.dependsOn 'assemble'
     }

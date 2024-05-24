@@ -26,8 +26,8 @@ android {
 
     defaultConfig {
         minSdk 21
-        targetSdk 21
-        compileSdk 30
+        targetSdk 34
+        compileSdk 33
         versionCode 1
         versionName '3.1'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -61,7 +61,7 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
     implementation project(':luajava')
     implementation project(':lua51')
     implementation project(':lua52')

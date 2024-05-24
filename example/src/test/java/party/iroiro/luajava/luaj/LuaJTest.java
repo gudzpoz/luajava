@@ -207,9 +207,9 @@ public class LuaJTest {
     public void testMath() {
         try (LuaJ L = new LuaJ()) {
             L.openLibraries();
-            double eLog = L.execute("return math.log(" + Math.E + ")")[0].toNumber();
+            double eLog = L.eval("return math.log(" + Math.E + ")")[0].toNumber();
             assertEquals(1., eLog, 0.000001);
-            double tenLog = L.execute("return math.log(100, 10)")[0].toNumber();
+            double tenLog = L.eval("return math.log(100, 10)")[0].toNumber();
             assertEquals(2., tenLog, 0.000001);
         }
     }

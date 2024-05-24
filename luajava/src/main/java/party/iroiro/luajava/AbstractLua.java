@@ -1059,7 +1059,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public @Nullable LuaValue[] execute(String command) throws LuaException {
+    public LuaValue[] eval(String command) throws LuaException {
         load(command);
         return get().call();
     }

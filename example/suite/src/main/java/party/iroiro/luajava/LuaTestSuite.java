@@ -109,7 +109,7 @@ public class LuaTestSuite<T extends AbstractLua> {
             try (T L = constructor.get()) {
                 synchronized (L.getMainState()) {
                     L.openLibrary("coroutine");
-                    Object proxy = L.execute("return { run = function() end }")[0]
+                    Object proxy = L.eval("return { run = function() end }")[0]
                             .toProxy(Runnable.class);
                     L.set("proxy", proxy);
                     L.run("\n" +
@@ -437,7 +437,7 @@ public class LuaTestSuite<T extends AbstractLua> {
             L.createTable(0, 100000);
             L.setGlobal("a");
             L.run("for i = 1, 100000 do a[tostring(i)] = true end");
-            LuaValue beforeGc = L.execute("return collectgarbage('count')")[0];
+            LuaValue beforeGc = L.eval("return collectgarbage('count')")[0];
             L.pushNil();
             L.setGlobal("a");
             L.gc();
