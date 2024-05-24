@@ -3,31 +3,26 @@ package party.iroiro.luajava;
 import org.junit.jupiter.api.Test;
 import party.iroiro.luajava.lua51.Lua51;
 
-import java.util.Objects;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static party.iroiro.luajava.Lua.LuaError.OK;
-import static party.iroiro.luajava.Lua.LuaError.RUNTIME;
+import static party.iroiro.luajava.LuaTestSuite.assertThrowsLua;
 
 public class ArrayTest {
     @Test
     public void arrayTest() {
         try (Lua L = new Lua51()) {
-            int[] i = new int[] { 1, 2, 3, 4 };
+            int[] i = new int[]{1, 2, 3, 4};
             L.pushJavaArray(i);
             L.setGlobal("i");
-            assertEquals(OK, L.run("assert(i[1] == 1)"));
-            assertEquals(OK, L.run("assert(i[2] == 2)"));
-            assertEquals(OK, L.run("assert(i[3] == 3)"));
-            assertEquals(OK, L.run("assert(i[4] == 4)"));
-            assertEquals(RUNTIME, L.run("assert(i[5] == nil)"));
-            assertTrue(Objects.requireNonNull(L.toString(-1))
-                    .contains("java.lang.ArrayIndexOutOfBoundsException"));
+            L.run("assert(i[1] == 1)");
+            L.run("assert(i[2] == 2)");
+            L.run("assert(i[3] == 3)");
+            L.run("assert(i[4] == 4)");
+            assertThrowsLua(L, "assert(i[5] == nil)",
+                    LuaException.LuaError.RUNTIME, ArrayIndexOutOfBoundsException.class);
 
-            assertEquals(OK, L.run("assert(#i == 4)"));
+            L.run("assert(#i == 4)");
 
-            assertEquals(OK, L.run("i[1] = 100"));
+            L.run("i[1] = 100");
             assertEquals(100, i[0]);
         }
     }

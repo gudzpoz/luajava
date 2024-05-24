@@ -22,38 +22,15 @@
 
 package party.iroiro.luajava.value;
 
-import org.jetbrains.annotations.Nullable;
 import party.iroiro.luajava.Lua;
-import party.iroiro.luajava.cleaner.LuaReferable;
 
-public class RefLuaValue extends AbstractLuaValue<Lua> implements LuaReferable {
-    private final int ref;
-
+public class RefLuaValue extends AbstractRefLuaValue {
     public RefLuaValue(Lua L, Lua.LuaType type) {
         super(L, type);
-        this.ref = L.ref();
     }
 
     @Override
-    public void push() {
-        L.refGet(ref);
-    }
-
-    @Override
-    public @Nullable Object toJavaObject() {
-        push();
-        Object o = L.toObject(-1);
-        L.pop(1);
-        return o;
-    }
-
-    @Override
-    public void close() {
-        // nothing
-    }
-
-    @Override
-    public int getReference() {
-        return ref;
+    public String toString() {
+        return getClass().getSimpleName() + "$" + type + "@" + L + ":" + getReference();
     }
 }

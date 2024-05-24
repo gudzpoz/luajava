@@ -58,10 +58,6 @@ static int luaJ_dobuffer(lua_State * L, unsigned char * buffer, int size, const 
     return (luaL_loadbuffer(L, (const char *) buffer, size, name) || lua_pcall(L, 0, LUA_MULTRET, 0));
 }
 
-static int luaJ_pcall(lua_State * L, int nargs, int nresults) {
-    return lua_pcall(L, nargs, nresults, 0);
-}
-
 static int luaJ_resume(lua_State * L, int narg) {
     int nresults;
     return lua_resume(L, NULL, narg, &nresults);

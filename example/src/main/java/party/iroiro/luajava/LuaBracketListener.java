@@ -6,7 +6,7 @@ import party.iroiro.luajava.parser.LuaBaseListener;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LuaBracketListener extends LuaBaseListener {
-    public AtomicInteger brackets = new AtomicInteger(0);
+    public final AtomicInteger brackets = new AtomicInteger(0);
 
     @Override
     public void enterEveryRule(ParserRuleContext ctx) {

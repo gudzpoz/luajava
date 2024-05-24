@@ -15,8 +15,7 @@ import java.util.Objects;
 
 import static org.junit.Assert.*;
 import static party.iroiro.luajava.DefaultProxyTest.instanceOfLuaJ;
-import static party.iroiro.luajava.Lua.LuaError.OK;
-import static party.iroiro.luajava.Lua.LuaError.RUNTIME;
+import static party.iroiro.luajava.LuaTestSuite.assertThrowsLua;
 
 public class LuaScriptSuite<T extends AbstractLua> {
     private static final String LUA_ASSERT_THROWS = "\n" +
@@ -34,15 +33,9 @@ public class LuaScriptSuite<T extends AbstractLua> {
             "  assert(false, debug.traceback('Expecting ' .. message .. ': Received \"' .. msg .. '\"'))\n" +
             "end";
     private final T L;
-    private final LuaTestConsumer<String> logger;
 
     public LuaScriptSuite(T L) {
-        this(L, System.err::println);
-    }
-
-    public LuaScriptSuite(T L, LuaTestConsumer<String> logger) {
         this.L = L;
-        this.logger = logger;
         addAssertThrows(L);
         L.openLibrary("package");
         L.setExternalLoader(new ClassPathLoader());
@@ -52,7 +45,7 @@ public class LuaScriptSuite<T extends AbstractLua> {
         L.openLibrary("string");
         L.openLibrary("debug");
         L.openLibrary("table");
-        assertEquals(OK, L.run(LUA_ASSERT_THROWS));
+        L.run(LUA_ASSERT_THROWS);
         L.push(DefaultProxyTest.isDefaultAvailable() && !(instanceOfLuaJ(L)));
         L.setGlobal("JAVA8");
         L.push(instanceOfLuaJ(L));
@@ -80,37 +73,17 @@ public class LuaScriptSuite<T extends AbstractLua> {
             new ScriptTester("/suite/otherConvTest.lua", L -> {
                 L.push(new OtherTypes(), Lua.Conversion.NONE);
                 L.setGlobal("others");
-                LuaNative C = L.getLuaNative();
+                LuaNatives C = L.getLuaNatives();
                 if (C instanceof Lua51Natives) {
-                    new Lua51Natives() {
-                        {
-                            lua_newuserdata(L.getPointer(), 1024);
-                        }
-                    };
+                    ((Lua51Natives) C).lua_newuserdata(L.getPointer(), 1024);
                 } else if (C instanceof Lua52Natives) {
-                    new Lua52Natives() {
-                        {
-                            lua_newuserdata(L.getPointer(), 1024);
-                        }
-                    };
+                    ((Lua52Natives) C).lua_newuserdata(L.getPointer(), 1024);
                 } else if (C instanceof Lua53Natives) {
-                    new Lua53Natives() {
-                        {
-                            lua_newuserdata(L.getPointer(), 1024);
-                        }
-                    };
+                    ((Lua53Natives) C).lua_newuserdata(L.getPointer(), 1024);
                 } else if (C instanceof Lua54Natives) {
-                    new Lua54Natives() {
-                        {
-                            lua_newuserdatauv(L.getPointer(), 1024, 0);
-                        }
-                    };
+                    ((Lua54Natives) C).lua_newuserdatauv(L.getPointer(), 1024, 0);
                 } else if (C instanceof LuaJitNatives) {
-                    new LuaJitNatives() {
-                        {
-                            lua_newuserdata(L.getPointer(), 1024);
-                        }
-                    };
+                    ((LuaJitNatives) C).lua_newuserdata(L.getPointer(), 1024);
                 } else if (C.getClass().getName().endsWith("LuaJNatives")) {
                     // This is tested instead in NativesTest,
                     // because our Android build has trouble desugaring and cannot run LuaJ.
@@ -123,6 +96,16 @@ public class LuaScriptSuite<T extends AbstractLua> {
             new ScriptTester("/suite/proxyTest.lua", L -> {
             }),
             new ScriptTester("/suite/importTest.lua", L -> {
+                OtherTypes others = new OtherTypes();
+                others.array1 = new Object[] {
+                        new Object[] { 1., 2., 3. },
+                        new Object[] { 4., 5., 6. },
+                        7.,
+                };
+                others.array2 = new int[] {
+                        8, 9, 10, 11, 12,
+                };
+                L.set("others", others);
             }),
             new ScriptTester("/suite/luaifyTest.lua", L -> {
             }),
@@ -163,7 +146,7 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 L.openLibrary("package");
                 L.openLibraries();
                 L.setExternalLoader(new ClassPathLoader());
-                assertEquals(RUNTIME, L.run("require('suite.not.a.module')"));
+                assertThrowsLua(L, "require('suite.not.a.module')", LuaException.LuaError.RUNTIME);
             }),
             new ScriptTester("/suite/apiTest.lua", L -> {
                 L.pushThread();
@@ -189,7 +172,6 @@ public class LuaScriptSuite<T extends AbstractLua> {
         L.openLibrary("coroutine");
         for (ScriptTester tester : TESTERS) {
             try {
-                logger.accept("Testing " + tester.file);
                 tester.test(L);
             } catch (Throwable e) {
                 throw new RuntimeException(tester.file + "\n" + L.toString(-1), e);
@@ -209,9 +191,9 @@ public class LuaScriptSuite<T extends AbstractLua> {
         public void test(AbstractLua L) throws IOException {
             init.accept(L);
             assertTrue(file.endsWith(".lua"));
-            assertEquals(OK, L.loadExternal(file.substring(1, file.length() - 4).replace('/', '.')));
+            L.loadExternal(file.substring(1, file.length() - 4).replace('/', '.'));
             try {
-                assertEquals(OK, L.pCall(0, Consts.LUA_MULTRET));
+                L.pCall(0, Consts.LUA_MULTRET);
             } catch (Throwable e) {
                 throw new RuntimeException(L.toString(-1), e);
             }
@@ -288,7 +270,6 @@ public class LuaScriptSuite<T extends AbstractLua> {
         L.openLibrary("string");
         L.setExternalLoader(new ClassPathLoader());
         L.loadExternal("luajava.testMemory");
-        Lua.LuaError result = L.pCall(0, Consts.LUA_MULTRET);
-        assertEquals(L.toString(-1), Lua.LuaError.OK, result);
+        L.pCall(0, Consts.LUA_MULTRET);
     }
 }

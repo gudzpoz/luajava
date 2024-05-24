@@ -9,13 +9,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
 import static org.junit.Assert.*;
-import static party.iroiro.luajava.Lua.LuaError.OK;
-import static party.iroiro.luajava.Lua.LuaError.RUNTIME;
+import static party.iroiro.luajava.LuaTestSuite.assertThrowsLua;
 
 public class DefaultProxyTest {
     private interface PrivateNullable {
@@ -37,7 +35,7 @@ public class DefaultProxyTest {
         }
 
         default void throwsError() {
-            throw new LuaException("exception!");
+            throw new LuaException(LuaException.LuaError.RUNTIME, "exception!");
         }
 
         @SuppressWarnings("UnusedReturnValue")
@@ -251,15 +249,13 @@ public class DefaultProxyTest {
         L.push(L.createProxy(new Class[]{A.class}, Lua.Conversion.SEMI), Lua.Conversion.NONE);
         L.setGlobal("aa");
         if (isAndroid || !defaultAvailable) {
-            assertEquals(RUNTIME, L.run("return aa:a() + 1"));
-            assertTrue(L.toString(-1), Objects.requireNonNull(L.toString(-1))
-                    .startsWith("party.iroiro.luajava.LuaException: method not implemented: "));
+            assertThrowsLua(L, "return aa:a() + 1", LuaException.LuaError.RUNTIME,
+                    "party.iroiro.luajava.LuaException: method not implemented");
         } else if (isLuaJ) {
-            assertEquals(RUNTIME, L.run("return aa:a() + 1"));
-            assertTrue(L.toString(-1), Objects.requireNonNull(L.toString(-1))
-                    .contains("invokespecial not available without JNI"));
+            assertThrowsLua(L, "return aa:a() + 1", LuaException.LuaError.RUNTIME,
+                    "invokespecial not available without JNI");
         } else {
-            assertEquals(OK, L.run("return aa:a() + 1"));
+            L.run("return aa:a() + 1");
             assertEquals(2., L.toNumber(-1), 0.000001);
         }
     }
@@ -289,7 +285,7 @@ public class DefaultProxyTest {
 
     private void simpleIterTest() {
         L.run("i = 10");
-        assertEquals(OK, L.run("return {\n" +
+        L.run("return {\n" +
                 "  next = function()\n" +
                 "    i = i - 1\n" +
                 "    return i\n" +
@@ -297,7 +293,7 @@ public class DefaultProxyTest {
                 "  hasNext = function()\n" +
                 "    return i > 0\n" +
                 "  end\n" +
-                "}"));
+                "}");
         Iterator<?> iter = (Iterator<?>)
                 L.createProxy(new Class[]{Iterator.class}, Lua.Conversion.SEMI);
         Set<Double> iset = new HashSet<>();

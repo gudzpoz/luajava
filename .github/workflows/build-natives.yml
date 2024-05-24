@@ -103,7 +103,7 @@ jobs:
       - name: Test (Desktop)
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
-          ./gradlew :example:test :jsr223:test
+          ./gradlew :example:test :jsr223:test :jpms-example:run
       - name: Jacoco Test Report
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
@@ -199,17 +199,17 @@ jobs:
           ./gradlew jniGen
       - name: Test
         run: |
-          ./gradlew :example:test :jsr223:test
+          ./gradlew :example:test :jsr223:test :jpms-example:run
   android-testing:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        api-level: [ 21, 24 ]
+        api-level: [ 21 ]
         android-arch: [ 'x86_64', 'x86' ]
         include:
+          - api-level: 24
+            android-arch: 'x86'
           - api-level: 27
-            android-arch: 'x86_64'
-          - api-level: 30
             android-arch: 'x86_64'
           - api-level: 33
             android-arch: 'x86_64'

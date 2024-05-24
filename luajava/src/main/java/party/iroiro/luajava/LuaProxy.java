@@ -53,47 +53,48 @@ public final class LuaProxy implements InvocationHandler, LuaReferable {
 
     @Override
     public Object invoke(Object object, Method method, Object[] objects) throws Throwable {
-        synchronized (L.getMainState()) {
-            int top = L.getTop();
-            L.refGet(ref);
-            L.getField(-1, method.getName());
-            if (L.isNil(-1)) {
-                L.setTop(top);
-                return callDefaultMethod(object, method, objects);
+        if (L.shouldSynchronize()) {
+            synchronized (L.getMainState()) {
+                return syncFreeInvoke(object, method, objects);
             }
-            L.pushJavaObject(object);
+        } else {
+            return syncFreeInvoke(object, method, objects);
+        }
+    }
 
-            int nResults = method.getReturnType() == Void.TYPE ? 0 : 1;
+    private Object syncFreeInvoke(Object object, Method method, Object[] objects) throws Throwable {
+        int top = L.getTop();
+        L.refGet(ref);
+        L.getField(-1, method.getName());
+        if (L.isNil(-1)) {
+            L.setTop(top);
+            return callDefaultMethod(object, method, objects);
+        }
+        L.pushJavaObject(object);
 
-            Lua.LuaError code;
-            if (objects == null) {
-                code = L.pCall(1, nResults);
+        int nResults = method.getReturnType() == Void.TYPE ? 0 : 1;
+
+        if (objects == null) {
+            L.pCall(1, nResults);
+        } else {
+            for (Object o : objects) {
+                L.push(o, degree);
+            }
+            L.pCall(objects.length + 1, nResults);
+        }
+
+        try {
+            if (method.getReturnType() == Void.TYPE) {
+                L.setTop(top);
+                return null;
             } else {
-                for (Object o : objects) {
-                    L.push(o, degree);
-                }
-                code = L.pCall(objects.length + 1, nResults);
-            }
-
-            if (code != Lua.LuaError.OK) {
-                RuntimeException t = new LuaException(L.toString(-1));
+                Object o = JuaAPI.convertFromLua(L, method.getReturnType(), -1);
                 L.setTop(top);
-                throw t;
+                return o;
             }
-
-            try {
-                if (method.getReturnType() == Void.TYPE) {
-                    L.setTop(top);
-                    return null;
-                } else {
-                    Object o = JuaAPI.convertFromLua(L, method.getReturnType(), -1);
-                    L.setTop(top);
-                    return o;
-                }
-            } catch (IllegalArgumentException e) {
-                L.setTop(top);
-                throw e;
-            }
+        } catch (IllegalArgumentException e) {
+            L.setTop(top);
+            throw e;
         }
     }
 
@@ -114,7 +115,7 @@ public final class LuaProxy implements InvocationHandler, LuaReferable {
         if (methodEquals(method, String.class, "toString")) {
             return "LuaProxy" + Arrays.toString(interfaces) + "@" + Integer.toHexString(hashCode());
         }
-        throw new LuaException("method not implemented: " + method);
+        throw new LuaException(LuaException.LuaError.JAVA, "method not implemented: " + method);
     }
 
     public static boolean methodEquals(Method method, Class<?> returnType,

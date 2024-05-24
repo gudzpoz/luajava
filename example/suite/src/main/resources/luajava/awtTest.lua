@@ -50,9 +50,9 @@ local module = function()
 
   local luaload = nil
   if loadstring ~= nil then
-    luaload = loadstring
+    luaload = loadstring -- Lua 5.1
   else
-    luaload = load
+    luaload = load -- Lua 5.2 and on
   end
 
   executeButton:addActionListener(function(this, ev)

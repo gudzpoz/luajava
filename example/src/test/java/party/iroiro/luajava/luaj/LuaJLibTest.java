@@ -3,20 +3,21 @@ package party.iroiro.luajava.luaj;
 
 import org.junit.jupiter.api.Test;
 import party.iroiro.luajava.Lua;
+import party.iroiro.luajava.LuaException;
 
 import java.io.*;
 import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static party.iroiro.luajava.Lua.LuaError.OK;
+import static party.iroiro.luajava.LuaTestSuite.assertThrowsLua;
 
 public class LuaJLibTest {
     @Test
     public void testUnsupportedOperation() {
         try (Lua L = new LuaJ()) {
             L.openLibraries();
-            assertNotEquals(OK, L.run("return io.tmpfile()"));
-            assertNotEquals(OK, L.run("return io.popen('/bin/ls')"));
+            assertThrowsLua(L, "return io.tmpfile()", LuaException.LuaError.RUNTIME);
+            assertThrowsLua(L, "return io.popen('/bin/ls')", LuaException.LuaError.RUNTIME);
         }
     }
 
@@ -28,41 +29,41 @@ public class LuaJLibTest {
             String path = file.getAbsolutePath();
             path = path.replace("\\", "\\\\");
             assertFalse(path.contains("'") || path.endsWith("\\"));
-            assertEquals(OK, L.run("f = io.open('" + path + "', 'w')"));
-            assertEquals(OK, L.run("f:setvbuf('line')"));
-            assertEquals(OK, L.run("f:write('Hello World')"));
-            assertEquals(OK, L.run("io.flush(f)"));
-            assertEquals(OK, L.run("io.close(f)"));
+            L.run("f = io.open('" + path + "', 'w')");
+            L.run("f:setvbuf('line')");
+            L.run("f:write('Hello World')");
+            L.run("io.flush(f)");
+            L.run("io.close(f)");
             try (BufferedReader r = new BufferedReader(new FileReader(file))) {
                 assertEquals("Hello World", r.readLine());
             }
 
-            assertEquals(OK, L.run("f = io.open('" + path + "', 'a')"));
-            assertEquals(OK, L.run("f:write('!!!')"));
-            assertEquals(OK, L.run("io.close(f)"));
+            L.run("f = io.open('" + path + "', 'a')");
+            L.run("f:write('!!!')");
+            L.run("io.close(f)");
             try (BufferedReader r = new BufferedReader(new FileReader(file))) {
                 assertEquals("Hello World!!!", r.readLine());
             }
 
-            assertEquals(OK, L.run("f = io.open('" + path + "', 'r')"));
-            assertNotEquals(OK, L.run("f:seek('set', 2)"));
-            assertEquals(OK, L.run("assert(not f:read('*n'))"));
-            assertEquals(OK, L.run("assert('Hello World!!!' == f:read('*l'))"));
-            assertEquals(OK, L.run("assert(not f:read('*l'))"));
-            assertEquals(OK, L.run("io.close(f)"));
+            L.run("f = io.open('" + path + "', 'r')");
+            assertThrowsLua(L, "f:seek('set', 2)", LuaException.LuaError.RUNTIME);
+            L.run("assert(not f:read('*n'))");
+            L.run("assert('Hello World!!!' == f:read('*l'))");
+            L.run("assert(not f:read('*l'))");
+            L.run("io.close(f)");
 
-            assertEquals(OK, L.run("f = io.open('" + path + "', 'r')"));
-            assertEquals(OK, L.run("for l in f:lines() do assert(l == 'Hello World!!!') end"));
-            assertEquals(OK, L.run("io.close(f)"));
+            L.run("f = io.open('" + path + "', 'r')");
+            L.run("for l in f:lines() do assert(l == 'Hello World!!!') end");
+            L.run("io.close(f)");
 
-            assertEquals(OK, L.run("f = io.open('" + path + "', 'r')"));
-            assertEquals(OK, L.run("assert(f:read('*a') == 'Hello World!!!')"));
-            assertEquals(OK, L.run("io.close(f)"));
+            L.run("f = io.open('" + path + "', 'r')");
+            L.run("assert(f:read('*a') == 'Hello World!!!')");
+            L.run("io.close(f)");
 
-            assertEquals(OK, L.run("io.input()"));
-            assertEquals(OK, L.run("io.output()"));
-            assertEquals(OK, L.run("io.input('" + path + "')"));
-            assertEquals(OK, L.run("io.output('" + path + "')"));
+            L.run("io.input()");
+            L.run("io.output()");
+            L.run("io.input('" + path + "')");
+            L.run("io.output('" + path + "')");
 
             Files.delete(file.toPath());
         } catch (IOException e) {

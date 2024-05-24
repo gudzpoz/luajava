@@ -51,14 +51,16 @@ public class JavaLib extends TwoArgFunction {
                         L.lid, o.m_instance, args.narg() > 2 ? 1 - args.narg() : args.arg(2).checkint()));
             }
         });
-        lib.set("catched", new VarArgFunction() {
+        VarArgFunction javaCaught = new VarArgFunction() {
             @Override
             public Varargs invoke(Varargs args) {
                 LuaJState L = LuaJNatives.instances.get(address);
                 Throwable error = L.getError();
                 return error == null ? LuaValue.NIL : new JavaObject(error, L.jObjectMetatable, L.address);
             }
-        });
+        };
+        lib.set("caught", javaCaught);
+        lib.set("catched", javaCaught);
         lib.set("detach", new OneArgFunction() {
             @Override
             public LuaValue call(LuaValue arg) {
@@ -76,7 +78,8 @@ public class JavaLib extends TwoArgFunction {
                 LuaJState L = LuaJNatives.instances.get(address);
                 String clazz = arg.checkjstring();
                 if (clazz.endsWith(".*")) {
-                    String packagePath = clazz.substring(0, clazz.length() - 2);
+                    int depth = countDepth(clazz);
+                    String packagePath = clazz.substring(0, clazz.length() - depth * 2);
                     return new PackageImporter(packagePath);
                 }
                 L.pushFrame();
@@ -159,6 +162,13 @@ public class JavaLib extends TwoArgFunction {
         });
         env.set("java", lib);
         return lib;
+    }
+
+    private static int countDepth(String clazz) {
+        if (!clazz.endsWith(".*")) {
+            return 0;
+        }
+        return countDepth(clazz.substring(0, clazz.length() - 2)) + 1;
     }
 
     private class PackageImporter extends LuaTable {

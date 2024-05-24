@@ -14,17 +14,15 @@ For more flexibility, just extend `ClassPathLoader` or write your own `ExternalL
 
 :::: code-group
 ::: code-group-item Java Side
-```java
-Lua L = new Lua51();
-L.openLibrary("package");
-L.setExternalLoader(new ClassPathLoader());
-```
+
+<!-- @code:classPathLoaderTest -->
+@[code{11-14} java](../../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java)
+
 :::
 ::: code-group-item Lua Side
-```lua
--- Loads classpath:/lua/MyModule.lua
-local MyModule = require('lua.MyModule')
-```
+
+@[code lua](../../example/src/test/resources/docs/modulesRequireExample.lua)
+
 :::
 ::::
 
@@ -43,33 +41,21 @@ This provides an approach to loading libraries written in Java, similar to Lua's
 
 :::: code-group
 ::: code-group-item Java Library
-```java
-package com.example;
 
-public class LuaLib {
-    public static int open(Lua L) {
-        L.createTable(0, 1);
-        L.push(l -> {
-            l.push(1024);
-            return 1;
-        });
-        L.setField(-2, "getNumber");
-        return 1;
-    }
-}
-```
+<!-- @code:class -->
+@[code java](../../example/src/test/java/party/iroiro/luajava/docs/JavaSideExampleModule.java)
+
 :::
 ::: code-group-item Java Side
-```java
-Lua L = new Lua51();
-L.openLibrary("package");
-```
+
+<!-- @code:javaSideModuleTest -->
+@[code{19-23} java](../../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java)
+
 :::
 ::: code-group-item Lua Side
-```lua
-local LuaLib = require('com.example.LuaLib.open')
-assert(1024 == LuaLib.getNumber())
-```
+
+@[code lua](../../example/src/test/resources/docs/apiLoadlibExample.lua)
+
 :::
 ::::
 

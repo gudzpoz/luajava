@@ -1,7 +1,9 @@
 package party.iroiro.luajava.luaj;
 
 import party.iroiro.luajava.AbstractLua;
-import party.iroiro.luajava.LuaNative;
+import party.iroiro.luajava.LuaException;
+import party.iroiro.luajava.LuaException.LuaError;
+import party.iroiro.luajava.LuaNatives;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -22,10 +24,10 @@ public class LuaJ extends AbstractLua {
     private final static AtomicReference<LuaJNatives> natives = new AtomicReference<>();
 
     public LuaJ(long L, int id, AbstractLua mainThread) {
-        super(mainThread.getLuaNative(), L, id, mainThread);
+        super(mainThread.getLuaNatives(), L, id, mainThread);
     }
 
-    private static LuaNative getNatives() {
+    private static LuaNatives getNatives() {
         synchronized (natives) {
             if (natives.get() == null) {
                 natives.set(new LuaJNatives());
@@ -59,7 +61,7 @@ public class LuaJ extends AbstractLua {
             case LUA_ERRERR:
                 return LuaError.HANDLER;
             default:
-                return null;
+                throw new LuaException(LuaError.RUNTIME, "Unrecognized error code");
         }
     }
 
@@ -87,7 +89,12 @@ public class LuaJ extends AbstractLua {
             case LUA_TUSERDATA:
                 return LuaType.USERDATA;
             default:
-                return null;
+                throw new LuaException(LuaError.RUNTIME, "Unrecognized type code");
         }
+    }
+
+    @Override
+    protected boolean shouldSynchronize() {
+        return !LuaJNatives.FunctionInvoker.isInsideCoroutine();
     }
 }

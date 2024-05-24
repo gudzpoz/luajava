@@ -425,13 +425,13 @@ f"""    /**
 
     def _javaSignature(self, f: LuaAPI):
         if f.name in overrideFunctions:
-            return f"    protected native {overrideFunctions[f.name][0]};"
+            return f"    public native {overrideFunctions[f.name][0]};"
         params = ', '.join(
             f"{returnTypes[paramType]} {name}"
             for paramType, name in self._normalizeParams(f)
         )
         returns = returnTypes[f.signature.returns]
-        return f"    protected native {returns} {f.name}({params});"
+        return f"    public native {returns} {f.name}({params});"
 
     def _jniGen(self, f: LuaAPI):
         if f.name in overrideFunctions:
@@ -577,18 +577,6 @@ extraFunctions = [
                 ('unsigned char *', 'buffer'),
                 ('int', 'size'),
                 ('const char *', 'name'),
-            ],
-        ),
-    ),
-    LuaAPI(
-        name='luaJ_pcall',
-        description='Protected call',
-        signature=FunctionSignature(
-            returns='int',
-            params=[
-                ('lua_State *', 'L'),
-                ('int', 'nargs'),
-                ('int', 'nresults'),
             ],
         ),
     ),
@@ -775,7 +763,6 @@ extraFunctions = [
     ),
 ]
 returnValueInconsistencies = [
-    'lua_pcall',
     'lua_getfield',
     'lua_getglobal',
     'lua_geti',
@@ -785,7 +772,6 @@ returnValueInconsistencies = [
     'lua_pushstring',
     'lua_gettable',
     'luaL_getmetatable',
-    'luaL_newmetatable',
 ]
 
 def gatherFunctions(existing: list[LuaAPI]):
@@ -810,7 +796,7 @@ def getWhole(luaVersion: str, package: str):
     className = f"Lua{luaVersion.replace('.', '')}Natives"
     inner = (
         f'''@SuppressWarnings({{"unused", "rawtypes"}})
-public class {className} extends LuaNative {{
+public class {className} implements LuaNatives {{
         /*JNI
             #include "luacustomamalg.h"
 
@@ -870,7 +856,7 @@ public class {className} extends LuaNative {{
     /**
      * Get <code>LUA_REGISTRYINDEX</code>, which is a computed compile time constant
      */
-    protected native int getRegistryIndex(); /*
+    public native int getRegistryIndex(); /*
         return LUA_REGISTRYINDEX;
     */
 
@@ -912,7 +898,7 @@ package {package};
 import java.util.concurrent.atomic.AtomicReference;
 import java.nio.Buffer;
 
-import party.iroiro.luajava.LuaNative;
+import party.iroiro.luajava.LuaNatives;
 import party.iroiro.luajava.util.GlobalLibraryLoader;
 
 /**

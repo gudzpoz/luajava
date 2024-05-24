@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath 'com.android.tools.build:gradle:7.4.1'
     }
 }
 
@@ -41,7 +41,7 @@ ext {
 apply from: 'publish.gradle'
 apply from: 'jacoco.gradle'
 
-task allJavadoc(type: Javadoc) {
+tasks.register('allJavadoc', Javadoc) {
     Set<String> projects = [
             'lua51',
             'lua52',

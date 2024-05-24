@@ -1,42 +1,53 @@
 package party.iroiro.luajava.threaded;
 
 import org.junit.jupiter.api.Test;
-import party.iroiro.luajava.Consts;
+import party.iroiro.luajava.ClassPathLoader;
 import party.iroiro.luajava.Lua;
-import party.iroiro.luajava.ResourceLoader;
 import party.iroiro.luajava.lua51.Lua51;
+import party.iroiro.luajava.lua52.Lua52;
+import party.iroiro.luajava.lua53.Lua53;
+import party.iroiro.luajava.lua54.Lua54;
 import party.iroiro.luajava.luaj.LuaJ;
+import party.iroiro.luajava.luajit.LuaJit;
 
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+/**
+ * Tests creating threads from the Lua side.
+ */
 public class ThreadCreatingTest {
+    @SuppressWarnings("resource")
     @Test
-    public void threadCreatingTest() throws IOException {
-        ResourceLoader loader = new ResourceLoader();
-        try (Lua L = new Lua51()) {
-            assertEquals(0, loader.load("/threads/threadCreating.lua", L));
-            synchronized (L.getMainState()) {
-                L.pCall(0, Consts.LUA_MULTRET);
-            }
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+    public void threadCreatingTestLua() {
+        for (Lua L : new Lua[]{
+                new Lua51(),
+                new Lua52(),
+                new Lua53(),
+                new Lua54(),
+                new LuaJit(),
+                new LuaJ(),
+        }) {
+            testLuaCreatingThreads(L);
         }
     }
 
-    @Test
-    public void threadCreatingTestJ() throws IOException {
-        ResourceLoader loader = new ResourceLoader();
-        try (Lua L = new LuaJ()) {
-            assertEquals(0, loader.load("/threads/threadCreating.lua", L));
-            synchronized (L.getMainState()) {
-                L.pCall(0, Consts.LUA_MULTRET);
+    public void testLuaCreatingThreads(Lua L) {
+        try {
+            L.openLibraries();
+            L.setExternalLoader(new ClassPathLoader());
+            Lua K = L.newThread();
+            K.loadExternal("threads.threadCreating");
+            while (true) {
+                synchronized (K.getMainState()) {
+                    if (!K.resume(0)) {
+                        break;
+                    }
+                }
+                //noinspection BusyWait
+                Thread.sleep(100);
             }
-            Thread.sleep(3000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        } finally {
+            L.close();
         }
     }
 }

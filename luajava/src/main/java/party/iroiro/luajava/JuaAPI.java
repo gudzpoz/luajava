@@ -79,7 +79,7 @@ public abstract class JuaAPI {
     }
 
     /**
-     * Loads a Lua chunck according with {@link Lua#loadExternal(String)}
+     * Loads a Lua chunk according with {@link Lua#loadExternal(String)}
      *
      * <p>
      * Used in <code>jmoduleLoad</code> in <code>jni/luajava/juaapi.cpp</code>
@@ -91,9 +91,10 @@ public abstract class JuaAPI {
      */
     public static int load(int id, String module) {
         AbstractLua L = Jua.get(id);
-        Lua.LuaError error = L.loadExternal(module);
-        if (error != Lua.LuaError.OK) {
-            L.push("\n  no module '" + module + "': " + error);
+        try {
+            L.loadExternal(module);
+        } catch (LuaException e) {
+            L.push("\n  no module '" + module + "': " + e);
         }
         return 1;
     }
@@ -131,13 +132,17 @@ public abstract class JuaAPI {
             Class<?> clazz = ClassUtils.forName(className, null);
             Method method = clazz.getDeclaredMethod(methodName, Lua.class);
             if (method.getReturnType() == int.class) {
-                L.push(l -> {
-                    try {
-                        return (Integer) method.invoke(null, l);
-                    } catch (IllegalAccessException e) {
-                        return l.error(e);
-                    } catch (InvocationTargetException e) {
-                        return l.error(e.getCause());
+                //noinspection Convert2Lambda
+                L.push(new JFunction() {
+                    @Override
+                    public int __call(Lua l) {
+                        try {
+                            return (Integer) method.invoke(null, l);
+                        } catch (IllegalAccessException e) {
+                            return l.error(e);
+                        } catch (InvocationTargetException e) {
+                            return l.error(e.getCause());
+                        }
                     }
                 });
                 return 1;
@@ -266,7 +271,7 @@ public abstract class JuaAPI {
             L.close();
             return 0;
         } else {
-            throw new LuaException("unable to detach a main state");
+            throw new LuaException(LuaException.LuaError.MEMORY, "unable to detach a main state");
         }
     }
 

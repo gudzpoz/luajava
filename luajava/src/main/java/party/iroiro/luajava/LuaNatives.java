@@ -33,8 +33,7 @@ import java.nio.Buffer;
  * Lua documentation to confirm.
  * </p>
  */
-@SuppressWarnings("unused")
-public abstract class LuaNative {
+public interface LuaNatives {
 
     /**
      * Exposes the symbols in the natives to external libraries.
@@ -44,7 +43,7 @@ public abstract class LuaNative {
      *     Otherwise, the JVM might just crash due to identical symbol names in different binaries.
      * </p>
      */
-    public abstract void loadAsGlobal();
+    void loadAsGlobal();
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_tonumber"><code>lua_tonumber</code></a>
@@ -69,12 +68,12 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract double lua_tonumber(long ptr, int index);
+    double lua_tonumber(long ptr, int index);
 
     /**
      * @return the {@code LUA_REGISTRYINDEX} constant, which changes between versions
      */
-    protected abstract int getRegistryIndex();
+    int getRegistryIndex();
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_checkstack"><code>lua_checkstack</code></a>
@@ -96,10 +95,10 @@ public abstract class LuaNative {
      * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
-     * @param extra extra slots
+     * @param n slots
      * @return see description
      */
-    protected abstract int lua_checkstack(long ptr, int extra);
+    int lua_checkstack(long ptr, int n);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_error"><code>lua_error</code></a>
@@ -124,7 +123,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected abstract int lua_error(long ptr);
+    int lua_error(long ptr);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_gethookcount"><code>lua_gethookcount</code></a>
@@ -144,7 +143,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected abstract int lua_gethookcount(long ptr);
+    int lua_gethookcount(long ptr);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_gethookmask"><code>lua_gethookmask</code></a>
@@ -164,7 +163,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected abstract int lua_gethookmask(long ptr);
+    int lua_gethookmask(long ptr);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_getmetatable"><code>lua_getmetatable</code></a>
@@ -189,7 +188,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_getmetatable(long ptr, int index);
+    int lua_getmetatable(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_gettop"><code>lua_gettop</code></a>
@@ -212,7 +211,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected abstract int lua_gettop(long ptr);
+    int lua_gettop(long ptr);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_isboolean"><code>lua_isboolean</code></a>
@@ -234,7 +233,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_isboolean(long ptr, int index);
+    int lua_isboolean(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_iscfunction"><code>lua_iscfunction</code></a>
@@ -256,7 +255,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_iscfunction(long ptr, int index);
+    int lua_iscfunction(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_isfunction"><code>lua_isfunction</code></a>
@@ -278,7 +277,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_isfunction(long ptr, int index);
+    int lua_isfunction(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_islightuserdata"><code>lua_islightuserdata</code></a>
@@ -300,7 +299,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_islightuserdata(long ptr, int index);
+    int lua_islightuserdata(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_isnil"><code>lua_isnil</code></a>
@@ -322,7 +321,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_isnil(long ptr, int index);
+    int lua_isnil(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_isnone"><code>lua_isnone</code></a>
@@ -345,7 +344,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_isnone(long ptr, int index);
+    int lua_isnone(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_isnoneornil"><code>lua_isnoneornil</code></a>
@@ -369,7 +368,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_isnoneornil(long ptr, int index);
+    int lua_isnoneornil(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_isnumber"><code>lua_isnumber</code></a>
@@ -392,30 +391,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_isnumber(long ptr, int index);
-
-    /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.3/manual.html#lua_isinteger"><code>lua_isinteger</code></a>
-     *
-     * <pre><code>
-     * [-0, +0, –]
-     * </code></pre>
-     *
-     * <pre><code>
-     * int lua_isinteger (lua_State *L, int index);
-     * </code></pre>
-     *
-     * <p>
-     * Returns 1 if the value at the given index is an integer
-     * (that is, the value is a number and is represented as an integer),
-     * and 0&#160;otherwise.
-     * </p>
-     *
-     * @param ptr the <code>lua_State*</code> pointer
-     * @param index the stack position of the element
-     * @return see description
-     */
-    protected abstract int luaJ_isinteger(long ptr, int index);
+    int lua_isnumber(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_isstring"><code>lua_isstring</code></a>
@@ -438,7 +414,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_isstring(long ptr, int index);
+    int lua_isstring(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_istable"><code>lua_istable</code></a>
@@ -460,7 +436,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_istable(long ptr, int index);
+    int lua_istable(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_isthread"><code>lua_isthread</code></a>
@@ -482,7 +458,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_isthread(long ptr, int index);
+    int lua_isthread(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_isuserdata"><code>lua_isuserdata</code></a>
@@ -504,7 +480,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_isuserdata(long ptr, int index);
+    int lua_isuserdata(long ptr, int index);
 
     /**
      * A wrapper function
@@ -517,7 +493,7 @@ public abstract class LuaNative {
      * @param op the operator
      * @return see description
      */
-    protected abstract int luaJ_compare(long ptr, int index1, int index2, int op);
+    int luaJ_compare(long ptr, int index1, int index2, int op);
 
     /**
      * A wrapper function
@@ -530,7 +506,7 @@ public abstract class LuaNative {
      * @param name the name
      * @return see description
      */
-    protected abstract int luaJ_dobuffer(long ptr, Buffer buffer, int size, String name);
+    int luaJ_dobuffer(long ptr, Buffer buffer, int size, String name);
 
     /**
      * A wrapper function
@@ -540,7 +516,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected abstract int luaJ_initloader(long ptr);
+    int luaJ_initloader(long ptr);
 
     /**
      * A wrapper function
@@ -559,7 +535,30 @@ public abstract class LuaNative {
      * @return see description
      */
     @SuppressWarnings("rawtypes")
-    protected abstract int luaJ_invokespecial(long ptr, Class clazz, String method, String sig, Object obj, String params);
+    int luaJ_invokespecial(long ptr, Class clazz, String method, String sig, Object obj, String params);
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.3/manual.html#lua_isinteger"><code>lua_isinteger</code></a>
+     *
+     * <pre><code>
+     * [-0, +0, –]
+     * </code></pre>
+     *
+     * <pre><code>
+     * int lua_isinteger (lua_State *L, int index);
+     * </code></pre>
+     *
+     * <p>
+     * Returns 1 if the value at the given index is an integer
+     * (that is, the value is a number and is represented as an integer),
+     * and 0&#160;otherwise.
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @return see description
+     */
+    int luaJ_isinteger(long ptr, int index);
 
     /**
      * A wrapper function
@@ -570,7 +569,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int luaJ_isobject(long ptr, int index);
+    int luaJ_isobject(long ptr, int index);
 
     /**
      * A wrapper function
@@ -581,7 +580,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int luaJ_len(long ptr, int index);
+    int luaJ_len(long ptr, int index);
 
     /**
      * A wrapper function
@@ -594,19 +593,7 @@ public abstract class LuaNative {
      * @param name the name
      * @return see description
      */
-    protected abstract int luaJ_loadbuffer(long ptr, Buffer buffer, int size, String name);
-
-    /**
-     * A wrapper function
-     *
-     * <p>Protected call</p>
-     *
-     * @param ptr the <code>lua_State*</code> pointer
-     * @param nargs the number of arguments that you pushed onto the stack
-     * @param nresults the number of results, or <code>LUA_MULTRET</code>
-     * @return see description
-     */
-    protected abstract int luaJ_pcall(long ptr, int nargs, int nresults);
+    int luaJ_loadbuffer(long ptr, Buffer buffer, int size, String name);
 
     /**
      * A wrapper function
@@ -617,7 +604,7 @@ public abstract class LuaNative {
      * @param nargs the number of arguments that you pushed onto the stack
      * @return see description
      */
-    protected abstract int luaJ_resume(long ptr, int nargs);
+    int luaJ_resume(long ptr, int nargs);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_callmeta"><code>luaL_callmeta</code></a>
@@ -649,7 +636,7 @@ public abstract class LuaNative {
      * @param e field name
      * @return see description
      */
-    protected abstract int luaL_callmeta(long ptr, int obj, String e);
+    int luaL_callmeta(long ptr, int obj, String e);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_dostring"><code>luaL_dostring</code></a>
@@ -680,7 +667,7 @@ public abstract class LuaNative {
      * @param str string
      * @return see description
      */
-    protected abstract int luaL_dostring(long ptr, String str);
+    int luaL_dostring(long ptr, String str);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_getmetafield"><code>luaL_getmetafield</code></a>
@@ -706,7 +693,7 @@ public abstract class LuaNative {
      * @param e field name
      * @return see description
      */
-    protected abstract int luaL_getmetafield(long ptr, int obj, String e);
+    int luaL_getmetafield(long ptr, int obj, String e);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_loadstring"><code>luaL_loadstring</code></a>
@@ -738,7 +725,7 @@ public abstract class LuaNative {
      * @param s the string
      * @return see description
      */
-    protected abstract int luaL_loadstring(long ptr, String s);
+    int luaL_loadstring(long ptr, String s);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_newmetatable"><code>luaL_newmetatable</code></a>
@@ -769,7 +756,7 @@ public abstract class LuaNative {
      * @param tname type name
      * @return see description
      */
-    protected abstract int luaL_newmetatable(long ptr, String tname);
+    int luaL_newmetatable(long ptr, String tname);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_ref"><code>luaL_ref</code></a>
@@ -808,7 +795,7 @@ public abstract class LuaNative {
      * @param t the stack index
      * @return see description
      */
-    protected abstract int luaL_ref(long ptr, int t);
+    int luaL_ref(long ptr, int t);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_next"><code>lua_next</code></a>
@@ -859,7 +846,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_next(long ptr, int index);
+    int lua_next(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a>
@@ -873,7 +860,7 @@ public abstract class LuaNative {
      * </code></pre>
      *
      * <p>
-     * Calls a function in protected mode.
+     * Calls a function in public mode.
      * </p>
      *
      * <p>
@@ -938,10 +925,10 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param nargs the number of arguments that you pushed onto the stack
      * @param nresults the number of results, or <code>LUA_MULTRET</code>
-     * @param errfunc 0 or the stack index of an error handler function
+     * @param msgh 0 or the stack index of an error handler function
      * @return see description
      */
-    protected abstract int lua_pcall(long ptr, int nargs, int nresults, int errfunc);
+    int lua_pcall(long ptr, int nargs, int nresults, int msgh);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pushthread"><code>lua_pushthread</code></a>
@@ -962,7 +949,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected abstract int lua_pushthread(long ptr);
+    int lua_pushthread(long ptr);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_rawequal"><code>lua_rawequal</code></a>
@@ -988,7 +975,7 @@ public abstract class LuaNative {
      * @param index2 the stack position of the second element
      * @return see description
      */
-    protected abstract int lua_rawequal(long ptr, int index1, int index2);
+    int lua_rawequal(long ptr, int index1, int index2);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_status"><code>lua_status</code></a>
@@ -1014,7 +1001,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected abstract int lua_status(long ptr);
+    int lua_status(long ptr);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_toboolean"><code>lua_toboolean</code></a>
@@ -1043,37 +1030,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_toboolean(long ptr, int index);
-
-    /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_tointeger"><code>lua_tointeger</code></a>
-     *
-     * <pre><code>
-     * [-0, +0, -]
-     * </code></pre>
-     *
-     * <pre><code>
-     * lua_Integer lua_tointeger (lua_State *L, int index);
-     * </code></pre>
-     *
-     * <p>
-     * Converts the Lua value at the given acceptable index
-     * to the signed integral type <a href="https://www.lua.org/manual/5.1/manual.html#lua_Integer"><code>lua_Integer</code></a>.
-     * The Lua value must be a number or a string convertible to a number
-     * (see <a href="https://www.lua.org/manual/5.1/manual.html#2.2.1">&#167;2.2.1</a>);
-     * otherwise, <a href="https://www.lua.org/manual/5.1/manual.html#lua_tointeger"><code>lua_tointeger</code></a> returns&#160;0.
-     * </p>
-     *
-     * <p>
-     * If the number is not an integer,
-     * it is truncated in some non-specified way.
-     * </p>
-     *
-     * @param ptr the <code>lua_State*</code> pointer
-     * @param index the stack position of the element
-     * @return see description
-     */
-    protected abstract long lua_tointeger(long ptr, int index);
+    int lua_toboolean(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_type"><code>lua_type</code></a>
@@ -1108,7 +1065,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract int lua_type(long ptr, int index);
+    int lua_type(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_yield"><code>lua_yield</code></a>
@@ -1158,7 +1115,7 @@ public abstract class LuaNative {
      * @param nresults the number of results, or <code>LUA_MULTRET</code>
      * @return see description
      */
-    protected abstract int lua_yield(long ptr, int nresults);
+    int lua_yield(long ptr, int nresults);
 
     /**
      * A wrapper function
@@ -1169,7 +1126,7 @@ public abstract class LuaNative {
      * @param lid the id of the Lua state, to be used to identify between Java and Lua
      * @return see description
      */
-    protected abstract long luaJ_newthread(long ptr, int lid);
+    long luaJ_newthread(long ptr, int lid);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_newstate"><code>luaL_newstate</code></a>
@@ -1199,7 +1156,7 @@ public abstract class LuaNative {
      * @param lid the id of the Lua state, to be used to identify between Java and Lua
      * @return see description
      */
-    protected abstract long luaL_newstate(int lid);
+    long luaL_newstate(int lid);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_newthread"><code>lua_newthread</code></a>
@@ -1229,7 +1186,37 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return see description
      */
-    protected abstract long lua_newthread(long ptr);
+    long lua_newthread(long ptr);
+
+    /**
+     * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_tointeger"><code>lua_tointeger</code></a>
+     *
+     * <pre><code>
+     * [-0, +0, -]
+     * </code></pre>
+     *
+     * <pre><code>
+     * lua_Integer lua_tointeger (lua_State *L, int index);
+     * </code></pre>
+     *
+     * <p>
+     * Converts the Lua value at the given acceptable index
+     * to the signed integral type <a href="https://www.lua.org/manual/5.1/manual.html#lua_Integer"><code>lua_Integer</code></a>.
+     * The Lua value must be a number or a string convertible to a number
+     * (see <a href="https://www.lua.org/manual/5.1/manual.html#2.2.1">&#167;2.2.1</a>);
+     * otherwise, <a href="https://www.lua.org/manual/5.1/manual.html#lua_tointeger"><code>lua_tointeger</code></a> returns&#160;0.
+     * </p>
+     *
+     * <p>
+     * If the number is not an integer,
+     * it is truncated in some non-specified way.
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param index the stack position of the element
+     * @return see description
+     */
+    long lua_tointeger(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_topointer"><code>lua_topointer</code></a>
@@ -1259,7 +1246,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract long lua_topointer(long ptr, int index);
+    long lua_topointer(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_tothread"><code>lua_tothread</code></a>
@@ -1283,7 +1270,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract long lua_tothread(long ptr, int index);
+    long lua_tothread(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_touserdata"><code>lua_touserdata</code></a>
@@ -1308,7 +1295,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract long lua_touserdata(long ptr, int index);
+    long lua_touserdata(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_dump"><code>lua_dump</code></a>
@@ -1344,7 +1331,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @return a nullable {@link java.nio.ByteBuffer} containing the dumped binary
      */
-    protected abstract Object luaJ_dumptobuffer(long ptr);
+    Object luaJ_dumptobuffer(long ptr);
 
     /**
      * Creates a {@link java.nio.ByteBuffer} from the string at the specific index
@@ -1358,7 +1345,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return a nullable {@link java.nio.ByteBuffer} containing the string
      */
-    protected abstract Object luaJ_tobuffer(long ptr, int index);
+    Object luaJ_tobuffer(long ptr, int index);
 
     /**
      * Creates a direct {@link java.nio.ByteBuffer} backed by the string at the stack index
@@ -1373,7 +1360,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return a nullable {@link java.nio.ByteBuffer} containing the string
      */
-    protected abstract Object luaJ_todirectbuffer(long ptr, int index);
+    Object luaJ_todirectbuffer(long ptr, int index);
 
     /**
      * A wrapper function
@@ -1384,7 +1371,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract Object luaJ_toobject(long ptr, int index);
+    Object luaJ_toobject(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_getupvalue"><code>lua_getupvalue</code></a>
@@ -1423,36 +1410,7 @@ public abstract class LuaNative {
      * @param n the index in the upvalue
      * @return see description
      */
-    protected abstract String lua_getupvalue(long ptr, int funcindex, int n);
-
-    /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_gsub"><code>luaL_gsub</code></a>
-     *
-     * <pre><code>
-     * [-0, +1, m]
-     * </code></pre>
-     *
-     * <pre><code>
-     * const char *luaL_gsub (lua_State *L,
-     *                        const char *s,
-     *                        const char *p,
-     *                        const char *r);
-     * </code></pre>
-     *
-     * <p>
-     * Creates a copy of string <code>s</code> by replacing
-     * any occurrence of the string <code>p</code>
-     * with the string <code>r</code>.
-     * Pushes the resulting string on the stack and returns it.
-     * </p>
-     *
-     * @param ptr the <code>lua_State*</code> pointer
-     * @param s the string
-     * @param p the replaced sequence
-     * @param r the replacing string
-     * @return see description
-     */
-    protected abstract String luaL_gsub(long ptr, String s, String p, String r);
+    String lua_getupvalue(long ptr, int funcindex, int n);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_typename"><code>luaL_typename</code></a>
@@ -1473,7 +1431,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract String luaL_typename(long ptr, int index);
+    String luaL_typename(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_setupvalue"><code>lua_setupvalue</code></a>
@@ -1505,7 +1463,7 @@ public abstract class LuaNative {
      * @param n the index in the upvalue
      * @return see description
      */
-    protected abstract String lua_setupvalue(long ptr, int funcindex, int n);
+    String lua_setupvalue(long ptr, int funcindex, int n);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_tostring"><code>lua_tostring</code></a>
@@ -1526,7 +1484,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @return see description
      */
-    protected abstract String lua_tostring(long ptr, int index);
+    String lua_tostring(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_typename"><code>lua_typename</code></a>
@@ -1548,7 +1506,7 @@ public abstract class LuaNative {
      * @param tp type id
      * @return see description
      */
-    protected abstract String lua_typename(long ptr, int tp);
+    String lua_typename(long ptr, int tp);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_close"><code>lua_close</code></a>
@@ -1575,7 +1533,7 @@ public abstract class LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      */
-    protected abstract void lua_close(long ptr);
+    void lua_close(long ptr);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_concat"><code>lua_concat</code></a>
@@ -1601,7 +1559,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param n the number of elements
      */
-    protected abstract void lua_concat(long ptr, int n);
+    void lua_concat(long ptr, int n);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_createtable"><code>lua_createtable</code></a>
@@ -1627,7 +1585,7 @@ public abstract class LuaNative {
      * @param narr the number of pre-allocated array elements
      * @param nrec the number of pre-allocated non-array elements
      */
-    protected abstract void lua_createtable(long ptr, int narr, int nrec);
+    void lua_createtable(long ptr, int narr, int nrec);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_insert"><code>lua_insert</code></a>
@@ -1650,7 +1608,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected abstract void lua_insert(long ptr, int index);
+    void lua_insert(long ptr, int index);
 
     /**
      * A wrapper function
@@ -1661,7 +1619,7 @@ public abstract class LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      */
-    protected abstract void luaJ_gc(long ptr);
+    void luaJ_gc(long ptr);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_getfield"><code>lua_getfield</code></a>
@@ -1685,7 +1643,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @param k the field name
      */
-    protected abstract void luaJ_getfield(long ptr, int index, String k);
+    void luaJ_getfield(long ptr, int index, String k);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_getglobal"><code>lua_getglobal</code></a>
@@ -1710,7 +1668,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param name the name
      */
-    protected abstract void luaJ_getglobal(long ptr, String name);
+    void luaJ_getglobal(long ptr, String name);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_getmetatable"><code>luaL_getmetatable</code></a>
@@ -1731,7 +1689,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param tname type name
      */
-    protected abstract void luaJ_getmetatable(long ptr, String tname);
+    void luaJ_getmetatable(long ptr, String tname);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_gettable"><code>lua_gettable</code></a>
@@ -1760,37 +1718,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected abstract void luaJ_gettable(long ptr, int index);
-
-    /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_newmetatable"><code>luaL_newmetatable</code></a>
-     *
-     * <pre><code>
-     * [-0, +1, m]
-     * </code></pre>
-     *
-     * <pre><code>
-     * int luaL_newmetatable (lua_State *L, const char *tname);
-     * </code></pre>
-     *
-     * <p>
-     * If the registry already has the key <code>tname</code>,
-     * returns 0.
-     * Otherwise,
-     * creates a new table to be used as a metatable for userdata,
-     * adds it to the registry with key <code>tname</code>,
-     * and returns 1.
-     * </p>
-     *
-     * <p>
-     * In both cases pushes onto the stack the final value associated
-     * with <code>tname</code> in the registry.
-     * </p>
-     *
-     * @param ptr the <code>lua_State*</code> pointer
-     * @param tname type name
-     */
-    protected abstract void luaJ_newmetatable(long ptr, String tname);
+    void luaJ_gettable(long ptr, int index);
 
     /**
      * A wrapper function
@@ -1800,88 +1728,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param lib library name
      */
-    protected abstract void luaJ_openlib(long ptr, String lib);
-
-    /**
-     * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a>
-     *
-     * <pre><code>
-     * [-(nargs + 1), +(nresults|1), -]
-     * </code></pre>
-     *
-     * <pre><code>
-     * int lua_pcall (lua_State *L, int nargs, int nresults, int errfunc);
-     * </code></pre>
-     *
-     * <p>
-     * Calls a function in protected mode.
-     * </p>
-     *
-     * <p>
-     * Both <code>nargs</code> and <code>nresults</code> have the same meaning as
-     * in <a href="https://www.lua.org/manual/5.1/manual.html#lua_call"><code>lua_call</code></a>.
-     * If there are no errors during the call,
-     * <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a> behaves exactly like <a href="https://www.lua.org/manual/5.1/manual.html#lua_call"><code>lua_call</code></a>.
-     * However, if there is any error,
-     * <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a> catches it,
-     * pushes a single value on the stack (the error message),
-     * and returns an error code.
-     * Like <a href="https://www.lua.org/manual/5.1/manual.html#lua_call"><code>lua_call</code></a>,
-     * <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a> always removes the function
-     * and its arguments from the stack.
-     * </p>
-     *
-     * <p>
-     * If <code>errfunc</code> is 0,
-     * then the error message returned on the stack
-     * is exactly the original error message.
-     * Otherwise, <code>errfunc</code> is the stack index of an
-     * <em>error handler function</em>.
-     * (In the current implementation, this index cannot be a pseudo-index.)
-     * In case of runtime errors,
-     * this function will be called with the error message
-     * and its return value will be the message returned on the stack by <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a>.
-     * </p>
-     *
-     * <p>
-     * Typically, the error handler function is used to add more debug
-     * information to the error message, such as a stack traceback.
-     * Such information cannot be gathered after the return of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a>,
-     * since by then the stack has unwound.
-     * </p>
-     *
-     * <p>
-     * The <a href="https://www.lua.org/manual/5.1/manual.html#lua_pcall"><code>lua_pcall</code></a> function returns 0 in case of success
-     * or one of the following error codes
-     * (defined in <code>lua.h</code>):
-     * </p>
-     *
-     * <ul>
-     *
-     * <li>
-     * <b><a><code>LUA_ERRRUN</code></a>:</b>
-     * a runtime error.
-     * </li>
-     *
-     * <li>
-     * <b><a><code>LUA_ERRMEM</code></a>:</b>
-     * memory allocation error.
-     * For such errors, Lua does not call the error handler function.
-     * </li>
-     *
-     * <li>
-     * <b><a><code>LUA_ERRERR</code></a>:</b>
-     * error while running the error handler function.
-     * </li>
-     *
-     * </ul>
-     *
-     * @param ptr the <code>lua_State*</code> pointer
-     * @param nargs the number of arguments that you pushed onto the stack
-     * @param nresults the number of results, or <code>LUA_MULTRET</code>
-     * @param errfunc 0 or the stack index of an error handler function
-     */
-    protected abstract void luaJ_pcall(long ptr, int nargs, int nresults, int errfunc);
+    void luaJ_openlib(long ptr, String lib);
 
     /**
      * A wrapper function
@@ -1891,7 +1738,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param array the Java array
      */
-    protected abstract void luaJ_pusharray(long ptr, Object array);
+    void luaJ_pusharray(long ptr, Object array);
 
     /**
      * A wrapper function
@@ -1901,7 +1748,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param clazz the Java class
      */
-    protected abstract void luaJ_pushclass(long ptr, Object clazz);
+    void luaJ_pushclass(long ptr, Object clazz);
 
     /**
      * A wrapper function
@@ -1911,7 +1758,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param func the function object
      */
-    protected abstract void luaJ_pushfunction(long ptr, Object func);
+    void luaJ_pushfunction(long ptr, Object func);
 
     /**
      * A wrapper function
@@ -1921,7 +1768,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param obj the Java object
      */
-    protected abstract void luaJ_pushobject(long ptr, Object obj);
+    void luaJ_pushobject(long ptr, Object obj);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pushstring"><code>lua_pushstring</code></a>
@@ -1947,7 +1794,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param s the string
      */
-    protected abstract void luaJ_pushstring(long ptr, String s);
+    void luaJ_pushstring(long ptr, String s);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_rawget"><code>lua_rawget</code></a>
@@ -1968,7 +1815,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected abstract void luaJ_rawget(long ptr, int index);
+    void luaJ_rawget(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_rawgeti"><code>lua_rawgeti</code></a>
@@ -1992,7 +1839,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @param n the number of elements
      */
-    protected abstract void luaJ_rawgeti(long ptr, int index, int n);
+    void luaJ_rawgeti(long ptr, int index, int n);
 
     /**
      * A wrapper function
@@ -2003,7 +1850,7 @@ public abstract class LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      */
-    protected abstract void luaJ_removestateindex(long ptr);
+    void luaJ_removestateindex(long ptr);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_setmetatable"><code>lua_setmetatable</code></a>
@@ -2025,7 +1872,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected abstract void luaJ_setmetatable(long ptr, int index);
+    void luaJ_setmetatable(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_openlibs"><code>luaL_openlibs</code></a>
@@ -2044,7 +1891,7 @@ public abstract class LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      */
-    protected abstract void luaL_openlibs(long ptr);
+    void luaL_openlibs(long ptr);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_unref"><code>luaL_unref</code></a>
@@ -2074,7 +1921,7 @@ public abstract class LuaNative {
      * @param t the stack index
      * @param ref the reference
      */
-    protected abstract void luaL_unref(long ptr, int t, int ref);
+    void luaL_unref(long ptr, int t, int ref);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#luaL_where"><code>luaL_where</code></a>
@@ -2110,7 +1957,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param lvl the running level
      */
-    protected abstract void luaL_where(long ptr, int lvl);
+    void luaL_where(long ptr, int lvl);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_newtable"><code>lua_newtable</code></a>
@@ -2130,7 +1977,7 @@ public abstract class LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      */
-    protected abstract void lua_newtable(long ptr);
+    void lua_newtable(long ptr);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pop"><code>lua_pop</code></a>
@@ -2150,7 +1997,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param n the number of elements
      */
-    protected abstract void lua_pop(long ptr, int n);
+    void lua_pop(long ptr, int n);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pushboolean"><code>lua_pushboolean</code></a>
@@ -2170,7 +2017,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param b boolean
      */
-    protected abstract void lua_pushboolean(long ptr, int b);
+    void lua_pushboolean(long ptr, int b);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pushinteger"><code>lua_pushinteger</code></a>
@@ -2188,9 +2035,9 @@ public abstract class LuaNative {
      * </p>
      *
      * @param ptr the <code>lua_State*</code> pointer
-     * @param i integer
+     * @param n integer
      */
-    protected abstract void lua_pushinteger(long ptr, long i);
+    void lua_pushinteger(long ptr, long n);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pushlightuserdata"><code>lua_pushlightuserdata</code></a>
@@ -2220,7 +2067,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param p the pointer
      */
-    protected abstract void lua_pushlightuserdata(long ptr, long p);
+    void lua_pushlightuserdata(long ptr, long p);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pushnil"><code>lua_pushnil</code></a>
@@ -2239,7 +2086,7 @@ public abstract class LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      */
-    protected abstract void lua_pushnil(long ptr);
+    void lua_pushnil(long ptr);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pushnumber"><code>lua_pushnumber</code></a>
@@ -2259,7 +2106,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param n the number of elements
      */
-    protected abstract void lua_pushnumber(long ptr, double n);
+    void lua_pushnumber(long ptr, double n);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_pushvalue"><code>lua_pushvalue</code></a>
@@ -2280,7 +2127,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected abstract void lua_pushvalue(long ptr, int index);
+    void lua_pushvalue(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_rawset"><code>lua_rawset</code></a>
@@ -2301,7 +2148,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected abstract void lua_rawset(long ptr, int index);
+    void lua_rawset(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_rawseti"><code>lua_rawseti</code></a>
@@ -2328,9 +2175,9 @@ public abstract class LuaNative {
      *
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
-     * @param n the number of elements
+     * @param i the index
      */
-    protected abstract void lua_rawseti(long ptr, int index, int n);
+    void lua_rawseti(long ptr, int index, int i);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_remove"><code>lua_remove</code></a>
@@ -2353,7 +2200,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected abstract void lua_remove(long ptr, int index);
+    void lua_remove(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_replace"><code>lua_replace</code></a>
@@ -2375,7 +2222,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected abstract void lua_replace(long ptr, int index);
+    void lua_replace(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_setfield"><code>lua_setfield</code></a>
@@ -2404,7 +2251,7 @@ public abstract class LuaNative {
      * @param index the stack position of the element
      * @param k the field name
      */
-    protected abstract void lua_setfield(long ptr, int index, String k);
+    void lua_setfield(long ptr, int index, String k);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_setglobal"><code>lua_setglobal</code></a>
@@ -2430,7 +2277,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param name the name
      */
-    protected abstract void lua_setglobal(long ptr, String name);
+    void lua_setglobal(long ptr, String name);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_settable"><code>lua_settable</code></a>
@@ -2459,7 +2306,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected abstract void lua_settable(long ptr, int index);
+    void lua_settable(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_settop"><code>lua_settop</code></a>
@@ -2483,7 +2330,7 @@ public abstract class LuaNative {
      * @param ptr the <code>lua_State*</code> pointer
      * @param index the stack position of the element
      */
-    protected abstract void lua_settop(long ptr, int index);
+    void lua_settop(long ptr, int index);
 
     /**
      * Wrapper of <a href="https://www.lua.org/manual/5.1/manual.html#lua_xmove"><code>lua_xmove</code></a>
@@ -2509,5 +2356,6 @@ public abstract class LuaNative {
      * @param to another thread
      * @param n the number of elements
      */
-    protected abstract void lua_xmove(long from, long to, int n);
+    void lua_xmove(long from, long to, int n);
+
 }

@@ -70,7 +70,7 @@ public class Console implements Callable<Integer> {
     private static void injectLicense(Lua L, LineReader reader) {
         reader.printAbove("Use license() to print licensing info.");
         L.push(l -> {
-            reader.printAbove("This appliation is licensed under GPL 3.0.");
+            reader.printAbove("This application is licensed under GPL 3.0.");
             reader.printAbove("Use license_gpl() to read full text of GPL 3.0.");
             printAll(Lua.class, reader, "/LICENSE-luajava-console");
             printAll(Lua.class, reader, "/META-INF/LICENSE-luajava");
@@ -78,7 +78,7 @@ public class Console implements Callable<Integer> {
         });
         L.setGlobal("license");
         L.push(l -> {
-            reader.printAbove("This appliation is licensed under GPL 3.0.");
+            reader.printAbove("This application is licensed under GPL 3.0.");
             reader.printAbove("Use license_gpl() to read full text of GPL 3.0.");
             printAll(Console.class, reader, "/gpl-3.0.txt");
             return 0;
@@ -131,31 +131,23 @@ public class Console implements Callable<Integer> {
                     s = "";
                 }
                 synchronized (L.getMainState()) {
-                    if (L.run(s) != Lua.LuaError.OK) {
-                        String message = null;
-                        if (L.getTop() != 0 && L.isString(-1)) {
-                            message = L.toString(-1);
-                        }
+                    try {
+                        L.run(s);
+                    } catch (LuaException e) {
                         L.setTop(0);
-                        Throwable e = L.getJavaError();
-                        if (e != null) {
-                            L.error((Throwable) null);
-                        }
                         s = "_ = (" + s + ")\nprint(_)";
-                        if (L.run(s) == Lua.LuaError.OK) {
+                        try {
+                            L.run(s);
                             prettyPrint(L, "_");
-                        } else {
-                            reader.printAbove(message);
-                            if (e != null) {
-                                reader.printAbove("Last Java side exception:");
-                                ByteArrayOutputStream output = new ByteArrayOutputStream();
-                                PrintStream print = new PrintStream(output);
-                                e.printStackTrace(print);
-                                print.flush();
-                                reader.printAbove(output.toString());
-                            }
+                        } catch (LuaException exprErr) {
+                            reader.printAbove(e.toString());
+                            reader.printAbove("Caused by:");
+                            ByteArrayOutputStream output = new ByteArrayOutputStream();
+                            PrintStream print = new PrintStream(output);
+                            e.printStackTrace(print);
+                            print.flush();
+                            reader.printAbove(output.toString());
                             L.setTop(0);
-                            L.error((Throwable) null);
                         }
                     }
                 }
@@ -184,7 +176,7 @@ public class Console implements Callable<Integer> {
         } else {
             Lua L = luaVersion.supplier.get();
             if (global) {
-                L.getLuaNative().loadAsGlobal();
+                L.getLuaNatives().loadAsGlobal();
             }
             return L;
         }
@@ -231,28 +223,17 @@ public class Console implements Callable<Integer> {
                     Path path = Paths.get(command.file);
                     byte[] bytes = Files.readAllBytes(path);
                     ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);
-                    okOrFail(L.load(buffer.put(bytes).flip(), path.getFileName().toString()),
-                            L, "loading file buffer");
-                    okOrFail(L.pCall(0, Consts.LUA_MULTRET),
-                            L, "running file");
+                    L.load(buffer.put(bytes).flip(), path.getFileName().toString());
+                    L.pCall(0, Consts.LUA_MULTRET);
                 } else if (command.expression != null) {
-                    okOrFail(L.load(command.expression),
-                            L, "loading expression");
-                    okOrFail(L.pCall(0, Consts.LUA_MULTRET),
-                            L, "running expression");
+                    L.load(command.expression);
+                    L.pCall(0, Consts.LUA_MULTRET);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
         return 0;
-    }
-
-    private void okOrFail(Lua.LuaError error, Lua L, String message) {
-        if (error != Lua.LuaError.OK) {
-            reader.printAbove("Error " + error + " when " + message);
-            throw new RuntimeException(L.toString(-1));
-        }
     }
 
     private static class Command {

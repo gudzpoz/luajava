@@ -2,7 +2,8 @@
 
 ## Extra Lua Types
 
-We provide three extra `userdata` types that correspond three Java concepts. We use their abbreviations in the following documentation.
+We provide three extra `userdata` types that correspond to three Java concepts.
+We use their abbreviations in the following documentation.
 
 |              | [Java classes](#jclass-type) | [Java objects](#jobject-type) | [Java arrays](#jarray-type) |
 |--------------|:----------------------------:|:-----------------------------:|:----------------------------|
@@ -14,28 +15,20 @@ For a `jclass` `clazz`:
 
 - `clazz.memberVar` performs the following in sequence:
     1. It looks for a field named `memberVar`. It returns the public static member if it finds it.
-       - If you have an inner class also named `memberVar`, you would have to manually `java.import` it.
+       - If you have an inner class also named `memberVar`, you will have to manually `java.import` it.
     2. It then looks for an inner class named `memberVar`, and returns that if it is available.
        - If you have a method also named `memberVar`, you need to use `java.method` to look that up.
-    4. Otherwise, it prepares for a method call. See `clazz:memberMethod(...)` below.
+    3. Otherwise, it prepares for a method call. See `clazz:memberMethod(...)` below.
 - `clazz.memberVar = value` assigns to the public static member. If exceptions occur, a Lua error is generated.
-- `clazz:memberMethod(...)` calls the public static member method `memberMethod`. See [Proxied Method Calls](#proxied-method-calls) for more info.
+- `clazz:memberMethod(...)` calls the public static member method `memberMethod`.
+  See [Proxied Method Calls](#proxied-method-calls) for more info.
 - `clazz(...)`:
-  - For an interface, this expects a table as the parameter and creates a proxy for it. See [`java.proxy`](#proxy-jclass-table-function).
+  - For an interface, this expects a table as the parameter and creates a proxy for it.
+    See [`java.proxy`](#proxy-jclass-table-function).
   - Otherwise, it calls the corresponding constructor. See [`java.new`](#new-jclass-function).
 - `clazz.class` returns a `jobject`, wrapping an instance of `java.lang.Class<clazz>`.
 
-```lua Example
-Integer = java.import('java.lang.Integer')
--- Accessing a static member
-print(Integer.TYPE)
--- Calling a static method
-print(Integer:parseInt('1024'))
--- Construct an instance
-print(Integer('1024'))
--- Get a Class<Integer> instance
-print(Integer.class:getName())
-```
+@[code lua](../example/src/test/resources/docs/apiClazzExample.lua)
 
 ::: tip
 Don't confuse `jclass` with an instance of `java.lang.Class<?>`.
@@ -49,14 +42,10 @@ For a `jobject` `object`:
 
 - `object.memberVar` returns the public member named `memberVar`.
 - `object.memberVar = value` assigns to the public static member. If exceptions occur, a Lua error is generated.
-- `object:memberMethod(...)` calls the public member method `memberMethod`. See [Proxied Method Calls](#proxied-method-calls) for more info.
+- `object:memberMethod(...)` calls the public member method `memberMethod`.
+  See [Proxied Method Calls](#proxied-method-calls) for more info.
 
-```lua
-Integer = java.import('java.lang.Integer')
-i = java.new(Integer, 1024)
--- Calling a method
-print(i:toString())
-```
+@[code lua](../example/src/test/resources/docs/apiObjectExample.lua)
 
 ### `jarray` <Badge>type</Badge>
 
@@ -64,7 +53,8 @@ For a `jarray` `array`:
 
 - `array[i]` returns `array[i - 1]`. Unlike Lua tables, we raise Lua errors if the index goes out of bounds.
 - `array[i] = value` assigns to `array[i - 1]`. If exceptions occur, a Lua error is generated.
-- `array:memberMethod(...)` calls the public member method `memberMethod` (of `java.lang.Object` of course), for example, `array:getClass()`.
+- `array:memberMethod(...)` calls the public member method `memberMethod` (of `java.lang.Object` of course),
+  for example, `array:getClass()`.
 
 ::: tip
 Lua tables usually start the index from 1, while Java arrays from 0.
@@ -75,7 +65,7 @@ Lua tables usually start the index from 1, while Java arrays from 0.
 | Functions     | Signature                   | Returns           | Description                                            |
 |---------------|-----------------------------|-------------------|--------------------------------------------------------|
 | **`array`**   | `(jclass, dim1, ...)`       | `jarray`          | Create an array with specified dimensions              |
-| **`catched`** | `()`                        | `jobject`         | Return the latest captured Java `Throwable`            |
+| **`caught`**  | `()`                        | `jobject`         | Return the latest captured Java `Throwable`            |
 | **`detach`**  | `(thread)`                  | `nil`             | Detach the sub-thread from registry to allow for GC    |
 | **`import`**  | `(string)`                  | `jclass \| table` | Import a Java class or package                         |
 | **`loadlib`** | `(string, string)`          | `function`        | Load a Java method, similar to `package.loadlib`       |
@@ -112,14 +102,9 @@ Creates a Java array.
 
 - Generates a Lua error if types mismatch or some dimensions are negative.
 
-```lua
-int = java.import('int')
-arr = java.array(int, 2, 16)
-assert(#arr == 2)
-assert(#arr[1] == 16)
-```
+@[code lua](../example/src/test/resources/docs/apiArrayExample.lua)
 
-### `catched ()` <Badge>function</Badge>
+### `caught ()` <Badge>function</Badge>
 
 Return the latest captured Java `java.lang.Throwable` during a Java method call.
 
@@ -170,10 +155,10 @@ IDs are stored both on:
 - the Java side: IDs are stored in `AbstractLua` instances.
 - and the Lua side: IDs are stored in the table at `LUA_REGISTRYINDEX`, *with the thread itself as the key*.
 
-However, since we keep references to the thread in the `LUA_REGISTRYINDEX`, it prevents the thread from garbage collection
-(which is intentional though, as you need threads alive for proxies).
+However, since we keep references to the thread in the `LUA_REGISTRYINDEX`,
+it prevents the thread from garbage collection (which is intentional though, as you need threads alive for proxies).
 
-If you are sure that neither the Java side (proxies, Java API, etc.) nor the Lua side uses the thread any more,
+If you are sure that neither the Java side (proxies, Java API, etc.) nor the Lua side uses the thread anymore,
 you may manually call `java.detach` or `Lua#close` to free the thread from the global registry.
 :::
 
@@ -198,26 +183,13 @@ Import a Java class or package.
 
 - Generates a Lua error if class not found.
 
-```lua
-lang = java.import('java.lang.*')
-print(lang.System:currentTimeMillis())
-
-R = java.import('android.R.*')
-print(R.id.input)
-
-j = java.import('java.*.*')
-print(j.lang.System:currentTimeMillis())
--- Both works
-j = java.import('java.*')
-print(j.lang.System:currentTimeMillis())
-
-System = java.import('java.lang.System')
-print(System:currentTimeMillis())
-```
+@[code lua](../example/src/test/resources/docs/apiImportExample.lua)
 
 ### `loadlib (classname, method)` <Badge>function</Badge>
 
-This function provides similar functionalities to Lua's `loadlib`. It looks for a method `static public int yourSuppliedMethodName(Lua L);` inside the class, and returns it as a C function.
+This function provides similar functionalities to Lua's `loadlib`.
+It looks for a method `static public int yourSuppliedMethodName(Lua L);` inside the class,
+and returns it as a C function.
 
 - **Parameters:**
 
@@ -231,39 +203,29 @@ This function provides similar functionalities to Lua's `loadlib`. It looks for 
 
     - (***function***) If the method is found, we wrap it up with a C function wrapper and return it.
 
-    - (***nil***, ***string***) If no valid method is found, we return `nil` plus a error message. Similar to `package.loadlib`, we do not generate a Lua error in this case.
+    - (***nil***, ***string***) If no valid method is found, we return `nil` plus a error message.
+      Similar to `package.loadlib`, we do not generate a Lua error in this case.
 
-You might also want to check out [Java-Side Modules](./examples/modules.md) to see how we use this function to extend the Lua `require`.
+You might also want to check out [Java-Side Modules](./examples/modules.md)
+to see how we use this function to extend the Lua `require`.
 
 :::: code-group
 ::: code-group-item Java Library
-```java
-package com.example;
 
-public class LuaLib {
-    public static int open(Lua L) {
-        L.createTable(0, 1);
-        L.push(l -> {
-            l.push(1024);
-            return 1;
-        });
-        L.setField(-2, "getNumber");
-        return 1;
-    }
-}
-```
+<!-- @code:class -->
+@[code java](../example/src/test/java/party/iroiro/luajava/docs/JavaSideExampleModule.java)
+
 :::
 ::: code-group-item Java Side
-```java
-Lua L = new Lua51();
-L.openLibrary("package");
-```
+
+<!-- @code:javaSideModuleTest -->
+@[code{19-23} java](../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java)
+
 :::
 ::: code-group-item Lua Side
-```lua
-local LuaLibOpen = java.loadlib('com.example.LuaLib.open')
-assert(1024 == LuaLibOpen().getNumber())
-```
+
+@[code lua](../example/src/test/resources/docs/apiLoadlibExample.lua)
+
 :::
 ::::
 
@@ -293,28 +255,14 @@ Finds a method of the `jobject` or `jclass` matching the name and signature. See
       For proxy object, it is possible to explicitly call the default methods in the interfaces.
       Use `complete.interface.name:methodName` to refer to the method. See the examples below.
 
-    - `signature`: (optional) (***string***) Comma separated argument type list. If not supplied, treated as an empty one.
+    - `signature`: (optional) (***string***) Comma separated argument type list.
+      If not supplied, treated as an empty one.
 
 - **Returns:**
 
     - (***function***) Never `nil`. The real method lookup begins after you supply arguments to this returned function.
 
-```lua {3-5}
-AtomicInteger = java.import('java.util.concurrent.atomic.AtomicInteger')
-Constructor = java.method(AtomicInteger, 'new', 'int')
-integer = Constructor(100)
-compareAndSet = java.method(integer, 'compareAndSet', 'int,int')
-compareAndSet(100, 200)
-compareAndSet(200, 400)
-assert(integer:get() == 400)
-
-iter = java.proxy('java.util.Iterator', {
-  remove = function(this)
-    java.method(iter, 'java.util.Iterator:remove')()
-  end
-})
--- iter:remove() -- This throws an exception
-```
+@[code lua{3-5}](../example/src/test/resources/docs/apiMethodExample.lua)
 
 ### `new (jclass, ...)` <Badge>function</Badge>
 
@@ -324,7 +272,8 @@ Call the constructor of the given Java type.
 
     - `jclass`: (***jclass*** | ***jobject***) The class. One may pass a `jclass` or a `jobject` of `Class<?>`.
 
-    - `...`: (***any***) Extra parameters are passed to the constructor. See also [Type Conversions](./conversions) to find out how we locate a matching method.
+    - `...`: (***any***) Extra parameters are passed to the constructor.
+      See also [Type Conversions](./conversions) to find out how we locate a matching method.
 
 - **Returns:**
 
@@ -334,12 +283,7 @@ Call the constructor of the given Java type.
 
 Examples:
 
-```lua
-String = java.import('java.lang.String')
-
---         new String ("This is the content of the String")
-str = java.new(String, 'This is the content of the String')
-```
+@[code lua](../example/src/test/resources/docs/apiNewExample.lua)
 
 ### `proxy (jclass, ..., table)` <Badge>function</Badge>
 
@@ -348,7 +292,8 @@ See also [Proxy Caveats](./proxy.md).
 
 - **Parameters:**
 
-    - `jclass1`: (***jclass*** | ***string*** | ***jobject***) The first interface. One may pass a `jclass` or a `string` or a `jobject` of `Class<?>`.
+    - `jclass1`: (***jclass*** | ***string*** | ***jobject***) The first interface.
+      One may pass a `jclass` or a `string` or a `jobject` of `Class<?>`.
     - `jclass2`: (***jclass*** | ***string*** | ***jobject***) The second interface.
     - `jclassN`: (***jclass*** | ***string*** | ***jobject***) The N-th interface.
 
@@ -366,16 +311,7 @@ See also [Proxy Caveats](./proxy.md).
 
 - Generates a Lua error if exceptions occur or unable to find the interfaces.
 
-```lua
-button = java.new(java.import('java.awt.Button'), 'Execute')
-callback = {}
-function callback:actionPerformed(ev)
-  -- do something
-end
-
-buttonProxy = java.proxy('java.awt.ActionListener', callback)
-button:addActionListener(buttonProxy)
-```
+@[code lua](../example/src/test/resources/docs/apiProxyExampleDisabled.lua)
 
 ### `unwrap (jobject)` <Badge>function</Badge>
 
@@ -384,7 +320,8 @@ See also [Proxy Caveats](./proxy.md).
 
 - **Parameters:**
 
-    - `jobject`: (***jobject***) The proxy object created with [`java.proxy`](#proxy-jclass-table-function) or [`party.iroiro.luajava.Lua#createProxy`](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion))
+    - `jobject`: (***jobject***) The proxy object created with [`java.proxy`](#proxy-jclass-table-function)
+      or [`party.iroiro.luajava.Lua#createProxy`](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion))
 
 - **Returns:**
 
@@ -394,22 +331,26 @@ See also [Proxy Caveats](./proxy.md).
 
 ## Proxied Method Calls
 
-Java allows method overloading, which means we cannot know which method you are calling until you supply the parameters. Method finding and parameter supplying is integrated in Java.
+Java allows method overloading, which means we cannot know which method you are calling until you supply the parameters.
+Method finding and parameter supplying is an integrated (or, as one may call it, atomic) process in Java.
 
 However, for calls in Lua, the two steps can get separated:
 
-```lua
+```lua ignored
 obj:method(param1)
 -- The above is actually:
 m = obj.method
 m(obj, param1)
 ```
 
-To proxy calls to Java, we treat all missing fields, such as `obj.method`, `obj.notAField`, `obj.whatever` as a possible method call. The real resolution starts only after you supply the parameters.
+To proxy calls to Java, we treat all missing fields,
+such as `obj.method`, `obj.notAField`, `obj.whatever` as a possible method call.
+The real resolution starts only after you supply the parameters.
 
-The side effect of this is that a missing field is never `nil` but always a possible `function` call, so don't depend on this.
+The side effect of this is that a missing field is never `nil` but always a possible `function` call,
+so don't depend on this.
 
-```lua
+```lua ignored
 assert(type(jobject.notAField) == 'function')
 ```
 
@@ -421,12 +362,17 @@ In either case, if no method matches, a Lua error is raised.
 
 For method resolution, see [Type Conversions](./conversions.md#lua-to-java).
 
-Since a Lua type maps to different Java types (for example, `lua_Number` may be mapped to any Java numerical type), we have to iterate through every method to find one matching Lua parameters. For each possible method, we try to convert the values on stack from Lua to Java. If such conversion is possible, the call is then proxied to this method and the remaining methods are never tried.
+Since a Lua type maps to different Java types (for example, `lua_Number` may be mapped to any Java numerical type),
+we have to iterate through every method to find one matching Lua parameters.
+For each possible method, we try to convert the values on stack from Lua to Java.
+If such conversion is possible, the call is then proxied to this method and the remaining methods are never tried.
 
 ::: warning
 By the nature of this procedure, we do not prioritize any of the method.
 
-For example, if you are calling `java.lang.Math.max`, which can be `Math.max(int, int)`, `Math.max(double, double)`, etc., then nobody knows which will ever get called.
+For example, if you are calling `java.lang.Math.max`,
+which can be `Math.max(int, int)`, `Math.max(double, double)`, etc.,
+then nobody knows which will ever get called.
 :::
 
 ::: warning
@@ -434,11 +380,7 @@ We do not support varargs. You will need to combine `java.method` and `java.arra
 
 For `Object... object` however, things are easier:
 
-```lua
-String = java.import('java.lang.String')
--- We automatically convert lua tables into Object[]
-assert(String:format('>>> %s', { 'content' }) == '>>> content')
-```
+@[code lua](../example/src/test/resources/docs/apiVarargsExample.lua)
 :::
 
 #### With `java.method`
@@ -449,43 +391,17 @@ to which you may specify the signature of the method that you intend to call.
 ::: tip
 Take the above `java.lang.Math.max` as an example. You may call `Math.max(int, int)` with the following:
 
-```lua {2}
-Math = java.import('java.lang.Math')
-max = java.method(Math, 'max', 'int,int')
-assert(max(1.2, 2.3) == 2)
-```
+@[code lua{2}](../example/src/test/resources/docs/apiMethodExample1.lua)
 
 You may call `Math.max(double, double)` with the following:
 
-```lua {2}
-Math = java.import('java.lang.Math')
-max = java.method(Math, 'max', 'double,double')
-assert(max(1.2, 2.3) == 2.3)
-```
+@[code lua{2}](../example/src/test/resources/docs/apiMethodExample2.lua)
 :::
 
 If you would like to access an overridden default method from a proxy object,
 you may also use:
 
-```lua
-iter1 = java.proxy('java.util.Iterator', {})
--- Calls the default method
-iter1:remove()
-
--- What if we want to access the default method from a overridden one?
-iterImpl = {
-  remove = function(this)
-    -- Calls the default method from java.util.Iterator.
-    java.method(this, 'java.util.Iterator:remove', '')()
-    -- Equivalent to the following in Java
-    --     Iterator.super.remove();
-  end
-}
-
-iter = java.proxy('java.util.Iterator', iterImpl)
--- Calls the implemented `remove`, which then calls the default one
-iter:remove()
-```
+@[code lua{2}](../example/src/test/resources/docs/apiMethodExample3.lua)
 
 ::: warning
 

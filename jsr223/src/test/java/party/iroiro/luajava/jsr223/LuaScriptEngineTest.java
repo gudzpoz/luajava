@@ -31,19 +31,19 @@ class LuaScriptEngineTest {
 
     @Test
     public void evalTest() throws ScriptException {
-        LuaValue[] values = (LuaValue[]) lua.eval("print('Hello')");
+        LuaValue[] values = (LuaValue[]) lua.eval("assert('Hello')");
         assertNull(values);
         values = (LuaValue[]) lua.eval("return 1");
         assertEquals(1, values.length);
         assertEquals(1., values[0].toJavaObject());
 
-        values = (LuaValue[]) lua.eval(new StringReader("print('Hello')"));
+        values = (LuaValue[]) lua.eval(new StringReader("assert('Hello')"));
         assertNull(values);
     }
 
     @Test
     public void compiledTest() throws ScriptException {
-        LuaValue[] values = (LuaValue[]) ((Compilable) lua).compile("print('Hello')").eval();
+        LuaValue[] values = (LuaValue[]) ((Compilable) lua).compile("assert('Hello')").eval();
         assertNull(values);
         values = (LuaValue[]) ((Compilable) lua).compile("return 1").eval();
         assertEquals(1., values[0].toJavaObject());
@@ -54,11 +54,11 @@ class LuaScriptEngineTest {
     @Test
     public void scopeTest() throws ScriptException {
         lua.setBindings(null, ScriptContext.GLOBAL_SCOPE);
-        lua.eval("print()");
+        lua.eval("assert(true)");
         lua.setBindings(new SimpleBindings(), ScriptContext.GLOBAL_SCOPE);
         lua.getBindings(ScriptContext.GLOBAL_SCOPE).put("javaTest1", "scopeTest");
         lua.getBindings(ScriptContext.ENGINE_SCOPE).put("javaTest2", "scopeTest");
-        assertDoesNotThrow(() -> lua.eval("print(javaTest1 .. javaTest2)"));
+        assertDoesNotThrow(() -> lua.eval("assert(javaTest1 .. javaTest2)"));
     }
 
     @Test

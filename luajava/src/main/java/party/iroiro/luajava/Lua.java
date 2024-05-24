@@ -24,6 +24,8 @@ package party.iroiro.luajava;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import party.iroiro.luajava.value.LuaFunction;
+import party.iroiro.luajava.value.LuaThread;
 import party.iroiro.luajava.value.LuaValue;
 
 import java.nio.Buffer;
@@ -33,7 +35,7 @@ import java.util.*;
 /**
  * A {@code lua_State *} wrapper, representing a Lua thread
  */
-public interface Lua extends AutoCloseable {
+public interface Lua extends AutoCloseable, LuaThread {
     String GLOBAL_THROWABLE = "__jthrowable__";
 
     /**
@@ -147,6 +149,21 @@ public interface Lua extends AutoCloseable {
      * @param clazz the class
      */
     void pushJavaClass(@NotNull Class<?> clazz);
+
+    /**
+     * Push a {@link LuaValue} onto the stack, equivalent to {@link LuaValue#push(Lua)}
+     *
+     * @param value the value
+     */
+    void push(@NotNull LuaValue value);
+
+    /**
+     * Push the function onto the stack, converted to a callable element
+     *
+     * @param value the function
+     * @see #push(JFunction)
+     */
+    void push(@NotNull LuaFunction value);
 
     /**
      * Push the element onto the stack, converted as is to Java objects
@@ -272,7 +289,7 @@ public interface Lua extends AutoCloseable {
      *
      * <p>
      * The memory of this buffer is managed by Lua.
-     * So you should never use the buffer after poping the corresponding value
+     * So you should never use the buffer after popping the corresponding value
      * from the Lua stack.
      * </p>
      *
@@ -604,10 +621,9 @@ public interface Lua extends AutoCloseable {
      * This function uses {@code luaL_loadstring} to load the chunk.
      * </p>
      *
-     * @param script the Lua chunck
-     * @return {@link LuaError#OK} or other error types
+     * @param script the Lua chunk
      */
-    LuaError load(String script);
+    void load(String script) throws LuaException;
 
 
     /**
@@ -619,9 +635,8 @@ public interface Lua extends AutoCloseable {
      *
      * @param buffer the buffer, must be a direct buffer
      * @param name   the chunk name, used for debug information and error messages
-     * @return {@link LuaError#OK} or {@link LuaError#MEMORY} when buffer is not direct, or other error types
      */
-    LuaError load(Buffer buffer, String name);
+    void load(Buffer buffer, String name) throws LuaException;
 
     /**
      * Loads and runs the given string
@@ -630,10 +645,9 @@ public interface Lua extends AutoCloseable {
      * This function uses {@code luaL_dostring} to run the chunk.
      * </p>
      *
-     * @param script the Lua chunck
-     * @return {@link LuaError#OK} or {@link LuaError#RUNTIME}
+     * @param script the Lua chunk
      */
-    LuaError run(String script);
+    void run(String script) throws LuaException;
 
     /**
      * Loads and runa a buffer
@@ -645,9 +659,8 @@ public interface Lua extends AutoCloseable {
      *
      * @param buffer the buffer, must be a direct buffer
      * @param name   the chunk name, used for debug information and error messages
-     * @return {@link LuaError#OK} or {@link LuaError#MEMORY} or {@link LuaError#RUNTIME}
      */
-    LuaError run(Buffer buffer, String name);
+    void run(Buffer buffer, String name) throws LuaException;
 
     /**
      * Dumps a function as a binary chunk
@@ -683,9 +696,8 @@ public interface Lua extends AutoCloseable {
      *
      * @param nArgs    the number of arguments that you pushed onto the stack
      * @param nResults the number of results to adjust to
-     * @return {@link LuaError#OK} or {@link LuaError#RUNTIME}
      */
-    LuaError pCall(int nArgs, int nResults);
+    void pCall(int nArgs, int nResults) throws LuaException;
 
     /* Thread functions */
 
@@ -722,16 +734,16 @@ public interface Lua extends AutoCloseable {
      * </p>
      *
      * @param nArgs the number of arguments
-     * @return {@link LuaError#YIELD}, {@link LuaError#OK} or other error code
+     * @return {@code true} if the thread yielded, or {@code false} if it ended execution
      */
-    LuaError resume(int nArgs);
+    boolean resume(int nArgs) throws LuaException;
 
     /**
      * Returns the status of the thread
      *
      * @return the status of the thread
      */
-    LuaError status();
+    LuaException.LuaError status();
 
     /**
      * Yields a coroutine
@@ -1091,14 +1103,6 @@ public interface Lua extends AutoCloseable {
     Object createProxy(Class<?>[] interfaces, Conversion degree) throws IllegalArgumentException;
 
     /**
-     * Registers the function to a global name
-     *
-     * @param name     the global name
-     * @param function the function
-     */
-    void register(String name, JFunction function);
-
-    /**
      * Sets a {@link ExternalLoader} for the main state
      *
      * <p>
@@ -1122,14 +1126,13 @@ public interface Lua extends AutoCloseable {
      * Loads a chunk from a {@link ExternalLoader} set by {@link #setExternalLoader(ExternalLoader)}
      *
      * @param module the module
-     * @return the return code from {@link #load(Buffer, String)}
      */
-    LuaError loadExternal(String module);
+    void loadExternal(String module) throws LuaException;
 
     /**
-     * @return the underlying {@link LuaNative} natives
+     * @return the underlying {@link LuaNatives} natives
      */
-    LuaNative getLuaNative();
+    LuaNatives getLuaNatives();
 
     /**
      * @return the main Lua state
@@ -1149,7 +1152,7 @@ public interface Lua extends AutoCloseable {
     /**
      * Fetches the most recent Java {@link Throwable} passed to Lua
      *
-     * @return value of the Lua glboal {@link #GLOBAL_THROWABLE}
+     * @return value of the Lua global {@link #GLOBAL_THROWABLE}
      */
     @Nullable
     Throwable getJavaError();
@@ -1185,52 +1188,6 @@ public interface Lua extends AutoCloseable {
      * @return a reference to the value
      */
     LuaValue get();
-
-    /**
-     * Gets a references to a global object
-     *
-     * @param globalName the global name
-     * @return a reference to the value
-     */
-    LuaValue get(String globalName);
-
-    /**
-     * Executes a command
-     *
-     * @param command the command
-     * @return the return values
-     */
-    @Nullable
-    LuaValue[] execute(String command);
-
-    /**
-     * @return a nil Lua value
-     */
-    LuaValue fromNull();
-
-    /**
-     * @param b the boolean
-     * @return a boolean Lua value
-     */
-    LuaValue from(boolean b);
-
-    /**
-     * @param n the number
-     * @return a number Lua value
-     */
-    LuaValue from(double n);
-
-    /**
-     * @param n the number
-     * @return a number Lua value
-     */
-    LuaValue from(long n);
-
-    /**
-     * @param s the string
-     * @return a string Lua value
-     */
-    LuaValue from(String s);
 
     /**
      * Controls the degree of conversion from Java to Lua
@@ -1289,44 +1246,5 @@ public interface Lua extends AutoCloseable {
         TABLE(),
         THREAD(),
         USERDATA()
-    }
-
-    /**
-     * Integer values of Lua error codes may vary between version
-     */
-    enum LuaError {
-        /**
-         * a file-related error
-         */
-        FILE,
-        /**
-         * error while running a __gc metamethod
-         */
-        GC,
-        /**
-         * error while running the message handler
-         */
-        HANDLER,
-        /**
-         * memory allocation error
-         */
-        MEMORY,
-        /**
-         * no errors
-         */
-        OK,
-        /**
-         * a runtime error
-         */
-        RUNTIME,
-        /**
-         * syntax error during precompilation
-         */
-        SYNTAX,
-
-        /**
-         * the thread (coroutine) yields
-         */
-        YIELD,
     }
 }

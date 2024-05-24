@@ -3,6 +3,7 @@ package party.iroiro.luajava.jsr223;
 import party.iroiro.luajava.ClassPathLoader;
 import party.iroiro.luajava.Consts;
 import party.iroiro.luajava.Lua;
+import party.iroiro.luajava.LuaException;
 import party.iroiro.luajava.util.ClassUtils;
 import party.iroiro.luajava.value.LuaValue;
 
@@ -24,7 +25,6 @@ public final class LuaScriptEngine extends AbstractScriptEngine implements Scrip
 
     private Lua getLua() throws ScriptException {
         try {
-            //noinspection deprecation
             Lua L = (Lua) ClassUtils.forName(luaClass, null).newInstance();
             L.setExternalLoader(new ClassPathLoader());
             L.openLibraries();
@@ -54,13 +54,10 @@ public final class LuaScriptEngine extends AbstractScriptEngine implements Scrip
         assertNotNull(scriptContext, "context");
         try (Lua L = getLua()) {
             putContext(L, scriptContext);
-            LuaValue[] values = L.execute(script);
-            if (values == null) {
-                String message = L.toString(-1);
-                L.pop(1);
-                throw new ScriptException(message);
-            }
+            LuaValue[] values = L.eval(script);
             return values.length == 0 ? null : values;
+        } catch (LuaException e) {
+            throw new ScriptException(e);
         }
     }
 
@@ -100,11 +97,7 @@ public final class LuaScriptEngine extends AbstractScriptEngine implements Scrip
     @Override
     public CompiledScript compile(String s) throws ScriptException {
         try (Lua L = getLua()) {
-            if (L.load(s) != Lua.LuaError.OK) {
-                String message = L.toString(-1);
-                L.pop(1);
-                throw new ScriptException(message);
-            }
+            L.load(s);
             ByteBuffer dump = L.dump();
             return new CompiledScript() {
                 @Override
@@ -114,18 +107,15 @@ public final class LuaScriptEngine extends AbstractScriptEngine implements Scrip
                         putContext(L, scriptContext);
                         int top = L.getTop();
                         L.load(dump, "CompiledScript");
-                        if (L.pCall(0, Consts.LUA_MULTRET) == Lua.LuaError.OK) {
-                            int returnCount = L.getTop() - top;
-                            LuaValue[] returnValues = new LuaValue[returnCount];
-                            for (int i = 0; i < returnCount; i++) {
-                                returnValues[returnCount - i - 1] = L.get();
-                            }
-                            return returnValues.length == 0 ? null : returnValues;
-                        } else {
-                            String message = L.toString(-1);
-                            L.pop(1);
-                            throw new ScriptException(message);
+                        L.pCall(0, Consts.LUA_MULTRET);
+                        int returnCount = L.getTop() - top;
+                        LuaValue[] returnValues = new LuaValue[returnCount];
+                        for (int i = 0; i < returnCount; i++) {
+                            returnValues[returnCount - i - 1] = L.get();
                         }
+                        return returnValues.length == 0 ? null : returnValues;
+                    } catch (LuaException e) {
+                        throw new ScriptException(e);
                     }
                 }
 
@@ -134,6 +124,8 @@ public final class LuaScriptEngine extends AbstractScriptEngine implements Scrip
                     return LuaScriptEngine.this;
                 }
             };
+        } catch (LuaException e) {
+            throw new ScriptException(e);
         }
     }
 

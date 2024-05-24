@@ -2,7 +2,7 @@ package party.iroiro.luajava.util;
 
 import com.badlogic.gdx.utils.SharedLibraryLoadRuntimeException;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
-import party.iroiro.luajava.LuaNative;
+import party.iroiro.luajava.LuaNatives;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,7 +32,7 @@ import java.io.InputStream;
  *             <li>{@code ./.temp/{crc}/{filename}}</li>
  *         </ul>
  *         </li>
- *         <li>Defautls to {@code {java.library.path}/{filename}}</li>
+ *         <li>Defaults to {@code {java.library.path}/{filename}}</li>
  *     </ul>
  *     </li>
  * </ul>
@@ -41,7 +41,7 @@ import java.io.InputStream;
  */
 public class GlobalLibraryLoader {
     private final static SharedLibraryLoader loader = new SharedLibraryLoader();
-    private static volatile Class<? extends LuaNative> loadedNatives = null;
+    private static volatile Class<? extends LuaNatives> loadedNatives = null;
     private static volatile int nativesLoaded = 0;
 
     private static InputStream readFile(String path) {
@@ -99,7 +99,7 @@ public class GlobalLibraryLoader {
      * @param natives the natives to be loaded
      * @param global  whether the natives are
      */
-    public synchronized static void register(Class<? extends LuaNative> natives, boolean global) {
+    public synchronized static void register(Class<? extends LuaNatives> natives, boolean global) {
         if (loadedNatives == null && nativesLoaded == 0) {
             loadedNatives = natives;
             nativesLoaded = global ? 0 : 1;

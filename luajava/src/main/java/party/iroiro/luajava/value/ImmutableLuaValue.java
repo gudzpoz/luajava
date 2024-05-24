@@ -38,8 +38,11 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
     }
 
     @Override
-    public void close() {
-        // nothing
+    public String toString() {
+        if (value == null) {
+            return "nil";
+        }
+        return value.toString();
     }
 
     @Override
@@ -50,7 +53,7 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
     public static LuaValue NIL(Lua L) {
         return new ImmutableLuaValue<Void>(L, Lua.LuaType.NIL, null) {
             @Override
-            public void push() {
+            public void push(Lua L) {
                 L.pushNil();
             }
         };
@@ -62,7 +65,7 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
         }
 
         @Override
-        public void push() {
+        public void push(Lua L) {
             L.push(value);
         }
     }
@@ -81,7 +84,7 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
         }
 
         @Override
-        public void push() {
+        public void push(Lua L) {
             L.push(value);
         }
     }
@@ -91,7 +94,8 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
             super(L, Lua.LuaType.NUMBER, value);
         }
 
-        public void push() {
+        @Override
+        public void push(Lua L) {
             L.push((long) value);
         }
 
@@ -107,8 +111,13 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
         }
 
         @Override
-        public void push() {
+        public void push(Lua L) {
             L.push(value);
+        }
+
+        @Override
+        public int length() {
+            return value.length();
         }
     }
 

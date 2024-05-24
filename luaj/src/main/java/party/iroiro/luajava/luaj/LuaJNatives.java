@@ -20,7 +20,7 @@ import static party.iroiro.luajava.luaj.JavaLib.checkOrError;
 import static party.iroiro.luajava.luaj.LuaJConsts.*;
 
 
-public class LuaJNatives extends LuaNative {
+public class LuaJNatives implements LuaNatives {
     final static LuaJInstances instances = new LuaJInstances();
 
     @Override
@@ -29,23 +29,23 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int getRegistryIndex() {
+    public int getRegistryIndex() {
         return LuaJConsts.LUA_REGISTRYINDEX;
     }
 
     @Override
-    protected int lua_checkstack(long ptr, int extra) {
+    public int lua_checkstack(long ptr, int extra) {
         // Pointless
         return 1;
     }
 
     @Override
-    protected void lua_close(long ptr) {
+    public void lua_close(long ptr) {
         instances.remove((int) ptr);
     }
 
     @Override
-    protected void lua_concat(long ptr, int n) {
+    public void lua_concat(long ptr, int n) {
         LuaJState L = instances.get((int) ptr);
         if (n < 0) {
             throw new IllegalArgumentException();
@@ -66,30 +66,30 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void lua_createtable(long ptr, int narr, int nrec) {
+    public void lua_createtable(long ptr, int narr, int nrec) {
         LuaJState L = instances.get((int) ptr);
         L.push(LuaValue.tableOf(narr, nrec));
     }
 
     @Override
-    protected int lua_error(long ptr) {
+    public int lua_error(long ptr) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected void luaJ_getfield(long ptr, int index, String k) {
+    public void luaJ_getfield(long ptr, int index, String k) {
         LuaJState L = instances.get((int) ptr);
         L.push(L.toLuaValue(index).get(k));
     }
 
     @Override
-    protected void luaJ_getglobal(long ptr, String name) {
+    public void luaJ_getglobal(long ptr, String name) {
         LuaJState L = instances.get((int) ptr);
         L.push(L.globals.get(name));
     }
 
     @Override
-    protected int lua_getmetatable(long ptr, int index) {
+    public int lua_getmetatable(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         LuaValue metatable = value.getmetatable();
@@ -101,7 +101,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void luaJ_gettable(long ptr, int index) {
+    public void luaJ_gettable(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         LuaValue key = L.toLuaValue(-1);
@@ -110,13 +110,13 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int lua_gettop(long ptr) {
+    public int lua_gettop(long ptr) {
         LuaJState L = instances.get((int) ptr);
         return L.getTop();
     }
 
     @Override
-    protected void lua_insert(long ptr, int index) {
+    public void lua_insert(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(-1);
         index = L.toAbsoluteIndex(index);
@@ -125,105 +125,105 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int lua_isboolean(long ptr, int index) {
+    public int lua_isboolean(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.isboolean() ? 1 : 0;
     }
 
     @Override
-    protected int lua_iscfunction(long ptr, int index) {
+    public int lua_iscfunction(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.isfunction() && !value.isclosure() ? 1 : 0;
     }
 
     @Override
-    protected int lua_isfunction(long ptr, int index) {
+    public int lua_isfunction(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.isfunction() ? 1 : 0;
     }
 
     @Override
-    protected int lua_islightuserdata(long ptr, int index) {
+    public int lua_islightuserdata(long ptr, int index) {
         return lua_type(ptr, index) == LUA_TLIGHTUSERDATA ? 1 : 0;
     }
 
     @Override
-    protected int lua_isnil(long ptr, int index) {
+    public int lua_isnil(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.isnil() ? 1 : 0;
     }
 
     @Override
-    protected int lua_isnone(long ptr, int index) {
+    public int lua_isnone(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value == LuaValue.NONE ? 1 : 0;
     }
 
     @Override
-    protected int lua_isnoneornil(long ptr, int index) {
+    public int lua_isnoneornil(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value == LuaValue.NONE || value.isnil() ? 1 : 0;
     }
 
     @Override
-    protected int lua_isnumber(long ptr, int index) {
+    public int lua_isnumber(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.isnumber() ? 1 : 0;
     }
 
     @Override
-    protected int luaJ_isinteger(long ptr, int index) {
+    public int luaJ_isinteger(long ptr, int index) {
         return 0;
     }
 
     @Override
-    protected int lua_isstring(long ptr, int index) {
+    public int lua_isstring(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.isstring() ? 1 : 0;
     }
 
     @Override
-    protected int lua_istable(long ptr, int index) {
+    public int lua_istable(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.istable() ? 1 : 0;
     }
 
     @Override
-    protected int lua_isthread(long ptr, int index) {
+    public int lua_isthread(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.isthread() ? 1 : 0;
     }
 
     @Override
-    protected int lua_isuserdata(long ptr, int index) {
+    public int lua_isuserdata(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.isuserdata() ? 1 : 0;
     }
 
-    protected void lua_newuserdata(long ptr, Object object) {
+    public void lua_newuserdata(long ptr, Object object) {
         LuaJState L = instances.get((int) ptr);
         L.push(LuaValue.userdataOf(object));
     }
 
     @Override
-    protected void lua_newtable(long ptr) {
+    public void lua_newtable(long ptr) {
         LuaJState L = instances.get((int) ptr);
         L.push(LuaValue.tableOf());
     }
 
     @Override
-    protected long lua_newthread(long ptr) {
+    public long lua_newthread(long ptr) {
         LuaJState L = instances.get((int) ptr);
         LuaThread thread = new LuaThread(L.globals, new FunctionInvoker());
         LuaInstances.Token<LuaJState> handle = instances.add();
@@ -277,7 +277,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int lua_next(long ptr, int index) {
+    public int lua_next(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue table = L.toLuaValue(index);
         LuaValue key = L.toLuaValue(-1);
@@ -292,7 +292,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int lua_pcall(long ptr, int nargs, int nresults, int errfunc) {
+    public int lua_pcall(long ptr, int nargs, int nresults, int errfunc) {
         LuaJState L = instances.get((int) ptr);
         LuaValue f = L.toLuaValue(-nargs - 1);
         LuaValue[] args = new LuaValue[nargs];
@@ -338,54 +338,49 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void luaJ_pcall(long ptr, int nargs, int nresults, int errfunc) {
-        lua_pcall(ptr, nargs, nresults, errfunc);
-    }
-
-    @Override
-    protected void lua_pop(long ptr, int n) {
+    public void lua_pop(long ptr, int n) {
         LuaJState L = instances.get((int) ptr);
         L.pop(n);
     }
 
     @Override
-    protected void lua_pushboolean(long ptr, int b) {
+    public void lua_pushboolean(long ptr, int b) {
         LuaJState L = instances.get((int) ptr);
         L.push(LuaValue.valueOf(b != 0));
     }
 
     @Override
-    protected void lua_pushinteger(long ptr, long n) {
+    public void lua_pushinteger(long ptr, long n) {
         LuaJState L = instances.get((int) ptr);
         L.push(LuaInteger.valueOf(n));
     }
 
     @Override
-    protected void lua_pushlightuserdata(long ptr, long p) {
+    public void lua_pushlightuserdata(long ptr, long p) {
         LuaJState L = instances.get((int) ptr);
         L.push(new LightUserdata(p));
     }
 
     @Override
-    protected void lua_pushnil(long ptr) {
+    public void lua_pushnil(long ptr) {
         LuaJState L = instances.get((int) ptr);
         L.push(LuaValue.NIL);
     }
 
     @Override
-    protected void lua_pushnumber(long ptr, double n) {
+    public void lua_pushnumber(long ptr, double n) {
         LuaJState L = instances.get((int) ptr);
         L.push(LuaValue.valueOf(n));
     }
 
     @Override
-    protected void luaJ_pushstring(long ptr, String s) {
+    public void luaJ_pushstring(long ptr, String s) {
         LuaJState L = instances.get((int) ptr);
         L.push(LuaValue.valueOf(s));
     }
 
     @Override
-    protected int lua_pushthread(long ptr) {
+    public int lua_pushthread(long ptr) {
         LuaJState L = instances.get((int) ptr);
         if (L.thread != null) {
             L.push(L.thread);
@@ -397,14 +392,14 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void lua_pushvalue(long ptr, int index) {
+    public void lua_pushvalue(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         L.push(value);
     }
 
     @Override
-    protected int lua_rawequal(long ptr, int index1, int index2) {
+    public int lua_rawequal(long ptr, int index1, int index2) {
         LuaJState L = instances.get((int) ptr);
         LuaValue v1 = L.toLuaValue(index1);
         LuaValue v2 = L.toLuaValue(index2);
@@ -412,7 +407,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void luaJ_rawget(long ptr, int index) {
+    public void luaJ_rawget(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         LuaValue key = L.toLuaValue(-1);
@@ -421,14 +416,14 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void luaJ_rawgeti(long ptr, int index, int n) {
+    public void luaJ_rawgeti(long ptr, int index, int n) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         L.push(value.rawget(n));
     }
 
     @Override
-    protected void lua_rawset(long ptr, int index) {
+    public void lua_rawset(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue table = L.toLuaValue(index);
         LuaValue key = L.toLuaValue(-2);
@@ -438,7 +433,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void lua_rawseti(long ptr, int index, int n) {
+    public void lua_rawseti(long ptr, int index, int n) {
         LuaJState L = instances.get((int) ptr);
         LuaValue table = L.toLuaValue(index);
         LuaValue value = L.toLuaValue(-1);
@@ -447,13 +442,13 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void lua_remove(long ptr, int index) {
+    public void lua_remove(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         L.remove(index);
     }
 
     @Override
-    protected void lua_replace(long ptr, int index) {
+    public void lua_replace(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(-1);
         index = L.toAbsoluteIndex(index);
@@ -462,7 +457,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void lua_setfield(long ptr, int index, String k) {
+    public void lua_setfield(long ptr, int index, String k) {
         LuaJState L = instances.get((int) ptr);
         LuaValue table = L.toLuaValue(index);
         LuaValue value = L.toLuaValue(-1);
@@ -471,7 +466,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void lua_setglobal(long ptr, String name) {
+    public void lua_setglobal(long ptr, String name) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(-1);
         L.pop(1);
@@ -479,7 +474,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void luaJ_setmetatable(long ptr, int index) {
+    public void luaJ_setmetatable(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         LuaValue meta = L.toLuaValue(-1);
@@ -488,7 +483,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void lua_settable(long ptr, int index) {
+    public void lua_settable(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue table = L.toLuaValue(index);
         LuaValue key = L.toLuaValue(-2);
@@ -498,13 +493,13 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void lua_settop(long ptr, int index) {
+    public void lua_settop(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         L.setTop(index);
     }
 
     @Override
-    protected int lua_status(long ptr) {
+    public int lua_status(long ptr) {
         LuaJState L = instances.get((int) ptr);
         if (L.thread == null) {
             return 0;
@@ -516,50 +511,50 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int lua_toboolean(long ptr, int index) {
+    public int lua_toboolean(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.toboolean() ? 1 : 0;
     }
 
     @Override
-    protected long lua_tointeger(long ptr, int index) {
+    public long lua_tointeger(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.tolong();
     }
 
     @Override
-    protected double lua_tonumber(long ptr, int index) {
+    public double lua_tonumber(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.todouble();
     }
 
     @Override
-    protected long lua_topointer(long ptr, int index) {
+    public long lua_topointer(long ptr, int index) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected String lua_tostring(long ptr, int index) {
+    public String lua_tostring(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.tojstring();
     }
 
     @Override
-    protected long lua_tothread(long ptr, int index) {
+    public long lua_tothread(long ptr, int index) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected long lua_touserdata(long ptr, int index) {
+    public long lua_touserdata(long ptr, int index) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected int lua_type(long ptr, int index) {
+    public int lua_type(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         // LuaJ: NONE.type() == NIL.type()... What.
@@ -567,14 +562,14 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected String lua_typename(long ptr, int index) {
+    public String lua_typename(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.typename();
     }
 
     @Override
-    protected void lua_xmove(long from, long to, int n) {
+    public void lua_xmove(long from, long to, int n) {
         LuaJState L = instances.get((int) from);
         LuaJState J = instances.get((int) to);
         for (int i = 0; i < n; i++) {
@@ -584,22 +579,22 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int lua_yield(long ptr, int nresults) {
+    public int lua_yield(long ptr, int nresults) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected int lua_gethookcount(long ptr) {
+    public int lua_gethookcount(long ptr) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected int lua_gethookmask(long ptr) {
+    public int lua_gethookmask(long ptr) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected String lua_getupvalue(long ptr, int funcindex, int n) {
+    public String lua_getupvalue(long ptr, int funcindex, int n) {
         LuaJState L = instances.get((int) ptr);
         LuaClosure value = (LuaClosure) L.toLuaValue(funcindex);
         L.push(value.upValues[n].getValue());
@@ -607,7 +602,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected String lua_setupvalue(long ptr, int funcindex, int n) {
+    public String lua_setupvalue(long ptr, int funcindex, int n) {
         LuaJState L = instances.get((int) ptr);
         LuaClosure up = (LuaClosure) L.toLuaValue(funcindex);
         LuaValue value = L.toLuaValue(-1);
@@ -617,10 +612,13 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int luaL_callmeta(long ptr, int obj, String e) {
+    public int luaL_callmeta(long ptr, int obj, String e) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(obj);
         LuaValue metatable = value.getmetatable();
+        if (metatable == null) {
+            return 0;
+        }
         LuaValue meta = metatable.get(e);
         if (!meta.isfunction()) {
             return 0;
@@ -630,7 +628,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int luaL_dostring(long ptr, String str) {
+    public int luaL_dostring(long ptr, String str) {
         LuaJState L = instances.get((int) ptr);
         try {
             L.push(L.globals.load(str));
@@ -642,7 +640,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int luaL_getmetafield(long ptr, int obj, String e) {
+    public int luaL_getmetafield(long ptr, int obj, String e) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(obj);
         LuaValue metatable = value.getmetatable();
@@ -659,21 +657,13 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void luaJ_getmetatable(long ptr, String tname) {
+    public void luaJ_getmetatable(long ptr, String tname) {
         LuaJState L = instances.get((int) ptr);
         L.push(L.getRegistry(tname));
     }
 
     @Override
-    protected String luaL_gsub(long ptr, String s, String p, String r) {
-        LuaJState L = instances.get((int) ptr);
-        String result = s.replaceAll(p, r);
-        L.push(LuaValue.valueOf(result));
-        return result;
-    }
-
-    @Override
-    protected int luaL_loadstring(long ptr, String s) {
+    public int luaL_loadstring(long ptr, String s) {
         LuaJState L = instances.get((int) ptr);
         try {
             L.push(L.globals.load(s));
@@ -685,7 +675,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int luaL_newmetatable(long ptr, String tname) {
+    public int luaL_newmetatable(long ptr, String tname) {
         LuaJState L = instances.get((int) ptr);
         if (L.getRegistry(tname).isnil()) {
             LuaTable value = LuaValue.tableOf();
@@ -698,12 +688,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void luaJ_newmetatable(long ptr, String tname) {
-        luaL_newmetatable(ptr, tname);
-    }
-
-    @Override
-    protected long luaL_newstate(int lid) {
+    public long luaL_newstate(int lid) {
         LuaInstances.Token<LuaJState> handle = instances.add();
         Globals globals = new Globals();
         globals.load(new BaseLib());
@@ -716,7 +701,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void luaL_openlibs(long ptr) {
+    public void luaL_openlibs(long ptr) {
         LuaJState L = instances.get((int) ptr);
         L.globals.load(new PackageLib());
 
@@ -730,7 +715,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int luaL_ref(long ptr, int t) {
+    public int luaL_ref(long ptr, int t) {
         LuaJState L = instances.get((int) ptr);
         LuaValue referee = L.toLuaValue(-1);
         if (referee.isnil()) {
@@ -747,25 +732,25 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected String luaL_typename(long ptr, int index) {
+    public String luaL_typename(long ptr, int index) {
         return lua_typename(ptr, index);
     }
 
     @Override
-    protected void luaL_unref(long ptr, int t, int ref) {
+    public void luaL_unref(long ptr, int t, int ref) {
         LuaJState L = instances.get((int) ptr);
         LuaTable value = (LuaTable) L.toLuaValue(t);
         value.rawset(ref, LuaValue.NIL);
     }
 
     @Override
-    protected void luaL_where(long ptr, int lvl) {
+    public void luaL_where(long ptr, int lvl) {
         LuaJState L = instances.get((int) ptr);
         L.push(LuaValue.valueOf(""));
     }
 
     @Override
-    protected void luaJ_openlib(long ptr, String lib) {
+    public void luaJ_openlib(long ptr, String lib) {
         LuaJState L = instances.get((int) ptr);
         switch (lib) {
             case "":
@@ -799,7 +784,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int luaJ_compare(long ptr, int index1, int index2, int op) {
+    public int luaJ_compare(long ptr, int index1, int index2, int op) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value1 = L.toLuaValue(index1);
         LuaValue value2 = L.toLuaValue(index2);
@@ -815,14 +800,14 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int luaJ_len(long ptr, int index) {
+    public int luaJ_len(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return value.length();
     }
 
     @Override
-    protected int luaJ_loadbuffer(long ptr, Buffer buffer, int size, String name) {
+    public int luaJ_loadbuffer(long ptr, Buffer buffer, int size, String name) {
         LuaJState L = instances.get((int) ptr);
         ByteBuffer bytes = (ByteBuffer) buffer;
         try {
@@ -842,29 +827,28 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int luaJ_dobuffer(long ptr, Buffer buffer, int size, String name) {
+    public int luaJ_dobuffer(long ptr, Buffer buffer, int size, String name) {
         luaJ_loadbuffer(ptr, buffer, size, name);
         return lua_pcall(ptr, 0, LUA_MULTRET, 0);
     }
 
     @Override
-    protected int luaJ_pcall(long ptr, int nargs, int nresults) {
-        return lua_pcall(ptr, nargs, nresults, 0);
-    }
-
-    @Override
-    protected int luaJ_resume(long ptr, int nargs) {
+    public int luaJ_resume(long ptr, int nargs) {
         LuaJState L = instances.get((int) ptr);
+        if (L.thread == null) {
+            throw new LuaException(LuaException.LuaError.RUNTIME,
+                    "resuming the main thread is not supported with luaj");
+        }
         LuaValue[] args = new LuaValue[nargs];
         for (int i = 0; i < nargs; i++) {
             args[i] = L.toLuaValue(-nargs + i);
         }
-        LuaValue func = L.toLuaValue(-nargs - 1);
         L.pop(nargs);
         if (L.thread.state.status == LuaThread.STATUS_DEAD) {
             L.thread.state.status = LuaThread.STATUS_INITIAL;
         }
         if (L.thread.state.status == LuaThread.STATUS_INITIAL) {
+            LuaValue func = L.toLuaValue(-nargs - 1);
             FunctionInvoker.setFunction(L, func);
             L.pop(1);
         }
@@ -876,25 +860,25 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected void luaJ_pushobject(long ptr, Object obj) {
+    public void luaJ_pushobject(long ptr, Object obj) {
         LuaJState L = instances.get((int) ptr);
         L.push(new JavaObject(obj, L.jObjectMetatable, L.address));
     }
 
     @Override
-    protected void luaJ_pushclass(long ptr, Object clazz) {
+    public void luaJ_pushclass(long ptr, Object clazz) {
         LuaJState L = instances.get((int) ptr);
         L.push(new JavaClass((Class<?>) clazz, L.jClassMetatable, L.address));
     }
 
     @Override
-    protected void luaJ_pusharray(long ptr, Object array) {
+    public void luaJ_pusharray(long ptr, Object array) {
         LuaJState L = instances.get((int) ptr);
         L.push(new JavaArray(array, L.jArrayMetatable, L.address));
     }
 
     @Override
-    protected void luaJ_pushfunction(long ptr, Object func) {
+    public void luaJ_pushfunction(long ptr, Object func) {
         LuaJState L = instances.get((int) ptr);
         JFunction f = (JFunction) func;
         L.push(new VarArgFunction() {
@@ -909,14 +893,14 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int luaJ_isobject(long ptr, int index) {
+    public int luaJ_isobject(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         return (value instanceof JavaObject) ? 1 : 0;
     }
 
     @Override
-    protected Object luaJ_toobject(long ptr, int index) {
+    public Object luaJ_toobject(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         if (value instanceof JavaObject) {
@@ -926,12 +910,12 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected long luaJ_newthread(long ptr, int lid) {
+    public long luaJ_newthread(long ptr, int lid) {
         return lua_newthread(ptr);
     }
 
     @Override
-    protected int luaJ_initloader(long ptr) {
+    public int luaJ_initloader(long ptr) {
         LuaJState L = instances.get((int) ptr);
         LuaValue table = L.globals.get("package");
         if (!table.istable()) {
@@ -959,23 +943,23 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected int luaJ_invokespecial(long ptr, @SuppressWarnings("rawtypes") Class clazz, String method, String sig, Object obj, String params) {
+    public int luaJ_invokespecial(long ptr, @SuppressWarnings("rawtypes") Class clazz, String method, String sig, Object obj, String params) {
         throw new UnsupportedOperationException("invokespecial not available without JNI");
     }
 
     @Override
-    protected void luaJ_removestateindex(long ptr) {
+    public void luaJ_removestateindex(long ptr) {
         // ignored
     }
 
     @Override
 
-    protected void luaJ_gc(long ptr) {
+    public void luaJ_gc(long ptr) {
         Runtime.getRuntime().gc();
     }
 
     @Override
-    protected Object luaJ_dumptobuffer(long ptr) {
+    public Object luaJ_dumptobuffer(long ptr) {
         LuaJState L = instances.get((int) ptr);
         LuaValue func = L.toLuaValue(-1);
         if (!func.isclosure()) {
@@ -996,7 +980,7 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected Object luaJ_tobuffer(long ptr, int index) {
+    public Object luaJ_tobuffer(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
         if (!value.isstring()) {
@@ -1010,15 +994,23 @@ public class LuaJNatives extends LuaNative {
     }
 
     @Override
-    protected Object luaJ_todirectbuffer(long ptr, int index) {
+    public Object luaJ_todirectbuffer(long ptr, int index) {
         return luaJ_tobuffer(ptr, index);
     }
 
-    private static class FunctionInvoker extends VarArgFunction {
+    public static class FunctionInvoker extends VarArgFunction {
+        public final static ThreadLocal<Boolean> insideCoroutine = new ThreadLocal<>();
+
+        public static boolean isInsideCoroutine() {
+            Boolean b = insideCoroutine.get();
+            return b != null && b;
+        }
+
         LuaValue function;
 
         @Override
         public Varargs invoke(Varargs args) {
+            insideCoroutine.set(true);
             return function.invoke(args);
         }
 

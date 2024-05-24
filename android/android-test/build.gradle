@@ -24,11 +24,10 @@ lint.enabled = false
 android {
     namespace = project(':').group
 
-    compileSdkVersion 30
-
     defaultConfig {
         minSdk 21
-        targetSdk 21
+        targetSdk 34
+        compileSdk 33
         versionCode 1
         versionName '3.1'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -55,20 +54,22 @@ android {
     }
 
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
-    androidTestImplementation project(':luajava')
-    androidTestImplementation project(':lua51')
-    androidTestImplementation project(':lua52')
-    androidTestImplementation project(':lua53')
-    androidTestImplementation project(':lua54')
-    androidTestImplementation project(':luajit')
-    androidTestImplementation project(':luaj')
-    androidTestImplementation project(':example:suite')
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+    implementation project(':luajava')
+    implementation project(':lua51')
+    implementation project(':lua52')
+    implementation project(':lua53')
+    implementation project(':lua54')
+    implementation project(':luajit')
+    implementation project(':luaj')
+    implementation project(':example:suite')
     androidTestImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:core:1.5.0'
     androidTestImplementation 'androidx.test:rules:1.5.0'

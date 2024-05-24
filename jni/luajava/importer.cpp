@@ -69,7 +69,7 @@ int jpackageImport(lua_State * L) {
     // Stack pos: 6: current .. name
     lua_pushvalue(L, 4);
     // Stack pos: 5? v = pcall(rawget(meta, '__import'), current .. name)
-    found = (luaJ_pcall(L, 1, 1) == 0);
+    found = (lua_pcall(L, 1, 1, 0) == 0);
   }
 
   /*
@@ -110,4 +110,3 @@ int jpackageImport(lua_State * L) {
   // Stack pos: -1: v
   return 1;
 }
-

@@ -13,24 +13,18 @@ If you want to get the backing Lua table, use [`java.unwrap`](./api.md#unwrap-jo
 
 :::: code-group
 ::: code-group-item Java API
-```java
-Lua L = new Lua54();
-L.run("return { run = function() print('Hello') end }");
-Runnable r = (Runnable) L.createProxy(new Class[] {Runnable.class}, Lua.Conversion.SEMI);
-```
+
+<!-- @code:runnableTest -->
+@[code{10-21} java](../example/src/test/java/party/iroiro/luajava/docs/ProxyExampleTest.java)
+
 :::
 ::::
 
 :::: code-group
 ::: code-group-item Lua API
-```lua
-r = java.proxy('java.lang.Runnable', {
-  run = function(this)
-    assert(type(java.unwrap(this)) == table)
-    print('Hello')
-  end
-})
-```
+
+@[code lua](../example/src/test/resources/docs/proxyExampleTest.lua)
+
 :::
 ::::
 
@@ -60,24 +54,7 @@ Just don't execute unknown Lua code at all.
 :::
 
 ::: details A Lua snippet to try things out
-```lua
-iterImpl = {
-  next = function()
-    i = i - 1
-    return i
-  end,
-  hasNext = function()
-    return i > 0
-  end
-}
-
-iter = java.proxy('java.util.Iterator', iterImpl)
-
--- The default `remove` throws an UnsupportedOperationException
-iter:remove()
--- Or explicitly calling `remove`
-java.method(iter, 'java.util.Iterator:remove')()
-```
+@[code lua](../example/src/test/resources/docs/apiMethodExample3.lua)
 :::
 
 ### And Android...
@@ -99,7 +76,7 @@ I am not going to detail on this. In short, if you have `minSdkVersion` lower th
 your interfaces with default methods will get transformed into a normal interface
 *and* an abstract class containing the implementation:
 
-```java
+```java ignored
 // Written code:
 interface DefaultedInterface { default int answer() { return 42; } }
 // Transformed:

@@ -34,6 +34,18 @@ assertThrows('bad argument', java.import, {})
 assertThrows('java.lang.ClassNotFoundException: 100',
              java.import, 100)
 
+-- Other tests
+System = java.import('java.lang.System')
+Thread = java.import('java.lang.Thread')
+Class = java.import('java.lang.Class')
+Short = java.import('java.lang.Short')
+-- Static method
+assert(1024 == Short:valueOf(1024))
+assertThrows('bad argument #1', Short.valueOf, 1024)
+-- Static field
+assert(type(System.out) == 'userdata')
+assert(type(System.out:getClass()) == 'userdata')
+
 --[[
   java.new
   ]]--

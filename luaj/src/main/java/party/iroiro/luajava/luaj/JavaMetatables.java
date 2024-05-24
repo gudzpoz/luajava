@@ -105,7 +105,7 @@ public abstract class JavaMetatables {
                 LuaValue value = J.toLuaValue(-1);
                 J.pop(1);
                 return value;
-            } else if (result == 2) {
+            } else /* if (result == 2) */ {
                 return new VarArgFunction() {
                     @Override
                     public Varargs invoke(Varargs args) {
@@ -122,7 +122,6 @@ public abstract class JavaMetatables {
                     }
                 };
             }
-            return LuaValue.NIL;
         }
     }
 
