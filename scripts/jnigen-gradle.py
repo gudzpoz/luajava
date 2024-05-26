@@ -99,8 +99,13 @@ jnigen {{
         ]
     }}
 
-    add(IOS) {{
+    robovm {{
+        forceLinkClasses "java.lang.Class", "java.lang.Throwable", "party.iroiro.luajava.JuaAPI"
+    }}
+    add(IOS, x64) {{
         libraries = ''
+        xcframeworkBundleIdentifier = "party.iroiro.luajava.{lua_version}"
+        minIOSVersion = "11.0"
     }}
 }}
 

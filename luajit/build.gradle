@@ -177,10 +177,16 @@ jnigen {
     add(MacOsX, x64, ARM, {
         linkerConfig(it, 'macosxaarch')
     })
-//    // Until jnigen allows 64-bit-only iOS builds
-//    add(IOS, x64) {
-//        linkerConfig(it, 'iosa')
-//    }
+
+    robovm {
+        forceLinkClasses "java.lang.Class", "java.lang.Throwable", "party.iroiro.luajava.JuaAPI"
+    }
+    add(IOS, x64) {
+        linkerConfig(it, 'iosa')
+        xcframeworkBundleIdentifier = "party.iroiro.luajava.luajit"
+        minIOSVersion = "11.0"
+    }
+
     add(Android) {
         cFlags += ' -D_FORTIFY_SOURCE=1 '
         cppFlags += ' -D_FORTIFY_SOURCE=1 '
@@ -217,7 +223,8 @@ tasks.jnigenBuildWindows.dependsOn(tasks.buildLuaWin32)
 tasks.jnigenBuildWindows64.dependsOn(tasks.buildLuaWin64)
 tasks.jnigenBuildMacOsX64.dependsOn(tasks.buildLuaMacOsXMerge)
 tasks.jnigenBuildAndroid.dependsOn(tasks.buildLuaAndroid)
-// tasks.jnigenBuildIOS.dependsOn(tasks.buildLuaIOS)
+tasks.jnigenBuildIOS64.dependsOn(tasks.buildLuaIOS)
+tasks.buildLuaIOS.dependsOn(tasks.jnigen)
 
 void addPatchElfTask(String platform) {
     String target = "patchElf${platform}"
