@@ -762,15 +762,11 @@ public interface Lua extends AutoCloseable {
     /**
      * Creates a new empty table and pushes it onto the stack
      * 
-     * Does the equivalent to createTable(0, 0)
-     * 
      * <p>
-     * The new table but without pre-allocation.
+     * It is equivalent to {@link #createTable(int, int) createTable(0, 0)}.
      * </p>
      */
-    default void newTable() {
-        createTable(0, 0);
-    }
+    void newTable();
 
     /**
      * Pushes onto the stack the value t[key]

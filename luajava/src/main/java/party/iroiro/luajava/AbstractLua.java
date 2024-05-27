@@ -653,6 +653,11 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
+    public void newTable() {
+        createTable(0, 0);
+    }
+
+    @Override
     public void createTable(int nArr, int nRec) {
         checkStack(1);
         C.lua_createtable(L, nArr, nArr);
