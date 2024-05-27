@@ -2,7 +2,7 @@
 
 We build a tiny console application with [JLine3](https://github.com/jline/jline3) every release. You may download the `example-all.jar` from our [Release page](https://github.com/gudzpoz/luajava/releases). Or you can get the lastest snapshot from [our workflow artifacts](https://github.com/gudzpoz/luajava/actions/workflows/build-natives.yml): choose the lastest build and find the `example` artifact.
 
-The jar bundles desktop natives with it, so you should be about to play around with it on your own computer.
+The jar bundles desktop natives with it, so you should be able to play around with it on your own computer.
 
 <ClientOnly><Asciinema :file="$withBase('/example.cast')" /></ClientOnly>
 
@@ -12,7 +12,7 @@ The jar bundles desktop natives with it, so you should be about to play around w
 
 We bundle several examples with the console JAR, which you may obtain using `require`.
 
-1. `require('luajava.ansiThreadedHelloWorld.lua')`: A simple Hello World with Java threads and Ansi printing.
+1. `require('luajava.ansiThreadedHelloWorld')`: A simple Hello World with Java threads and Ansi printing.
 2. `require('luajava.awtTest')()`: Sets up an AWT frame to execute Lua commands.
 3. `require('luajava.simpleLuaFile')`: Executes a simple Lua file.
 4. `require('luajava.swingTest')()`: Sets up a Swing frame to execute Lua commands.

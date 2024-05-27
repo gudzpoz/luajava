@@ -43,11 +43,11 @@ to get things work.
 
 <Matrix/>
 
-## iOS
+### iOS
 
 (Work in progress.)
 
-## Android
+### Android
 
 You can choose between the following two configurations. The former one uses a pre-bundled AAR archive while the latter
 might give a little more flexibility.
@@ -56,7 +56,7 @@ For LuaJ bindings, you don't need a binary artifact.
 However, the LuaJ library uses some Java 8 API unsupported by older Android API levels,
 and you might need to configure [Android Java 8+ API Desugaring](https://developer.android.com/studio/write/java8-support#library-desugaring) in your application.
 
-### Using bundled AAR files
+#### Using bundled AAR files
 
 The AAR archive bundles native binaries for `armeabi-v7a` `arm64-v8a` `x86` and `x86_64`.
 
@@ -74,7 +74,7 @@ dependencies {
 }
 ```
 
-### Using a really lengthy configuration
+#### Using a really lengthy configuration
 
 ```groovy
 android {
@@ -140,3 +140,8 @@ tasks.whenTaskAdded { packageTask ->
     }
 }
 ```
+
+## Using It
+
+After setting up the dependencies or downloading the [an interactive console](./console.md),
+check out the [Lua-side `java` API](./api.md) and the [Java-side API](./java.md) to start coding!

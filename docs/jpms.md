@@ -3,7 +3,7 @@
 The [Java Platform Module System](https://en.wikipedia.org/wiki/Java_Platform_Module_System)
 is a built-in way to express relationships between Java _modules_, starting from Java 9.
 
-To use LuaJava in your Java module, simply place the follow `requires` statements in your `module-info.java`:
+To use LuaJava in your Java module, simply place the following `requires` statements in your `module-info.java`:
 
 ```java ignored
 module my.java.module {
