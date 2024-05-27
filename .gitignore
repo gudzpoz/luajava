@@ -75,6 +75,7 @@ luajit/.tags
 **/jni/*.cpp
 **/jni/*.h
 **/jni/*.c
+**/jni/*.plist
 **/libs/*.xml
 **/libs/*.jar
 **/libs/**/*.dylib

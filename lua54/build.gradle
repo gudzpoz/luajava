@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.badlogicgames.gdx:gdx-jnigen-gradle:2.3.1'
+        classpath 'com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.1'
     }
 }
 
@@ -43,7 +43,7 @@ jnigen {
     sharedLibName = 'lua54'
 
     all {
-        headerDirs = ['../../jni/luajava', 'lua54', 'mod']
+        headerDirs = ['../../jni/luajava', 'mod', 'lua54']
         cppExcludes = ['lua54/**/*']
         cExcludes = ['lua54/**/*']
         libraries = ' -lm '
@@ -51,34 +51,27 @@ jnigen {
 
     add(Windows, x32)
     add(Windows, x64)
-    String linuxFlags = ' -D_FORTIFY_SOURCE=0 -DLUA_USE_DLOPEN '
-    add(Linux, x32) {
+    // add(Windows, x64, ARM) // TODO: Add to CI after GCC adds aarch64-w64-mingw32 target
+
+    add(Linux, x32)
+    add(Linux, x64)
+    add(Linux, x32, ARM)
+    add(Linux, x64, ARM)
+    each({ it.os == Linux }) {
+        String linuxFlags = ' -D_FORTIFY_SOURCE=0 -DLUA_USE_DLOPEN '
         cFlags += linuxFlags
         cppFlags += linuxFlags
     }
-    add(Linux, x64) {
-        cFlags += linuxFlags
-        cppFlags += linuxFlags
-    }
-    add(Linux, x32, ARM) {
-        cFlags += linuxFlags
-        cppFlags += linuxFlags
-    }
-    add(Linux, x64, ARM) {
-        cFlags += linuxFlags
-        cppFlags += linuxFlags
-    }
-    String macFlags = ' -DLUA_USE_DLOPEN '
-    add(MacOsX, x64) {
+
+    add(MacOsX, x64)
+    add(MacOsX, x64, ARM)
+    each({ it.os == MacOsX }) {
+        String macFlags = ' -DLUA_USE_DLOPEN '
         libraries = ''
         cFlags += macFlags
         cppFlags += macFlags
     }
-    add(MacOsX, x64, ARM) {
-        libraries = ''
-        cFlags += macFlags
-        cppFlags += macFlags
-    }
+
     add(Android) {
         String androidFlags = ' -D_FORTIFY_SOURCE=1 -DLUA_USE_DLOPEN '
         cFlags += androidFlags
@@ -88,8 +81,14 @@ jnigen {
                 "APP_CFLAG :=$androidFlags",
         ]
     }
-    add(IOS) {
+
+    robovm {
+        forceLinkClasses "java.lang.Class", "java.lang.Throwable", "party.iroiro.luajava.JuaAPI"
+    }
+    add(IOS, x64) {
         libraries = ''
+        xcframeworkBundleIdentifier = "party.iroiro.luajava.lua54"
+        minIOSVersion = "11.0"
     }
 }
 
@@ -105,4 +104,3 @@ tasks.named('jar') {
 }
 
 tasks.jnigen.dependsOn(tasks.build)
-

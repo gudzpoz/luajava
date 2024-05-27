@@ -1,4 +1,5 @@
 import com.badlogic.gdx.jnigen.BuildTarget
+import com.badlogic.gdx.utils.Os
 
 buildscript {
     repositories {
@@ -6,7 +7,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.badlogicgames.gdx:gdx-jnigen-gradle:2.3.1'
+        classpath 'com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.1'
     }
 }
 
@@ -132,7 +133,7 @@ buildLuaTargets(
 void linkerConfig(BuildTarget it, String platformFolder) {
     // TODO: decide whether to shell-string-escape-and-then-xml-entity-escape $projectDir
     it.linkerFlags += " -L&quot;$projectDir/jni/luajit/lib/${platformFolder}&quot; "
-    if (it.os == BuildTarget.TargetOs.Linux) {
+    if (it.os == Os.Linux) {
         it.cFlags += ' -D_FORTIFY_SOURCE=0 '
         it.cppFlags += ' -D_FORTIFY_SOURCE=0 '
     }
@@ -149,17 +150,12 @@ jnigen {
         libraries += ' -lm  -lluajit '
         headerDirs = ['../../jni/luajava', 'luajit/src', 'mod']
     }
-    add(Linux, x64, false, {
+
+    add(Linux, x64, x86, {
         linkerConfig(it, 'linux64')
     })
-    add(Linux, x32, false, {
+    add(Linux, x32, x86, {
         linkerConfig(it, 'linux32')
-    })
-    add(Windows, x32, false, {
-        linkerConfig(it, 'win32')
-    })
-    add(Windows, x64, false, {
-        linkerConfig(it, 'win64')
     })
     add(Linux, x32, ARM, {
         linkerConfig(it, 'arm')
@@ -167,16 +163,31 @@ jnigen {
     add(Linux, x64, ARM, {
         linkerConfig(it, 'aarch')
     })
-    add(MacOsX, x64, false, {
+
+    add(Windows, x32, x86, {
+        linkerConfig(it, 'win32')
+    })
+    add(Windows, x64, x86, {
+        linkerConfig(it, 'win64')
+    })
+    // add(Windows, x64, ARM)
+
+    add(MacOsX, x64, x86, {
         linkerConfig(it, 'macosxa')
     })
     add(MacOsX, x64, ARM, {
         linkerConfig(it, 'macosxaarch')
     })
-//    // Until jnigen allows 64-bit-only iOS builds
-//    add(IOS, x64) {
-//        linkerConfig(it, 'iosa')
-//    }
+
+    robovm {
+        forceLinkClasses "java.lang.Class", "java.lang.Throwable", "party.iroiro.luajava.JuaAPI"
+    }
+    add(IOS, x64) {
+        linkerConfig(it, 'iosa')
+        xcframeworkBundleIdentifier = "party.iroiro.luajava.luajit"
+        minIOSVersion = "11.0"
+    }
+
     add(Android) {
         cFlags += ' -D_FORTIFY_SOURCE=1 '
         cppFlags += ' -D_FORTIFY_SOURCE=1 '
@@ -213,7 +224,8 @@ tasks.jnigenBuildWindows.dependsOn(tasks.buildLuaWin32)
 tasks.jnigenBuildWindows64.dependsOn(tasks.buildLuaWin64)
 tasks.jnigenBuildMacOsX64.dependsOn(tasks.buildLuaMacOsXMerge)
 tasks.jnigenBuildAndroid.dependsOn(tasks.buildLuaAndroid)
-// tasks.jnigenBuildIOS.dependsOn(tasks.buildLuaIOS)
+tasks.jnigenBuildIOS64.dependsOn(tasks.buildLuaIOS)
+tasks.buildLuaIOS.dependsOn(tasks.jnigen)
 
 void addPatchElfTask(String platform) {
     String target = "patchElf${platform}"
@@ -278,4 +290,3 @@ tasks.named('jar') {
 }
 
 tasks.jnigen.dependsOn(tasks.build)
-
