@@ -51,7 +51,7 @@ jnigen {
 
     add(Windows, x32)
     add(Windows, x64)
-    add(Windows, x64, ARM) // TODO: Add to CI after GCC adds aarch64-w64-mingw32 target
+    // add(Windows, x64, ARM) // TODO: Add to CI after GCC adds aarch64-w64-mingw32 target
 
     add(Linux, x32)
     add(Linux, x64)

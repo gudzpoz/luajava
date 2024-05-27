@@ -170,6 +170,7 @@ jnigen {
     add(Windows, x64, x86, {
         linkerConfig(it, 'win64')
     })
+    // add(Windows, x64, ARM)
 
     add(MacOsX, x64, x86, {
         linkerConfig(it, 'macosxa')
