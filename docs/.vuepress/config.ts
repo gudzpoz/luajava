@@ -1,6 +1,10 @@
-import { defineUserConfig, defaultTheme } from 'vuepress'
-const { registerComponentsPlugin } = require('@vuepress/plugin-register-components')
-const { path } = require('@vuepress/utils')
+import { defineUserConfig } from 'vuepress'
+import { viteBundler } from '@vuepress/bundler-vite'
+import { defaultTheme } from '@vuepress/theme-default'
+import { registerComponentsPlugin } from '@vuepress/plugin-register-components'
+import { path } from '@vuepress/utils'
+
+import markdownItFootnote from 'markdown-it-footnote'
 
 export default defineUserConfig({
   lang: 'en-US',
@@ -8,6 +12,7 @@ export default defineUserConfig({
   description: 'Lua for Java',
   base: '/luajava/',
   head: [['link', { rel: 'icon', href: '/luajava/favicon.png' }]],
+  bundler: viteBundler(),
   theme: defaultTheme({
     logo: '/lua-java.svg',
     repo: 'https://github.com/gudzpoz/luajava',
@@ -45,9 +50,15 @@ export default defineUserConfig({
         ]
       },
       {
+        text: 'Java API',
+        children: [
+          '/java.md',
+          '/c-api.md',
+        ],
+      },
+      {
         text: 'Examples',
         children: [
-          '/examples/java.md',
           '/examples/compat.md',
           '/examples/hello-world.md',
           '/examples/hello-world-mod.md',
@@ -71,7 +82,7 @@ export default defineUserConfig({
     },
   },
   extendsMarkdown (md) {
-    md.use(require('markdown-it-footnote'))
+    md.use(markdownItFootnote)
   },
   plugins: [
     registerComponentsPlugin({

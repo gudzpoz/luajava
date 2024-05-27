@@ -90,13 +90,13 @@ Optionally, you may include `party.iroiro.luajava:jsr223` to provide JSR 223 fun
 ### Examples
 
 Here is a simple example on how to correctly initialize new Lua instance.
-This example will push `message` variable to Lua with value `Hello World from Lua`, then prints it using the Java `println`.
+This example will push `message` variable to Lua with value `Hello World from Lua`,
+and then print it using the Java `println`.
 
 ```java
 public static void main(String[] args) {
     try (Lua L = new Lua51()) {
-        L.push("Hello World from LuaJava");
-        L.setGlobal("message");
+        L.set("message", "Hello World from LuaJava");
         L.run("java.import('java.lang.System').out:println(message)");
     }
 }

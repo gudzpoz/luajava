@@ -50,7 +50,7 @@ This library includes two sets of Java API:
    Additionally, if you are not satisfied with the API (which is an intersection between Lua 5.* versions),
    you can use the Lua C API bindings directly via [`Lua#getLuaNatives`](./javadoc/party/iroiro/luajava/Lua.html#getLuaNatives()).
 
-2. A more Java-ish API. This requires significantly less Lua knowledge. See [Java API](./examples/java.md).
+2. A more Java-ish API. This requires significantly less Lua knowledge. See [Java API](./java.md).
 
 ## Supported Lua Versions
 

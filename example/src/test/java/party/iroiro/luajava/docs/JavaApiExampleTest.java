@@ -6,6 +6,7 @@ import party.iroiro.luajava.lua51.Lua51;
 import party.iroiro.luajava.lua54.Lua54;
 import party.iroiro.luajava.value.LuaValue;
 
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,6 +24,27 @@ try (Lua L = new Lua54()) {
     }
 
     @Test
+    public void luaValueFromGlobalTest() {
+try (Lua L = new Lua54()) {
+    assertEquals("Lua 5.4", L.get("_VERSION").toString());
+}
+    }
+
+    @Test
+    public void setGlobalTest() {
+try (Lua L = new Lua54()) {
+    LuaValue value = L.from(1);
+    L.set("a", value); // LuaValue
+    L.set("b", 2); // Java Integer
+    L.set("c", new BigDecimal(3)); // Any Java object
+    assertEquals(
+    6,
+    L.eval("return a + b + c:longValue()")[0].toInteger()
+    );
+}
+    }
+
+    @Test
     public void luaValueEvalTest() {
 try (Lua L = new Lua54()) {
     L.openLibraries();
@@ -30,6 +52,45 @@ try (Lua L = new Lua54()) {
     assertEquals(0, values1.length);
     LuaValue[] values2 = L.eval("return string.sub('abcdefg', 0, 3)");
     assertEquals("abc", values2[0].toString());
+}
+    }
+
+    @Test
+    public void luaValueTableTest() {
+try (Lua L = new Lua54()) {
+    L.run("t = { text = 'abc', children = { 'a', 'b', 'c' } }");
+    LuaValue table = L.eval("return t")[0];
+    // Get-calls return LuaValues.
+    assertEquals("abc", table.get("text").toString());
+    LuaValue children = table.get("children");
+    // Indices are 1-based.
+    assertEquals("a", children.get(1).toString());
+    assertEquals(3, children.size());
+    // Set-calls accept LuaValues or any Java object.
+    children.set(4, "d");
+    // Changes are done in the Lua side.
+    L.run("assert(t.children[4] == 'd')");
+}
+    }
+
+    @Test
+    public void luaValueCallTest() {
+try (Lua L = new Lua54()) {
+    L.openLibrary("string");
+    LuaValue gsub = L.eval("return string.gsub")[0];
+    LuaValue luaJava = gsub.call("Lua", "a", "aJava")[0];
+    assertEquals("LuaJava", luaJava.toString());
+}
+    }
+
+    @Test
+    public void luaValueProxyTest() throws InterruptedException {
+try (Lua L = new Lua54()) {
+    LuaValue runnable = L.eval("return { run = function() print('running...') end }")[0];
+    Runnable r = runnable.toProxy(Runnable.class);
+    Thread t = new Thread(r);
+    t.start();
+    t.join();
 }
     }
 
