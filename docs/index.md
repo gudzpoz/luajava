@@ -96,7 +96,7 @@ const matrix = {
   'MacOS (x86_64)':   [2, 2, 2, 2, 2, 2],
   'MacOS (ARM64)':    [2, 2, 2, 2, 2, 2],
   [android]:          [2, 2, 2, 2, 2, 2],
-  'iOS':              [1, 1, 1, 1, 0, 1],
+  'iOS':              [1, 1, 1, 1, 1, 1],
 };
 const classes = ['unsupported', 'available', 'tested'];
 </script>

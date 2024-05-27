@@ -13,9 +13,6 @@ const groupId = 'party.iroiro.luajava'
 const version = '4.0.0'
 
 const notAvailable = {
-  luajit: {
-    iOS: true,
-  }
 }
 
 const lua = ref('lua51')
