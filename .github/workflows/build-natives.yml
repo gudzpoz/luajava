@@ -65,6 +65,19 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Download llvm-mingw
+        uses: robinraju/release-downloader@v1.10
+        with:
+          repository: 'mstorsjo/llvm-mingw'
+          tag: 20240518
+          fileName: llvm-mingw-20240518-ucrt-ubuntu-20.04-x86_64.tar.xz
+          tarBall: false
+          zipBall: false
+      - name: Set up llvm-mingw
+        run: |
+          sudo mkdir -p /usr/local
+          sudo tar -Jxf llvm-mingw-20240518-ucrt-ubuntu-20.04-x86_64.tar.xz -C /usr/local
+          echo "PATH=/usr/local/llvm-mingw-20240518-ucrt-ubuntu-20.04-x86_64/bin:$PATH" >> $GITHUB_ENV
       - name: Install cross-compilation toolchains
         run: |
           sudo apt update
@@ -94,7 +107,7 @@ jobs:
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
           ./gradlew jniGen jnigenBuildLinux jnigenBuildLinux64 jnigenBuildLinuxARM jnigenBuildLinuxARM64
-          ./gradlew jniGen jnigenBuildAndroid jnigenBuildWindows jnigenBuildWindows64
+          ./gradlew jniGen jnigenBuildAndroid jnigenBuildWindows jnigenBuildWindows64 jnigenBuildWindowsARM64
       - name: Test (Desktop)
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME

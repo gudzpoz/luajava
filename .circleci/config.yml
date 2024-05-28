@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   download-and-test:
     machine:
-      image: ubuntu-2004:202101-01
+      image: ubuntu-2204:edge
     resource_class: arm.medium
     steps:
       - run:

@@ -39,6 +39,14 @@ dependencies {
 
 apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
 
+static def removeNonArmFlags(String s) {
+    // TODO: Until https://github.com/libgdx/gdx-jnigen/pull/56 gets released
+    return s
+            .replace("-mfpmath=sse -msse2", "")
+            .replace("-m32", "")
+            .replace("-m64", "")
+}
+
 jnigen {
     sharedLibName = 'lua51'
 
@@ -51,7 +59,11 @@ jnigen {
 
     add(Windows, x32)
     add(Windows, x64)
-    // add(Windows, x64, ARM) // TODO: Add to CI after GCC adds aarch64-w64-mingw32 target
+    add(Windows, x64, ARM) {
+        cFlags = removeNonArmFlags(cFlags)
+        cppFlags = removeNonArmFlags(cppFlags)
+        linkerFlags = removeNonArmFlags(linkerFlags)
+    }
 
     add(Linux, x32)
     add(Linux, x64)
