@@ -1,6 +1,7 @@
 #!/bin/python
 
 # for i in {1..4}; do python scripts/jnigen-gradle.py lua5${i} > lua5${i}/build.gradle; done
+# Don't forget to update luajit/build.gradle !
 
 import sys
 

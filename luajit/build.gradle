@@ -40,9 +40,30 @@ dependencies {
     api project(':luajava')
 }
 
-String addLuaJitTarget(String platform, List<String> command) {
-    String target = "buildLua${platform}"
-    String folder = "jni/luajit/lib/${platform.toLowerCase()}"
+enum Platform {
+    Android,
+    IOS,
+    // Linux
+    Linux64,
+    Linux32,
+    ARM,
+    AArch64,
+    // Windows
+    Win32,
+    Win64,
+    WinAArch64,
+    // MacOsX
+    MacOsX,
+    MacOsXAArch64,
+    MacOsXMerged, // Merged libluajit.a
+}
+
+// Builds LuaJIT and copies the output libluajit.a to jni/luajit/lib/${platform}
+// libluajit.a will be used in linkerConfig
+String addLuaJitTarget(Platform platform, List<String> command) {
+    String name = platform.toString()
+    String target = "buildLua${name}"
+    String folder = "jni/luajit/lib/${name.toLowerCase()}"
     tasks.register(target) {
         if (command.get(0) == 'make') {
             doLast {
@@ -92,52 +113,52 @@ void buildLuaTargets(String... targets) {
 }
 
 buildLuaTargets(
-        addLuaJitTarget('Android',
+        addLuaJitTarget(Platform.Android,
                 ['bash', '../scripts/build-android.sh']),
-        addLuaJitTarget('IOS',
+        addLuaJitTarget(Platform.IOS,
                 ['bash', '../scripts/build-ios.sh']),
-        addLuaJitTarget('Linux64',
+        addLuaJitTarget(Platform.Linux64,
                 ['make', 'amalg',
                  'CC=gcc -m64 -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC ',
                  'TARGET_SYS=Linux']),
-        addLuaJitTarget('Linux32',
+        addLuaJitTarget(Platform.Linux32,
                 ['make', 'amalg',
                  'CC=gcc -m32 -I/usr/i686-linux-gnu/include -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC',
                  'TARGET_SYS=Linux']),
-        addLuaJitTarget('ARM',
+        addLuaJitTarget(Platform.ARM,
                 ['make', 'amalg',
                  'HOST_CC=gcc -m32 -I/usr/i686-linux-gnu/include -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC',
                  'TARGET_SYS=Linux', 'CROSS=arm-linux-gnueabihf-']),
-        addLuaJitTarget('AARCH',
+        addLuaJitTarget(Platform.AArch64,
                 ['make', 'amalg',
                  'HOST_CC=gcc -m64 -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC',
                  'TARGET_SYS=Linux', 'CROSS=aarch64-linux-gnu-']),
-        addLuaJitTarget('Win32',
+        addLuaJitTarget(Platform.Win32,
                 ['make', 'amalg',
                  'HOST_CC=gcc -m32 -I/usr/i686-linux-gnu/include', 'CFLAGS=-fPIC',
                  'BUILDMODE=static',
                  'CROSS=i686-w64-mingw32-', 'TARGET_SYS=Windows']),
-        addLuaJitTarget('Win64',
+        addLuaJitTarget(Platform.Win64,
                 ['make', 'amalg',
                  'HOST_CC=gcc -m64', 'CFLAGS=-fPIC',
                  'BUILDMODE=static',
                  'CROSS=x86_64-w64-mingw32-', 'TARGET_SYS=Windows']),
-        addLuaJitTarget('WinAARCH',
+        addLuaJitTarget(Platform.WinAArch64,
                 ['make', 'amalg',
-                 'HOST_CC=gcc -m64', 'CFLAGS=fPIC',
+                 'HOST_CC=gcc -m64', 'CFLAGS=-fPIC',
                  'BUILDMODE=static',
                  'CROSS=aarch64-w64-mingw32-', 'TARGET_SYS=Windows']),
-        addLuaJitTarget('MacOsX',
+        addLuaJitTarget(Platform.MacOsX,
                 ['make', 'amalg', 'TARGET_FLAGS=-arch x86_64',
                  'CFLAGS=-fPIC', 'TARGET_SYS=Darwin']),
-        addLuaJitTarget('MacOsXAARCH',
+        addLuaJitTarget(Platform.MacOsXAArch64,
                 ['make', 'amalg', 'TARGET_FLAGS=-arch arm64',
                  'CFLAGS=-fPIC', 'TARGET_SYS=Darwin']),
 )
 
-void linkerConfig(BuildTarget it, String platformFolder) {
+void linkerConfig(BuildTarget it, Platform platform) {
     // TODO: decide whether to shell-string-escape-and-then-xml-entity-escape $projectDir
-    it.linkerFlags += " -L&quot;$projectDir/jni/luajit/lib/${platformFolder}&quot; "
+    it.linkerFlags += " -L&quot;$projectDir/jni/luajit/lib/${platform.toString().toLowerCase()}&quot; "
     if (it.os == Os.Linux) {
         it.cFlags += ' -D_FORTIFY_SOURCE=0 '
         it.cppFlags += ' -D_FORTIFY_SOURCE=0 '
@@ -145,6 +166,14 @@ void linkerConfig(BuildTarget it, String platformFolder) {
 }
 
 apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
+
+static def removeNonArmFlags(String s) {
+    // TODO: Until https://github.com/libgdx/gdx-jnigen/pull/56 gets released
+    return s
+        .replace("-mfpmath=sse -msse2", "")
+        .replace("-m32", "")
+        .replace("-m64", "")
+}
 
 jnigen {
     sharedLibName = 'luajit'
@@ -157,40 +186,42 @@ jnigen {
     }
 
     add(Linux, x64, x86, {
-        linkerConfig(it, 'linux64')
+        linkerConfig(it, Platform.Linux64)
     })
     add(Linux, x32, x86, {
-        linkerConfig(it, 'linux32')
+        linkerConfig(it, Platform.Linux32)
     })
     add(Linux, x32, ARM, {
-        linkerConfig(it, 'arm')
+        linkerConfig(it, Platform.ARM)
     })
     add(Linux, x64, ARM, {
-        linkerConfig(it, 'aarch')
+        linkerConfig(it, Platform.AArch64)
     })
 
     add(Windows, x32, x86, {
-        linkerConfig(it, 'win32')
+        linkerConfig(it, Platform.Win32)
     })
     add(Windows, x64, x86, {
-        linkerConfig(it, 'win64')
+        linkerConfig(it, Platform.Win64)
     })
     add(Windows, x64, ARM) {
-        linkerConfig(it, 'winaarch64')
+        cFlags = removeNonArmFlags(cFlags)
+        cppFlags = removeNonArmFlags(cppFlags)
+        linkerFlags = removeNonArmFlags(linkerFlags)
+        linkerConfig(it, Platform.WinAArch64)
     }
 
     add(MacOsX, x64, x86, {
-        linkerConfig(it, 'macosxa')
+        linkerConfig(it, Platform.MacOsXMerged)
     })
     add(MacOsX, x64, ARM, {
-        linkerConfig(it, 'macosxaarch')
+        linkerConfig(it, Platform.MacOsXMerged)
     })
 
     robovm {
         forceLinkClasses "java.lang.Class", "java.lang.Throwable", "party.iroiro.luajava.JuaAPI"
     }
     add(IOS, x64) {
-        linkerConfig(it, 'iosa')
         xcframeworkBundleIdentifier = "party.iroiro.luajava.luajit"
         minIOSVersion = "11.0"
     }
@@ -208,17 +239,20 @@ jnigen {
 }
 
 tasks.register('buildLuaMacOsXMerge', {
-    dependsOn tasks.buildLuaMacOsX, tasks.buildLuaMacOsXAARCH
+    dependsOn tasks.buildLuaMacOsX, tasks.buildLuaMacOsXAArch64
+    String pathX86 = "lib/${Platform.MacOsX.toString().toLowerCase()}"
+    String pathAArch64 = "lib/${Platform.MacOsXAArch64.toString().toLowerCase()}"
+    String pathA = "lib/${Platform.MacOsXMerged.toString().toLowerCase()}"
     doLast {
         exec {
             workingDir 'jni/luajit'
-            commandLine 'mkdir', '-p', 'lib/macosxa'
+            commandLine 'mkdir', '-p', pathA
         }
         exec {
             workingDir 'jni/luajit'
             commandLine 'lipo', '-create',
-                    'lib/macosx/libluajit.a', 'lib/macosxaarch/libluajit.a',
-                    '-output', 'lib/macosxa/libluajit.a'
+                    "${pathX86}/libluajit.a", "${pathAArch64}/libluajit.a",
+                    '-output', "${pathA}/libluajit.a"
         }
     }
 })
@@ -226,10 +260,10 @@ tasks.register('buildLuaMacOsXMerge', {
 tasks.jnigenBuildLinux.dependsOn(tasks.buildLuaLinux32)
 tasks.jnigenBuildLinux64.dependsOn(tasks.buildLuaLinux64)
 tasks.jnigenBuildLinuxARM.dependsOn(tasks.buildLuaARM)
-tasks.jnigenBuildLinuxARM64.dependsOn(tasks.buildLuaAARCH)
+tasks.jnigenBuildLinuxARM64.dependsOn(tasks.buildLuaAArch64)
 tasks.jnigenBuildWindows.dependsOn(tasks.buildLuaWin32)
 tasks.jnigenBuildWindows64.dependsOn(tasks.buildLuaWin64)
-tasks.jnigenBuildWindowsARM64.dependsOn(tasks.buildLuaWinAARCH)
+tasks.jnigenBuildWindowsARM64.dependsOn(tasks.buildLuaWinAArch64)
 tasks.jnigenBuildMacOsX64.dependsOn(tasks.buildLuaMacOsXMerge)
 tasks.jnigenBuildAndroid.dependsOn(tasks.buildLuaAndroid)
 tasks.jnigenBuildIOS64.dependsOn(tasks.buildLuaIOS)
