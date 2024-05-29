@@ -974,6 +974,10 @@ public class LuaTestSuite<T extends AbstractLua> {
             L.pop(1);
         }
         L.pop(1);
+
+        L.newTable();
+        assertEquals(TABLE, L.type(-1));
+        L.pop(1);
     }
 
     @SuppressWarnings("ConstantConditions")

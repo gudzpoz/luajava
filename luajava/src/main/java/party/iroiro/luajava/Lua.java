@@ -772,6 +772,15 @@ public interface Lua extends AutoCloseable, LuaThread {
     void createTable(int nArr, int nRec);
 
     /**
+     * Creates a new empty table and pushes it onto the stack
+     * 
+     * <p>
+     * It is equivalent to {@link #createTable(int, int) createTable(0, 0)}.
+     * </p>
+     */
+    void newTable();
+
+    /**
      * Pushes onto the stack the value t[key]
      *
      * <p>
