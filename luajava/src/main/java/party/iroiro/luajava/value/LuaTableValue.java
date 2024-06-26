@@ -170,7 +170,7 @@ public class LuaTableValue extends AbstractRefLuaValue implements LuaValue {
                 n++;
                 L.pop(1);
             }
-            L.pop(2);
+            L.pop(1);
             return n;
         }
     }
