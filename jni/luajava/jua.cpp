@@ -269,6 +269,7 @@ void initMetaRegistry(lua_State * L) {
     lua_pushcfunction(L, &jobjectEquals);
     lua_setfield(L, -2, LUA_METAFIELD_EQ);
   }
+  lua_pop(L, 1);
 
   if (luaL_newmetatable(L, JAVA_PACKAGE_META_REGISTRY) == 1) {
     /* Lua:
@@ -289,7 +290,6 @@ void initMetaRegistry(lua_State * L) {
     lua_pushcfunction(L, &jclassNewIndex);
     lua_setfield(L, -2, LUA_METAFIELD_NEWINDEX);
   }
-
   lua_pop(L, 1);
 }
 

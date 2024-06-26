@@ -22,20 +22,33 @@ public class LuaValueSuite<T extends Lua> {
 
     public void test() {
         L.openLibraries();
-
+        assertEquals(0, L.getTop());
         equalityTest(L);
-        equalityTest(L.newThread());
+        assertEquals(0, L.getTop());
+        Lua J = L.newThread();
+        L.pop(1);
+        equalityTest(J);
+        assertEquals(0, L.getTop());
         try (Lua K = new Lua51()) {
             equalityTest(K);
         }
+        assertEquals(0, L.getTop());
         differentThreadTest();
+        assertEquals(0, L.getTop());
         tableTest();
+        assertEquals(0, L.getTop());
         tableMapTest();
+        assertEquals(0, L.getTop());
         nilTest();
+        assertEquals(0, L.getTop());
         stringTest();
+        assertEquals(0, L.getTop());
         toStringTest();
+        assertEquals(0, L.getTop());
         callTest();
+        assertEquals(0, L.getTop());
         luaStateTest();
+        assertEquals(0, L.getTop());
     }
 
     @SuppressWarnings("SuspiciousMethodCalls")
@@ -43,16 +56,19 @@ public class LuaValueSuite<T extends Lua> {
         LuaValue map = L.eval("t = { 1, 2, 3, 4, a = 5, b = 6, c = 7, d = 8 }; return t")[0];
         assertEquals(8, map.entrySet().size());
         assertEquals(4, map.length());
+        assertEquals(0, L.getTop());
         assertTrue(map.containsKey("a"));
         map.entrySet().removeIf(next -> next.getKey().toString().equals("a"));
         assertEquals(7, map.entrySet().size());
         assertEquals(4, map.length());
+        assertEquals(0, L.getTop());
         L.run("assert(not t.a)");
         assertFalse(map.containsKey("a"));
         assertEquals(7, map.remove("c").toInteger());
         assertEquals(6, Objects.requireNonNull(map.put(L.from("b"), L.from(10))).toInteger());
         assertEquals(10, map.get("b").toInteger());
         assertEquals(1, map.get((Number) 1).toInteger());
+        assertEquals(0, L.getTop());
 
         assertThrows(NoSuchElementException.class, () -> L.eval("return {}")[0].entrySet().iterator().next());
         assertThrows(IllegalStateException.class, () -> L.eval("return {}")[0].entrySet().iterator().remove());
@@ -67,6 +83,7 @@ public class LuaValueSuite<T extends Lua> {
         assertThrows(UnsupportedOperationException.class, () -> i.set(1, new Object()));
         assertThrows(UnsupportedOperationException.class, () -> i.set("", new Object()));
         assertThrows(UnsupportedOperationException.class, i::call);
+        assertEquals(0, L.getTop());
 
         assertEquals(1, i.toNumber(), 0.000001);
         assertEquals(1, i.toInteger());
@@ -74,6 +91,7 @@ public class LuaValueSuite<T extends Lua> {
         L.push(0);
         LuaValue j = L.get();
         assertFalse(j.toBoolean());
+        assertEquals(0, L.getTop());
     }
 
     private void toStringTest() {
@@ -136,6 +154,7 @@ public class LuaValueSuite<T extends Lua> {
 
     private void tableTest() {
         int top = L.getTop();
+        assertEquals(0, L.getTop());
         LuaValue[] values = L.eval("return {1, 2, 3, a = 'b', c = 'd'}, 1024");
         assertEquals(2, values.length);
         LuaValue value = values[0];
@@ -147,6 +166,7 @@ public class LuaValueSuite<T extends Lua> {
         assertEquals(3., map.get(3.));
         assertEquals("b", map.get("a"));
         assertEquals("d", map.get("c"));
+        assertEquals(0, L.getTop());
 
         assertEquals(top, L.getTop());
         assertEquals(1., value.get(1).toJavaObject());
@@ -179,6 +199,8 @@ public class LuaValueSuite<T extends Lua> {
             assertThrows(UnsupportedOperationException.class, () -> L.get().get(K.get()));
             K.pushNil();
             K.get().push(L);
+            assertEquals(NIL, L.type(-1));
+            L.pop(1);
 
             K.pushNil();
             LuaValue nil = K.get();
@@ -186,6 +208,7 @@ public class LuaValueSuite<T extends Lua> {
             assertTrue(L.isNil(-1));
             L.pop(1);
             Lua J = L.newThread();
+            L.pop(1);
             J.pushNil();
             L.push(J.get(), Lua.Conversion.NONE);
             assertTrue(L.isNil(-1));

@@ -681,6 +681,11 @@ public class LuaTestSuite<T extends AbstractLua> {
     }
 
     private void testStackOperations() {
+        try (Lua L = constructor.get()) {
+            assertEquals(0, L.getTop());
+            assertEquals(0, L.newThread().getTop());
+        }
+
         Lua sub = L.newThread();
         int top = L.getTop();
         L.setTop(top + 1);
