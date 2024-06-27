@@ -10,9 +10,11 @@
  */
 static inline void luaJ_openlib_call(lua_State * L, const char * libName, lua_CFunction loader) {
     luaL_requiref(L, libName, loader, 1);
+    lua_pop(L, 1);
 }
 
 luaL_Reg allAvailableLibs[] = {
+    { "",          luaopen_base },
     { "_G",        luaopen_base },
     { "package",   luaopen_package },
     { "coroutine", luaopen_coroutine },
