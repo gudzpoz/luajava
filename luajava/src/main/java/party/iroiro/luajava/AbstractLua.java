@@ -547,6 +547,12 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public void pop(int n) {
+        if (n < 0 || getTop() < n) {
+            throw new LuaException(
+                    LuaException.LuaError.MEMORY,
+                    "invalid number of items to pop"
+            );
+        }
         C.lua_pop(L, n);
     }
 

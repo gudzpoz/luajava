@@ -684,6 +684,10 @@ public class LuaTestSuite<T extends AbstractLua> {
         try (Lua L = constructor.get()) {
             assertEquals(0, L.getTop());
             assertEquals(0, L.newThread().getTop());
+            assertThrowsLua(LuaError.MEMORY, () -> L.pop(-1), "invalid number of items to pop");
+            assertThrowsLua(LuaError.MEMORY, () -> L.pop(10), "invalid number of items to pop");
+            L.setTop(0);
+            assertThrowsLua(LuaError.MEMORY, () -> L.pop(1), "invalid number of items to pop");
         }
 
         Lua sub = L.newThread();
