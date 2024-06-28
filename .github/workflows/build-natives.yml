@@ -111,7 +111,7 @@ jobs:
       - name: Test (Desktop)
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
-          ./gradlew :example:test :jsr223:test :jpms-example:run
+          ./gradlew --info --stacktrace :example:test :jsr223:test :jpms-example:run
       - name: Jacoco Test Report
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
@@ -207,7 +207,7 @@ jobs:
           ./gradlew jniGen
       - name: Test
         run: |
-          ./gradlew :example:test :jsr223:test :jpms-example:run
+          ./gradlew --info --stacktrace :example:test :jsr223:test :jpms-example:run
   android-testing:
     runs-on: ubuntu-latest
     strategy:
@@ -280,7 +280,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew :android:android-test:connectedAndroidTest
+          script: ./gradlew --info --stacktrace :android:android-test:connectedAndroidTest
   pack-natives:
     environment: OSSRH
     needs:
