@@ -64,8 +64,8 @@ To include LuaJava into your project, you need to include two artifacts, one for
 
 ```groovy
 // Example: LuaJIT with Desktop natives
-implementation 'party.iroiro.luajava:luajit:4.0.0'
-runtimeOnly 'party.iroiro.luajava:luajit-platform:4.0.0:natives-desktop'
+implementation 'party.iroiro.luajava:luajit:4.0.1'
+runtimeOnly 'party.iroiro.luajava:luajit-platform:4.0.1:natives-desktop'
 ```
 
 Different artifacts are provided for different Lua versions and different platforms. Check out [Getting Started](https://gudzpoz.github.io/luajava/getting-started.html) for an overview. Or you may also search in the [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava).
