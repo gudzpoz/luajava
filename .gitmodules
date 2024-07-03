@@ -17,3 +17,4 @@
 [submodule "lua54/jni/lua54"]
 	path = lua54/jni/lua54
 	url = https://github.com/lua/lua.git
+	branch = v5.4
