@@ -82,6 +82,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.openLibraries();
         LuaScriptSuite.addAssertThrows(L);
         test64BitInteger();
+        testCompat();
         testCoroutineDeadlock();
         testDump();
         testException();
@@ -114,6 +115,25 @@ public class LuaTestSuite<T extends AbstractLua> {
                     LuaError.HANDLER,
                     L.convertError(L.getLuaNatives().lua_pcall(L.getPointer(), 0, 0, -2))
             );
+        }
+    }
+
+    private void testCompat() {
+        L.run("return _VERSION");
+        String version = L.toString(-1);
+
+        switch (version) {
+            case "Lua 5.4": // LUA_COMPAT_5_3
+            case "Lua 5.3": // LUA_COMPAT_5_2
+                L.openLibrary("math");
+                L.run("return math.pow(2, 2)");
+                assertEquals(4, L.toInteger(-1));
+                break;
+            case "Lua 5.2": // LUA_COMPAT_ALL
+                L.openLibrary("math");
+                L.run("return math.log10(1)");
+                assertEquals(0, L.toInteger(-1));
+                break;
         }
     }
 
