@@ -51,6 +51,8 @@ jnigen {
     sharedLibName = 'lua54'
 
     all {
+        cFlags += ' -DLUA_COMPAT_5_3'
+        cppFlags += ' -DLUA_COMPAT_5_3'
         headerDirs = ['../../jni/luajava', 'mod', 'lua54']
         cppExcludes = ['lua54/**/*']
         cExcludes = ['lua54/**/*']
