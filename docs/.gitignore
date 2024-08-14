@@ -2,5 +2,7 @@ node_modules/
 .temp
 .cache
 .pnp.*
-.vuepress/public/
-.vuepress/luajava
+.vitepress/cache
+.vitepress/dist
+.vitepress/luajava
+public/javadoc

@@ -59,4 +59,4 @@ For example, on [Alpine Linux](https://alpinelinux.org/), you will very likely n
 
 Here is a `Dockerfile` snippet that is used to test this library on Alpine.
 
-@[code dockerfile](../example/docker/musl/Dockerfile)
+<<< ../example/docker/musl/Dockerfile

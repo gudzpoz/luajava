@@ -4,8 +4,7 @@
 
 For now:
 
-<!-- @code:synchronizedTest -->
-@[code{19-22} java](../example/src/test/java/party/iroiro/luajava/docs/ThreadExampleTest.java)
+<<< ../example/src/test/java/party/iroiro/luajava/docs/ThreadExampleTest.java#synchronizedTest
 
 :::
 
@@ -19,13 +18,11 @@ But you may safely access the Lua state across threads with a bit of external sy
 
 You do not need to worry if you use multiple Lua main states, each dedicated to one OS thread.
 
-<!-- @code:differentStatesTest -->
-@[code{27-31} java](../example/src/test/java/party/iroiro/luajava/docs/ThreadExampleTest.java)
+<<< ../example/src/test/java/party/iroiro/luajava/docs/ThreadExampleTest.java#differentStatesTest
 
 ## Same main state
 
-<!-- @code:sameStateTest -->
-@[code{40-44} java](../example/src/test/java/party/iroiro/luajava/docs/ThreadExampleTest.java)
+<<< ../example/src/test/java/party/iroiro/luajava/docs/ThreadExampleTest.java#sameStateTest
 
 From Java's perspective, there are two kinds of operations that might change the Lua state:
 

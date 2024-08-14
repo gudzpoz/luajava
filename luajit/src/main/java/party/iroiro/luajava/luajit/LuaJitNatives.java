@@ -2595,18 +2595,6 @@ public class LuaJitNatives implements LuaNatives {
      * that are passed as results to <a href="https://www.lua.org/manual/5.1/manual.html#lua_resume"><code>lua_resume</code></a>.
      * </p>
      *
-     * <h2>3.8 &#8211; <a>The Debug Interface</a>
-     * </h2>
-     *
-     * <p>
-     * Lua has no built-in debugging facilities.
-     * Instead, it offers a special interface
-     * by means of functions and <em>hooks</em>.
-     * This interface allows the construction of different
-     * kinds of debuggers, profilers, and other tools
-     * that need "inside information" from the interpreter.
-     * </p>
-     *
      * @param ptr the <code>lua_State*</code> pointer
      * @param nresults the number of results, or <code>LUA_MULTRET</code>
      * @return see description

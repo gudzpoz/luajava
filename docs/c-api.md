@@ -1,6 +1,6 @@
 # Lua Stack-based C API
 
-The [`party.iroiro.luajava.Lua`](../javadoc/party/iroiro/luajava/Lua.html) interface
+The [`party.iroiro.luajava.Lua`](./javadoc/party/iroiro/luajava/Lua.html){target="_self"} interface
 is a wrapper around the `lua_State` pointer.
 Besides [`LuaValue`-relevant methods](./java.md),
 it also provides the common parts from the C APIs of Lua 5.1 ~ 5.4 and LuaJIT.
@@ -16,99 +16,67 @@ Some common patterns are listed below to help you get started.
 ### Setting a global value
 
 Lua API bases on a Lua stack. You need to push the value onto the stack before assigning it
-to a global value with [`setGlobal`](../javadoc/party/iroiro/luajava/Lua.html#setGlobal(java.lang.String)).
+to a global value with [`setGlobal`](./javadoc/party/iroiro/luajava/Lua.html#setGlobal(java.lang.String)){target="_self"}.
 
-<!-- @code:globalSetTest -->
-@[code{112-120} java{6-7}](../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+<<< ../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java#globalSetTest{6-7}
 
 ### Getting a global value
 
-Similarly, [`getGlobal`](../javadoc/party/iroiro/luajava/Lua.html#getGlobal(java.lang.String))
+Similarly, [`getGlobal`](./javadoc/party/iroiro/luajava/Lua.html#getGlobal(java.lang.String)){target="_self"}
 pushes a value onto the stack, instead of returning it.
 
-<!-- @code:globalGetTest -->
-@[code{125-132} java](../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+<<< ../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java#globalGetTest
 
 ### Querying a table
 
 We need to make use of
-[`getField`](../javadoc/party/iroiro/luajava/Lua.html#getField(int,java.lang.String)),
-[`getTable`](../javadoc/party/iroiro/luajava/Lua.html#getTable(int)),
-[`rawGet`](../javadoc/party/iroiro/luajava/Lua.html#rawGetI(int,int))
-or [`rawGetI`](../javadoc/party/iroiro/luajava/Lua.html#rawGetI(int,int)).
+[`getField`](./javadoc/party/iroiro/luajava/Lua.html#getField(int,java.lang.String)){target="_self"},
+[`getTable`](./javadoc/party/iroiro/luajava/Lua.html#getTable(int)){target="_self"},
+[`rawGet`](./javadoc/party/iroiro/luajava/Lua.html#rawGetI(int,int)){target="_self"}
+or [`rawGetI`](./javadoc/party/iroiro/luajava/Lua.html#rawGetI(int,int)){target="_self"}.
 
-:::: code-group
-::: code-group-item getField
+::: code-group
 
-<!-- @code:getFieldTest -->
-@[code{137-141} java](../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+<<< ../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java#getFieldTest [getField]
 
-:::
-::: code-group-item rawGetI
+<<< ../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java#rawGetITest [rawGetI]
 
-<!-- @code:rawGetITest -->
-@[code{146-150} java](../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+<<< ../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java#getTableTest [getTable]
+
+<<< ../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java#rawGetTest [rawGet]
 
 :::
-::: code-group-item getTable
-
-<!-- @code:getTableTest -->
-@[code{155-160} java](../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
-
-:::
-::: code-group-item rawGet
-
-<!-- @code:rawGetTest -->
-@[code{165-170} java](../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
-
-:::
-::::
 
 ### Updating a table
 
 Similarly, we have
-[`setField`](../javadoc/party/iroiro/luajava/Lua.html#setField(int,java.lang.String))
-[`setTable`](../javadoc/party/iroiro/luajava/Lua.html#setTable(int))
-[`rawSet`](../javadoc/party/iroiro/luajava/Lua.html#rawSet(int))
-and [`rawSetI`](../javadoc/party/iroiro/luajava/Lua.html#rawSetI(int,int)).
+[`setField`](./javadoc/party/iroiro/luajava/Lua.html#setField(int,java.lang.String)){target="_self"}
+[`setTable`](./javadoc/party/iroiro/luajava/Lua.html#setTable(int)){target="_self"}
+[`rawSet`](./javadoc/party/iroiro/luajava/Lua.html#rawSet(int)){target="_self"}
+and [`rawSetI`](./javadoc/party/iroiro/luajava/Lua.html#rawSetI(int,int)){target="_self"}.
 
-:::: code-group
-::: code-group-item setField
+::: code-group
 
-<!-- @code:setFieldTest -->
-@[code{175-179} java](../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+<<< ../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java#setFieldTest [setField]
 
-:::
-::: code-group-item rawSetI
+<<< ../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java#rawSetITest [rawSetI]
 
-<!-- @code:rawSetITest -->
-@[code{184-188} java](../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+<<< ../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java#setTableTest [setTable]
+
+<<< ../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java#rawSetTest [rawSet]
 
 :::
-::: code-group-item setTable
-
-<!-- @code:setTableTest -->
-@[code{193-198} java](../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
-
-:::
-::: code-group-item rawSet
-
-<!-- @code:rawSetTest -->
-@[code{203-208} java](../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
-
-:::
-::::
 
 ### Creating references
 
 A reference is a unique integer key: `table[reference] = referredValue`. Lua provides a convenient way to store values into a table, returning the generated reference key.
 
 See
-[`ref()`](../javadoc/party/iroiro/luajava/Lua.html#ref())
-[`ref(int)`](../javadoc/party/iroiro/luajava/Lua.html#ref(int))
-[`refGet(int)`](../javadoc/party/iroiro/luajava/Lua.html#refGet(int))
-[`unref(int)`](../javadoc/party/iroiro/luajava/Lua.html#unref(int))
-and [`unRef(int, int)`](../javadoc/party/iroiro/luajava/Lua.html#unRef(int,int)) for more info.
+[`ref()`](./javadoc/party/iroiro/luajava/Lua.html#ref()){target="_self"}
+[`ref(int)`](./javadoc/party/iroiro/luajava/Lua.html#ref(int)){target="_self"}
+[`refGet(int)`](./javadoc/party/iroiro/luajava/Lua.html#refGet(int)){target="_self"}
+[`unref(int)`](./javadoc/party/iroiro/luajava/Lua.html#unref(int)){target="_self"}
+and [`unRef(int, int)`](./javadoc/party/iroiro/luajava/Lua.html#unRef(int,int)){target="_self"} for more info.
 
 ### Pre-compiled chunks
 
@@ -135,42 +103,35 @@ To work around this, you may either:
 
 Here is a tiny example for the second approach:
 
-:::: code-group
-::: code-group-item Use lua_dump
+::: code-group
 
-<!-- @code:luaDumpTest -->
-@[code{221-228} java](../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+<<< ../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java#luaDumpTest [Use lua_dump]
 
-:::
-::: code-group-item Use `string.dump`
-
-<!-- @code:stringDumpTest -->
-@[code{233-240} java](../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java)
+<<< ../example/src/test/java/party/iroiro/luajava/docs/JavaApiExampleTest.java#stringDumpTest [Use `string.dump`]
 
 :::
-::::
 
 Dumping functions involves some more Lua knowledge such as up-values and environments.
 What these terms mean might differ between versions and is not a topic of this document.
 
 ## `LuaNatives` <Badge>interface</Badge>
 
-The [`LuaNatives`](../javadoc/party/iroiro/luajava/LuaNatives.html) interface
+The [`LuaNatives`](./javadoc/party/iroiro/luajava/LuaNatives.html){target="_self"} interface
 exposes common JNI bindings of the C API of Lua 5.1 ~ Lua 5.4.
 Use with caution.
 
-- Get an instance of `LuaValue` with [`LuaValue::getLuaNatives()`](../javadoc/party/iroiro/luajava/Lua.html#getLuaNatives()).
-- Get the pointer to a `Lua` state with [`Lua::getPointer()`](../javadoc/party/iroiro/luajava/Lua.html#getPointer()).
+- Get an instance of `LuaValue` with [`LuaValue::getLuaNatives()`](./javadoc/party/iroiro/luajava/Lua.html#getLuaNatives()){target="_self"}.
+- Get the pointer to a `Lua` state with [`Lua::getPointer()`](./javadoc/party/iroiro/luajava/Lua.html#getPointer()){target="_self"}.
 
 If you want to use C API functions specific to a Lua version,
 simply cast them to the corresponding `LuaNatives` implementation:
 
-- [`Lua51Natives`](../javadoc/party/iroiro/luajava/lua51/Lua51Natives.html)
-- [`Lua52Natives`](../javadoc/party/iroiro/luajava/lua52/Lua52Natives.html)
-- [`Lua53Natives`](../javadoc/party/iroiro/luajava/lua53/Lua53Natives.html)
-- [`Lua54Natives`](../javadoc/party/iroiro/luajava/lua54/Lua54Natives.html)
-- [`LuaJitNatives`](../javadoc/party/iroiro/luajava/luajit/LuaJitNatives.html)
-- [`LuaJNatives`](../javadoc/party/iroiro/luajava/luaj/LuaJNatives.html)
+- [`Lua51Natives`](./javadoc/party/iroiro/luajava/lua51/Lua51Natives.html){target="_self"}
+- [`Lua52Natives`](./javadoc/party/iroiro/luajava/lua52/Lua52Natives.html){target="_self"}
+- [`Lua53Natives`](./javadoc/party/iroiro/luajava/lua53/Lua53Natives.html){target="_self"}
+- [`Lua54Natives`](./javadoc/party/iroiro/luajava/lua54/Lua54Natives.html){target="_self"}
+- [`LuaJitNatives`](./javadoc/party/iroiro/luajava/luajit/LuaJitNatives.html){target="_self"}
+- [`LuaJNatives`](./javadoc/party/iroiro/luajava/luaj/LuaJNatives.html){target="_self"}
 
 ::: tip
 `LuaJNatives`, which uses LuaJ, a Lua implementation in Java,

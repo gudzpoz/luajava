@@ -4,7 +4,13 @@ We build a tiny console application with [JLine3](https://github.com/jline/jline
 
 The jar bundles desktop natives with it, so you should be able to play around with it on your own computer.
 
-<ClientOnly><Asciinema :file="$withBase('/example.cast')" /></ClientOnly>
+<script setup>
+import { withBase } from 'vitepress';
+
+import Asciinema from './.vitepress/components/Asciinema.vue';
+</script>
+
+<ClientOnly><Asciinema :file="withBase('/example.cast')" /></ClientOnly>
 
 `Lua Version` can be any of `5.1`, `5.2`, `5.3`, `5.4`, `luaj` or `jit`.
 

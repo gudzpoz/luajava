@@ -1,0 +1,4 @@
+body img, body svg {
+  /* The default theme sets display to block, messing up tons of external things. */
+  display: inline;
+}

@@ -35,13 +35,13 @@ jobs:
           ./gradlew allJavadoc
       - name: Moving Javadoc
         run: |
-          mv build/docs/javadoc docs/.vuepress/public/
+          mv build/docs/javadoc docs/public/
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
         with:
           version: 8
           run_install: false
-      - name: Build VuePress
+      - name: Build VitePress
         run: |
           cd docs
           pnpm install
@@ -49,5 +49,5 @@ jobs:
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: docs/.vuepress/dist
+          folder: docs/.vitepress/dist
           single-commit: true

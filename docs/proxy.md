@@ -4,29 +4,24 @@
 The following won't work when using LuaJ bindings.
 :::
 
-Both [the Java API](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class[],party.iroiro.luajava.Lua.Conversion))
+Both [the Java API](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class[],party.iroiro.luajava.Lua.Conversion)){target="_self"}
 and [the Lua API](./api.md#proxy-jclass-table-function) provide a way
 to create Java proxies that delegate calls to an underlying Lua table.
 
 The created Java object is passed as the first parameter to the member functions in Lua.
 If you want to get the backing Lua table, use [`java.unwrap`](./api.md#unwrap-jobject-function).
 
-:::: code-group
-::: code-group-item Java API
+::: code-group
 
-<!-- @code:runnableTest -->
-@[code{10-21} java](../example/src/test/java/party/iroiro/luajava/docs/ProxyExampleTest.java)
+<<< ../example/src/test/java/party/iroiro/luajava/docs/ProxyExampleTest.java#runnableTest [Java API]
 
 :::
-::::
 
-:::: code-group
-::: code-group-item Lua API
+::: code-group
 
-@[code lua](../example/src/test/resources/docs/proxyExampleTest.lua)
+<<< ../example/src/test/resources/docs/proxyExampleTest.lua [Lua API]
 
 :::
-::::
 
 ::: tip TL;DR
 Things are finally working after all! Kudos to JNI.
@@ -54,7 +49,7 @@ Just don't execute unknown Lua code at all.
 :::
 
 ::: details A Lua snippet to try things out
-@[code lua](../example/src/test/resources/docs/apiMethodExample3.lua)
+<<< ../example/src/test/resources/docs/apiMethodExample3.lua
 :::
 
 ### And Android...

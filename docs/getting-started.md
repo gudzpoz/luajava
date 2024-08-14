@@ -41,6 +41,10 @@ You may get the required dependencies for your build system using the following 
 For mobile platforms, e.g. iOS and Android, you might need some more configuration
 to get things work.
 
+<script setup>
+import Matrix from './.vitepress/components/Matrix.vue';
+</script>
+
 <Matrix/>
 
 ### iOS

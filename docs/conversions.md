@@ -39,15 +39,13 @@ Currently, there is no way to specify how you want the return value converted.
 
   You cannot add `jobject` types up, even if their underlying class is `Integer`.
 
-  <!-- @code:noAutoUnboxingTest -->
-  @[code{13-19} java{5}](../example/src/test/java/party/iroiro/luajava/docs/ConversionExampleTest.java)
+  <<< ../example/src/test/java/party/iroiro/luajava/docs/ConversionExampleTest.java#noAutoUnboxingTest{5}
 
 - **`FULL`**:
 
   Changes in converted Lua objects are not propagated back to the original Java object.
 
-  <!-- @code:fullConversionTest -->
-  @[code{24-30} java{5-6}](../example/src/test/java/party/iroiro/luajava/docs/ConversionExampleTest.java)
+  <<< ../example/src/test/java/party/iroiro/luajava/docs/ConversionExampleTest.java#fullConversionTest{5-6}
 
 :::
 
@@ -64,8 +62,8 @@ Currently, there is no way to specify how you want the return value converted.
 5. ***table*** to `Map<Object, Object>`, `List<Object&gt;`, `Object[]`, (converted recursively with `Map<Object, Object>` preferred) or any interfaces.
 
    To convert tables into any interface,
-   we call [`party.iroiro.luajava.Lua#createProxy`](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion))
-   with [`party.iroiro.luajava.Lua.Conversion#SEMI`](./javadoc/party/iroiro/luajava/Lua.Conversion.html#SEMI).
+   we call [`party.iroiro.luajava.Lua#createProxy`](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion)){target="_self"}
+   with [`party.iroiro.luajava.Lua.Conversion#SEMI`](./javadoc/party/iroiro/luajava/Lua.Conversion.html#SEMI){target="_self"}.
 
 6. ***jclass*** to `Class<?>`.
 7. ***jobject*** to the underlying Java object.
@@ -74,8 +72,8 @@ Currently, there is no way to specify how you want the return value converted.
    Actually, if the abstract methods in the target interfaces are all of the same name, the library also does the wrapping for you.
 
    The wrapping is done by creating an intermediate Lua table and then calling
-   [`party.iroiro.luajava.Lua#createProxy`](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion))
-   with [`party.iroiro.luajava.Lua.Conversion#SEMI`](./javadoc/party/iroiro/luajava/Lua.Conversion.html#SEMI).
+   [`party.iroiro.luajava.Lua#createProxy`](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion)){target="_self"}
+   with [`party.iroiro.luajava.Lua.Conversion#SEMI`](./javadoc/party/iroiro/luajava/Lua.Conversion.html#SEMI){target="_self"}.
 
 9. Any type can get wrapped into a `LuaValue`.
 10. If all the above is not applicable, the result is `null` on the Java side.
@@ -93,13 +91,13 @@ This library ensures that no truncation ever happens when casting between `long`
 (which can happen on 32-bit machines where `long` values get truncated to 32-bit Lua integers).
 To retrieve or push integer values that exceed the safe integer range of `double` numbers,
 you will need to use
-[`party.iroiro.luajava.Lua#push(long)`](./javadoc/party/iroiro/luajava/Lua.html#push(long))
+[`party.iroiro.luajava.Lua#push(long)`](./javadoc/party/iroiro/luajava/Lua.html#push(long)){target="_self"}
 and
-[`party.iroiro.luajava.Lua#toInteger`](./javadoc/party/iroiro/luajava/Lua.html#toInteger(int)).
+[`party.iroiro.luajava.Lua#toInteger`](./javadoc/party/iroiro/luajava/Lua.html#toInteger(int)){target="_self"}.
 
 Also, when passing values via proxies or Java calls on the Lua side,
 the values will get auto converted to ensure maximal precision.
 For example, the following Lua snippet passes `2^60 + 1` around correctly
 (which cannot fit into a `double`) when running with 64-bit Lua 5.3:
 
-@[code lua](../example/src/test/resources/docs/conversions64BitExample.lua)
+<<< ../example/src/test/resources/docs/conversions64BitExample.lua

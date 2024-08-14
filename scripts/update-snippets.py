@@ -9,9 +9,8 @@ import sys
 import typing
 from pathlib import Path
 
-hintRegex = re.compile('^\\s*<!-- @code:(\\w+) -->$')
 snippetRegex = re.compile(
-    '^(\\s*)@\\[code[\\d{},\\-]* (java|lua|\\w+)([\\w\\d\\-,: {}]*)\\]\\(([\\./\\w\\-]+)\\)$'
+    '^(\\s*)<<< (.+?\\.(java|lua))(#\\w+)?(\\{[\\d\\-,]+\\})?( \\[|$)',
 )
 
 java_files: set[Path] = set()
@@ -31,59 +30,33 @@ for n, md in enumerate(files):
     hint_java_method: typing.Optional[str] = None
     for i in range(len(lines)):
         line = lines[i]
+        # All Java/Lua code must be quoted with snippets,
+        # so that we can test them and ensure they are up-to-date.
         assert '~~~' not in line, (line, md)
         assert (
             ('```java' not in line or '```java ignored' in line)
             and ('```lua' not in line or '```lua ignored' in line)
         ), (line, md)
-        is_hint = line.strip().startswith('<!-- @code:')
-        is_snippet = line.strip().startswith('@[code')
-        if not is_snippet:
-            if is_hint:
-                hint = hintRegex.match(line)
-                assert hint, (line, md)
-                hint_java_method = hint.group(1)
-            else:
-                hint_java_method = None
+        is_snippet = line.strip().startswith('<<<')
+        if not is_snippet or line.endswith('Dockerfile'):
             continue
 
         # replace the hint with the snippet
         snippet = snippetRegex.match(line)
         assert snippet, (line, md)
         indentation = snippet.group(1)
-        lang = snippet.group(2)
-        extra = snippet.group(3)
-        link = snippet.group(4)
-        if lang != 'java' and lang != 'lua':
-            assert lang in ['dockerfile']
-            continue
+        link = snippet.group(2)
+        lang = snippet.group(3)
+        frag = snippet.group(4)
+        highlight = snippet.group(5)
+        end = snippet.group(6)
+        assert lang == 'java' or lang == 'lua'
         code_file = md.parent.joinpath(link)
 
         if lang == 'java':
             java_files.add(code_file.absolute())
-            assert hint_java_method, (line, md)
-            if hint_java_method == 'class':
-                lines[i] = f'{indentation}@[code java{extra}]({link})'
-            else:
-                # find the line number range of the snippet
-                start, end = -1, -1
-                for j, jline in enumerate(code_file.read_text(encoding='utf-8').splitlines()):
-                    if hint_java_method in jline:
-                        assert start == -1, (line, jline, md)
-                        start = j
-                    elif start != -1 and end == -1:
-                        if jline == '    }':
-                            end = j
-                assert start != -1 and end != -1, (line, md)
-                lines[i] = f'{indentation}@[code{{{start + 2}-{end}}} java{extra}]({link})'
         else:
-            assert lang == 'lua', (line, md)
             lua_files.add(code_file.absolute())
-
-        hint_java_method = None
-
-    # write the updated file
-    md.write_text('\n'.join(lines).strip() + '\n', encoding='utf-8')
 
 
 for java_file in java_files:

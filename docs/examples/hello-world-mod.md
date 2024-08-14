@@ -7,4 +7,4 @@ You may try this with [the pre-built Console](../console.md).
 
 :::
 
-@[code lua](../../example/suite/src/main/resources/luajava/ansiThreadedHelloWorld.lua)
+<<< ../../example/suite/src/main/resources/luajava/ansiThreadedHelloWorld.lua

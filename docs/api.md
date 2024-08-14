@@ -28,7 +28,7 @@ For a `jclass` `clazz`:
   - Otherwise, it calls the corresponding constructor. See [`java.new`](#new-jclass-function).
 - `clazz.class` returns a `jobject`, wrapping an instance of `java.lang.Class<clazz>`.
 
-@[code lua](../example/src/test/resources/docs/apiClazzExample.lua)
+<<< ../example/src/test/resources/docs/apiClazzExample.lua
 
 ::: tip
 Don't confuse `jclass` with an instance of `java.lang.Class<?>`.
@@ -45,7 +45,7 @@ For a `jobject` `object`:
 - `object:memberMethod(...)` calls the public member method `memberMethod`.
   See [Proxied Method Calls](#proxied-method-calls) for more info.
 
-@[code lua](../example/src/test/resources/docs/apiObjectExample.lua)
+<<< ../example/src/test/resources/docs/apiObjectExample.lua
 
 ### `jarray` <Badge>type</Badge>
 
@@ -102,7 +102,7 @@ Creates a Java array.
 
 - Generates a Lua error if types mismatch or some dimensions are negative.
 
-@[code lua](../example/src/test/resources/docs/apiArrayExample.lua)
+<<< ../example/src/test/resources/docs/apiArrayExample.lua
 
 ### `caught ()` <Badge>function</Badge>
 
@@ -183,7 +183,7 @@ Import a Java class or package.
 
 - Generates a Lua error if class not found.
 
-@[code lua](../example/src/test/resources/docs/apiImportExample.lua)
+<<< ../example/src/test/resources/docs/apiImportExample.lua
 
 ### `loadlib (classname, method)` <Badge>function</Badge>
 
@@ -209,25 +209,15 @@ and returns it as a C function.
 You might also want to check out [Java-Side Modules](./examples/modules.md)
 to see how we use this function to extend the Lua `require`.
 
-:::: code-group
-::: code-group-item Java Library
+::: code-group
 
-<!-- @code:class -->
-@[code java](../example/src/test/java/party/iroiro/luajava/docs/JavaSideExampleModule.java)
+<<< ../example/src/test/java/party/iroiro/luajava/docs/JavaSideExampleModule.java [Java Library]
 
-:::
-::: code-group-item Java Side
+<<< ../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java#javaSideModuleTest [Java Side]
 
-<!-- @code:javaSideModuleTest -->
-@[code{19-23} java](../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java)
+<<< ../example/src/test/resources/docs/apiLoadlibExample.lua [Lua Side]
 
 :::
-::: code-group-item Lua Side
-
-@[code lua](../example/src/test/resources/docs/apiLoadlibExample.lua)
-
-:::
-::::
 
 ### `luaify (jobject)` <Badge>function</Badge>
 
@@ -262,7 +252,7 @@ Finds a method of the `jobject` or `jclass` matching the name and signature. See
 
     - (***function***) Never `nil`. The real method lookup begins after you supply arguments to this returned function.
 
-@[code lua{3-5}](../example/src/test/resources/docs/apiMethodExample.lua)
+<<< ../example/src/test/resources/docs/apiMethodExample.lua{3-5}
 
 ### `new (jclass, ...)` <Badge>function</Badge>
 
@@ -283,7 +273,7 @@ Call the constructor of the given Java type.
 
 Examples:
 
-@[code lua](../example/src/test/resources/docs/apiNewExample.lua)
+<<< ../example/src/test/resources/docs/apiNewExample.lua
 
 ### `proxy (jclass, ..., table)` <Badge>function</Badge>
 
@@ -311,7 +301,7 @@ See also [Proxy Caveats](./proxy.md).
 
 - Generates a Lua error if exceptions occur or unable to find the interfaces.
 
-@[code lua](../example/src/test/resources/docs/apiProxyExampleDisabled.lua)
+<<< ../example/src/test/resources/docs/apiProxyExampleDisabled.lua
 
 ### `unwrap (jobject)` <Badge>function</Badge>
 
@@ -321,7 +311,7 @@ See also [Proxy Caveats](./proxy.md).
 - **Parameters:**
 
     - `jobject`: (***jobject***) The proxy object created with [`java.proxy`](#proxy-jclass-table-function)
-      or [`party.iroiro.luajava.Lua#createProxy`](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion))
+      or [`party.iroiro.luajava.Lua#createProxy`](./javadoc/party/iroiro/luajava/Lua.html#createProxy(java.lang.Class%5B%5D,party.iroiro.luajava.Lua.Conversion)){target="_self"}
 
 - **Returns:**
 
@@ -380,7 +370,7 @@ We do not support varargs. You will need to combine `java.method` and `java.arra
 
 For `Object... object` however, things are easier:
 
-@[code lua](../example/src/test/resources/docs/apiVarargsExample.lua)
+<<< ../example/src/test/resources/docs/apiVarargsExample.lua
 :::
 
 #### With `java.method`
@@ -391,17 +381,17 @@ to which you may specify the signature of the method that you intend to call.
 ::: tip
 Take the above `java.lang.Math.max` as an example. You may call `Math.max(int, int)` with the following:
 
-@[code lua{2}](../example/src/test/resources/docs/apiMethodExample1.lua)
+<<< ../example/src/test/resources/docs/apiMethodExample1.lua{2}
 
 You may call `Math.max(double, double)` with the following:
 
-@[code lua{2}](../example/src/test/resources/docs/apiMethodExample2.lua)
+<<< ../example/src/test/resources/docs/apiMethodExample2.lua{2}
 :::
 
 If you would like to access an overridden default method from a proxy object,
 you may also use:
 
-@[code lua{2}](../example/src/test/resources/docs/apiMethodExample3.lua)
+<<< ../example/src/test/resources/docs/apiMethodExample3.lua{16,26}
 
 ::: warning
 

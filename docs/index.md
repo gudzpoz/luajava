@@ -48,7 +48,7 @@ This library includes two sets of Java API:
    Most API names are renamed in CamelCases with the `lua_` or `luaL_` prefix removed.
 
    Additionally, if you are not satisfied with the API (which is an intersection between Lua 5.* versions),
-   you can use the Lua C API bindings directly via [`Lua#getLuaNatives`](./javadoc/party/iroiro/luajava/Lua.html#getLuaNatives()).
+   you can use the Lua C API bindings directly via [`Lua#getLuaNatives`](./javadoc/party/iroiro/luajava/Lua.html#getLuaNatives()){target="_self"}.
 
 2. A more Java-ish API. This requires significantly less Lua knowledge. See [Java API](./java.md).
 

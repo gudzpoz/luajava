@@ -12,19 +12,13 @@ Alternatively, we provide a `ClassPathLoader`. One just initializes the Lua stat
 
 For more flexibility, just extend `ClassPathLoader` or write your own `ExternalLoader`.
 
-:::: code-group
-::: code-group-item Java Side
+::: code-group
 
-<!-- @code:classPathLoaderTest -->
-@[code{11-14} java](../../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java)
+<<< ../../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java#classPathLoaderTest [Java Side]
 
-:::
-::: code-group-item Lua Side
-
-@[code lua](../../example/src/test/resources/docs/modulesRequireExample.lua)
+<<< ../../example/src/test/resources/docs/modulesRequireExample.lua [Lua Side]
 
 :::
-::::
 
 ## Java Method Modules
 
@@ -39,25 +33,15 @@ This provides an approach to loading libraries written in Java, similar to Lua's
    - `require` calls the loader with two arguments: `modname` and an extra value.
    - The extra value is `nil` for LuaJava.
 
-:::: code-group
-::: code-group-item Java Library
+::: code-group
 
-<!-- @code:class -->
-@[code java](../../example/src/test/java/party/iroiro/luajava/docs/JavaSideExampleModule.java)
+<<< ../../example/src/test/java/party/iroiro/luajava/docs/JavaSideExampleModule.java [Java Library]
 
-:::
-::: code-group-item Java Side
+<<< ../../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java#javaSideModuleTest [Java Side]
 
-<!-- @code:javaSideModuleTest -->
-@[code{19-23} java](../../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java)
+<<< ../../example/src/test/resources/docs/apiLoadlibExample.lua [Lua Side]
 
 :::
-::: code-group-item Lua Side
-
-@[code lua](../../example/src/test/resources/docs/apiLoadlibExample.lua)
-
-:::
-::::
 
 ## Binary Modules
 

@@ -16,19 +16,23 @@ L.close();
 
     @Test
     public void synchronizedTest() {
+// #region synchronizedTest
 Lua L = getSharedLua();
 synchronized (L.getMainState()) {
     L.run("print('operating...')");
 }
+// #endregion synchronizedTest
     }
 
     @Test
     public void differentStatesTest() {
+// #region differentStatesTest
 Lua L = new LuaJit();
 Lua J = new LuaJit();
 // No synchronization needed at all
 new Thread(new Worker(L)).start();
 new Thread(new Worker(J)).start();
+// #endregion differentStatesTest
     }
 
     private Lua getSharedLua() {
@@ -37,11 +41,13 @@ return L;
 
     @Test
     public void sameStateTest() {
+// #region sameStateTest
 Lua mainState = new LuaJit();
 Lua subThread = mainState.newThread();
 // Now the two workers need some synchronization mechanism
 new Thread(new Worker(mainState)).start();
 new Thread(new Worker(subThread)).start();
+// #endregion sameStateTest
     }
 
     private static class Worker implements Runnable {

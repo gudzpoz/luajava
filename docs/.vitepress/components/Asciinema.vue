@@ -1,9 +1,9 @@
 <script setup>
-import 'asciinema-player/dist/bundle/asciinema-player.css'
-import { ref, onMounted } from 'vue'
+import 'asciinema-player/dist/bundle/asciinema-player.css';
+import { ref, onMounted } from 'vue';
 
-const cinema = ref(null)
-const props = defineProps(['file'])
+const cinema = ref(null);
+const props = defineProps(['file']);
 
 onMounted(() => {
   if (!import.meta.env.SSR) {
@@ -11,9 +11,9 @@ onMounted(() => {
       AsciinemaPlayer.create(props.file, cinema.value, {
         rows: 12,
       })
-    )
+    );
   }
-})
+});
 </script>
 
 <template>
