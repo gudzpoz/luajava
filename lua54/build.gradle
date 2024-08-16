@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.1'
+        classpath 'com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.2'
     }
 }
 
@@ -39,14 +39,6 @@ dependencies {
 
 apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
 
-static def removeNonArmFlags(String s) {
-    // TODO: Until https://github.com/libgdx/gdx-jnigen/pull/56 gets released
-    return s
-            .replace("-mfpmath=sse -msse2", "")
-            .replace("-m32", "")
-            .replace("-m64", "")
-}
-
 jnigen {
     sharedLibName = 'lua54'
 
@@ -61,16 +53,14 @@ jnigen {
 
     add(Windows, x32)
     add(Windows, x64)
-    add(Windows, x64, ARM) {
-        cFlags = removeNonArmFlags(cFlags)
-        cppFlags = removeNonArmFlags(cppFlags)
-        linkerFlags = removeNonArmFlags(linkerFlags)
-    }
+    add(Windows, x64, ARM)
 
     add(Linux, x32)
     add(Linux, x64)
     add(Linux, x32, ARM)
     add(Linux, x64, ARM)
+    // TODO: Until we have a RISCV toolchain on Ubuntu.
+    // add(Linux, x64, RISCV)
     each({ it.os == Linux }) {
         String linuxFlags = ' -D_FORTIFY_SOURCE=0 -DLUA_USE_DLOPEN '
         cFlags += linuxFlags

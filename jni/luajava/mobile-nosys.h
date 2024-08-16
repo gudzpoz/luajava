@@ -1,8 +1,13 @@
 #ifndef MOBILE_NOSYS_H
 #define MOBILE_NOSYS_H
 
+/* Workaround before LuaJIT supports RISC-V */
+#if (defined(__riscv) || defined(__riscv__)) && __riscv_xlen == 64
+#define LJ_TARGET_RISCV64 1
+#else
 /* Borrowing arch info from LuaJIT */
 #include "lj/lj_arch.h"
+#endif
 
 /* Disabling exception usage */
 #define LUA_USE_LONGJMP

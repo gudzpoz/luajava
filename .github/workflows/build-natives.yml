@@ -69,26 +69,33 @@ jobs:
         uses: robinraju/release-downloader@v1.10
         with:
           repository: 'mstorsjo/llvm-mingw'
-          tag: 20240518
-          fileName: llvm-mingw-20240518-ucrt-ubuntu-20.04-x86_64.tar.xz
+          tag: 20240619
+          fileName: llvm-mingw-20240619-ucrt-ubuntu-20.04-x86_64.tar.xz
           tarBall: false
           zipBall: false
       - name: Set up llvm-mingw
         run: |
           sudo mkdir -p /usr/local
-          sudo tar -Jxf llvm-mingw-20240518-ucrt-ubuntu-20.04-x86_64.tar.xz -C /usr/local
-          echo "PATH=/usr/local/llvm-mingw-20240518-ucrt-ubuntu-20.04-x86_64/bin:$PATH" >> $GITHUB_ENV
+          sudo tar -Jxf llvm-mingw-20240619-ucrt-ubuntu-20.04-x86_64.tar.xz -C /usr/local
+          echo "PATH=/usr/local/llvm-mingw-20240619-ucrt-ubuntu-20.04-x86_64/bin:$PATH" >> $GITHUB_ENV
       - name: Install cross-compilation toolchains
         run: |
           sudo apt update
-          sudo apt install -y --force-yes gcc g++ linux-libc-dev libc6-dev
-          sudo apt install -y --force-yes libc6-dev-i386 lib32stdc++-9-dev
-          sudo apt install -y --force-yes linux-libc-dev linux-libc-dev-i386-cross
-          sudo apt install -y --force-yes linux-libc-dev-armhf-cross linux-libc-dev-arm64-cross linux-libc-dev-amd64-cross
-          sudo apt install -y --force-yes libstdc++-9-dev-i386-cross libstdc++-9-dev-arm64-cross libstdc++-9-dev-armhf-cross
-          sudo apt install -y --force-yes gcc-i686-linux-gnu g++-i686-linux-gnu libc6-dev-i386-cross
+          # x86_64
+          sudo apt install -y --force-yes gcc g++
+          sudo apt install -y --force-yes libc6-dev linux-libc-dev linux-libc-dev-amd64-cross
+          # x86
+          sudo apt install -y --force-yes gcc-i686-linux-gnu g++-i686-linux-gnu
+          sudo apt install -y --force-yes lib32stdc++-9-dev libstdc++-9-dev-i386-cross
+          sudo apt install -y --force-yes libc6-dev-i386 libc6-dev-i386-cross linux-libc-dev-i386-cross
+          # arm64
           sudo apt install -y --force-yes gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross
+          sudo apt install -y --force-yes libstdc++-9-dev-arm64-cross linux-libc-dev-arm64-cross
+          # armhf
           sudo apt install -y --force-yes gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libc6-dev-armhf-cross
+          sudo apt install -y --force-yes libstdc++-9-dev-armhf-cross linux-libc-dev-armhf-cross
+          # TODO: riscv64
+          # Windows
           sudo apt install -y --force-yes mingw-w64 lib32z1
       - name: Install PatchELF (verneed-fix)
         run: |
@@ -106,7 +113,9 @@ jobs:
       - name: Build natives
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
-          ./gradlew jniGen jnigenBuildLinux jnigenBuildLinux64 jnigenBuildLinuxARM jnigenBuildLinuxARM64
+          ./gradlew jniGen jnigenBuildLinux jnigenBuildLinux64
+          ./gradlew jniGen jnigenBuildLinuxARM jnigenBuildLinuxARM64
+          # TODO: ./gradlew jniGen jnigenBuildLinuxRISCV64
           ./gradlew jniGen jnigenBuildAndroid jnigenBuildWindows jnigenBuildWindows64 jnigenBuildWindowsARM64
       - name: Test (Desktop)
         run: |

@@ -5,7 +5,7 @@
 
 import sys
 
-jnigen_version = "2.5.1"
+jnigen_version = "2.5.2"
 lua_version = sys.argv[1]
 assert lua_version in ["lua51", "lua52", "lua53", "lua54"]
 header_dirs = {
@@ -13,6 +13,12 @@ header_dirs = {
     "lua52": "'lua52'",
     "lua53": "'lua53'",
     "lua54": "'lua54'",
+}
+
+compat_flags = {
+    "lua52": "-DLUA_COMPAT_ALL",
+    "lua53": "-DLUA_COMPAT_5_2",
+    "lua54": "-DLUA_COMPAT_5_3",
 }
 
 script = f"""\
@@ -57,18 +63,12 @@ dependencies {{
 
 apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
 
-static def removeNonArmFlags(String s) {{
-    // TODO: Until https://github.com/libgdx/gdx-jnigen/pull/56 gets released
-    return s
-            .replace("-mfpmath=sse -msse2", "")
-            .replace("-m32", "")
-            .replace("-m64", "")
-}}
-
 jnigen {{
     sharedLibName = '{lua_version}'
 
-    all {{
+    all {{{'' if lua_version not in compat_flags else f'''
+        cFlags += ' {compat_flags[lua_version]}'
+        cppFlags += ' {compat_flags[lua_version]}\''''}
         headerDirs = ['../../jni/luajava', 'mod', {header_dirs[lua_version]}]
         cppExcludes = ['{lua_version}/**/*']
         cExcludes = ['{lua_version}/**/*']
@@ -77,16 +77,14 @@ jnigen {{
 
     add(Windows, x32)
     add(Windows, x64)
-    add(Windows, x64, ARM) {{
-        cFlags = removeNonArmFlags(cFlags)
-        cppFlags = removeNonArmFlags(cppFlags)
-        linkerFlags = removeNonArmFlags(linkerFlags)
-    }}
+    add(Windows, x64, ARM)
 
     add(Linux, x32)
     add(Linux, x64)
     add(Linux, x32, ARM)
     add(Linux, x64, ARM)
+    // TODO: Until we have a RISCV toolchain on Ubuntu.
+    // add(Linux, x64, RISCV)
     each({{ it.os == Linux }}) {{
         String linuxFlags = ' -D_FORTIFY_SOURCE=0 -DLUA_USE_DLOPEN '
         cFlags += linuxFlags

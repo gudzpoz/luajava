@@ -7,7 +7,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.1'
+        classpath 'com.badlogicgames.gdx:gdx-jnigen-gradle:2.5.2'
     }
 }
 
@@ -167,14 +167,6 @@ void linkerConfig(BuildTarget it, Platform platform) {
 
 apply plugin: 'com.badlogicgames.gdx.gdx-jnigen'
 
-static def removeNonArmFlags(String s) {
-    // TODO: Until https://github.com/libgdx/gdx-jnigen/pull/56 gets released
-    return s
-        .replace("-mfpmath=sse -msse2", "")
-        .replace("-m32", "")
-        .replace("-m64", "")
-}
-
 jnigen {
     sharedLibName = 'luajit'
 
@@ -205,9 +197,6 @@ jnigen {
         linkerConfig(it, Platform.Win64)
     })
     add(Windows, x64, ARM) {
-        cFlags = removeNonArmFlags(cFlags)
-        cppFlags = removeNonArmFlags(cppFlags)
-        linkerFlags = removeNonArmFlags(linkerFlags)
         linkerConfig(it, Platform.WinAArch64)
     }
 

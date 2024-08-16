@@ -6,7 +6,7 @@
 
 #include <stdlib.h>
 
-#include "lj/lj_arch.h"
+#include "mobile-nosys.h"
 #if LJ_TARGET_DLOPEN
 #include <dlfcn.h>
 int reopenAsGlobal(const char * file) {

@@ -47,6 +47,7 @@ configure([
                         if (project.tasks.findByName('jnigenJarNativesIOS')) {
                             artifact jnigenJarNativesIOS {}
                         }
+                        // TODO: Add riscv64 to the list once Android NDK & jnigen supports RISC-V Android builds.
                         ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { arch ->
                             if (project.tasks.findByName("jnigenJarNativesAndroid$arch")) {
                                 artifact "jnigenJarNativesAndroid$arch" {}
