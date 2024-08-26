@@ -129,7 +129,7 @@ public abstract class JuaAPI {
     public static int loadLib(int id, String className, String methodName) {
         AbstractLua L = Jua.get(id);
         try {
-            Class<?> clazz = ClassUtils.forName(className, null);
+            Class<?> clazz = ClassUtils.forName(className);
             Method method = clazz.getDeclaredMethod(methodName, Lua.class);
             if (method.getReturnType() == int.class) {
                 //noinspection Convert2Lambda
@@ -199,7 +199,7 @@ public abstract class JuaAPI {
             String name = L.toString(i);
             if (name != null) {
                 try {
-                    return ClassUtils.forName(name, null);
+                    return ClassUtils.forName(name);
                 } catch (ClassNotFoundException e) {
                     return null;
                 }
@@ -224,7 +224,7 @@ public abstract class JuaAPI {
     public static int javaImport(int id, String className) {
         Lua L = Jua.get(id);
         try {
-            L.pushJavaClass(ClassUtils.forName(className, null));
+            L.pushJavaClass(ClassUtils.forName(className));
             return 1;
         } catch (ClassNotFoundException e) {
             return L.error(e);
@@ -362,7 +362,7 @@ public abstract class JuaAPI {
             String iClass = name.substring(0, colon);
             String method = name.substring(colon + 1);
             try {
-                return methodInvoke(index, ClassUtils.forName(iClass, null), obj, method,
+                return methodInvoke(index, ClassUtils.forName(iClass), obj, method,
                         notSignature, paramCount);
             } catch (ClassNotFoundException e) {
                 return Jua.get(index).error(e);
@@ -460,7 +460,7 @@ public abstract class JuaAPI {
                 return 1;
             } else {
                 try {
-                    L.pushJavaClass(ClassUtils.forName(clazz.getName() + '$' + name, null));
+                    L.pushJavaClass(ClassUtils.forName(clazz.getName() + '$' + name));
                     return 1;
                 } catch (ClassNotFoundException e) {
                     return i;
@@ -1028,7 +1028,7 @@ public abstract class JuaAPI {
         Class<?>[] classes = new Class[names.length];
         for (int i = 0; i < names.length; i++) {
             try {
-                classes[i] = ClassUtils.forName(names[i], null);
+                classes[i] = ClassUtils.forName(names[i]);
             } catch (ClassNotFoundException e) {
                 classes[i] = null;
             }

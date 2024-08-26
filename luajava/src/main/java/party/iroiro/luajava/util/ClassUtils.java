@@ -1,7 +1,7 @@
 /*
  * Copied from Spring Framework: org/springframework/util/ClassUtils.java
  *
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,19 +23,19 @@ import org.jetbrains.annotations.Nullable;
 import java.io.Closeable;
 import java.io.Externalizable;
 import java.io.Serializable;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.*;
 
 /**
  * Miscellaneous {@code java.lang.Class} utility methods.
- * Mainly for internal use within the framework.
+ *
+ * <p>Mainly for internal use within the framework.
  *
  * @author Juergen Hoeller
  * @author Keith Donald
  * @author Rob Harrop
  * @author Sam Brannen
+ * @author Sebastien Deleuze
  * @since 1.1
  */
 public abstract class ClassUtils {
@@ -73,7 +73,7 @@ public abstract class ClassUtils {
 
     /**
      * Map with primitive type name as key and corresponding primitive
-     * type as value, for example: "int" -> "int.class".
+     * type as value, for example: {@code "int" -> int.class}.
      */
     private static final Map<String, Class<?>> primitiveTypeNameMap = new HashMap<>(32);
 
@@ -114,8 +114,7 @@ public abstract class ClassUtils {
         registerCommonClasses(Throwable.class, Exception.class, RuntimeException.class,
                 Error.class, StackTraceElement.class, StackTraceElement[].class);
         registerCommonClasses(Enum.class, Iterable.class, Iterator.class, Enumeration.class,
-                Collection.class, List.class, Set.class, Map.class, Map.Entry.class,
-                optionalClass());
+                Collection.class, List.class, Set.class, Map.class, Map.Entry.class, optionalClass());
 
         Class<?>[] javaLanguageInterfaceArray = {Serializable.class, Externalizable.class,
                 Closeable.class, AutoCloseable.class, Cloneable.class, Comparable.class};
@@ -140,11 +139,20 @@ public abstract class ClassUtils {
      */
     private static void registerCommonClasses(Class<?>... commonClasses) {
         for (Class<?> clazz : commonClasses) {
-            if (clazz != null) {
-                commonClassCache.put(clazz.getName(), clazz);
-            }
+            commonClassCache.put(clazz.getName(), clazz);
         }
     }
+
+    /**
+     * Reference to an external class loader
+     *
+     * <p>
+     * This library defaults to using the class loader of this class.
+     * If this causes problems, you may try to override the default
+     * by setting this field to a suitable class loader instance.
+     * </p>
+     */
+    public static volatile ClassLoader DEFAULT_CLASS_LOADER = null;
 
     /**
      * Return the default ClassLoader to use: typically the thread context
@@ -163,7 +171,10 @@ public abstract class ClassUtils {
      */
     @Nullable
     public static ClassLoader getDefaultClassLoader() {
-        ClassLoader cl = null;
+        ClassLoader cl = DEFAULT_CLASS_LOADER;
+        if (cl != null) {
+            return cl;
+        }
         try {
             cl = Thread.currentThread().getContextClassLoader();
         } catch (Throwable ex) {
@@ -192,13 +203,13 @@ public abstract class ClassUtils {
      *
      * @param name        the name of the Class
      * @param classLoader the class loader to use
-     *                    (which may be {@code null}, which indicates the default class loader)
+     *                    (can be {@code null}, which indicates the default class loader)
      * @return a class instance for the supplied name
      * @throws ClassNotFoundException if the class was not found
      * @throws LinkageError           if the class file could not be loaded
      * @see Class#forName(String, boolean, ClassLoader)
      */
-    public static Class<?> forName(String name, @Nullable ClassLoader classLoader)
+    private static Class<?> forName(String name, @Nullable ClassLoader classLoader)
             throws ClassNotFoundException, LinkageError {
         Class<?> clazz = resolvePrimitiveClassName(name);
         if (clazz == null) {
@@ -237,7 +248,8 @@ public abstract class ClassUtils {
             return Class.forName(name, false, clToUse);
         } catch (ClassNotFoundException ex) {
             int lastDotIndex = name.lastIndexOf(PACKAGE_SEPARATOR);
-            if (lastDotIndex != -1) {
+            int previousDotIndex = name.lastIndexOf(PACKAGE_SEPARATOR, lastDotIndex - 1);
+            if (lastDotIndex != -1 && previousDotIndex != -1 && Character.isUpperCase(name.charAt(previousDotIndex + 1))) {
                 String nestedClassName =
                         name.substring(0, lastDotIndex) + NESTED_CLASS_SEPARATOR + name.substring(lastDotIndex + 1);
                 try {
@@ -271,6 +283,38 @@ public abstract class ClassUtils {
             result = primitiveTypeNameMap.get(name);
         }
         return result;
+    }
+
+    /**
+     * Try to use {@link #forName(String, ClassLoader)} with multiple class loaders
+     * <p>
+     * {@link #getDefaultClassLoader()} prioritizes {@link Thread#getContextClassLoader()}
+     * over {@link Class#getClassLoader()}. However, in some scenarios, the package is
+     * loaded over a isolated class-loader with an inappropriate {@link Thread#getContextClassLoader()},
+     * making class look-up fail. This method is an attempt to fix that.
+     * </p>
+     *
+     * @param name the name of the Class
+     * @return a class instance for the supplied name
+     * @throws ClassNotFoundException if the class was not found
+     * @throws LinkageError           if the class file could not be loaded
+     * @see #forName(String, ClassLoader)
+     */
+    public static Class<?> forName(String name) throws ClassNotFoundException {
+        try {
+            return forName(name, null);
+        } catch (ClassNotFoundException ex) {
+            try {
+                return forName(name, ClassUtils.class.getClassLoader());
+            } catch (ClassNotFoundException ex2) {
+                try {
+                    return forName(name, ClassLoader.getSystemClassLoader());
+                } catch (ClassNotFoundException ex3) {
+                    // Swallow - let original exception get through
+                }
+            }
+            throw ex;
+        }
     }
 
     private final static Set<String> OBJECT_METHODS;

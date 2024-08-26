@@ -183,7 +183,7 @@ public class LuaScriptEngineFactory implements ScriptEngineFactory {
         }
         for (String[] engine : ENGINES) {
             try {
-                ClassUtils.forName(engine[2], null);
+                ClassUtils.forName(engine[2]);
                 return engine;
             } catch (ClassNotFoundException ignored) {
             }
