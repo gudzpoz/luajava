@@ -384,6 +384,12 @@ public abstract class JuaAPI {
         return fieldNewIndex(index, obj.getClass(), obj, name);
     }
 
+    private final static LRUCache<Class<?>, Boolean, Constructor<?>[]> CONSTRUCTORS_CACHE = new LRUCache<>(
+            25,
+            1,
+            4
+    );
+
     /**
      * Constructs an instance of a class
      *
@@ -411,7 +417,12 @@ public abstract class JuaAPI {
             }
         }
         Object[] objects = new Object[paramCount];
-        Constructor<?> constructor = matchMethod(L, clazz.getConstructors(), objects);
+        Constructor<?>[] constructors = CONSTRUCTORS_CACHE.get(clazz, Boolean.TRUE);
+        if (constructors == null) {
+            constructors = clazz.getConstructors();
+            CONSTRUCTORS_CACHE.put(clazz, Boolean.TRUE, constructors);
+        }
+        Constructor<?> constructor = matchMethod(L, constructors, CONSTRUCTOR_WRAPPER, objects);
         if (constructor != null) {
             return construct(L, objects, constructor);
         }
@@ -646,7 +657,7 @@ public abstract class JuaAPI {
             methods = namedMethods.toArray(new Method[0]);
             MEMBER_METHOD_CACHE.put(clazz, name, methods);
         }
-        Method method = matchMethod(L, methods, name, objects);
+        Method method = matchMethod(L, methods, METHOD_WRAPPER, objects);
         if (method == null) {
             L.push("no matching method found");
             return -1;
@@ -674,7 +685,7 @@ public abstract class JuaAPI {
                 Constructor<?> constructor = matchMethod(clazz, notSignature);
                 if (constructor != null) {
                     Object[] objects = new Object[paramCount];
-                    if (matchMethod(L, new Constructor[]{constructor}, objects) != null) {
+                    if (matchMethod(L, new Constructor[]{constructor}, CONSTRUCTOR_WRAPPER, objects) != null) {
                         return construct(L, objects, constructor);
                     }
                 }
@@ -687,7 +698,7 @@ public abstract class JuaAPI {
         Method method = matchMethod(clazz, name, notSignature);
         if (method != null) {
             Object[] objects = new Object[paramCount];
-            if (matchMethod(L, new Method[]{method}, name, objects) != null) {
+            if (matchMethod(L, new Method[]{method}, METHOD_WRAPPER, objects) != null) {
                 if (clazz.isInterface()) {
                     return specialInvoke(L, method, obj, objects);
                 } else {
@@ -853,41 +864,9 @@ public abstract class JuaAPI {
     }
 
     /**
-     * See {@link #matchMethod(Lua, Object[], ExecutableWrapper, String, Object[])}
-     *
-     * @param L       the lua state
-     * @param methods all the constructors
-     * @param params  an array to store converted parameters
-     * @return a match method
-     */
-    @Nullable
-    private static Constructor<?> matchMethod(Lua L, Constructor<?>[] methods, Object[] params) {
-        return matchMethod(L, methods, CONSTRUCTOR_WRAPPER, null, params);
-    }
-
-    /**
-     * See {@link #matchMethod(Lua, Object[], ExecutableWrapper, String, Object[])}
-     *
-     * @param L       the lua state
-     * @param methods all the constructors
-     * @param name    the method name
-     * @param params  an array to store converted parameters
-     * @return a match method
-     */
-    @Nullable
-    private static Method matchMethod(Lua L, Method[] methods,
-                                      @Nullable String name, Object[] params) {
-        return matchMethod(L, methods,
-                METHOD_WRAPPER,
-                name, params);
-    }
-
-    /**
      * Matches methods against values on stack
-     *
      * @param L       the lua state
-     * @param methods all the methods
-     * @param name    the method name
+     * @param methods filtered methods that only differ in their parameters
      * @param params  an array to store converted parameters
      * @param <T>     either {@link Method} or {@link Constructor}
      * @return a match method
@@ -895,26 +874,24 @@ public abstract class JuaAPI {
     @Nullable
     private static <T> T matchMethod(Lua L, T[] methods,
                                      ExecutableWrapper<T> wrapper,
-                                     @Nullable String name, Object[] params) {
+                                     Object[] params) {
         for (T method : methods) {
-            if (name == null || name.equals(wrapper.getName(method))) {
-                /*
-                 * This is costly since it clones the internal array.
-                 * However, getParameterCount() is not available on Android 4.4
-                 *
-                 * {@code Call requires API level 24 (current min is 19): java.lang.reflect.Method#isDefault}
-                 */
-                Class<?>[] classes = wrapper.getParameterTypes(method);
-                if (classes.length == params.length) {
-                    try {
-                        for (int i = 0; i != params.length; ++i) {
-                            params[i] = convertFromLua(L, classes[i], -params.length + i);
-                        }
-                    } catch (IllegalArgumentException e) {
-                        continue;
+            /*
+             * This is costly since it clones the internal array.
+             * However, getParameterCount() is not available on Android 4.4
+             *
+             * {@code Call requires API level 24 (current min is 19): java.lang.reflect.Method#isDefault}
+             */
+            Class<?>[] classes = wrapper.getParameterTypes(method);
+            if (classes.length == params.length) {
+                try {
+                    for (int i = 0; i != params.length; ++i) {
+                        params[i] = convertFromLua(L, classes[i], -params.length + i);
                     }
-                    return method;
+                } catch (IllegalArgumentException e) {
+                    continue;
                 }
+                return method;
             }
         }
         return null;
