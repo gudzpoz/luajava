@@ -1,5 +1,31 @@
 # Troubleshooting
 
+## Class (or Resource) Not Found
+
+### Is a wrong classloader used?
+
+By default, LuaJava tries the following classloaders for class loading,
+and chooses the first non-null one:
+
+1. `Thread.currentThread().getContextClassLoader()`
+2. `party.iroiro.luajava.util.ClassUtils.class.getClassLoader()`
+3. `ClassLoader.getSystemClassLoader()`
+
+This might not be optimal if your class loading environment is not set up in this hierarchical way.
+You may override `party.iroiro.luajava.util.ClassUtils#DEFAULT_CLASS_LOADER` to use a different class loader.
+(It is not documented in the Javadoc, since it is quite internal and subject to changes.)
+
+### Are you (mistakenly) using Java 9 modules?
+
+If you package a fat JAR with, for example, [shadow](https://github.com/GradleUp/shadow),
+please note that older versions of the plugins may not prune the `module-info.class` from some of your dependencies,
+potentially making the whole JAR a large module.
+
+It should be fine if the fat JAR is the only external JAR you load into the JVM.
+But, if you plan to use this JAR as part of another application (e.g., as a plugin),
+this can cause problems because the module system can restrict reflective access.
+Try moving all `**/*/module-info.class` from your fat JAR.
+
 ## JVM Crashed
 
 The crash is often followed by the following error message:

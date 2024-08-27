@@ -114,7 +114,8 @@ public abstract class ClassUtils {
         registerCommonClasses(Throwable.class, Exception.class, RuntimeException.class,
                 Error.class, StackTraceElement.class, StackTraceElement[].class);
         registerCommonClasses(Enum.class, Iterable.class, Iterator.class, Enumeration.class,
-                Collection.class, List.class, Set.class, Map.class, Map.Entry.class, optionalClass());
+                Collection.class, List.class, Set.class, Map.class, Map.Entry.class);
+        registerOptionalClasses();
 
         Class<?>[] javaLanguageInterfaceArray = {Serializable.class, Externalizable.class,
                 Closeable.class, AutoCloseable.class, Cloneable.class, Comparable.class};
@@ -123,14 +124,11 @@ public abstract class ClassUtils {
 
     /**
      * {@code Class requires API level 24 (current min is 19): java.util.Optional}
-     *
-     * @return the class
      */
-    private static @Nullable Class<?> optionalClass() {
+    private static void registerOptionalClasses() {
         try {
-            return Class.forName("java.util.Optional");
-        } catch (ClassNotFoundException e) {
-            return null;
+            registerCommonClasses(Class.forName("java.util.Optional"));
+        } catch (ClassNotFoundException ignored) {
         }
     }
 
