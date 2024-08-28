@@ -25,6 +25,7 @@ package party.iroiro.luajava;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import party.iroiro.luajava.util.ClassUtils;
+import party.iroiro.luajava.util.LRUCache;
 import party.iroiro.luajava.value.LuaValue;
 
 import java.lang.reflect.*;
@@ -129,7 +130,7 @@ public abstract class JuaAPI {
     public static int loadLib(int id, String className, String methodName) {
         AbstractLua L = Jua.get(id);
         try {
-            Class<?> clazz = ClassUtils.forName(className, null);
+            Class<?> clazz = ClassUtils.forName(className);
             Method method = clazz.getDeclaredMethod(methodName, Lua.class);
             if (method.getReturnType() == int.class) {
                 //noinspection Convert2Lambda
@@ -199,7 +200,7 @@ public abstract class JuaAPI {
             String name = L.toString(i);
             if (name != null) {
                 try {
-                    return ClassUtils.forName(name, null);
+                    return ClassUtils.forName(name);
                 } catch (ClassNotFoundException e) {
                     return null;
                 }
@@ -224,7 +225,7 @@ public abstract class JuaAPI {
     public static int javaImport(int id, String className) {
         Lua L = Jua.get(id);
         try {
-            L.pushJavaClass(ClassUtils.forName(className, null));
+            L.pushJavaClass(ClassUtils.forName(className));
             return 1;
         } catch (ClassNotFoundException e) {
             return L.error(e);
@@ -362,7 +363,7 @@ public abstract class JuaAPI {
             String iClass = name.substring(0, colon);
             String method = name.substring(colon + 1);
             try {
-                return methodInvoke(index, ClassUtils.forName(iClass, null), obj, method,
+                return methodInvoke(index, ClassUtils.forName(iClass), obj, method,
                         notSignature, paramCount);
             } catch (ClassNotFoundException e) {
                 return Jua.get(index).error(e);
@@ -382,6 +383,12 @@ public abstract class JuaAPI {
     public static int objectNewIndex(int index, Object obj, String name) {
         return fieldNewIndex(index, obj.getClass(), obj, name);
     }
+
+    private final static LRUCache<Class<?>, Boolean, Constructor<?>[]> CONSTRUCTORS_CACHE = new LRUCache<>(
+            25,
+            1,
+            4
+    );
 
     /**
      * Constructs an instance of a class
@@ -410,7 +417,12 @@ public abstract class JuaAPI {
             }
         }
         Object[] objects = new Object[paramCount];
-        Constructor<?> constructor = matchMethod(L, clazz.getConstructors(), objects);
+        Constructor<?>[] constructors = CONSTRUCTORS_CACHE.get(clazz, Boolean.TRUE);
+        if (constructors == null) {
+            constructors = clazz.getConstructors();
+            CONSTRUCTORS_CACHE.put(clazz, Boolean.TRUE, constructors);
+        }
+        Constructor<?> constructor = matchMethod(L, constructors, CONSTRUCTOR_WRAPPER, objects);
         if (constructor != null) {
             return construct(L, objects, constructor);
         }
@@ -460,7 +472,7 @@ public abstract class JuaAPI {
                 return 1;
             } else {
                 try {
-                    L.pushJavaClass(ClassUtils.forName(clazz.getName() + '$' + name, null));
+                    L.pushJavaClass(ClassUtils.forName(clazz.getName() + '$' + name));
                     return 1;
                 } catch (ClassNotFoundException e) {
                     return i;
@@ -607,6 +619,12 @@ public abstract class JuaAPI {
         }
     }
 
+    private final static LRUCache<Class<?>, String, Method[]> MEMBER_METHOD_CACHE = new LRUCache<>(
+            25,
+            10,
+            4
+    );
+
     /**
      * Calls the given method <code>{obj}.{name}(... params from stack)</code>
      * <p>
@@ -628,7 +646,18 @@ public abstract class JuaAPI {
         Lua L = Jua.get(index);
         /* Storage of converted params */
         Object[] objects = new Object[paramCount];
-        Method method = matchMethod(L, clazz.getMethods(), name, objects);
+        Method[] methods = MEMBER_METHOD_CACHE.get(clazz, name);
+        if (methods == null) {
+            List<Method> namedMethods = new ArrayList<>();
+            for (Method method : clazz.getMethods()) {
+                if (method.getName().equals(name)) {
+                    namedMethods.add(method);
+                }
+            }
+            methods = namedMethods.toArray(new Method[0]);
+            MEMBER_METHOD_CACHE.put(clazz, name, methods);
+        }
+        Method method = matchMethod(L, methods, METHOD_WRAPPER, objects);
         if (method == null) {
             L.push("no matching method found");
             return -1;
@@ -656,7 +685,7 @@ public abstract class JuaAPI {
                 Constructor<?> constructor = matchMethod(clazz, notSignature);
                 if (constructor != null) {
                     Object[] objects = new Object[paramCount];
-                    if (matchMethod(L, new Constructor[]{constructor}, objects) != null) {
+                    if (matchMethod(L, new Constructor[]{constructor}, CONSTRUCTOR_WRAPPER, objects) != null) {
                         return construct(L, objects, constructor);
                     }
                 }
@@ -669,7 +698,7 @@ public abstract class JuaAPI {
         Method method = matchMethod(clazz, name, notSignature);
         if (method != null) {
             Object[] objects = new Object[paramCount];
-            if (matchMethod(L, new Method[]{method}, name, objects) != null) {
+            if (matchMethod(L, new Method[]{method}, METHOD_WRAPPER, objects) != null) {
                 if (clazz.isInterface()) {
                     return specialInvoke(L, method, obj, objects);
                 } else {
@@ -752,6 +781,21 @@ public abstract class JuaAPI {
     }
     */
 
+    private final static class OptionalField {
+        @Nullable
+        public final Field field;
+
+        private OptionalField(@Nullable Field field) {
+            this.field = field;
+        }
+    }
+
+    private final static LRUCache<Class<?>, String, OptionalField> OBJECT_FIELD_CACHE = new LRUCache<>(
+            25,
+            10,
+            4
+    );
+
     /**
      * Tries to fetch field from an object
      * <p>
@@ -766,11 +810,22 @@ public abstract class JuaAPI {
      */
     public static int fieldIndex(Lua L, Class<?> clazz, @Nullable Object object, String name) {
         try {
-            Field field = clazz.getField(name);
+            OptionalField optionalField = OBJECT_FIELD_CACHE.get(clazz, name);
+            Field field;
+            if (optionalField == null) {
+                field = clazz.getField(name);
+                OBJECT_FIELD_CACHE.put(clazz, name, new OptionalField(field));
+            } else {
+                field = optionalField.field;
+                if (field == null) {
+                    return 2;
+                }
+            }
             Object obj = field.get(object);
             L.push(obj, Lua.Conversion.SEMI);
             return 1;
         } catch (NoSuchFieldException | IllegalAccessException | NullPointerException ignored) {
+            OBJECT_FIELD_CACHE.put(clazz, name, new OptionalField(null));
             return 2;
         }
     }
@@ -787,52 +842,31 @@ public abstract class JuaAPI {
     private static int fieldNewIndex(int index, Class<?> clazz, Object object, String name) {
         Lua L = Jua.get(index);
         try {
-            Field field = clazz.getField(name);
+            OptionalField optionalField = OBJECT_FIELD_CACHE.get(clazz, name);
+            Field field;
+            if (optionalField == null) {
+                field = clazz.getField(name);
+                OBJECT_FIELD_CACHE.put(clazz, name, new OptionalField(field));
+            } else {
+                field = optionalField.field;
+                if (field == null) {
+                    return L.error(new NoSuchFieldException(name));
+                }
+            }
             Class<?> type = field.getType();
             Object o = convertFromLua(L, type, 3);
             field.set(object, o);
             return 0;
         } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
+            OBJECT_FIELD_CACHE.put(clazz, name, new OptionalField(null));
             return L.error(e);
         }
     }
 
     /**
-     * See {@link #matchMethod(Lua, Object[], ExecutableWrapper, String, Object[])}
-     *
-     * @param L       the lua state
-     * @param methods all the constructors
-     * @param params  an array to store converted parameters
-     * @return a match method
-     */
-    @Nullable
-    private static Constructor<?> matchMethod(Lua L, Constructor<?>[] methods, Object[] params) {
-        return matchMethod(L, methods, CONSTRUCTOR_WRAPPER, null, params);
-    }
-
-    /**
-     * See {@link #matchMethod(Lua, Object[], ExecutableWrapper, String, Object[])}
-     *
-     * @param L       the lua state
-     * @param methods all the constructors
-     * @param name    the method name
-     * @param params  an array to store converted parameters
-     * @return a match method
-     */
-    @Nullable
-    private static Method matchMethod(Lua L, Method[] methods,
-                                      @Nullable String name, Object[] params) {
-        return matchMethod(L, methods,
-                METHOD_WRAPPER,
-                name, params);
-    }
-
-    /**
      * Matches methods against values on stack
-     *
      * @param L       the lua state
-     * @param methods all the methods
-     * @param name    the method name
+     * @param methods filtered methods that only differ in their parameters
      * @param params  an array to store converted parameters
      * @param <T>     either {@link Method} or {@link Constructor}
      * @return a match method
@@ -840,30 +874,40 @@ public abstract class JuaAPI {
     @Nullable
     private static <T> T matchMethod(Lua L, T[] methods,
                                      ExecutableWrapper<T> wrapper,
-                                     @Nullable String name, Object[] params) {
+                                     Object[] params) {
         for (T method : methods) {
-            if (name == null || name.equals(wrapper.getName(method))) {
-                /*
-                 * This is costly since it clones the internal array.
-                 * However, getParameterCount() is not available on Android 4.4
-                 *
-                 * {@code Call requires API level 24 (current min is 19): java.lang.reflect.Method#isDefault}
-                 */
-                Class<?>[] classes = wrapper.getParameterTypes(method);
-                if (classes.length == params.length) {
-                    try {
-                        for (int i = 0; i != params.length; ++i) {
-                            params[i] = convertFromLua(L, classes[i], -params.length + i);
-                        }
-                    } catch (IllegalArgumentException e) {
-                        continue;
+            /*
+             * This is costly since it clones the internal array.
+             * However, getParameterCount() is not available on Android 4.4
+             *
+             * {@code Call requires API level 24 (current min is 19): java.lang.reflect.Method#isDefault}
+             */
+            Class<?>[] classes = wrapper.getParameterTypes(method);
+            if (classes.length == params.length) {
+                try {
+                    for (int i = 0; i != params.length; ++i) {
+                        params[i] = convertFromLua(L, classes[i], -params.length + i);
                     }
-                    return method;
+                } catch (IllegalArgumentException e) {
+                    continue;
                 }
+                return method;
             }
         }
         return null;
     }
+
+    private final static LRUCache<Class<?>, String, Constructor<?>> CONSTRUCTOR_CACHE = new LRUCache<>(
+            25,
+            5,
+            4
+    );
+
+    private final static LRUCache<Class<?>, String, Method> METHOD_CACHE = new LRUCache<>(
+            25,
+            50,
+            4
+    );
 
     /**
      * Find a certain constructor
@@ -874,6 +918,10 @@ public abstract class JuaAPI {
      */
     @Nullable
     private static Constructor<?> matchMethod(Class<?> clazz, String notSignature) {
+        Constructor<?> cached = CONSTRUCTOR_CACHE.get(clazz, notSignature);
+        if (cached != null) {
+            return cached;
+        }
         Class<?>[] classes = getClasses(notSignature);
         try {
             return clazz.getConstructor(classes);
@@ -892,6 +940,10 @@ public abstract class JuaAPI {
      */
     @Nullable
     private static Method matchMethod(Class<?> clazz, String name, String notSignature) {
+        Method cached = METHOD_CACHE.get(clazz, name + ",," + notSignature);
+        if (cached != null) {
+            return cached;
+        }
         Class<?>[] classes = getClasses(notSignature);
         try {
             return clazz.getMethod(name, classes);
@@ -1028,7 +1080,7 @@ public abstract class JuaAPI {
         Class<?>[] classes = new Class[names.length];
         for (int i = 0; i < names.length; i++) {
             try {
-                classes[i] = ClassUtils.forName(names[i], null);
+                classes[i] = ClassUtils.forName(names[i]);
             } catch (ClassNotFoundException e) {
                 classes[i] = null;
             }
@@ -1041,7 +1093,8 @@ public abstract class JuaAPI {
      * since {@code Executable} is not introduced until Java 8.
      */
     interface ExecutableWrapper<T> {
-        @Nullable String getName(T executable);
+        @Nullable
+        String getName(T executable);
 
         Class<?>[] getParameterTypes(T executable);
     }

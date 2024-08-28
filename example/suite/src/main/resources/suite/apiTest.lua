@@ -105,3 +105,16 @@ assert(currentThread ~= nil) -- Injected by the runner
 assertThrows('unable to detach a main state', java.detach, currentThread)
 subThread = coroutine.create(function() end)
 java.detach(subThread)
+
+--[[
+  java.method
+  ]]--
+-- The following ensures coverage of method caching
+BigInteger = java.import('java.math.BigInteger')
+Constructor = java.method(BigInteger, 'new', 'java.lang.String')
+integer1 = Constructor('100')
+integer2 = Constructor('100')
+assert(integer1:equals(integer2))
+added = java.method(integer1, 'add', 'java.math.BigInteger')(integer2)
+added = java.method(added, 'add', 'java.math.BigInteger')(added)
+assert(integer:intValue() == 400)

@@ -24,6 +24,7 @@ package party.iroiro.luajava;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import party.iroiro.luajava.util.ClassUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -32,12 +33,37 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
+/**
+ * An {@link ExternalLoader} that loads modules from classpath
+ *
+ * <p>
+ * The path to the resource is converted from module name with
+ * {@link #getPath(String)}. For example, loading a {@code abc.def} module
+ * will load a Lua file at {@code classpath://abc/def.lua}.
+ * </p>
+ */
 public class ClassPathLoader implements ExternalLoader {
+    protected final ClassLoader classLoader;
+
+    /**
+     * Use {@link ClassUtils#getDefaultClassLoader()} for resource loading
+     */
+    public ClassPathLoader() {
+        this(ClassUtils.getDefaultClassLoader());
+    }
+
+    /**
+     * @param classLoader the classloader for resource loading
+     */
+    public ClassPathLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
     @Override
     public @Nullable Buffer load(String module, Lua ignored) {
         try (InputStream resource = Objects.requireNonNull(
                 // We use the class loader to load resources support loading from other Java modules.
-                getClass().getClassLoader().getResourceAsStream(getPath(module))
+                classLoader.getResourceAsStream(getPath(module))
         )) {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             byte[] bytes = new byte[4096];
@@ -57,10 +83,17 @@ public class ClassPathLoader implements ExternalLoader {
         }
     }
 
+    /**
+     * @param module dot separated module path
+     * @return module path with {@code .} replaced by {@code /}, appended with {@code .lua}
+     */
     protected String getPath(String module) {
         return module.replace('.', '/') + ".lua";
     }
 
+    /**
+     * An output stream used to convert a {@link ByteArrayOutputStream} to a {@link ByteBuffer}
+     */
     public static class BufferOutputStream extends OutputStream {
         private final ByteBuffer buffer;
 

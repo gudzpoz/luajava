@@ -3,6 +3,7 @@ plugins {
     id 'application'
     id 'jacoco'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'me.champeau.jmh' version '0.7.2'
 }
 
 repositories {
@@ -24,6 +25,12 @@ java {
 }
 
 dependencies {
+    jmh project(':luajava')
+    jmh project(':luaj')
+    jmh project(':lua54')
+    jmh project(':luajit')
+    jmh project(path: ':lua54', configuration: 'desktopNatives')
+    jmh project(path: ':luajit', configuration: 'desktopNatives')
     implementation project(':luajava')
     implementation project(':lua51')
     implementation project(':lua52')
@@ -48,6 +55,15 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$jUnitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$jUnitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$jUnitVersion"
+}
+
+jmh {
+    benchmarkMode = ['avgt']
+    fork = 1
+    iterations = 3
+    profilers = ['perfasm']
+    warmupIterations = 2
+    timeUnit = 'us'
 }
 
 test {
