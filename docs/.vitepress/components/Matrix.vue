@@ -12,7 +12,7 @@
 <script setup>
 import { ref } from 'vue';
 const groupId = 'party.iroiro.luajava';
-const version = '4.0.1';
+const version = '4.0.2';
 
 const notAvailable = {};
 

@@ -1,6 +1,6 @@
 {
   "name": "luajava-docs",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Documentation for LuaJava",
   "type": "module",
   "main": "index.js",

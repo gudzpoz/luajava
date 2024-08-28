@@ -66,11 +66,11 @@ Currently:
 
 | Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 | LuaJIT      |    LuaJ     |
 |:-------:|:-------:|:-------:|:-------:|:-----------:|:-----------:|
-| 5.1.5   | 5.2.4   | 5.3.6   | 5.4.6   | [`5790d25`] | [LuaJ fork] |
+| 5.1.5   | 5.2.4   | 5.3.6   | 5.4.6   | [`ae4735f`] | [LuaJ fork] |
 
 </div>
 
-[`5790d25`]: https://github.com/LuaJIT/LuaJIT/commits/5790d253972c9d78a0c2aece527eda5b134bbbf7
+[`ae4735f`]: https://github.com/LuaJIT/LuaJIT/commits/ae4735f621d89d84758769b76432d2319dda9827
 
 [LuaJ fork]: https://github.com/wagyourtail/luaj
 
