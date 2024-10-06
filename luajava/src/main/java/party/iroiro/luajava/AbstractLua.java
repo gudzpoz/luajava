@@ -46,6 +46,7 @@ public abstract class AbstractLua implements Lua {
     private final static Object[] EMPTY = new Object[0];
     protected final static LuaInstances<AbstractLua> instances = new LuaInstances<>();
     protected volatile ExternalLoader loader;
+    protected volatile LuaValue requireFunction;
     protected final ReferenceQueue<LuaReferable> recyclableReferences;
     protected final ConcurrentHashMap<Integer, LuaReference<?>> recordedReferences;
 
@@ -71,6 +72,7 @@ public abstract class AbstractLua implements Lua {
         mainThread = this;
         subThreads = new LinkedList<>();
         loader = null;
+        requireFunction = null;
         recyclableReferences = new ReferenceQueue<>();
         recordedReferences = new ConcurrentHashMap<>();
     }
@@ -1092,6 +1094,21 @@ public abstract class AbstractLua implements Lua {
     public LuaValue[] eval(String command) throws LuaException {
         load(command);
         return get().call();
+    }
+
+    @Override
+    public LuaValue require(String module) throws LuaException {
+        LuaValue req = requireFunction;
+        if (req == null) {
+            req = get("require");
+            if (req.type() != LuaType.FUNCTION) {
+                openLibrary("package");
+                req = get("require");
+                requireFunction = req;
+            }
+        }
+        LuaValue[] results = req.call(module);
+        return results.length > 0 ? results[0] : fromNull();
     }
 
     @Override

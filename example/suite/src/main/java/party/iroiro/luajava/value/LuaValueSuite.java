@@ -123,6 +123,9 @@ public class LuaValueSuite<T extends Lua> {
         L.push(10);
         LuaValue i = L.get();
         assertThrows(UnsupportedOperationException.class, i::length);
+
+        L.openLibrary("string");
+        assertEquals('t', L.require("string").get("byte").call("test", 1)[0].toInteger());
     }
 
     private void luaStateTest() {
