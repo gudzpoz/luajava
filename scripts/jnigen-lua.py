@@ -640,6 +640,18 @@ extraFunctions = [
         ),
     ),
     LuaAPI(
+        name='luaJ_pushlstring',
+        description='Push a buffer as a raw Lua string',
+        signature=FunctionSignature(
+            returns='void',
+            params=[
+                ('lua_State *', 'L'),
+                ('unsigned char *', 'buffer'),
+                ('int', 'size'),
+            ],
+        ),
+    ),
+    LuaAPI(
         name='luaJ_isobject',
         description='Is a Java object (including object, array or class)',
         signature=FunctionSignature(

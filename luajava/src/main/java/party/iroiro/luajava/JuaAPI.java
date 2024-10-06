@@ -649,7 +649,11 @@ public abstract class JuaAPI {
         Method[] methods = MEMBER_METHOD_CACHE.get(clazz, name);
         if (methods == null) {
             List<Method> namedMethods = new ArrayList<>();
-            for (Method method : clazz.getMethods()) {
+            Class<?> publicClass = clazz;
+            while (!Modifier.isPublic(publicClass.getModifiers())) {
+                publicClass = publicClass.getSuperclass();
+            }
+            for (Method method : publicClass.getMethods()) {
                 if (method.getName().equals(name)) {
                     namedMethods.add(method);
                 }
@@ -975,8 +979,12 @@ public abstract class JuaAPI {
             if (clazz == boolean.class || clazz == Boolean.class) {
                 return L.toBoolean(index);
             }
-        } else if (type == Lua.LuaType.STRING && clazz.isAssignableFrom(String.class)) {
-            return L.toString(index);
+        } else if (type == Lua.LuaType.STRING) {
+            if (clazz.isAssignableFrom(String.class)) {
+                return L.toString(index);
+            } else if (clazz.isAssignableFrom(ByteBuffer.class)) {
+                return L.toBuffer(index);
+            }
         } else if (type == Lua.LuaType.NUMBER) {
             if (clazz.isPrimitive() || Number.class.isAssignableFrom(clazz)) {
                 Number v;

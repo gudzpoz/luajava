@@ -1751,6 +1751,19 @@ public interface LuaNatives {
     /**
      * A wrapper function
      *
+     * <p>
+     * Push a buffer as a raw Lua string
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param buffer the buffer (expecting direct)
+     * @param size size
+     */
+    void luaJ_pushlstring(long ptr, Buffer buffer, int size);
+
+    /**
+     * A wrapper function
+     *
      * <p>Push a Java object</p>
      *
      * @param ptr the <code>lua_State*</code> pointer

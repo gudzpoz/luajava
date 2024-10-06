@@ -2,6 +2,8 @@ package party.iroiro.luajava.value;
 
 import party.iroiro.luajava.LuaException;
 
+import java.nio.ByteBuffer;
+
 public interface LuaThread {
     /**
      * Sets a global variable to the given value
@@ -63,4 +65,10 @@ public interface LuaThread {
      * @return a string Lua value
      */
     LuaValue from(String s);
+
+    /**
+     * @param buffer the content of the raw string
+     * @return a raw string Lua value
+     */
+    LuaValue from(ByteBuffer buffer);
 }

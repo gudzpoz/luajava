@@ -3446,6 +3446,24 @@ public class LuaJitNatives implements LuaNatives {
      * A wrapper function
      *
      * <p>
+     * Push a buffer as a raw Lua string
+     * </p>
+     *
+     * @param ptr the <code>lua_State*</code> pointer
+     * @param buffer the buffer (expecting direct)
+     * @param size size
+     */
+    public native void luaJ_pushlstring(long ptr, Buffer buffer, int size); /*
+        lua_State * L = (lua_State *) ptr;
+
+        luaJ_pushlstring((lua_State *) L, (unsigned char *) buffer, (int) size);
+    */
+
+
+    /**
+     * A wrapper function
+     *
+     * <p>
      * Is a Java object (including object, array or class)
      * </p>
      *
