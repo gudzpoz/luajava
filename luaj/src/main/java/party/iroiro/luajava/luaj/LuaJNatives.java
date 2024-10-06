@@ -807,9 +807,10 @@ public class LuaJNatives implements LuaNatives {
     }
 
     @Override
-    public int luaJ_loadbuffer(long ptr, Buffer buffer, int size, String name) {
+    public int luaJ_loadbuffer(long ptr, Buffer buffer, int start, int size, String name) {
         LuaJState L = instances.get((int) ptr);
-        ByteBuffer bytes = (ByteBuffer) buffer;
+        ByteBuffer bytes = ((ByteBuffer) buffer).duplicate();
+        bytes.position(start).limit(start + size);
         try {
             L.push(
                     L.globals.load(new InputStream() {
@@ -827,8 +828,8 @@ public class LuaJNatives implements LuaNatives {
     }
 
     @Override
-    public int luaJ_dobuffer(long ptr, Buffer buffer, int size, String name) {
-        luaJ_loadbuffer(ptr, buffer, size, name);
+    public int luaJ_dobuffer(long ptr, Buffer buffer, int start, int size, String name) {
+        luaJ_loadbuffer(ptr, buffer, start, size, name);
         return lua_pcall(ptr, 0, LUA_MULTRET, 0);
     }
 
@@ -893,10 +894,12 @@ public class LuaJNatives implements LuaNatives {
     }
 
     @Override
-    public void luaJ_pushlstring(long ptr, Buffer buffer, int size) {
+    public void luaJ_pushlstring(long ptr, Buffer buffer, int start, int size) {
         LuaJState L = instances.get((int) ptr);
         byte[] bytes = new byte[size];
-        ((ByteBuffer) buffer).get(bytes);
+        ByteBuffer duplicate = ((ByteBuffer) buffer).duplicate();
+        duplicate.position(start).limit(start + size);
+        duplicate.get(bytes);
         L.push(LuaValue.valueOf(bytes));
     }
 
