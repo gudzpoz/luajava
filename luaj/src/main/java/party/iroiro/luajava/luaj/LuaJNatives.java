@@ -240,7 +240,7 @@ public class LuaJNatives implements LuaNatives {
         FunctionInvoker.setFunction(instances.get((int) J), func.checkfunction());
         return thread;
     }
-    
+
     protected void lua_require_coroutine(long ptr) {
         LuaJState L = instances.get((int) ptr);
         L.globals.load(new CoroutineLib() {
@@ -890,6 +890,14 @@ public class LuaJNatives implements LuaNatives {
                 return checkOrError(L, f.__call(Jua.get(L.lid)));
             }
         });
+    }
+
+    @Override
+    public void luaJ_pushlstring(long ptr, Buffer buffer, int size) {
+        LuaJState L = instances.get((int) ptr);
+        byte[] bytes = new byte[size];
+        ((ByteBuffer) buffer).get(bytes);
+        L.push(LuaValue.valueOf(bytes));
     }
 
     @Override

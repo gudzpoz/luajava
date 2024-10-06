@@ -101,6 +101,13 @@ public interface Lua extends AutoCloseable, LuaThread {
     void push(@NotNull String string);
 
     /**
+     * Pushes a buffer as a raw string onto the stack
+     *
+     * @param buffer the buffer, which might contain invalid UTF-8 characters and zeros
+     */
+    void push(@NotNull ByteBuffer buffer);
+
+    /**
      * Push the element onto the stack, converted to lua tables
      *
      * <p>
@@ -773,7 +780,7 @@ public interface Lua extends AutoCloseable, LuaThread {
 
     /**
      * Creates a new empty table and pushes it onto the stack
-     * 
+     *
      * <p>
      * It is equivalent to {@link #createTable(int, int) createTable(0, 0)}.
      * </p>
@@ -1208,6 +1215,7 @@ public interface Lua extends AutoCloseable, LuaThread {
          * <ul>
          *     <li>Boolean -&gt; boolean</li>
          *     <li>String -&gt; string</li>
+         *     <li>ByteBuffer -&gt; string</li>
          *     <li>Number -&gt; lua_Number</li>
          *     <li>Map / Collection / Array -&gt; table (recursive)</li>
          *     <li>Object -&gt; Java object wrapped by a metatable {@link #pushJavaObject}</li>

@@ -98,6 +98,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         testPCall();
         testProxy();
         testPushChecks();
+        testRawStrings();
         testRef();
         testRequire();
         testRunners();
@@ -105,6 +106,30 @@ public class LuaTestSuite<T extends AbstractLua> {
         testStackPositions();
         testTableOperations();
         testThreads();
+    }
+
+    private void testRawStrings() {
+        byte[] array = {3, 2, 1, 0, -1, -2, -3};
+        L.push(ByteBuffer.wrap(array));
+        assertEquals(7, L.rawLength(-1));
+        L.setGlobal("raw_str");
+        for (int i = 0; i < 7; i++) {
+            assertEquals(
+                    Byte.toUnsignedInt(array[i]),
+                    L.eval("return string.byte(raw_str, " + (i + 1) + ")")[0].toInteger()
+            );
+        }
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(array.length);
+        byteBuffer.put(array).flip();
+        L.push(byteBuffer);
+        assertEquals(7, L.rawLength(-1));
+        L.setGlobal("raw_str");
+        for (int i = 0; i < 7; i++) {
+            assertEquals(
+                    Byte.toUnsignedInt(array[i]),
+                    L.eval("return string.byte(raw_str, " + (i + 1) + ")")[0].toInteger()
+            );
+        }
     }
 
     private void testPCall() {
@@ -1108,6 +1133,12 @@ public class LuaTestSuite<T extends AbstractLua> {
                 .convertFromLua(L, LuaValue.class, -1))).toJavaObject());
         L.pop(1);
 
+        L.push("string");
+        L.setGlobal("string1");
+        L.push(ByteBuffer.wrap("string".getBytes()));
+        L.setGlobal("string2");
+        L.run("assert(string1 == string2)");
+
         for (Object[] data : DATA) {
             Lua.Conversion[] conversions = {Lua.Conversion.NONE, SEMI, FULL};
             for (int i = 0; i < conversions.length; i++) {
@@ -1202,6 +1233,12 @@ public class LuaTestSuite<T extends AbstractLua> {
             {
                     V(Object::equals),
                     USERDATA, STRING, STRING, "", "String"
+            },
+            {
+                    V((o, l) -> l.toString().equals("a") || l.toString().isEmpty()),
+                    USERDATA, USERDATA, STRING,
+                    ByteBuffer.wrap(new byte[]{'a'}),
+                    ByteBuffer.allocateDirect(0),
             },
             {
                     V((o, o2) -> o == null || o2 == null || o.equals(o2) || o2 instanceof LuaValue),
