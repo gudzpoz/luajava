@@ -146,7 +146,7 @@ public class LuaTestSuite<T extends AbstractLua> {
     private void testCompat() {
         L.run("return _VERSION");
         String version = L.toString(-1);
-
+        assertNotNull(version);
         switch (version) {
             case "Lua 5.4": // LUA_COMPAT_5_3
             case "Lua 5.3": // LUA_COMPAT_5_2
@@ -393,6 +393,12 @@ public class LuaTestSuite<T extends AbstractLua> {
         try (T L = constructor.get()) {
             L.openLibrary("package");
             L.run("assert(1024 == require('party.iroiro.luajava.JavaLibTest.open').getNumber())");
+        }
+        try (T L = constructor.get()) {
+            assertThrowsLua(
+                    LuaError.RUNTIME,
+                    () -> L.require("luajava.wrongLuaFile")
+            );
         }
     }
 

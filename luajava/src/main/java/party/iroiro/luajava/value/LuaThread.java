@@ -38,6 +38,20 @@ public interface LuaThread {
     LuaValue[] eval(String command) throws LuaException;
 
     /**
+     * Loads a module, similar to the Lua `require` function
+     *
+     * <p>
+     * Please note that this method will attempt to call
+     * {@link party.iroiro.luajava.Lua#openLibrary(String) Lua.openLibrary("package")} first and
+     * cache the global {@code require} function.
+     * </p>
+     *
+     * @param module the module name
+     * @return the module
+     */
+    LuaValue require(String module) throws LuaException;
+
+    /**
      * @return a nil Lua value
      */
     LuaValue fromNull();
