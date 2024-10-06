@@ -4,6 +4,8 @@ import party.iroiro.luajava.Lua;
 import party.iroiro.luajava.LuaException;
 import party.iroiro.luajava.lua51.Lua51;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -102,12 +104,22 @@ public class LuaValueSuite<T extends Lua> {
         L.push((L, args) -> null);
         LuaValue v = L.get();
         assertTrue(v.toString(), v.toString().startsWith("RefLuaValue$FUNCTION@party.iroiro.luajava.lua"));
+
+        assertEquals("test", L.from(ByteBuffer.wrap("test".getBytes(StandardCharsets.UTF_8))).toString());
     }
 
     private void stringTest() {
         LuaValue value = L.get("_VERSION");
         //noinspection SizeReplaceableByIsEmpty
         assertTrue(value.length() > 0);
+        ByteBuffer buffer = value.toBuffer();
+        byte[] bytes = new byte[buffer.limit()];
+        buffer.get(bytes);
+        assertArrayEquals(
+                value.toString().getBytes(StandardCharsets.UTF_8),
+                bytes
+        );
+
         L.push(10);
         LuaValue i = L.get();
         assertThrows(UnsupportedOperationException.class, i::length);

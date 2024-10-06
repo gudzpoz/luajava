@@ -39,12 +39,12 @@ public class LuaTestSuite<T extends AbstractLua> {
         }
     }
 
-    public static LuaException assertThrowsLua(Lua L, String lua, LuaException.LuaError error) {
+    public static LuaException assertThrowsLua(Lua L, String lua, LuaError error) {
         return assertThrowsLua(L, lua, error, (String) null);
     }
 
     public static LuaException assertThrowsLua(Lua L, String lua,
-                                               LuaException.LuaError error, Class<? extends Throwable> cause) {
+                                               LuaError error, Class<? extends Throwable> cause) {
         LuaException e = assertThrowsLua(L, lua, error);
         assertInstanceOf(cause, e.getCause());
         return e;
@@ -58,7 +58,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         return assertThrowsLua(error, f, null);
     }
 
-    public static LuaException assertThrowsLua(LuaException.LuaError error, Runnable f, String message) {
+    public static LuaException assertThrowsLua(LuaError error, Runnable f, String message) {
         try {
             f.run();
             fail("Expecting an exception thrown");
@@ -474,6 +474,8 @@ public class LuaTestSuite<T extends AbstractLua> {
             ByteBuffer buffer = J.toBuffer(-1);
             assertNotNull(buffer);
             assertEquals(size, buffer.capacity());
+            assertEquals(0, buffer.position());
+            assertEquals(size, buffer.limit());
             for (int i = 0; i < size; i++) {
                 assertEquals('s', buffer.get(i));
             }
@@ -481,6 +483,7 @@ public class LuaTestSuite<T extends AbstractLua> {
             assertNotNull(direct);
             assertTrue(direct.isDirect());
             assertTrue(direct.isReadOnly());
+            assertEquals(0, direct.position());
             assertEquals(size, direct.limit());
             assertEquals(size, direct.capacity());
             J.pop(1);
@@ -1235,7 +1238,11 @@ public class LuaTestSuite<T extends AbstractLua> {
                     USERDATA, STRING, STRING, "", "String"
             },
             {
-                    V((o, l) -> l.toString().equals("a") || l.toString().isEmpty()),
+                    V((o, l) -> {
+                        ByteBuffer buffer = (ByteBuffer) o;
+                        buffer.position(0); // resets
+                        return o == l || l.toString().equals("a") || l.toString().length() == buffer.limit();
+                    }),
                     USERDATA, USERDATA, STRING,
                     ByteBuffer.wrap(new byte[]{'a'}),
                     ByteBuffer.allocateDirect(0),

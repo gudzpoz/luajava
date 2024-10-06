@@ -214,7 +214,7 @@ public abstract class AbstractLua implements Lua {
             directBuffer.flip();
             buffer = directBuffer;
         }
-        C.luaJ_pushlstring(L, buffer, buffer.limit());
+        C.luaJ_pushlstring(L, buffer, buffer.position(), buffer.remaining());
     }
 
     @Override
@@ -384,6 +384,11 @@ public abstract class AbstractLua implements Lua {
             }
             if (type == double.class || type == Double.class) {
                 return number.doubleValue();
+            }
+        } else {
+            try {
+                return JuaAPI.convertFromLua(this, type, index);
+            } catch (IllegalArgumentException ignored) {
             }
         }
         return null;
@@ -612,7 +617,7 @@ public abstract class AbstractLua implements Lua {
     public void load(Buffer buffer, String name) throws LuaException {
         if (buffer.isDirect()) {
             checkStack(1);
-            checkError(C.luaJ_loadbuffer(L, buffer, buffer.limit(), name), false);
+            checkError(C.luaJ_loadbuffer(L, buffer, buffer.position(), buffer.remaining(), name), false);
         } else {
             throw new LuaException(LuaException.LuaError.MEMORY, "Expecting a direct buffer");
         }
@@ -628,7 +633,7 @@ public abstract class AbstractLua implements Lua {
     public void run(Buffer buffer, String name) throws LuaException {
         if (buffer.isDirect()) {
             checkStack(1);
-            checkError(C.luaJ_dobuffer(L, buffer, buffer.limit(), name), true);
+            checkError(C.luaJ_dobuffer(L, buffer, buffer.position(), buffer.remaining(), name), true);
         } else {
             throw new LuaException(LuaException.LuaError.MEMORY, "Expecting a direct buffer");
         }
