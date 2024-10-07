@@ -362,38 +362,11 @@ public abstract class AbstractLua implements Lua {
 
     @Override
     public @Nullable Object toObject(int index, Class<?> type) {
-        Object converted = toObject(index);
-        if (converted == null) {
+        try {
+            return JuaAPI.convertFromLua(this, type, index);
+        } catch (IllegalArgumentException ignored) {
             return null;
-        } else if (type.isAssignableFrom(converted.getClass())) {
-            return converted;
-        } else if (Number.class.isAssignableFrom(converted.getClass())) {
-            Number number = ((Number) converted);
-            if (type == byte.class || type == Byte.class) {
-                return number.byteValue();
-            }
-            if (type == short.class || type == Short.class) {
-                return number.shortValue();
-            }
-            if (type == int.class || type == Integer.class) {
-                return number.intValue();
-            }
-            if (type == long.class || type == Long.class) {
-                return number.longValue();
-            }
-            if (type == float.class || type == Float.class) {
-                return number.floatValue();
-            }
-            if (type == double.class || type == Double.class) {
-                return number.doubleValue();
-            }
-        } else {
-            try {
-                return JuaAPI.convertFromLua(this, type, index);
-            } catch (IllegalArgumentException ignored) {
-            }
         }
-        return null;
     }
 
     @Override
@@ -1108,7 +1081,7 @@ public abstract class AbstractLua implements Lua {
             }
         }
         LuaValue[] results = req.call(module);
-        return results.length > 0 ? results[0] : fromNull();
+        return results[0];
     }
 
     @Override
