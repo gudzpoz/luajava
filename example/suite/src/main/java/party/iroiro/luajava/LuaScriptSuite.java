@@ -234,6 +234,8 @@ public class LuaScriptSuite<T extends AbstractLua> {
         public Override annotation;
         public Runnable intf;
         public Buffer buffer;
+
+        public Object any;
     }
 
     public static abstract class AbstractClass {

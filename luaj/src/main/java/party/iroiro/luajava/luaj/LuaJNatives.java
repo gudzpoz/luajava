@@ -540,6 +540,10 @@ public class LuaJNatives implements LuaNatives {
     public String lua_tostring(long ptr, int index) {
         LuaJState L = instances.get((int) ptr);
         LuaValue value = L.toLuaValue(index);
+        if (value.isnumber()) {
+            value = value.tostring();
+            L.replace(index, value);
+        }
         return value.tojstring();
     }
 
@@ -996,6 +1000,10 @@ public class LuaJNatives implements LuaNatives {
         LuaValue value = L.toLuaValue(index);
         if (!value.isstring()) {
             return null;
+        }
+        if (!(value instanceof LuaString)) {
+            value = value.tostring();
+            L.replace(index, value);
         }
         byte[] bytes = ((LuaString) value).m_bytes;
         ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);

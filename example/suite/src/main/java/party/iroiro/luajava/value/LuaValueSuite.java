@@ -51,6 +51,16 @@ public class LuaValueSuite<T extends Lua> {
         assertEquals(0, L.getTop());
         luaStateTest();
         assertEquals(0, L.getTop());
+        bufferTest();
+        assertEquals(0, L.getTop());
+    }
+
+    private void bufferTest() {
+        ByteBuffer buffer = L.from(100).toBuffer();
+        assertNotNull(buffer);
+        assertEquals(0, buffer.position());
+        assertEquals(3, buffer.remaining());
+        assertEquals("100", StandardCharsets.UTF_8.decode(buffer).toString());
     }
 
     @SuppressWarnings("SuspiciousMethodCalls")
@@ -126,6 +136,8 @@ public class LuaValueSuite<T extends Lua> {
 
         L.openLibrary("string");
         assertEquals('t', L.require("string").get("byte").call("test", 1)[0].toInteger());
+
+        assertEquals("sss", L.from("sss").toString());
     }
 
     private void luaStateTest() {

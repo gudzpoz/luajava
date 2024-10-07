@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -395,10 +396,13 @@ public class LuaTestSuite<T extends AbstractLua> {
             L.run("assert(1024 == require('party.iroiro.luajava.JavaLibTest.open').getNumber())");
         }
         try (T L = constructor.get()) {
+            L.setExternalLoader(new ClassPathLoader());
             assertThrowsLua(
                     LuaError.RUNTIME,
                     () -> L.require("luajava.wrongLuaFile")
             );
+            L.require("suite.luajava-compat");
+            L.require("suite.empty");
         }
     }
 
@@ -875,12 +879,20 @@ public class LuaTestSuite<T extends AbstractLua> {
         for (int i = 0; i < classes.size(); i += 3) {
             for (int j = 0; j < 3; j++) {
                 Object o = L.toObject(-1, classes.get(i + j));
-                assertInstanceOf(classes.get(i + 2), Objects.requireNonNull(o));
+                assertNotNull(o);
+                assertInstanceOf(classes.get(i + 2), o);
                 assertInstanceOf(Number.class, o);
                 assertEquals(127.0, ((Number) Objects.requireNonNull(o)).doubleValue(), 0.000001);
             }
         }
         assertNull(L.toObject(-1, BigDecimal.class));
+        L.pop(1);
+
+        L.push("100");
+        assertEquals(STRING, L.type(-1));
+        Object buffer = L.toObject(-1, ByteBuffer.class);
+        assertNotNull(buffer);
+        assertEquals("100", StandardCharsets.UTF_8.decode(assertInstanceOf(ByteBuffer.class, buffer)).toString());
         L.pop(1);
 
         testToMap(luaNative);
