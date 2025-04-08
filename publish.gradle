@@ -9,7 +9,7 @@ configure([
         project(':jsr223')
 ]) {
     apply plugin: 'maven-publish'
-    apply plugin: 'signing'
+    //apply plugin: 'signing'
 
     apply from: project(':').file('javadoc.gradle')
     apply from: project(':').file('pom.gradle')
@@ -72,17 +72,17 @@ configure([
             }
         }
 
-        signing {
-            useInMemoryPgpKeys(
-                    System.getenv("GPG_KEY_ID"),
-                    System.getenv("GPG_SECKEY"),
-                    System.getenv("GPG_PASSPHRASE"),
-            )
-            sign publishing.publications.mavenJava
-
-            if (project.tasks.findByName('jnigen')) {
-                sign publishing.publications.mavenPlatform
-            }
-        }
+//        //signing {
+//            useInMemoryPgpKeys(
+//                    System.getenv("GPG_KEY_ID"),
+//                    System.getenv("GPG_SECKEY"),
+//                    System.getenv("GPG_PASSPHRASE"),
+//            )
+//            //sign publishing.publications.mavenJava
+//
+//            if (project.tasks.findByName('jnigen')) {
+//                //sign publishing.publications.mavenPlatform
+//            }
+//        }
     }
 }
