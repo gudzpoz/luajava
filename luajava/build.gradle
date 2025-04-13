@@ -38,6 +38,24 @@ tasks.named('jar') {
     }
 }
 
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/LuaLink/luajava"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        register("maven", MavenPublication.class) {
+            from components.java
+        }
+    }
+}
+
 test {
     useJUnitPlatform()
 }
