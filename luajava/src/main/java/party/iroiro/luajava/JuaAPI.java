@@ -40,6 +40,30 @@ import java.util.regex.Pattern;
  * </p>
  */
 public abstract class JuaAPI {
+
+    private static final short UNRESOLVED_CACHE_SIZE = 10_000;
+
+    // Holds a set of class names that failed to be resolved
+    private static final LinkedHashSet<String> UNRESOLVED = new LinkedHashSet<String>(UNRESOLVED_CACHE_SIZE) {
+
+        @Override
+        public boolean add(final String obj) {
+            // Returning early if element is already in the set.
+            if (this.contains(obj) == true)
+                return false;
+            // Removing first entry if set has reached it's size.
+            if (this.size() >= UNRESOLVED_CACHE_SIZE) {
+                final Iterator<String> iterator = this.iterator();
+                if (iterator.hasNext() == true) {
+                    iterator.next();
+                    iterator.remove();
+                }
+            }
+            return super.add(obj);
+        }
+
+    };
+
     /**
      * Allocates a direct buffer whose memory is managed by Java
      *
@@ -471,10 +495,15 @@ public abstract class JuaAPI {
             if (i == 1) {
                 return 1;
             } else {
+                final String className = clazz.getName() + "$" + name;
+                // Preventing redundant (and expensive) lookups if already marked as unresolved
+                if (UNRESOLVED.contains(className) == true)
+                    return i;
                 try {
-                    L.pushJavaClass(ClassUtils.forName(clazz.getName() + '$' + name));
+                    L.pushJavaClass(ClassUtils.forName(className));
                     return 1;
                 } catch (ClassNotFoundException e) {
+                    UNRESOLVED.add(className); // Marking as unresolved
                     return i;
                 }
             }
