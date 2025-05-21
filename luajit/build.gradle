@@ -136,6 +136,8 @@ jnigen {
         cExcludes = ['luajit/**/*']
         libraries += ' -lm  -lluajit '
         headerDirs = ['../../jni/luajava', 'luajit/src', 'mod']
+        cFlags += ' -DLUAJIT_ENABLE_LUA52COMPAT'
+        cppFlags += ' -DLUAJIT_ENABLE_LUA52COMPAT'
     }
 
     add(Linux, x64, x86, {
