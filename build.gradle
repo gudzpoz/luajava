@@ -1,5 +1,5 @@
 group 'party.iroiro.luajava'
-version(System.getenv('IS_RELEASE') == 'true' ? '4.0.2' : '4.0.3-SNAPSHOT')
+version(System.getenv('IS_RELEASE') == 'true' ? '4.0.2' : '4.0.4-SNAPSHOT')
 
 
 
