@@ -3,7 +3,7 @@ name: Build and Publish Natives to GHCR
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [drop-platforms]
     tags: ["*"]
 
 jobs:
