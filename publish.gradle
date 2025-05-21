@@ -29,44 +29,28 @@ configure([
                             fromResolutionOf('runtimeClasspath')
                         }
                         usage('java-runtime') {
-                            //noinspection GroovyImplicitNullArgumentCall
                             fromResolutionResult()
                         }
                     }
-
                     setPom(pom, '')
                 }
-
                 if (project.tasks.findByName('jnigen')) {
                     mavenPlatform(MavenPublication) {
                         artifactId = artifactId + '-platform'
-
                         if (project.tasks.findByName('jnigenJarNativesDesktop')) {
                             artifact jnigenJarNativesDesktop {}
-                        }
-                        if (project.tasks.findByName('jnigenJarNativesIOS')) {
-                            artifact jnigenJarNativesIOS {}
-                        }
-                        // TODO: Add riscv64 to the list once Android NDK & jnigen supports RISC-V Android builds.
-                        ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { arch ->
-                            if (project.tasks.findByName("jnigenJarNativesAndroid$arch")) {
-                                artifact "jnigenJarNativesAndroid$arch" {}
-                            }
                         }
                         setPom(pom, ' Native Libraries')
                     }
                 }
             }
-
             repositories {
                 maven {
-                    name = 'OSSRH'
-                    url = rootProject.version.toString().endsWith('-SNAPSHOT')
-                            ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-                            : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                    name = 'GitHubPackages'
+                    url = "https://maven.pkg.github.com/${System.getenv('GITHUB_REPOSITORY')}"
                     credentials {
-                        username = System.getenv("MAVEN_USERNAME")
-                        password = System.getenv("MAVEN_PASSWORD")
+                        username = System.getenv("GITHUB_ACTOR")
+                        password = System.getenv("GITHUB_TOKEN")
                     }
                 }
             }

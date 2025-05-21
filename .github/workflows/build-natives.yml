@@ -16,36 +16,7 @@ on:
     branches:
       - main
 
-env:
-  MACOSX_DEPLOYMENT_TARGET: "10.10"
-
 jobs:
-  apple-natives:
-    runs-on: macos-13
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-      - run: echo "JAVA_17=$JAVA_HOME" >> $GITHUB_ENV
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
-      - name: Build natives
-        run: |
-          ./gradlew jniGen jnigenBuildMacOsX64 jnigenBuildMacOsXARM64 jnigenBuildIOS
-      - name: Test
-        run: |
-          ./gradlew :example:test :jsr223:test :jpms-example:run
-      - name: Upload macOS natives
-        uses: actions/upload-artifact@v4
-        with:
-          name: apple-natives
-          path: ./*/libs
-          retention-days: 5
   most-natives:
     environment: Codecov
     runs-on: ubuntu-20.04
@@ -217,86 +188,12 @@ jobs:
       - name: Test
         run: |
           ./gradlew --info --stacktrace :example:test :jsr223:test :jpms-example:run
-  android-testing:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        api-level: [ 21 ]
-        android-arch: [ 'x86_64', 'x86' ]
-        include:
-          - api-level: 24
-            android-arch: 'x86'
-          - api-level: 33
-            android-arch: 'x86_64'
-    needs:
-      - most-natives
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-      - name: Set up JDK 8
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '8'
-      - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
-      - name: Set up JDK 11
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-      - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
-      - name: Download most-natives artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: most-natives
-      - name: JniGen
-        run: |
-          ./gradlew jniGen
-      - name: Pack Android natives
-        run: |
-          ./gradlew :android:assemble
-      - name: AVD cache
-        uses: actions/cache@v4
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ matrix.api-level }}-${{ matrix.android-arch }}
-      - name: Enable KVM for linux runners
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-      - name: Create AVD and generate snapshot for caching
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          arch: ${{ matrix.android-arch }}
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
-          script: echo "Generated AVD snapshot for caching."
-      - name: Test on Android AVD
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          arch: ${{ matrix.android-arch }}
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
-          script: ./gradlew --info --stacktrace :android:android-test:connectedAndroidTest
+
   pack-natives:
     environment: OSSRH
     needs:
-      - apple-natives
       - most-natives
       - windows-testing
-      - android-testing
       - linux-testing
     runs-on: ubuntu-20.04
     steps:
@@ -335,9 +232,9 @@ jobs:
           ant -f lua53/jni/build.xml pack-natives
           ant -f lua54/jni/build.xml pack-natives
           ant -f luajit/jni/build.xml pack-natives
-      - name: Pack Android AAR
-        run: |
-          ./gradlew :android:assemble
+      # - name: Pack Android AAR
+      #   run: |
+      #     ./gradlew :android:assemble
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -374,18 +271,18 @@ jobs:
         with:
           draft: true
           files: example/build/libs/example-all.jar
-  mac-arm-test:
-    needs:
-      - pack-natives
-    runs-on: macos-14
-    steps:
-      - name: Download example tests
-        uses: actions/download-artifact@v4
-        with:
-          name: example
-      - name: Run example tests
-        run: |
-          java -jar example-all.jar --test
+  # mac-arm-test:
+  #   needs:
+  #     - pack-natives
+  #   runs-on: macos-14
+  #   steps:
+  #     - name: Download example tests
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: example
+  #     - name: Run example tests
+  #       run: |
+  #         java -jar example-all.jar --test
   linux-arm-test:
     environment: Bitrise
     needs:

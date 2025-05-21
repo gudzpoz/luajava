@@ -1,1 +1,0 @@
--keep class party.iroiro.luajava.JuaAPI

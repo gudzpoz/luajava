@@ -9,6 +9,4 @@ include ':luajava',
         ':jsr223',
         ':example',
         ':example:suite',
-        ':jpms-example',
-        ':android',
-        ':android:android-test'
+        ':jpms-example'

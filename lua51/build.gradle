@@ -49,49 +49,15 @@ jnigen {
         libraries = ' -lm '
     }
 
-    add(Windows, x32)
     add(Windows, x64)
-    add(Windows, x64, ARM)
-
-    add(Linux, x32)
     add(Linux, x64)
-    add(Linux, x32, ARM)
     add(Linux, x64, ARM)
-    // TODO: Until we have a RISCV toolchain on Ubuntu.
-    // add(Linux, x64, RISCV)
     each({ it.os == Linux }) {
         String linuxFlags = ' -D_FORTIFY_SOURCE=0 -DLUA_USE_DLOPEN '
         cFlags += linuxFlags
         cppFlags += linuxFlags
     }
-
-    add(MacOsX, x64)
-    add(MacOsX, x64, ARM)
-    each({ it.os == MacOsX }) {
-        String macFlags = ' -DLUA_USE_DLOPEN '
-        libraries = ''
-        cFlags += macFlags
-        cppFlags += macFlags
-    }
-
-    add(Android) {
-        String androidFlags = ' -D_FORTIFY_SOURCE=1 -DLUA_USE_DLOPEN '
-        cFlags += androidFlags
-        cppFlags += androidFlags
-        androidApplicationMk = [
-                'APP_PLATFORM := android-21',
-                "APP_CFLAG :=$androidFlags",
-        ]
-    }
-
-    robovm {
-        forceLinkClasses "java.lang.Class", "java.lang.Throwable", "party.iroiro.luajava.JuaAPI"
-    }
-    add(IOS, x64) {
-        libraries = ''
-        xcframeworkBundleIdentifier = "party.iroiro.luajava.lua51"
-        minIOSVersion = "11.0"
-    }
+    // Removed Android, iOS, MacOS, robovm, and other extra targets for minimal desktop build
 }
 
 artifacts {

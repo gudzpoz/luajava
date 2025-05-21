@@ -17,6 +17,8 @@ repositories {
     mavenCentral()
 }
 
+
+// Only keep desktop subprojects, remove android and android-test from build
 subprojects { it ->
     if (!['android', 'android-test', 'jpms-example'].contains(it.name)) {
         apply plugin: 'java'
