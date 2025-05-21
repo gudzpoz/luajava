@@ -1,5 +1,6 @@
-name: Build and Publish Natives to GHCR
-
+name: Build and Publish Natives to Github Packages
+permissions:
+  packages: write
 on:
   workflow_dispatch:
   push:

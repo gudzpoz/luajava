@@ -1,4 +1,4 @@
-name: Build
+name: Build and Publish LuaJava to Github Packages
 permissions:
   packages: write
 
