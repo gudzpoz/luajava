@@ -1,16 +1,7 @@
 group 'party.iroiro.luajava'
 version(System.getenv('IS_RELEASE') == 'true' ? '4.0.2' : '4.0.3-SNAPSHOT')
 
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
 
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
-    }
-}
 
 repositories {
     mavenLocal()
