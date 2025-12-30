@@ -21,12 +21,12 @@ TARGET=armv7a-linux-androideabi
 NDKP=$NDKB/${TARGET}-
 NDKCC=$NDKB/${TARGET}${NDKAPI}-clang
 NDKARCH="-march=armv7-a -mhard-float -mfpu=vfpv3-d16 -mfloat-abi=softfp -D_NDK_MATH_NO_SOFTFP=1 -marm -DNO_RTLD_DEFAULT=1"
-make HOST_CC="gcc -m32 -I/usr/i686-linux-gnu/include" CROSS=$NDKP \
+make HOST_CC="i686-linux-gnu-gcc -m32" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
      CFLAGS=-fPIC TARGET_FLAGS="$NDKARCH" \
      clean
-make HOST_CC="gcc -m32 -I/usr/i686-linux-gnu/include" CROSS=$NDKP \
+make HOST_CC="i686-linux-gnu-gcc -m32" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
      CFLAGS=-fPIC TARGET_FLAGS="$NDKARCH" \
@@ -39,12 +39,12 @@ TARGET=i686-linux-android
 NDKP=$NDKB/${TARGET}-
 NDKCC=$NDKB/${TARGET}${NDKAPI}-clang
 NDKARCH="-DNO_RTLD_DEFAULT=1"
-make HOST_CC="gcc -m32 -I/usr/i686-linux-gnu/include" CROSS=$NDKP \
+make HOST_CC="i686-linux-gnu-gcc -m32" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
      CFLAGS=-fPIC TARGET_FLAGS="$NDKARCH" \
      clean
-make HOST_CC="gcc -m32 -I/usr/i686-linux-gnu/include" CROSS=$NDKP \
+make HOST_CC="i686-linux-gnu-gcc -m32" CROSS=$NDKP \
      STATIC_CC=$NDKCC DYNAMIC_CC="$NDKCC -fPIC" \
      TARGET_LD=$NDKCC TARGET_AR="$NDKB/llvm-ar rcus" TARGET_STRIP=$NDKB/llvm-strip \
      CFLAGS=-fPIC TARGET_FLAGS="$NDKARCH" \

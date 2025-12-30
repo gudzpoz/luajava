@@ -14,7 +14,7 @@ on:
 
 jobs:
   documentation:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,7 +29,7 @@ jobs:
       - name: Build
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
-          ./gradlew jniGen
+          ./gradlew jnigen
       - name: All Javadoc
         run: |
           ./gradlew allJavadoc

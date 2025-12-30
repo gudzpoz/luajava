@@ -1,23 +1,9 @@
 import com.badlogic.gdx.jnigen.commons.Os
 import com.badlogic.gdx.jnigen.BuildTarget
 
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.badlogicgames.jnigen:jnigen-gradle:3.1.1'
-    }
-}
-
 plugins {
     id 'java'
     id 'java-library'
-}
-
-repositories {
-    mavenCentral()
 }
 
 group = rootProject.group
@@ -87,6 +73,8 @@ String addLuaJitTarget(Platform platform, List<String> command) {
                     into folder
                     rename '(.+)', 'libluajit.a'
                 }
+                // TODO: luajit.h is generated and could be platform-specific,
+                //       although currently it does not seem to be.
             }
         } else {
             doLast {
@@ -123,11 +111,11 @@ buildLuaTargets(
                  'TARGET_SYS=Linux']),
         addLuaJitTarget(Platform.Linux32,
                 ['make', 'amalg',
-                 'CC=gcc -m32 -I/usr/i686-linux-gnu/include -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC',
-                 'TARGET_SYS=Linux']),
+                 'HOST_CC=i686-linux-gnu-gcc -m32 -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC',
+                 'TARGET_SYS=Linux', 'CROSS=i686-linux-gnu-']),
         addLuaJitTarget(Platform.ARM,
                 ['make', 'amalg',
-                 'HOST_CC=gcc -m32 -I/usr/i686-linux-gnu/include -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC',
+                 'HOST_CC=i686-linux-gnu-gcc -m32 -D_FORTIFY_SOURCE=0', 'CFLAGS=-fPIC',
                  'TARGET_SYS=Linux', 'CROSS=arm-linux-gnueabihf-']),
         addLuaJitTarget(Platform.AArch64,
                 ['make', 'amalg',
@@ -135,19 +123,19 @@ buildLuaTargets(
                  'TARGET_SYS=Linux', 'CROSS=aarch64-linux-gnu-']),
         addLuaJitTarget(Platform.Win32,
                 ['make', 'amalg',
-                 'HOST_CC=gcc -m32 -I/usr/i686-linux-gnu/include', 'CFLAGS=-fPIC',
+                 'HOST_CC=i686-linux-gnu-gcc -m32', 'CFLAGS=-fPIC',
                  'BUILDMODE=static',
-                 'CROSS=i686-w64-mingw32-', 'TARGET_SYS=Windows']),
+                 'TARGET_SYS=Windows', 'CROSS=i686-w64-mingw32-']),
         addLuaJitTarget(Platform.Win64,
                 ['make', 'amalg',
                  'HOST_CC=gcc -m64', 'CFLAGS=-fPIC',
                  'BUILDMODE=static',
-                 'CROSS=x86_64-w64-mingw32-', 'TARGET_SYS=Windows']),
+                 'TARGET_SYS=Windows', 'CROSS=x86_64-w64-mingw32-']),
         addLuaJitTarget(Platform.WinAArch64,
                 ['make', 'amalg',
                  'HOST_CC=gcc -m64', 'CFLAGS=-fPIC',
                  'BUILDMODE=static',
-                 'CROSS=aarch64-w64-mingw32-', 'TARGET_SYS=Windows']),
+                 'TARGET_SYS=Windows', 'CROSS=aarch64-w64-mingw32-', ]),
         addLuaJitTarget(Platform.MacOsX,
                 ['make', 'amalg', 'TARGET_FLAGS=-arch x86_64',
                  'CFLAGS=-fPIC', 'TARGET_SYS=Darwin']),
@@ -157,7 +145,6 @@ buildLuaTargets(
 )
 
 void linkerConfig(BuildTarget it, Platform platform) {
-    // TODO: decide whether to shell-string-escape-and-then-xml-entity-escape $projectDir
     it.linkerFlags += ["-L$projectDir/jni/luajit/lib/${platform.toString().toLowerCase()}"]
     if (it.os == Os.Linux) {
         it.cFlags += ['-D_FORTIFY_SOURCE=0']
@@ -181,6 +168,11 @@ jnigen {
         linkerConfig(it, Platform.Linux64)
     })
     addLinux(x32, x86, {
+        // TODO: maybe report to jnigen
+        compilerPrefix = 'i686-linux-gnu-'
+        cFlags = cFlags.findAll { it != '-m32' }
+        cppFlags = cppFlags.findAll { it != '-m32' }
+        linkerFlags = linkerFlags.findAll { it != '-m32' }
         linkerConfig(it, Platform.Linux32)
     })
     addLinux(x32, ARM, {
@@ -212,7 +204,10 @@ jnigen {
         xcframeworkBundleIdentifier = "party.iroiro.luajava.luajit"
         minIOSVersion = "11.0"
     }
-    addIOS()
+    addIOS {
+        String directory = "${it.architecture.displayName.toLowerCase()}-${it.targetType.targetTypeBuildDirName}"
+        linkerFlags += ["-L${projectDir}/jni/luajit/lib/ios/${directory}"]
+    }
 
     addAndroid {
         cFlags += ['-D_FORTIFY_SOURCE=1']
@@ -248,9 +243,22 @@ tasks.jnigenBuildLinux_x86_32.dependsOn(tasks.buildLuaLinux32)
 tasks.jnigenBuildLinux_x86_64.dependsOn(tasks.buildLuaLinux64)
 tasks.jnigenBuildLinux_Arm_32.dependsOn(tasks.buildLuaARM)
 tasks.jnigenBuildLinux_Arm_64.dependsOn(tasks.buildLuaAArch64)
+tasks.jnigenBuildAllLinux.dependsOn(
+        tasks.buildLuaLinux32,
+        tasks.buildLuaLinux64,
+        tasks.buildLuaARM,
+        tasks.buildLuaAArch64,
+)
+
 tasks.jnigenBuildWindows_x86_32.dependsOn(tasks.buildLuaWin32)
 tasks.jnigenBuildWindows_x86_64.dependsOn(tasks.buildLuaWin64)
 tasks.jnigenBuildWindows_Arm_64.dependsOn(tasks.buildLuaWinAArch64)
+tasks.jnigenBuildAllWindows.dependsOn(
+        tasks.buildLuaWin32,
+        tasks.buildLuaWin64,
+        tasks.buildLuaWinAArch64,
+)
+
 tasks.jnigenBuildAllMacOsX.dependsOn(tasks.buildLuaMacOsXMerge)
 tasks.jnigenBuildAllAndroid.dependsOn(tasks.buildLuaAndroid)
 tasks.jnigenBuildAllIOS.dependsOn(tasks.buildLuaIOS)
@@ -258,7 +266,7 @@ tasks.buildLuaIOS.dependsOn(tasks.jnigen)
 
 void addPatchElfTask(String platform) {
     String target = "patchElf${platform}"
-    String folder = "libs/${platform.toLowerCase()}"
+    String folder = "build/jnigen/libs/${platform.toLowerCase()}"
     tasks.register(target) {
         doLast {
             String file = projectDir.toPath().resolve(folder).toFile().listFiles(new FilenameFilter() {
@@ -304,6 +312,12 @@ tasks.jnigenBuildLinux_x86_32.finalizedBy(tasks.patchElfLinux32)
 tasks.jnigenBuildLinux_x86_64.finalizedBy(tasks.patchElfLinux64)
 tasks.jnigenBuildLinux_Arm_32.finalizedBy(tasks.patchElfLinuxARM32)
 tasks.jnigenBuildLinux_Arm_64.finalizedBy(tasks.patchElfLinuxARM64)
+tasks.jnigenBuildAllLinux.finalizedBy(
+        tasks.patchElfLinux32,
+        tasks.patchElfLinux64,
+        tasks.patchElfLinuxARM32,
+        tasks.patchElfLinuxARM64,
+)
 
 artifacts {
     artifacts {
@@ -321,7 +335,9 @@ artifacts {
     }
 
     instrumentedJars(jar)
-    desktopNatives(jnigenPackageAllDesktop.outputs.files.files)
+    desktopNatives(jnigenPackageAllDesktop.outputs.files.files) {
+        builtBy(jnigenPackageAllDesktop)
+    }
 }
 
 tasks.named('jar') {
@@ -329,5 +345,3 @@ tasks.named('jar') {
         attributes('Automatic-Module-Name': 'party.iroiro.luajava.luajit')
     }
 }
-
-tasks.jnigen.dependsOn(tasks.build)

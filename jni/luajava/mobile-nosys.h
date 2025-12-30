@@ -30,6 +30,8 @@ extern "C" {
  * nm --dynamic --with-symbol-versions lua5*\/libs/linux*\/*.so \
  * | grep GLIBC | grep --invert-match <common versions>
  *
+ * To update the list in case of glibc updates, run scripts/glibc-compat.sh.
+ *
  * This does not work for LuaJIT, which uses an independent build routine.
  */
 
@@ -53,6 +55,27 @@ __asm__(".symver exp,exp@GLIBC_2.0");
 __asm__(".symver log,log@GLIBC_2.0");
 __asm__(".symver log2,log2@GLIBC_2.1");
 __asm__(".symver pow,pow@GLIBC_2.0");
+#endif
+#if LJ_TARGET_ARM64
+__asm__(".symver dlclose,dlclose@GLIBC_2.17");
+__asm__(".symver dlerror,dlerror@GLIBC_2.17");
+__asm__(".symver dlopen,dlopen@GLIBC_2.17");
+__asm__(".symver dlsym,dlsym@GLIBC_2.17");
+#elif LJ_TARGET_ARM
+__asm__(".symver dlclose,dlclose@GLIBC_2.4");
+__asm__(".symver dlerror,dlerror@GLIBC_2.4");
+__asm__(".symver dlopen,dlopen@GLIBC_2.4");
+__asm__(".symver dlsym,dlsym@GLIBC_2.4");
+#elif LJ_64
+__asm__(".symver dlclose,dlclose@GLIBC_2.2.5");
+__asm__(".symver dlerror,dlerror@GLIBC_2.2.5");
+__asm__(".symver dlopen,dlopen@GLIBC_2.2.5");
+__asm__(".symver dlsym,dlsym@GLIBC_2.2.5");
+#elif LJ_32
+__asm__(".symver dlclose,dlclose@GLIBC_2.0");
+__asm__(".symver dlerror,dlerror@GLIBC_2.0");
+__asm__(".symver dlopen,dlopen@GLIBC_2.1");
+__asm__(".symver dlsym,dlsym@GLIBC_2.0");
 #endif
 
 #endif

@@ -74,7 +74,7 @@ tasks.register('copyAndroidNatives') {
 
                 copy {
                     from fileTree(project(":${ver}").projectDir.toPath().toAbsolutePath()
-                            .resolve("libs/${platform}"))
+                            .resolve("build/jnigen/libs/android32/${platform}"))
                     into outputDir
                     include "*.so"
                 }
