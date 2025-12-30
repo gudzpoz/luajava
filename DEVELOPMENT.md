@@ -98,10 +98,6 @@ You will need to install at least the following:
 
   I personally just install Android Studio and use their GUI to set things up.
 
-- [Ant](https://ant.apache.org/)
-
-  We use [`jnigen`](https://github.com/libgdx/gdx-jnigen/) to cross-compile binaries, which requires Ant.
-
 - C/C++ compilation: `gcc g++ linux-libc-dev libc6-dev linux-libc-dev`.
 
   The package names may differ between Linux distributions.
@@ -125,7 +121,7 @@ If you are developing on an x86_64 machine, run the following commands to build 
 
 ```console
 $ ./gradlew jnigen
-$ ./gradlew jnigenBuildLinux64
+$ ./gradlew jnigenBuildHost
 ```
 
 You will need to manually recompile when you change any of the C/C++ files.

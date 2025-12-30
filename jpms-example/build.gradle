@@ -12,7 +12,7 @@ repositories {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(9)
+        languageVersion = JavaLanguageVersion.of(11)
     }
 
     modularity.inferModulePath = true

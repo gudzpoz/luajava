@@ -21,22 +21,22 @@ env:
 
 jobs:
   apple-natives:
-    runs-on: macos-15
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: Set up JDK 17
+      - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
-      - run: echo "JAVA_17=$JAVA_HOME" >> $GITHUB_ENV
+          java-version: '11'
+      - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Build natives
         run: |
-          ./gradlew jniGen jnigenBuildMacOsX64 jnigenBuildMacOsXARM64 jnigenBuildIOS
+          ./gradlew jnigen jnigenBuildAllMacOsX jnigenBuildAllIOS
       - name: Test
         run: |
           ./gradlew :example:test :jsr223:test :jpms-example:run
@@ -44,8 +44,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: apple-natives
-          path: ./*/libs
+          path: ./*/build/jnigen/libs
           retention-days: 5
+
   most-natives:
     environment: Codecov
     runs-on: ubuntu-22.04
@@ -83,17 +84,15 @@ jobs:
           sudo apt update
           # x86_64
           sudo apt install -y --force-yes gcc g++
-          sudo apt install -y --force-yes libc6-dev linux-libc-dev linux-libc-dev-amd64-cross
           # x86
-          sudo apt install -y --force-yes gcc-i686-linux-gnu g++-i686-linux-gnu
-          sudo apt install -y --force-yes lib32stdc++-9-dev libstdc++-9-dev-i386-cross
-          sudo apt install -y --force-yes libc6-dev-i386 libc6-dev-i386-cross linux-libc-dev-i386-cross
+          sudo apt install -y --force-yes gcc-i686-linux-gnu g++-i686-linux-gnu libc6-dev-i386-amd64-cross
+          sudo apt install -y --force-yes libstdc++-11-dev-i386-cross linux-libc-dev-i386-cross
           # arm64
           sudo apt install -y --force-yes gcc-aarch64-linux-gnu g++-aarch64-linux-gnu libc6-dev-arm64-cross
-          sudo apt install -y --force-yes libstdc++-9-dev-arm64-cross linux-libc-dev-arm64-cross
+          sudo apt install -y --force-yes libstdc++-11-dev-arm64-cross linux-libc-dev-arm64-cross
           # armhf
           sudo apt install -y --force-yes gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libc6-dev-armhf-cross
-          sudo apt install -y --force-yes libstdc++-9-dev-armhf-cross linux-libc-dev-armhf-cross
+          sudo apt install -y --force-yes libstdc++-11-dev-armhf-cross linux-libc-dev-armhf-cross
           # TODO: riscv64
           # Windows
           sudo apt install -y --force-yes mingw-w64 lib32z1
@@ -113,10 +112,9 @@ jobs:
       - name: Build natives
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
-          ./gradlew jniGen jnigenBuildLinux jnigenBuildLinux64
-          ./gradlew jniGen jnigenBuildLinuxARM jnigenBuildLinuxARM64
-          # TODO: ./gradlew jniGen jnigenBuildLinuxRISCV64
-          ./gradlew jniGen jnigenBuildAndroid jnigenBuildWindows jnigenBuildWindows64 jnigenBuildWindowsARM64
+          ./gradlew jnigen jnigenBuildAllLinux
+          ./gradlew jnigen jnigenBuildAllAndroid
+          ./gradlew jnigen jnigenBuildAllWindows
       - name: Test (Desktop)
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
@@ -143,8 +141,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: most-natives
-          path: ./*/libs
+          path: ./*/build/jnigen/libs
           retention-days: 5
+
   linux-testing:
     runs-on: ubuntu-latest
     needs:
@@ -173,7 +172,7 @@ jobs:
           name: most-natives
       - name: JniGen
         run: |
-          ./gradlew jniGen
+          ./gradlew jnigen
       - name: Build example
         run: |
           ./gradlew :example:shadowJar
@@ -185,6 +184,7 @@ jobs:
         run: |
           sudo docker build -t ljtest-musl -f example/docker/musl/Dockerfile example/build/libs
           sudo docker run --rm ljtest-musl
+
   windows-testing:
     runs-on: windows-latest
     needs:
@@ -213,10 +213,11 @@ jobs:
           name: most-natives
       - name: JniGen
         run: |
-          ./gradlew jniGen
+          ./gradlew jnigen
       - name: Test
         run: |
           ./gradlew --info --stacktrace :example:test :jsr223:test :jpms-example:run
+
   android-testing:
     runs-on: ubuntu-latest
     strategy:
@@ -234,18 +235,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: Set up JDK 8
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '8'
-      - run: echo "JAVA_8=$JAVA_HOME" >> $GITHUB_ENV
-      - name: Set up JDK 11
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-      - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
+          java-version: '17'
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Download most-natives artifact
@@ -254,7 +248,7 @@ jobs:
           name: most-natives
       - name: JniGen
         run: |
-          ./gradlew jniGen
+          ./gradlew jnigen
       - name: Pack Android natives
         run: |
           ./gradlew :android:assemble
@@ -290,6 +284,7 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: ./gradlew --info --stacktrace :android:android-test:connectedAndroidTest
+
   pack-natives:
     environment: OSSRH
     needs:
@@ -298,7 +293,76 @@ jobs:
       - windows-testing
       - android-testing
       - linux-testing
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+      - name: Download apple-natives artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: apple-natives
+      - name: Download most-natives artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: most-natives
+      - name: JniGen
+        run: |
+          ./gradlew jnigen
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: natives
+          path: ./*/build/jnigen/libs
+      - name: Pack desktop natives
+        run: |
+          ./gradlew jnigenPackageAll
+      - name: Pack Android AAR
+        run: |
+          ./gradlew :android:assemble
+      - name: Build example
+        run: |
+          ./gradlew :example:shadowJar
+      - name: Upload example
+        uses: actions/upload-artifact@v4
+        with:
+          name: example
+          path: example/build/libs/example-all.jar
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+          files: example/build/libs/example-all.jar
+      - name: Release?
+        if: |
+          startsWith(github.ref, 'refs/tags/')
+        run: echo "IS_RELEASE=true" >> $GITHUB_ENV
+
+  mac-arm-test:
+    needs:
+      - pack-natives
+    runs-on: macos-15
+    steps:
+      - name: Download example tests
+        uses: actions/download-artifact@v4
+        with:
+          name: example
+      - name: Run example tests
+        run: |
+          java -jar example-all.jar --test
+
+  linux-arm-test:
+    needs:
+      - pack-natives
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
         with:
@@ -317,83 +381,13 @@ jobs:
       - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
-      - name: Download apple-natives artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: apple-natives
       - name: Download most-natives artifact
         uses: actions/download-artifact@v4
         with:
           name: most-natives
       - name: JniGen
         run: |
-          ./gradlew jniGen
-      - name: Pack desktop natives
+          ./gradlew jnigen
+      - name: Test
         run: |
-          ant -f lua51/jni/build.xml pack-natives
-          ant -f lua52/jni/build.xml pack-natives
-          ant -f lua53/jni/build.xml pack-natives
-          ant -f lua54/jni/build.xml pack-natives
-          ant -f luajit/jni/build.xml pack-natives
-      - name: Pack Android AAR
-        run: |
-          ./gradlew :android:assemble
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: natives
-          path: ./*/libs
-      - name: Release?
-        if: |
-          startsWith(github.ref, 'refs/tags/')
-        run: echo "IS_RELEASE=true" >> $GITHUB_ENV
-      - name: Publish
-        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-          GPG_KEY_ID: ${{ secrets.SIGNING_KEY_ID }}
-          GPG_PASSPHRASE: ${{ secrets.SIGNING_PASSPHRASE }}
-          GPG_SECKEY: ${{ secrets.SIGNING_SECRET_KEY }}
-          GITHUB_REF: ${{ github.ref }}
-        run: |
-          ./gradlew build -x test
-          ./gradlew publish -Dorg.gradle.parallel=false
-      - name: Build example
-        run: |
-          ./gradlew :example:shadowJar
-      - name: Upload example
-        uses: actions/upload-artifact@v4
-        with:
-          name: example
-          path: example/build/libs/example-all.jar
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          draft: true
-          files: example/build/libs/example-all.jar
-  mac-arm-test:
-    needs:
-      - pack-natives
-    runs-on: macos-15
-    steps:
-      - name: Download example tests
-        uses: actions/download-artifact@v4
-        with:
-          name: example
-      - name: Run example tests
-        run: |
-          java -jar example-all.jar --test
-  linux-arm-test:
-    environment: Bitrise
-    needs:
-      - pack-natives
-    runs-on: ubuntu-slim
-    steps:
-      - name: Trigger CircleCI tests for Linux on arm64
-        env:
-          CIRCLECI_TOKEN: ${{ secrets.CIRCLECI_TOKEN }}
-        run: |
-          curl -X POST -H "Circle-Token: $CIRCLECI_TOKEN" https://circleci.com/api/v2/project/github/gudzpoz/luajava/pipeline
+          ./gradlew --info --stacktrace :example:test :jsr223:test :jpms-example:run

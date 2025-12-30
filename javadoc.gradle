@@ -30,7 +30,7 @@ javadoc {
 
     options.links([
             rootProject.jdkJavadoc,
-            "https://javadoc.io/doc/com.badlogicgames.gdx/gdx-jnigen-loader/latest/"
+            "https://javadoc.io/doc/com.badlogicgames.jnigen/jnigen-loader/latest/",
     ] as String[])
 
     options.tags = ['apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:',

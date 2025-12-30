@@ -5,7 +5,6 @@
 
 import sys
 
-jnigen_version = "3.1.1"
 lua_version = sys.argv[1]
 assert lua_version in ["lua51", "lua52", "lua53", "lua54"]
 header_dirs = {
@@ -22,23 +21,9 @@ compat_flags = {
 }
 
 script = f"""\
-buildscript {{
-    repositories {{
-        mavenLocal()
-        mavenCentral()
-    }}
-    dependencies {{
-        classpath 'com.badlogicgames.jnigen:jnigen-gradle:{jnigen_version}'
-    }}
-}}
-
 plugins {{
     id 'java'
     id 'java-library'
-}}
-
-repositories {{
-    mavenCentral()
 }}
 
 group = rootProject.group
@@ -79,7 +64,13 @@ jnigen {{
     addWindows(x64, x86)
     addWindows(x64, ARM)
 
-    addLinux(x32, x86)
+    addLinux(x32, x86) {{
+        // TODO: report to jnigen
+        compilerPrefix = 'i686-linux-gnu-'
+        cFlags = cFlags.findAll {{ it != '-m32' }}
+        cppFlags = cppFlags.findAll {{ it != '-m32' }}
+        linkerFlags = linkerFlags.findAll {{ it != '-m32' }}
+    }}
     addLinux(x64, x86)
     addLinux(x32, ARM)
     addLinux(x64, ARM)
@@ -95,7 +86,7 @@ jnigen {{
     addMac(x64, ARM)
     each({{ it.os == MacOsX }}) {{
         String[] macFlags = ['-DLUA_USE_DLOPEN']
-        libraries = ''
+        libraries = []
         cFlags += macFlags
         cppFlags += macFlags
     }}
@@ -134,7 +125,9 @@ artifacts {{
     }}
 
     instrumentedJars(jar)
-    desktopNatives(jnigenPackageAllDesktop.outputs.files.files)
+    desktopNatives(jnigenPackageAllDesktop.outputs.files.files) {{
+        builtBy(jnigenPackageAllDesktop)
+    }}
 }}
 
 tasks.named('jar') {{
@@ -142,8 +135,6 @@ tasks.named('jar') {{
         attributes('Automatic-Module-Name': 'party.iroiro.luajava.{lua_version}')
     }}
 }}
-
-tasks.jnigen.dependsOn(tasks.build)
 """
 
 print(script, end="")

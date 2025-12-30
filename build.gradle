@@ -5,10 +5,12 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
 
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.badlogicgames.jnigen:jnigen-gradle:3.1.1'
     }
 }
 
@@ -18,16 +20,20 @@ repositories {
 }
 
 subprojects { it ->
+    repositories {
+        mavenCentral()
+    }
+
     if (!['android', 'android-test', 'jpms-example'].contains(it.name)) {
         apply plugin: 'java'
 
         java {
-            toolchain {
-                languageVersion = JavaLanguageVersion.of(8)
-            }
-
             withSourcesJar()
             withJavadocJar()
+        }
+
+        tasks.withType(JavaCompile).configureEach {
+            options.release = 8
         }
     }
 }

@@ -4,10 +4,6 @@ plugins {
     id 'jacoco'
 }
 
-repositories {
-    mavenCentral()
-}
-
 group = rootProject.group
 version = rootProject.version
 
