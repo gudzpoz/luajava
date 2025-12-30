@@ -13,10 +13,10 @@ version = rootProject.version
 
 dependencies {
     implementation 'org.jetbrains:annotations:24.1.0'
-    implementation 'com.badlogicgames.gdx:gdx-jnigen-loader:2.5.2'
+    implementation 'com.badlogicgames.jnigen:jnigen-loader:3.1.1'
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.deprecation = true
 }
 

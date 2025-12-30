@@ -1,8 +1,9 @@
 package party.iroiro.luajava.util;
 
-import com.badlogic.gdx.utils.Os;
-import com.badlogic.gdx.utils.SharedLibraryLoadRuntimeException;
-import com.badlogic.gdx.utils.SharedLibraryLoader;
+import com.badlogic.gdx.jnigen.commons.HostDetection;
+import com.badlogic.gdx.jnigen.commons.Os;
+import com.badlogic.gdx.jnigen.loader.SharedLibraryLoadRuntimeException;
+import com.badlogic.gdx.jnigen.loader.SharedLibraryLoader;
 import party.iroiro.luajava.LuaNatives;
 
 import java.io.File;
@@ -61,11 +62,11 @@ public class GlobalLibraryLoader {
      */
     public static String load(String libraryName) {
         loader.load(libraryName);
-        if (SharedLibraryLoader.os == Os.IOS) {
+        if (HostDetection.os == Os.IOS) {
             return "";
         }
         String fileName = loader.mapLibraryName(libraryName);
-        if (SharedLibraryLoader.os == Os.Android) {
+        if (HostDetection.os == Os.Android) {
             return fileName;
         }
         String sourceCrc = loader.crc(readFile(fileName));
