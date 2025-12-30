@@ -21,7 +21,7 @@ env:
 
 jobs:
   apple-natives:
-    runs-on: macos-13
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -48,7 +48,7 @@ jobs:
           retention-days: 5
   most-natives:
     environment: Codecov
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -69,15 +69,15 @@ jobs:
         uses: robinraju/release-downloader@v1.10
         with:
           repository: 'mstorsjo/llvm-mingw'
-          tag: 20240619
-          fileName: llvm-mingw-20240619-ucrt-ubuntu-20.04-x86_64.tar.xz
+          tag: 20251216
+          fileName: llvm-mingw-20251216-ucrt-ubuntu-22.04-x86_64.tar.xz
           tarBall: false
           zipBall: false
       - name: Set up llvm-mingw
         run: |
           sudo mkdir -p /usr/local
-          sudo tar -Jxf llvm-mingw-20240619-ucrt-ubuntu-20.04-x86_64.tar.xz -C /usr/local
-          echo "PATH=/usr/local/llvm-mingw-20240619-ucrt-ubuntu-20.04-x86_64/bin:$PATH" >> $GITHUB_ENV
+          sudo tar -Jxf llvm-mingw-20251216-ucrt-ubuntu-22.04-x86_64.tar.xz -C /usr/local
+          echo "PATH=/usr/local/llvm-mingw-20251216-ucrt-ubuntu-22.04-x86_64/bin:$PATH" >> $GITHUB_ENV
       - name: Install cross-compilation toolchains
         run: |
           sudo apt update
@@ -298,7 +298,7 @@ jobs:
       - windows-testing
       - android-testing
       - linux-testing
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v4
         with:
@@ -377,7 +377,7 @@ jobs:
   mac-arm-test:
     needs:
       - pack-natives
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Download example tests
         uses: actions/download-artifact@v4
@@ -390,7 +390,7 @@ jobs:
     environment: Bitrise
     needs:
       - pack-natives
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-slim
     steps:
       - name: Trigger CircleCI tests for Linux on arm64
         env:
