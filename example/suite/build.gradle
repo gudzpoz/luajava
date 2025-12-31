@@ -5,16 +5,12 @@ plugins {
 repositories {
     mavenCentral()
     maven {
-        url 'https://jitpack.io'
+        url = 'https://jitpack.io'
     }
 }
 
 java {
     withSourcesJar()
-
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
 }
 
 dependencies {

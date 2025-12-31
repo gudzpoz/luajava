@@ -6,15 +6,11 @@ plugins {
 repositories {
     mavenCentral()
     maven {
-        url 'https://jitpack.io'
+        url = 'https://jitpack.io'
     }
 }
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
-
     modularity.inferModulePath = true
 
     withSourcesJar()

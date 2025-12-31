@@ -7,7 +7,7 @@ repositories {
     google()
     mavenCentral()
     maven {
-        url 'https://jitpack.io'
+        url = 'https://jitpack.io'
     }
 }
 
@@ -25,12 +25,12 @@ android {
     namespace = project(':').group
 
     defaultConfig {
-        minSdk 21
-        targetSdk 34
-        compileSdk 33
-        versionCode 1
-        versionName '3.1'
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        minSdk = 21
+        targetSdk = 34
+        compileSdk = 33
+        versionCode = 1
+        versionName = '3.1'
+        testInstrumentationRunner = 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -41,7 +41,7 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
+        viewBinding = true
     }
 
     sourceSets {
@@ -54,9 +54,9 @@ android {
     }
 
     compileOptions {
-        coreLibraryDesugaringEnabled true
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
 
@@ -76,6 +76,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test:runner:1.5.2'
     luaVersions.forEach { ver ->
-        androidTestImplementation files("${project(':android').buildDir}/outputs/aar/android-${ver}-release.aar")
+        androidTestImplementation files(
+                project(':android').layout.buildDirectory.file("outputs/aar/android-${ver}-release.aar"),
+        )
     }
 }

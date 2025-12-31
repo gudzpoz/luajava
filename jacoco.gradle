@@ -3,15 +3,15 @@ subprojects {
         apply plugin: 'jacoco'
 
         jacocoTestReport {
-            dependsOn fileTree(buildDir.absolutePath).include('jacoco/*.exec')
+            dependsOn layout.buildDirectory.files('jacoco/*.exec')
 
-            executionData.setFrom(fileTree(project(':').buildDir.absolutePath).include('jacoco/*.exec'))
+            executionData.setFrom(project(':').layout.buildDirectory.files('jacoco/*.exec'))
 
             reports {
                 xml.required = true
                 html.required = true
                 csv.required = true
-                xml.outputLocation = file("${buildDir}/reports/jacoco/report.xml")
+                xml.outputLocation = layout.buildDirectory.file('reports/jacoco/report.xml')
             }
 
             afterEvaluate {
