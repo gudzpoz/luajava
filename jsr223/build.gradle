@@ -33,7 +33,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.deprecation = true
 }
 
@@ -47,20 +47,20 @@ test {
     useJUnitPlatform()
 
     jacoco {
-        destinationFile = buildDir.toPath().resolve('jacoco/test.exec').toFile()
+        destinationFile = layout.buildDirectory.file('jacoco/test.exec').get().asFile
     }
 }
 
 jacocoTestReport {
-    dependsOn fileTree(buildDir.absolutePath).include('jacoco/*.exec')
+    dependsOn fileTree(layout.buildDirectory).include('jacoco/*.exec')
 
-    executionData.setFrom(fileTree(buildDir.absolutePath).include('jacoco/*.exec'))
+    executionData.setFrom(fileTree(layout.buildDirectory).include('jacoco/*.exec'))
 
     reports {
-        xml.enabled true
-        html.enabled true
-        csv.enabled false
-        xml.destination file("${buildDir}/reports/jacoco/report.xml")
+        xml.required = true
+        html.required = true
+        csv.required = true
+        xml.outputLocation = layout.buildDirectory.file('reports/jacoco/report.xml')
     }
 
     afterEvaluate {

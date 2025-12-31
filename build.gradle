@@ -1,5 +1,5 @@
-group 'party.iroiro.luajava'
-version(System.getenv('IS_RELEASE') == 'true' ? '4.0.2' : '4.0.3-SNAPSHOT')
+group = 'party.iroiro.luajava'
+version = System.getenv('IS_RELEASE') == 'true' ? '4.0.2' : '4.0.3-SNAPSHOT'
 
 buildscript {
     repositories {
@@ -9,7 +9,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.library:com.android.library.gradle.plugin:8.13.2'
         classpath 'com.badlogicgames.jnigen:jnigen-gradle:3.1.1'
     }
 }
@@ -44,7 +44,6 @@ ext {
     println "JDK Javadoc link for this build is ${rootProject.jdkJavadoc}"
 }
 
-apply from: 'publish.gradle'
 apply from: 'jacoco.gradle'
 
 tasks.register('allJavadoc', Javadoc) {
@@ -66,5 +65,5 @@ tasks.register('allJavadoc', Javadoc) {
             '**/party/iroiro/luajava/util/**',
             '**/party/iroiro/luajava/cleaner/**',
     )
-    destinationDir = file("${buildDir}/docs/javadoc")
+    destinationDir = layout.buildDirectory.file("docs/javadoc").get().asFile
 }
