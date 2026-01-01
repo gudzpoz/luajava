@@ -26,19 +26,22 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * A collection of {@link Jua} instances, each labeled with a unique id
+ *
+ * @param <T> instance type
  */
 public class LuaInstances<T> {
-    private final ArrayList<T> instances;
-    private final HashSet<Integer> freeIds;
+    private final ArrayList<Object> instances;
+    private int freeEntries;
+    private int lastFreeId;
 
+    /// Creates an empty collection
     protected LuaInstances() {
-        freeIds = new HashSet<>();
         instances = new ArrayList<>();
+        freeEntries = 0;
+        lastFreeId = -1;
     }
 
     /**
@@ -52,17 +55,17 @@ public class LuaInstances<T> {
     }
 
     protected synchronized int addNullable(@Nullable T instance) {
-        if (freeIds.isEmpty()) {
-            int id = instances.size();
+        int id;
+        if (lastFreeId == -1) {
+            id = instances.size();
             instances.add(instance);
-            return id;
         } else {
-            Iterator<Integer> first = freeIds.iterator();
-            Integer id = first.next();
-            first.remove();
+            id = lastFreeId;
+            lastFreeId = (Integer) instances.get(lastFreeId);
             instances.set(id, instance);
-            return id;
+            freeEntries--;
         }
+        return id;
     }
 
     protected synchronized Token<T> add() {
@@ -85,8 +88,9 @@ public class LuaInstances<T> {
      * @param id id of the instance to return
      * @return the element with the specified id
      */
+    @SuppressWarnings("unchecked")
     protected synchronized T get(int id) {
-        return instances.get(id);
+        return (T) instances.get(id);
     }
 
     /**
@@ -102,18 +106,22 @@ public class LuaInstances<T> {
         if (id == instances.size() - 1) {
             instances.remove(id);
         } else {
-            instances.set(id, null);
-            freeIds.add(id);
+            instances.set(id, lastFreeId);
+            lastFreeId = id;
+            freeEntries++;
         }
     }
 
     /**
+     * Returns the number of elements in this collection
+     *
      * @return the number of elements in this collection
      */
     protected synchronized int size() {
-        return instances.size() - freeIds.size();
+        return instances.size() - freeEntries;
     }
 
+    /// A place in the instance list
     public static class Token<T> {
         /**
          * Replacing the Consumer interface for lower versions
