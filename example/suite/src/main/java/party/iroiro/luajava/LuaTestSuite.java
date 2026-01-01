@@ -97,6 +97,7 @@ public class LuaTestSuite<T extends AbstractLua> {
         testOthers();
         testOverflow();
         testPCall();
+        testPrintOverride();
         testProxy();
         testPushChecks();
         testRawStrings();
@@ -619,6 +620,20 @@ public class LuaTestSuite<T extends AbstractLua> {
         assertEquals("lua state closed",
                 assertThrows(LuaException.class, () -> assertInstanceOf(Runnable.class, closedProxy).run())
                         .getMessage());
+    }
+
+    private void testPrintOverride() {
+        T K = constructor.get();
+        K.openLibraries();
+        StringBuilder output = new StringBuilder();
+        K.push((L, args) -> {
+            output.append(Arrays.toString(args));
+            return new LuaValue[0];
+        });
+        K.setGlobal("print");
+        K.run("print(1, 2, \"3\", {}, true, false)");
+        // for lua versions supported 64-bit ints, we get "1" instead of "1.0"
+        assertEquals("[1, 2, 3, {}, true, false]", output.toString().replace(".0", ""));
     }
 
     private void testOthers() {
