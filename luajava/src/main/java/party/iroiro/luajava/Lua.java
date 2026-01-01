@@ -1090,11 +1090,27 @@ public interface Lua extends AutoCloseable, LuaThread {
 
     /**
      * Opens all standard Lua libraries into the given state
+     *
+     * <p>See {@link #openLibrary(String)} for more info.</p>
      */
     void openLibraries();
 
     /**
      * Opens a specific library into the given state
+     *
+     * <p>
+     * See the corresponding Lua manual for available library. For example,
+     * in <a href="https://lua.org/manual/5.4/manual.html#6">Lua 5.4</a>,
+     * calling {@code L.openLibrary("base")} will call the {@code luaopen_base}
+     * C function for the base library.
+     * </p>
+     *
+     * <p>
+     * Note that opening a library may modify global variables. For example,
+     * opening the {@code base} library in some specific Lua versions will override
+     * built-in functions like {@code print}. So make sure to make your modifications
+     * after opening all the libraries.
+     * </p>
      *
      * @param name the library name
      */
