@@ -1,23 +1,25 @@
 #!/bin/python
 
-# for i in {1..4}; do python scripts/jnigen-gradle.py lua5${i} > lua5${i}/build.gradle; done
+# for i in {1..5}; do python scripts/jnigen-gradle.py lua5${i} > lua5${i}/build.gradle; done
 # Don't forget to update luajit/build.gradle !
 
 import sys
 
 lua_version = sys.argv[1]
-assert lua_version in ["lua51", "lua52", "lua53", "lua54"]
+assert lua_version in ["lua51", "lua52", "lua53", "lua54", "lua55"]
 header_dirs = {
     "lua51": "'jni/lua51/src', 'jni/lua51/etc'",
     "lua52": "'jni/lua52'",
     "lua53": "'jni/lua53'",
     "lua54": "'jni/lua54'",
+    "lua55": "'jni/lua55'",
 }
 
 compat_flags = {
     "lua52": "-DLUA_COMPAT_ALL",
     "lua53": "-DLUA_COMPAT_5_2",
     "lua54": "-DLUA_COMPAT_5_3",
+    "lua55": "-DLUA_COMPAT_5_3", # does not seem to be used
 }
 
 script = f"""\

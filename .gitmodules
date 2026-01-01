@@ -18,3 +18,6 @@
 	path = lua54/jni/lua54
 	url = https://github.com/lua/lua.git
 	branch = v5.4
+[submodule "lua55/jni/lua55"]
+	path = lua55/jni/lua55
+	url = https://github.com/lua/lua.git

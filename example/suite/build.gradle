@@ -19,6 +19,7 @@ dependencies {
     implementation project(':lua52')
     implementation project(':lua53')
     implementation project(':lua54')
+    implementation project(':lua55')
     implementation project(':luajit')
     implementation 'junit:junit:4.13.2'
 }

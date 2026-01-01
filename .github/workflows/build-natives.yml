@@ -31,21 +31,26 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - run: echo "JAVA_11=$JAVA_HOME" >> $GITHUB_ENV
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
       - name: Build natives
         run: |
           ./gradlew jnigen jnigenBuildAllMacOsX jnigenBuildAllIOS
-      - name: Test
-        run: |
-          ./gradlew :example:test :jsr223:test :jpms-example:run
       - name: Upload macOS natives
         uses: actions/upload-artifact@v4
         with:
           name: apple-natives
           path: ./*/build/jnigen/libs
           retention-days: 5
+      - name: Test
+        run: |
+          ./gradlew --info --stacktrace :example:test :jsr223:test :jpms-example:run
+      - name: Breakpoint if tests failed
+        if: failure()
+        uses: namespacelabs/breakpoint-action@v0
+        with:
+          duration: 30m
+          authorized-users: gudzpoz
 
   most-natives:
     environment: Codecov
@@ -124,6 +129,7 @@ jobs:
             ./lua52/build/reports/jacoco/report.xml,
             ./lua53/build/reports/jacoco/report.xml,
             ./lua54/build/reports/jacoco/report.xml,
+            ./lua55/build/reports/jacoco/report.xml,
             ./luajit/build/reports/jacoco/report.xml,
             ./luaj/build/reports/jacoco/report.xml,
             ./luajava/build/reports/jacoco/report.xml,
@@ -196,6 +202,12 @@ jobs:
       - name: Test
         run: |
           ./gradlew --info --stacktrace :example:test :jsr223:test :jpms-example:run
+      - name: Breakpoint if tests failed
+        if: failure()
+        uses: namespacelabs/breakpoint-action@v0
+        with:
+          duration: 30m
+          authorized-users: gudzpoz
 
   android-testing:
     runs-on: ubuntu-latest

@@ -43,13 +43,13 @@ since this library is more or less just a thin wrapper and requires some basic u
 
 <div style="display:flex;justify-content:center">
 
-| Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 | LuaJIT      |    LuaJ     |
-|:-------:|:-------:|:-------:|:-------:|:-----------:|:-----------:|
-| 5.1.5   | 5.2.4   | 5.3.6   | 5.4.6   | [`ae4735f`] | [LuaJ fork] |
+| Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 | Lua 5.5 | LuaJIT      | LuaJ        |
+|:-------:|:-------:|:-------:|:-------:|:--------|:-----------:|:-----------:|
+| 5.1.5   | 5.2.4   | 5.3.6   | 5.4.8   | 5.5.0   | [`7152e15`] | [LuaJ fork] |
 
 </div>
 
-[`ae4735f`]: https://github.com/LuaJIT/LuaJIT/commits/ae4735f621d89d84758769b76432d2319dda9827
+[`7152e15`]: https://github.com/LuaJIT/LuaJIT/commits/7152e15489d2077cd299ee23e3d51a4c599ab14f
 
 [LuaJ fork]: https://github.com/wagyourtail/luaj
 

@@ -1,0 +1,114 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+group = rootProject.group
+version = rootProject.version
+
+configurations {
+    desktopNatives {
+        canBeConsumed = true
+        canBeResolved = false
+    }
+
+    instrumentedJars {
+        canBeConsumed = true
+        canBeResolved = false
+        extendsFrom api, implementation, runtimeOnly
+    }
+}
+
+dependencies {
+    api project(':luajava')
+}
+
+apply plugin: 'com.badlogicgames.jnigen.jnigen-gradle'
+
+jnigen {
+    sharedLibName = 'lua55'
+
+    all {
+        cFlags += ['-DLUA_COMPAT_5_3']
+        cppFlags += ['-DLUA_COMPAT_5_3']
+        headerDirs = ['../jni/luajava', 'jni/mod', 'jni/lua55']
+        cppExcludes = ['jni/lua55/**/*']
+        cExcludes = ['jni/lua55/**/*']
+        libraries = ['-lm']
+    }
+
+    addWindows(x32, x86)
+    addWindows(x64, x86)
+    addWindows(x64, ARM)
+
+    addLinux(x32, x86) {
+        // TODO: report to jnigen
+        compilerPrefix = 'i686-linux-gnu-'
+        cFlags = cFlags.findAll { it != '-m32' }
+        cppFlags = cppFlags.findAll { it != '-m32' }
+        linkerFlags = linkerFlags.findAll { it != '-m32' }
+    }
+    addLinux(x64, x86)
+    addLinux(x32, ARM)
+    addLinux(x64, ARM)
+    // TODO: Until we have a RISCV toolchain on Ubuntu.
+    // addLinux(x64, RISCV)
+    each({ it.os == Linux }) {
+        String[] linuxFlags = ['-D_FORTIFY_SOURCE=0', '-DLUA_USE_DLOPEN']
+        cFlags += linuxFlags
+        cppFlags += linuxFlags
+    }
+
+    addMac(x64, x86)
+    addMac(x64, ARM)
+    each({ it.os == MacOsX }) {
+        String[] macFlags = ['-DLUA_USE_DLOPEN']
+        libraries = []
+        cFlags += macFlags
+        cppFlags += macFlags
+    }
+
+    addAndroid {
+        String[] androidFlags = ['-D_FORTIFY_SOURCE=1', '-DLUA_USE_DLOPEN']
+        cFlags += androidFlags
+        cppFlags += androidFlags
+        androidApplicationMk = [
+                'APP_PLATFORM := android-21',
+                "APP_CFLAG :=$androidFlags",
+        ]
+    }
+
+    robovm {
+        forceLinkClasses "java.lang.Class", "java.lang.Throwable", "party.iroiro.luajava.JuaAPI"
+        xcframeworkBundleIdentifier = "party.iroiro.luajava.lua55"
+        minIOSVersion = "11.0"
+    }
+    addIOS()
+}
+
+artifacts {
+    artifacts {
+        [
+                tasks.jnigenPackageAllAndroid,
+                tasks.jnigenPackageAllIOS,
+                tasks.jnigenPackageAllDesktop,
+        ].forEach { packageTask ->
+            packageTask.outputs.files.forEach { file ->
+                archives(file) {
+                    builtBy(packageTask)
+                }
+            }
+        }
+    }
+
+    instrumentedJars(jar)
+    desktopNatives(jnigenPackageAllDesktop.outputs.files.files) {
+        builtBy(jnigenPackageAllDesktop)
+    }
+}
+
+tasks.named('jar') {
+    manifest {
+        attributes('Automatic-Module-Name': 'party.iroiro.luajava.lua55')
+    }
+}

@@ -12,7 +12,7 @@ import Asciinema from './.vitepress/components/Asciinema.vue';
 
 <ClientOnly><Asciinema :file="withBase('/example.cast')" /></ClientOnly>
 
-`Lua Version` can be any of `5.1`, `5.2`, `5.3`, `5.4`, `luaj` or `jit`.
+`Lua Version` can be any of `5.1`, `5.2`, `5.3`, `5.4`, `5.5`, `luaj` or `jit`.
 
 ## Built-In Examples
 

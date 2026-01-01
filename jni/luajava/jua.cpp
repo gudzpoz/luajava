@@ -477,6 +477,10 @@ struct DumpBuffer {
 };
 
 int dumpBufferWriter(lua_State * L, const void * p, size_t sz, void * ud) {
+  if (p == NULL || sz == 0) {
+    // Lua 5.5 end signal
+    return 0;
+  }
   DumpBuffer * dump = (DumpBuffer *) ud;
   jint size = dump->size + sz;
   if (size < 0) {

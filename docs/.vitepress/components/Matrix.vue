@@ -22,6 +22,7 @@ const luaVersions = {
   lua52: 'Lua 5.2',
   lua53: 'Lua 5.3',
   lua54: 'Lua 5.4',
+  lua55: 'Lua 5.5',
   luajit: 'LuaJIT',
   luaj: 'LuaJ',
 };

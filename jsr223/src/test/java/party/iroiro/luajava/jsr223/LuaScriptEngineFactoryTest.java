@@ -18,6 +18,7 @@ class LuaScriptEngineFactoryTest {
 
     @Test
     public void preferredVersionTest() {
+        // TODO: do we prefer Lua 5.5? Should be breaking?
         System.setProperty("luajava.jsr-223", "54");
         new LuaScriptEngineFactory();
         System.setProperty("luajava.jsr-223", "jit");
@@ -48,7 +49,7 @@ class LuaScriptEngineFactoryTest {
     public void paramTest() {
         LuaScriptEngineFactory factory = new LuaScriptEngineFactory();
         assertEquals("Lua 5.4", factory.getEngineName());
-        assertEquals("5.4.4", factory.getEngineVersion());
+        assertEquals("5.4.8", factory.getEngineVersion());
         assertIterableEquals(Collections.singletonList("lua"), factory.getExtensions());
         List<String> mimeTypes = new ArrayList<>();
         mimeTypes.add("text/x-lua");
@@ -56,13 +57,13 @@ class LuaScriptEngineFactoryTest {
         assertIterableEquals(mimeTypes, factory.getMimeTypes());
         assertIterableEquals(Collections.singletonList("lua54"), factory.getNames());
         assertEquals("Lua", factory.getLanguageName());
-        assertEquals("5.4.4", factory.getLanguageVersion());
+        assertEquals("5.4.8", factory.getLanguageVersion());
 
         String[][] params = {
                 {"ENGINE", "Lua 5.4"},
-                {"ENGINE_VERSION", "5.4.4"},
+                {"ENGINE_VERSION", "5.4.8"},
                 {"LANGUAGE", "Lua"},
-                {"LANGUAGE_VERSION", "5.4.4"},
+                {"LANGUAGE_VERSION", "5.4.8"},
                 {"NAME", "lua54"},
                 {"THREADING", "THREAD-ISOLATED"},
                 {"NONSENSE", null},
