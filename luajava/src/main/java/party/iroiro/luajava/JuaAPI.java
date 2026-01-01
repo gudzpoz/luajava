@@ -659,6 +659,17 @@ public abstract class JuaAPI {
                     namedMethods.add(method);
                 }
             }
+            if (namedMethods.isEmpty()) {
+                for (Class<?> i : clazz.getInterfaces()) {
+                    if (Modifier.isPublic(i.getModifiers())) {
+                        for (Method method : i.getMethods()) {
+                            if (method.getName().equals(name)) {
+                                namedMethods.add(method);
+                            }
+                        }
+                    }
+                }
+            }
             methods = namedMethods.toArray(new Method[0]);
             MEMBER_METHOD_CACHE.put(clazz, name, methods);
         }
