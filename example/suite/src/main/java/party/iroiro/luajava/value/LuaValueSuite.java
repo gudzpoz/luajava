@@ -63,7 +63,7 @@ public class LuaValueSuite<T extends Lua> {
         assertEquals("100", StandardCharsets.UTF_8.decode(buffer).toString());
     }
 
-    @SuppressWarnings("SuspiciousMethodCalls")
+    @SuppressWarnings({"SuspiciousMethodCalls", "RedundantCollectionOperation"})
     private void tableMapTest() {
         LuaValue map = L.eval("t = { 1, 2, 3, 4, a = 5, b = 6, c = 7, d = 8 }; return t")[0];
         assertEquals(8, map.entrySet().size());
@@ -97,12 +97,37 @@ public class LuaValueSuite<T extends Lua> {
         assertThrows(UnsupportedOperationException.class, i::call);
         assertEquals(0, L.getTop());
 
+        // toBoolean
         assertEquals(1, i.toNumber(), 0.000001);
         assertEquals(1, i.toInteger());
         assertTrue(i.toBoolean());
         L.push(0);
         LuaValue j = L.get();
+        assertTrue(j.toBoolean());
+        assertEquals(0, j.toInteger());
+        assertEquals(0, j.toNumber(), 10e-10);
+        L.push(0.1);
+        j = L.get();
+        assertTrue(j.toBoolean());
+        assertEquals(0, j.toInteger());
+        assertEquals(0.1, j.toNumber(), 10e-10);
+
+        // false/nil
+        L.push(false);
+        j = L.get();
         assertFalse(j.toBoolean());
+        assertEquals("BOOLEAN is not a number", assertThrows(LuaException.class, j::toNumber).getMessage());
+        assertEquals("BOOLEAN is not a number", assertThrows(LuaException.class, j::toInteger).getMessage());
+
+        L.pushNil();
+        j = L.get();
+        assertFalse(j.toBoolean());
+        assertEquals("NIL is not a number", assertThrows(LuaException.class, j::toNumber).getMessage());
+        assertEquals("NIL is not a number", assertThrows(LuaException.class, j::toInteger).getMessage());
+
+        // toNumber
+        assertEquals(Long.MAX_VALUE, ImmutableLuaValue.LONG(L, Long.MAX_VALUE).toInteger());
+
         assertEquals(0, L.getTop());
     }
 

@@ -59,6 +59,11 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
             public void push(Lua L) {
                 L.pushNil();
             }
+
+            @Override
+            public boolean toBoolean() {
+                return false;
+            }
         };
     }
 
@@ -70,6 +75,11 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
         @Override
         public void push(Lua L) {
             L.push(value);
+        }
+
+        @Override
+        public boolean toBoolean() {
+            return value;
         }
     }
 
@@ -90,6 +100,11 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
         public void push(Lua L) {
             L.push(value);
         }
+
+        @Override
+        public double toNumber() {
+            return value;
+        }
     }
 
     private static final class ImmutableLong extends ImmutableLuaValue<Long> {
@@ -105,6 +120,11 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
         @Override
         public Object toJavaObject() {
             return value.doubleValue();
+        }
+
+        @Override
+        public long toInteger() {
+            return value;
         }
     }
 

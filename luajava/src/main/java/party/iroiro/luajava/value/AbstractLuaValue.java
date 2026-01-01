@@ -24,10 +24,10 @@ package party.iroiro.luajava.value;
 
 import org.jetbrains.annotations.NotNull;
 import party.iroiro.luajava.Lua;
+import party.iroiro.luajava.LuaException;
 
 import java.nio.ByteBuffer;
 import java.util.AbstractMap;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -107,19 +107,28 @@ public abstract class AbstractLuaValue<T extends Lua>
         throw new UnsupportedOperationException(type.toString());
     }
 
+    private Number checkNumber() {
+        Object o = toJavaObject();
+        if (o instanceof Number) {
+            return (Number) o;
+        }
+        throw new LuaException(LuaException.LuaError.JAVA, type + " is not a number");
+    }
+
     @Override
     public double toNumber() {
-        return ((Number) Objects.requireNonNull(toJavaObject())).doubleValue();
+        return checkNumber().doubleValue();
     }
 
     @Override
     public long toInteger() {
-        return ((Number) Objects.requireNonNull(toJavaObject())).longValue();
+        return checkNumber().longValue();
     }
 
     @Override
     public boolean toBoolean() {
-        return toInteger() != 0;
+        // overridden by false and nil
+        return true;
     }
 
     @Override
