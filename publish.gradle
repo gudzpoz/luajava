@@ -1,88 +1,50 @@
-configure([
-        project(':luajava'),
-        project(':lua51'),
-        project(':lua52'),
-        project(':lua53'),
-        project(':lua54'),
-        project(':luajit'),
-        project(':luaj'),
-        project(':jsr223')
-]) {
-    apply plugin: 'maven-publish'
-    apply plugin: 'signing'
+static File jarFile(DefaultTask task) {
+    def files = task.outputs.files.files
+    assert files.size() == 1
+    files.iterator().next()
+}
 
-    apply from: project(':').file('javadoc.gradle')
-    apply from: project(':').file('pom.gradle')
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
-    java {
-        withSourcesJar()
-        withJavadocJar()
+apply from: project(':').file('javadoc.gradle')
+apply from: project(':').file('pom.gradle')
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+afterEvaluate { project ->
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                versionMapping {
+                    usage('java-api') {
+                        fromResolutionOf('runtimeClasspath')
+                    }
+                    usage('java-runtime') {
+                        fromResolutionResult()
+                    }
+                }
+
+                setPom(pom, '')
+            }
+        }
+
+        repositories {
+            mavenLocal()
+        }
     }
 
-    afterEvaluate { project ->
-        publishing {
-            publications {
-                mavenJava(MavenPublication) {
-                    from components.java
-                    versionMapping {
-                        usage('java-api') {
-                            fromResolutionOf('runtimeClasspath')
-                        }
-                        usage('java-runtime') {
-                            //noinspection GroovyImplicitNullArgumentCall
-                            fromResolutionResult()
-                        }
-                    }
-
-                    setPom(pom, '')
-                }
-
-                if (project.tasks.findByName('jnigen')) {
-                    mavenPlatform(MavenPublication) {
-                        artifactId = artifactId + '-platform'
-
-                        if (project.tasks.findByName('jnigenJarNativesDesktop')) {
-                            artifact jnigenJarNativesDesktop {}
-                        }
-                        if (project.tasks.findByName('jnigenJarNativesIOS')) {
-                            artifact jnigenJarNativesIOS {}
-                        }
-                        // TODO: Add riscv64 to the list once Android NDK & jnigen supports RISC-V Android builds.
-                        ['arm64-v8a', 'armeabi-v7a', 'x86_64', 'x86'].each { arch ->
-                            if (project.tasks.findByName("jnigenJarNativesAndroid$arch")) {
-                                artifact "jnigenJarNativesAndroid$arch" {}
-                            }
-                        }
-                        setPom(pom, ' Native Libraries')
-                    }
-                }
-            }
-
-            repositories {
-                maven {
-                    name = 'OSSRH'
-                    url = rootProject.version.toString().endsWith('-SNAPSHOT')
-                            ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-                            : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-                    credentials {
-                        username = System.getenv("MAVEN_USERNAME")
-                        password = System.getenv("MAVEN_PASSWORD")
-                    }
-                }
-            }
-        }
-
-        signing {
-            useInMemoryPgpKeys(
-                    System.getenv("GPG_KEY_ID"),
-                    System.getenv("GPG_SECKEY"),
-                    System.getenv("GPG_PASSPHRASE"),
-            )
-            sign publishing.publications.mavenJava
-
-            if (project.tasks.findByName('jnigen')) {
-                sign publishing.publications.mavenPlatform
-            }
-        }
+    configure(signing) {
+        def key = System.getenv("GPG_SECKEY")
+        useInMemoryPgpKeys(
+                System.getenv("GPG_KEY_ID"),
+                key == null ? null : new String(Base64.getDecoder().decode(key)),
+                System.getenv("GPG_PASSPHRASE"),
+        )
+        sign(publishing.publications)
     }
 }

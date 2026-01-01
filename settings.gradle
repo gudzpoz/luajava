@@ -1,3 +1,9 @@
+import java.time.Duration
+
+plugins {
+    id 'com.gradleup.nmcp.settings' version '1.4.2'
+}
+
 rootProject.name = 'luajava-root'
 include ':luajava',
         ':lua51',
@@ -12,3 +18,12 @@ include ':luajava',
         ':jpms-example',
         ':android',
         ':android:android-test'
+
+nmcpSettings {
+    centralPortal {
+        username = System.getenv("MAVEN_USERNAME")
+        password = System.getenv("MAVEN_PASSWORD")
+        publishingType = 'USER_MANAGED'
+        publishingTimeout = Duration.ZERO
+    }
+}

@@ -26,12 +26,6 @@ subprojects { it ->
 
     if (!['android', 'android-test', 'jpms-example'].contains(it.name)) {
         apply plugin: 'java'
-
-        java {
-            withSourcesJar()
-            withJavadocJar()
-        }
-
         tasks.withType(JavaCompile).configureEach {
             options.release = 8
         }
@@ -66,4 +60,17 @@ tasks.register('allJavadoc', Javadoc) {
             '**/party/iroiro/luajava/cleaner/**',
     )
     destinationDir = layout.buildDirectory.file("docs/javadoc").get().asFile
+}
+
+configure([
+        project(':luajava'),
+        project(':lua51'),
+        project(':lua52'),
+        project(':lua53'),
+        project(':lua54'),
+        project(':luajit'),
+        project(':luaj'),
+        project(':jsr223')
+]) {
+    apply from: project(':').file('publish.gradle')
 }

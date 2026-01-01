@@ -88,3 +88,48 @@ tasks.configureEach { packageTask ->
         packageTask.dependsOn 'copyAndroidNatives'
     }
 }
+
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+apply from: project(':').file('pom.gradle')
+
+afterEvaluate {
+    publishing {
+        publications {
+            create('default', MavenPublication) { container ->
+                setPom(pom, '')
+                luaVersions.each { v ->
+                    String ver = v
+                    String path = "${buildDir}/outputs/aar/android-${ver}-release.aar"
+                    file(path).getParentFile().mkdirs()
+                    file(path).createNewFile()
+                    container.artifact(path) {
+                        classifier ver
+                        extension 'aar'
+                    }
+                }
+            }
+        }
+
+        repositories {
+            mavenLocal()
+        }
+    }
+
+    signing {
+        def key = System.getenv("GPG_SECKEY")
+        useInMemoryPgpKeys(
+                System.getenv("GPG_KEY_ID"),
+                key == null ? null : new String(Base64.getDecoder().decode(key)),
+                System.getenv("GPG_PASSPHRASE"),
+        )
+        sign publishing.publications.default
+    }
+}
+
+tasks.configureEach { packageTask ->
+    if (packageTask.name.toLowerCase().contains("maven")) {
+        packageTask.dependsOn 'assemble'
+    }
+}
