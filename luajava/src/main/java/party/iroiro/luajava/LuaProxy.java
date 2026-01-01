@@ -63,6 +63,10 @@ public final class LuaProxy implements InvocationHandler, LuaReferable {
     }
 
     private Object syncFreeInvoke(Object object, Method method, Object[] objects) throws Throwable {
+        if (L.mainThread.isClosed()) {
+            throw new LuaException(LuaException.LuaError.JAVA, "lua state closed");
+        }
+
         int top = L.getTop();
         L.refGet(ref);
         L.getField(-1, method.getName());

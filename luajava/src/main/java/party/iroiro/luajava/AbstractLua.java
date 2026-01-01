@@ -56,7 +56,7 @@ public abstract class AbstractLua implements Lua {
 
     protected final LuaNatives C;
     protected final long L;
-    protected final int id;
+    protected volatile int id;
     protected final AbstractLua mainThread;
     protected final List<Lua> subThreads;
 
@@ -976,22 +976,32 @@ public abstract class AbstractLua implements Lua {
         }
     }
 
+    protected boolean isClosed() {
+        return id == -1;
+    }
+
     @Override
     public void close() {
-        if (mainThread == this) {
-            synchronized (subThreads) {
-                for (Lua lua : subThreads) {
-                    instances.remove(lua.getId());
+        synchronized (mainThread) {
+            if (mainThread == this) {
+                if (isClosed()) {
+                    return;
                 }
-                subThreads.clear();
-                instances.remove(id);
-                C.lua_close(L);
-            }
-        } else {
-            synchronized (mainThread.subThreads) {
-                if (mainThread.subThreads.remove(this)) {
-                    C.luaJ_removestateindex(L);
-                    instances.remove(getId());
+                synchronized (subThreads) {
+                    for (Lua lua : subThreads) {
+                        instances.remove(lua.getId());
+                    }
+                    subThreads.clear();
+                    instances.remove(id);
+                    id = -1;
+                    C.lua_close(L);
+                }
+            } else {
+                synchronized (mainThread.subThreads) {
+                    if (!mainThread.isClosed() && mainThread.subThreads.remove(this)) {
+                        C.luaJ_removestateindex(L);
+                        instances.remove(id);
+                    }
                 }
             }
         }

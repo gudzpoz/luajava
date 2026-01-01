@@ -608,6 +608,17 @@ public class LuaTestSuite<T extends AbstractLua> {
         assertInstanceOf(Runnable.class, L.createProxy(new Class[]{Runnable.class}, SEMI));
 
         new DefaultProxyTest(L).test();
+
+        Object closedProxy;
+        try (Lua L = constructor.get()) {
+            L.openLibraries();
+            LuaValue[] v = L.eval("return java.proxy('java.lang.Runnable', { run = function() print('thread') end })");
+            assertEquals(1, v.length);
+            closedProxy = Objects.requireNonNull(v[0].toJavaObject());
+        }
+        assertEquals("lua state closed",
+                assertThrows(LuaException.class, () -> assertInstanceOf(Runnable.class, closedProxy).run())
+                        .getMessage());
     }
 
     private void testOthers() {
