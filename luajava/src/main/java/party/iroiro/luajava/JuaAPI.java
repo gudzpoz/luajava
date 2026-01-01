@@ -664,7 +664,13 @@ public abstract class JuaAPI {
         }
         Method method = matchMethod(L, methods, METHOD_WRAPPER, objects);
         if (method == null) {
-            L.push("no matching method found");
+            StringBuilder sb = new StringBuilder();
+            sb.append("no matching method found: ");
+            sb.append(clazz.getCanonicalName()).append(".").append(name).append(Arrays.toString(objects));
+            for (Method m: methods) {
+                sb.append("\n").append(m.toGenericString());
+            }
+            L.push(sb.toString());
             return -1;
         } else {
             return methodInvoke(L, method, obj, objects);
@@ -700,6 +706,7 @@ public abstract class JuaAPI {
             L.push("bad argument to constructor (Class<?> expected, got Object)");
             return -1;
         }
+        String message;
         Method method = matchMethod(clazz, name, notSignature);
         if (method != null) {
             Object[] objects = new Object[paramCount];
@@ -710,8 +717,14 @@ public abstract class JuaAPI {
                     return methodInvoke(L, method, obj, objects);
                 }
             }
+            message = "no matching method found: " + clazz.getCanonicalName() + "." + name
+                    + "(" + notSignature + "): "
+                    + Arrays.toString(objects);
+        } else {
+            message = "no matching method found: " + clazz.getCanonicalName() + "." + name
+                    + "(" + notSignature + ")";
         }
-        L.push("no matching method found");
+        L.push(message);
         return -1;
     }
 
