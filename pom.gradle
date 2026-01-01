@@ -1,6 +1,4 @@
-import org.gradle.api.publish.maven.internal.publication.DefaultMavenPom
-
-def setPom(DefaultMavenPom pom, String extra) {
+def setPom(MavenPom pom, String extra) {
     pom.name.set(POM_NAME + extra)
     if (!POM_DESCRIPTION.isEmpty()) {
         pom.description.set(POM_DESCRIPTION)
@@ -17,10 +15,10 @@ def setPom(DefaultMavenPom pom, String extra) {
 
     pom.developers {
         developer {
-            id = POM_DEV_ID
-            url = POM_DEV_URL
-            name = POM_DEV_ID
-            email = POM_DEV_EMAIL
+            id = POM_DEVELOPER_ID
+            url = POM_DEVELOPER_URL
+            name = POM_DEVELOPER_NAME
+            email = POM_DEVELOPER_EMAIL
         }
     }
 
