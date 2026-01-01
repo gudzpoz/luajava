@@ -54,7 +54,7 @@ This library includes two sets of Java API:
 
 ## Supported Lua Versions
 
-Supported Lua versions are: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4, LuaJ and LuaJIT.
+Supported Lua versions are: Lua 5.1, Lua 5.2, Lua 5.3, Lua 5.4, Lua 5.5, LuaJ and LuaJIT.
 
 I try to keep up with the most recent version of Lua, that is,
 [the latest official release of Lua](https://www.lua.org/versions.html),
@@ -64,17 +64,22 @@ Currently:
 
 <div style="display:flex;justify-content:center">
 
-| Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 | LuaJIT      |    LuaJ     |
-|:-------:|:-------:|:-------:|:-------:|:-----------:|:-----------:|
-| 5.1.5   | 5.2.4   | 5.3.6   | 5.4.6   | [`ae4735f`] | [LuaJ fork] |
+| Lua 5.1 | Lua 5.2 | Lua 5.3 | Lua 5.4 | Lua 5.5 | LuaJIT      | LuaJ        |
+|:-------:|:-------:|:-------:|:-------:|:--------|:-----------:|:-----------:|
+| 5.1.5   | 5.2.4   | 5.3.6   | 5.4.8   | 5.5.0   | [`7152e15`] | [LuaJ fork] |
 
 </div>
 
-[`ae4735f`]: https://github.com/LuaJIT/LuaJIT/commits/ae4735f621d89d84758769b76432d2319dda9827
+[`7152e15`]: https://github.com/LuaJIT/LuaJIT/commits/7152e15489d2077cd299ee23e3d51a4c599ab14f
 
 [LuaJ fork]: https://github.com/wagyourtail/luaj
 
 [^jit]: LuaJIT no longer creates new releases. See [Project status · Issue #665](https://github.com/LuaJIT/LuaJIT/issues/665#issuecomment-784452583) for an explanation.
+
+<!--
+By the way, when changing LuaJIT commit, don't forget to update the commit hash
+in README.md and jsr223/LuaScriptEngineFactory.java.
+-->
 
 ## Platforms
 
@@ -84,19 +89,19 @@ readily available on [Maven Central](https://mvnrepository.com/search?q=party.ir
 [^android] [^luaj]
 
 <script setup>
-const columns = ['Lua 5.1', 'Lua 5.2', 'Lua 5.3', 'Lua 5.4', 'LuaJIT', 'LuaJ'];
+const columns = ['Lua 5.1', 'Lua 5.2', 'Lua 5.3', 'Lua 5.4', 'Lua 5.5', 'LuaJIT', 'LuaJ'];
 const android = 'Android <sup><a href="#fn2">[2]</a></sup>';
 const matrix = {
-  'Linux (x86_64)':   [2, 2, 2, 2, 2, 2],
-  'Linux (x86)':      [1, 1, 1, 1, 1, 1],
-  'Linux (ARM)':      [1, 1, 1, 1, 1, 1],
-  'Linux (ARM64)':    [2, 2, 2, 2, 2, 2],
-  'Windows (x86)':    [1, 1, 1, 1, 1, 1],
-  'Windows (x86_64)': [2, 2, 2, 2, 2, 2],
-  'MacOS (x86_64)':   [2, 2, 2, 2, 2, 2],
-  'MacOS (ARM64)':    [2, 2, 2, 2, 2, 2],
-  [android]:          [2, 2, 2, 2, 2, 2],
-  'iOS':              [1, 1, 1, 1, 1, 1],
+  'Linux (x86_64)':   [2, 2, 2, 2, 2, 2, 2],
+  'Linux (x86)':      [1, 1, 1, 1, 1, 1, 1],
+  'Linux (ARM)':      [1, 1, 1, 1, 1, 1, 1],
+  'Linux (ARM64)':    [2, 2, 2, 2, 2, 2, 2],
+  'Windows (x86)':    [1, 1, 1, 1, 1, 1, 1],
+  'Windows (x86_64)': [2, 2, 2, 2, 2, 2, 2],
+  'MacOS (x86_64)':   [2, 2, 2, 2, 2, 2, 2],
+  'MacOS (ARM64)':    [2, 2, 2, 2, 2, 2, 2],
+  [android]:          [2, 2, 2, 2, 2, 2, 2],
+  'iOS':              [1, 1, 1, 1, 1, 1, 1],
 };
 const classes = ['unsupported', 'available', 'tested'];
 </script>

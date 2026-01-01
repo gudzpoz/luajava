@@ -177,6 +177,7 @@ jvalue convertFromJobject(JNIEnv * env, jobject obj, char target) {
 int luaJ_invokespecial(JNIEnv * env, lua_State * L,
                        jclass clazz, const char * methodName, const char * sig,
                        jobject obj, const char * params) {
+  // TODO: Cache method IDs
   jmethodID method = bindJavaMethod(env, clazz, methodName, sig);
   // The last character signifies the type of return value
   int paramCount = std::strlen(params) - 1;

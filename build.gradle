@@ -46,6 +46,7 @@ tasks.register('allJavadoc', Javadoc) {
             'lua52',
             'lua53',
             'lua54',
+            'lua55',
             'luajit',
             'luaj',
             'luajava',
@@ -68,6 +69,7 @@ configure([
         project(':lua52'),
         project(':lua53'),
         project(':lua54'),
+        project(':lua55'),
         project(':luajit'),
         project(':luaj'),
         project(':jsr223')

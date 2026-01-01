@@ -6,6 +6,7 @@ import party.iroiro.luajava.lua51.Lua51;
 import party.iroiro.luajava.lua52.Lua52;
 import party.iroiro.luajava.lua53.Lua53;
 import party.iroiro.luajava.lua54.Lua54;
+import party.iroiro.luajava.lua55.Lua55;
 import party.iroiro.luajava.luaj.LuaJ;
 import party.iroiro.luajava.luajit.LuaJit;
 
@@ -34,6 +35,12 @@ public class LuaTest {
     public void lua54Test() {
         try (Lua54 L = new Lua54()) {
             new LuaTestSuite<>(L, Lua54::new).test();
+        }
+    }
+    @RepeatedTest(REPEATED)
+    public void lua55Test() {
+        try (Lua55 L = new Lua55()) {
+            new LuaTestSuite<>(L, Lua55::new).test();
         }
     }
     @RepeatedTest(REPEATED)

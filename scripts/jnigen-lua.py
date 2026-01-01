@@ -3,7 +3,7 @@
 
 # Use the following command to update boilerplates:
 #
-# for i in {1..4}; do python scripts/jnigen-lua.py 5.$i party.iroiro.luajava.lua5${i} lua5${i}/src/main/java/; done
+# for i in {1..5}; do python scripts/jnigen-lua.py 5.$i party.iroiro.luajava.lua5${i} lua5${i}/src/main/java/; done
 #
 # Do not forget to update LuaJit (by copying that of Lua5.1) and possibly LuaJ.
 # Use some diff tools to help determine what changes to keep.
@@ -239,6 +239,7 @@ paramTypedDescriptions = {
     'nrec': {'int': 'the number of pre-allocated non-array elements'},
     'nresults': {'int': 'the number of results, or <code>LUA_MULTRET</code>',
                  'int *': 'pointer to the number of results'},
+    'nseq': {'int': 'the number of pre-allocated array elements'},
     'nuvalue': {'int': 'number of associated Lua values (user values)'},
     'obj': {'int': 'the stack position of the object',
             'jobject': 'the Java object'},
@@ -486,6 +487,10 @@ filtered = [
     'luaL_loadfilex',
     'lua_pushliteral',
     'luaL_typeerror',
+    # Lua 5.5
+    'lua_numbertocstring',
+    'luaL_makeseed',
+    'luaL_openselectedlibs',
 ]
 
 def functionHas(f: LuaAPI, noGo: str):

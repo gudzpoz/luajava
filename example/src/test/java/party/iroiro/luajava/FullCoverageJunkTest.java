@@ -9,6 +9,8 @@ import party.iroiro.luajava.lua53.Lua53;
 import party.iroiro.luajava.lua53.Lua53Consts;
 import party.iroiro.luajava.lua54.Lua54;
 import party.iroiro.luajava.lua54.Lua54Consts;
+import party.iroiro.luajava.lua55.Lua55;
+import party.iroiro.luajava.lua55.Lua55Consts;
 import party.iroiro.luajava.luaj.JavaMetatables;
 import party.iroiro.luajava.luaj.LuaJ;
 import party.iroiro.luajava.luaj.LuaJConsts;
@@ -34,6 +36,7 @@ public class FullCoverageJunkTest {
         Lua52Consts lua52Consts = new Lua52Consts() {};
         Lua53Consts lua53Consts = new Lua53Consts() {};
         Lua54Consts lua54Consts = new Lua54Consts() {};
+        Lua55Consts lua55Consts = new Lua55Consts() {};
         LuaJitConsts luaJitConsts = new LuaJitConsts() {};
         LuaJConsts luaJConsts = new LuaJConsts() {};
 
@@ -72,6 +75,7 @@ public class FullCoverageJunkTest {
                 new Lua52(),
                 new Lua53(),
                 new Lua54(),
+                new Lua55(),
                 new LuaJit(),
                 new LuaJ(),
         }) {

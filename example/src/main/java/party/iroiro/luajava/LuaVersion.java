@@ -6,6 +6,7 @@ import party.iroiro.luajava.lua51.Lua51;
 import party.iroiro.luajava.lua52.Lua52;
 import party.iroiro.luajava.lua53.Lua53;
 import party.iroiro.luajava.lua54.Lua54;
+import party.iroiro.luajava.lua55.Lua55;
 import party.iroiro.luajava.luaj.LuaJ;
 import party.iroiro.luajava.luajit.LuaJit;
 
@@ -18,6 +19,7 @@ public enum LuaVersion {
     v52("5.2", Lua52::new),
     v53("5.3", Lua53::new),
     v54("5.4", Lua54::new),
+    v55("5.5", Lua55::new),
     vjit("jit", LuaJit::new),
     vj("j", LuaJ::new);
 

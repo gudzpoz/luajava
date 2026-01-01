@@ -15,14 +15,14 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       pagefind:
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: 1.1.1
+        version: 1.1.1
       vitepress:
         specifier: ^1.3.2
         version: 1.3.2(@algolia/client-search@4.24.0)(@types/node@22.3.0)(fuse.js@6.6.2)(postcss@8.4.41)(sass@1.77.2)(search-insights@2.16.3)
       vitepress-plugin-pagefind:
         specifier: ^0.4.10
-        version: 0.4.10(pagefind@1.1.0)
+        version: 0.4.10(pagefind@1.1.1)
       vue:
         specifier: ^3.4.37
         version: 3.4.37
@@ -456,28 +456,28 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@pagefind/darwin-arm64@1.1.0':
-    resolution: {integrity: sha512-SLsXNLtSilGZjvqis8sX42fBWsWAVkcDh1oerxwqbac84HbiwxpxOC2jm8hRwcR0Z55HPZPWO77XeRix/8GwTg==}
+  '@pagefind/darwin-arm64@1.1.1':
+    resolution: {integrity: sha512-tZ9tysUmQpFs2EqWG2+E1gc+opDAhSyZSsgKmFzhnWfkK02YHZhvL5XJXEZDqYy3s1FAKhwjTg8XDxneuBlDZQ==}
     cpu: [arm64]
     os: [darwin]
 
-  '@pagefind/darwin-x64@1.1.0':
-    resolution: {integrity: sha512-QjQSE/L5oS1C8N8GdljGaWtjCBMgMtfrPAoiCmINTu9Y9dp0ggAyXvF8K7Qg3VyIMYJ6v8vg2PN7Z3b+AaAqUA==}
+  '@pagefind/darwin-x64@1.1.1':
+    resolution: {integrity: sha512-ChohLQ39dLwaxQv0jIQB/SavP3TM5K5ENfDTqIdzLkmfs3+JlzSDyQKcJFjTHYcCzQOZVeieeGq8PdqvLJxJxQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@pagefind/linux-arm64@1.1.0':
-    resolution: {integrity: sha512-8zjYCa2BtNEL7KnXtysPtBELCyv5DSQ4yHeK/nsEq6w4ToAMTBl0K06khqxdSGgjMSwwrxvLzq3so0LC5Q14dA==}
+  '@pagefind/linux-arm64@1.1.1':
+    resolution: {integrity: sha512-H5P6wDoCoAbdsWp0Zx0DxnLUrwTGWGLu/VI1rcN2CyFdY2EGSvPQsbGBMrseKRNuIrJDFtxHHHyjZ7UbzaM9EA==}
     cpu: [arm64]
     os: [linux]
 
-  '@pagefind/linux-x64@1.1.0':
-    resolution: {integrity: sha512-4lsg6VB7A6PWTwaP8oSmXV4O9H0IHX7AlwTDcfyT+YJo/sPXOVjqycD5cdBgqNLfUk8B9bkWcTDCRmJbHrKeCw==}
+  '@pagefind/linux-x64@1.1.1':
+    resolution: {integrity: sha512-yJs7tTYbL2MI3HT+ngs9E1BfUbY9M4/YzA0yEM5xBo4Xl8Yu8Qg2xZTOQ1/F6gwvMrjCUFo8EoACs6LRDhtMrQ==}
     cpu: [x64]
     os: [linux]
 
-  '@pagefind/windows-x64@1.1.0':
-    resolution: {integrity: sha512-OboCM76BcMKT9IoSfZuFhiqMRgTde8x4qDDvKulFmycgiJrlL5WnIqBHJLQxZq+o2KyZpoHF97iwsGAm8c32sQ==}
+  '@pagefind/windows-x64@1.1.1':
+    resolution: {integrity: sha512-b7/qPqgIl+lMzkQ8fJt51SfguB396xbIIR+VZ3YrL2tLuyifDJ1wL5mEm+ddmHxJ2Fki340paPcDan9en5OmAw==}
     cpu: [x64]
     os: [win32]
 
@@ -1084,8 +1084,8 @@ packages:
     resolution: {integrity: sha512-ANIvzobt1rls2BDny5fWZ3ZVKyD6nscLvfFRpQgfWsythlcsVUC9kL0zq6j2Z5z9wwp1kd7wpsD/T9qNPVLCaQ==}
     engines: {node: '>=18'}
 
-  pagefind@1.1.0:
-    resolution: {integrity: sha512-1nmj0/vfYcMxNEQj0YDRp6bTVv9hI7HLdPhK/vBBYlrnwjATndQvHyicj5Y7pUHrpCFZpFnLVQXIF829tpFmaw==}
+  pagefind@1.1.1:
+    resolution: {integrity: sha512-U2YR0dQN5B2fbIXrLtt/UXNS0yWSSYfePaad1KcBPTi0p+zRtsVjwmoPaMQgTks5DnHNbmDxyJUL5TGaLljK3A==}
     hasBin: true
 
   path-key@3.1.1:
@@ -1747,19 +1747,19 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
 
-  '@pagefind/darwin-arm64@1.1.0':
+  '@pagefind/darwin-arm64@1.1.1':
     optional: true
 
-  '@pagefind/darwin-x64@1.1.0':
+  '@pagefind/darwin-x64@1.1.1':
     optional: true
 
-  '@pagefind/linux-arm64@1.1.0':
+  '@pagefind/linux-arm64@1.1.1':
     optional: true
 
-  '@pagefind/linux-x64@1.1.0':
+  '@pagefind/linux-x64@1.1.1':
     optional: true
 
-  '@pagefind/windows-x64@1.1.0':
+  '@pagefind/windows-x64@1.1.1':
     optional: true
 
   '@rollup/rollup-android-arm-eabi@4.20.0':
@@ -2477,13 +2477,13 @@ snapshots:
       string-width: 7.2.0
       strip-ansi: 7.1.0
 
-  pagefind@1.1.0:
+  pagefind@1.1.1:
     optionalDependencies:
-      '@pagefind/darwin-arm64': 1.1.0
-      '@pagefind/darwin-x64': 1.1.0
-      '@pagefind/linux-arm64': 1.1.0
-      '@pagefind/linux-x64': 1.1.0
-      '@pagefind/windows-x64': 1.1.0
+      '@pagefind/darwin-arm64': 1.1.1
+      '@pagefind/darwin-x64': 1.1.1
+      '@pagefind/linux-arm64': 1.1.1
+      '@pagefind/linux-x64': 1.1.1
+      '@pagefind/windows-x64': 1.1.1
 
   path-key@3.1.1: {}
 
@@ -2670,12 +2670,12 @@ snapshots:
       fsevents: 2.3.3
       sass: 1.77.2
 
-  vitepress-plugin-pagefind@0.4.10(pagefind@1.1.0):
+  vitepress-plugin-pagefind@0.4.10(pagefind@1.1.1):
     dependencies:
       '@sugarat/theme-shared': 0.0.2
       '@vueuse/core': 9.13.0(vue@3.4.37)
       javascript-stringify: 2.1.0
-      pagefind: 1.1.0
+      pagefind: 1.1.1
       vue: 3.4.37
       vue-command-palette: 0.1.4
     transitivePeerDependencies:

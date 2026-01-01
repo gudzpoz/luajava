@@ -10,7 +10,7 @@ module my.java.module {
     // ...
 
     requires party.iroiro.luajava;
-    // Replace lua51 with your Lua version: lua51/lua52/lua53/lua54/luajit/luaj
+    // Replace lua51 with your Lua version: lua51/lua52/lua53/lua54/lua55/luajit/luaj
     requires party.iroiro.luajava.lua51;
 
     // ...

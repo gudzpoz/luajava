@@ -5,6 +5,7 @@ import party.iroiro.luajava.lua51.Lua51Natives;
 import party.iroiro.luajava.lua52.Lua52Natives;
 import party.iroiro.luajava.lua53.Lua53Natives;
 import party.iroiro.luajava.lua54.Lua54Natives;
+import party.iroiro.luajava.lua55.Lua55Natives;
 import party.iroiro.luajava.luajit.LuaJitNatives;
 
 import java.io.IOException;
@@ -83,6 +84,8 @@ public class LuaScriptSuite<T extends AbstractLua> {
                     ((Lua53Natives) C).lua_newuserdata(L.getPointer(), 1024);
                 } else if (C instanceof Lua54Natives) {
                     ((Lua54Natives) C).lua_newuserdatauv(L.getPointer(), 1024, 0);
+                } else if (C instanceof Lua55Natives) {
+                    ((Lua55Natives) C).lua_newuserdatauv(L.getPointer(), 1024, 0);
                 } else if (C instanceof LuaJitNatives) {
                     ((LuaJitNatives) C).lua_newuserdata(L.getPointer(), 1024);
                 } else if (C.getClass().getName().endsWith("LuaJNatives")) {
