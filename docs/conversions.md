@@ -35,6 +35,14 @@ When calling Java methods from Lua, we `SEMI`-convert the return value.
 Currently, there is no way to specify how you want the return value converted.
 :::
 
+::: warning String Encoding
+Java uses [its own modified UTF-8 encoding](http://en.wikipedia.org/wiki/UTF-8#Modified_UTF-8)
+for JNI `GetStringUTFChars`, which can be problematic if your string contains chars outside 
+the range.
+
+See the [Troubleshooting page](./troubleshooting.md#string-messed-up) for a workaround.
+:::
+
 ::: warning Examples
 - **`NONE`**:
 

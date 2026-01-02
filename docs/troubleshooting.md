@@ -1,5 +1,24 @@
 # Troubleshooting
 
+## String Messed Up?
+
+Java uses [its own modified UTF-8 encoding](http://en.wikipedia.org/wiki/UTF-8#Modified_UTF-8)
+for JNI `GetStringUTFChars`. It should be more efficient for characters within the basic plane
+(`0 - 0xFFFF`), but uses a different kind of encoding for characters higher up.
+
+Currently, we still use `GetStringUTFChars` for most the String conversions.
+And that means things can be problematic if your string contains emojis, for example.
+A workaround for this is to use the buffer API to directly push raw strings:
+
+```java
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+
+void push(Lua L, String string) {
+    L.push(ByteBuffer.wrap("🀄".getBytes(StandardCharsets.UTF_8)));
+}
+```
+
 ## Class (or Resource) Not Found
 
 ### Is a wrong classloader used?
