@@ -33,11 +33,15 @@ import java.nio.ByteBuffer;
  */
 public interface LuaValue extends LuaTableTrait {
     /**
+     * Returns the type of this Lua value.
+     *
      * @return the type of the Lua value
      */
     Lua.LuaType type();
 
     /**
+     * Returns the Lua state where this value resides.
+     *
      * @return the Lua state where this Lua value lives
      */
     Lua state();
@@ -58,6 +62,8 @@ public interface LuaValue extends LuaTableTrait {
     LuaValue[] call(Object... parameters);
 
     /**
+     * Converts this Lua value to a Java object.
+     *
      * @return a Java value converted from this Lua value
      * @see Lua#toObject(int)
      */
@@ -77,6 +83,7 @@ public interface LuaValue extends LuaTableTrait {
     /**
      * Creates a proxy from this value with {@link Lua#createProxy(Class[], Lua.Conversion)}.
      *
+     * @param <T> the type of the proxy interface
      * @param targetInterface the interfaces the proxy should implement.
      * @return the proxy object
      */

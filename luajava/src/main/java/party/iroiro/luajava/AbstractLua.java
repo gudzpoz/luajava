@@ -43,13 +43,28 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class AbstractLua implements Lua {
     private final static Object[] EMPTY = new Object[0];
+    /**
+     * Registry of all active Lua instances.
+     */
     protected final static LuaInstances<AbstractLua> instances = new LuaInstances<>();
+    /**
+     * External loader for Lua modules.
+     */
     @Nullable
     protected volatile ExternalLoader loader;
+    /**
+     * Cached reference to the Lua require function.
+     */
     @Nullable
     protected volatile LuaValue requireFunction;
+    /**
+     * Queue for tracking references that can be garbage collected.
+     */
     @Nullable
     protected final ReferenceQueue<LuaReferable> recyclableReferences;
+    /**
+     * Map tracking all active Lua references.
+     */
     @Nullable
     protected final ConcurrentHashMap<Integer, LuaReference<?>> recordedReferences;
 
@@ -172,6 +187,11 @@ public abstract class AbstractLua implements Lua {
         }
     }
 
+    /**
+     * Pushes a Java object or array onto the Lua stack.
+     *
+     * @param object the Java object or array to push
+     */
     protected void pushJavaObjectOrArray(Object object) {
         checkStack(1);
         if (object.getClass().isArray()) {
@@ -641,12 +661,25 @@ public abstract class AbstractLua implements Lua {
         return lua;
     }
 
+    /**
+     * Adds a sub-thread to this main thread's tracking list.
+     *
+     * @param lua the sub-thread to add
+     */
     protected void addSubThread(Lua lua) {
         synchronized (Objects.requireNonNull(subThreads)) {
             subThreads.add(lua);
         }
     }
 
+    /**
+     * Creates a new sub-thread attached to this main thread.
+     *
+     * @param L the pointer to the new Lua state
+     * @param id the unique identifier for the new state
+     * @param mainThread the main thread this state belongs to
+     * @return the new sub-thread
+     */
     protected abstract AbstractLua newThread(long L, int id, AbstractLua mainThread);
 
     @Override
@@ -983,6 +1016,11 @@ public abstract class AbstractLua implements Lua {
         }
     }
 
+    /**
+     * Checks if this Lua state has been closed.
+     *
+     * @return true if the state is closed, false otherwise
+     */
     protected boolean isClosed() {
         return id == -1;
     }
@@ -1066,8 +1104,20 @@ public abstract class AbstractLua implements Lua {
         throw e;
     }
 
+    /**
+     * Converts a native error code to a LuaError enum value.
+     *
+     * @param code the native error code
+     * @return the corresponding LuaError value
+     */
     public abstract LuaException.LuaError convertError(int code);
 
+    /**
+     * Converts a native type code to a LuaType enum value.
+     *
+     * @param code the native type code
+     * @return the corresponding LuaType value
+     */
     public abstract LuaType convertType(int code);
 
     @Override

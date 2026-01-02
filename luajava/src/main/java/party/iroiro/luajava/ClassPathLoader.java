@@ -47,6 +47,9 @@ import java.util.Objects;
  * </p>
  */
 public class ClassPathLoader implements ExternalLoader {
+    /**
+     * The class loader used to load Lua modules from the classpath.
+     */
     protected final ClassLoader classLoader;
 
     /**
@@ -57,6 +60,8 @@ public class ClassPathLoader implements ExternalLoader {
     }
 
     /**
+     * Creates a new ClassPathLoader with the specified class loader.
+     *
      * @param classLoader the classloader for resource loading
      */
     public ClassPathLoader(ClassLoader classLoader) {
@@ -88,6 +93,8 @@ public class ClassPathLoader implements ExternalLoader {
     }
 
     /**
+     * Converts a dot-separated module path to a file system path.
+     *
      * @param module dot separated module path
      * @return module path with {@code .} replaced by {@code /}, appended with {@code .lua}
      */
@@ -101,6 +108,11 @@ public class ClassPathLoader implements ExternalLoader {
     public static class BufferOutputStream extends OutputStream {
         private final ByteBuffer buffer;
 
+        /**
+         * Creates a new BufferOutputStream.
+         *
+         * @param buffer the byte buffer to write to
+         */
         public BufferOutputStream(ByteBuffer buffer) {
             this.buffer = buffer;
         }

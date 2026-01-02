@@ -52,35 +52,47 @@ public interface LuaThread {
     LuaValue require(String module) throws LuaException;
 
     /**
+     * Creates a nil Lua value.
+     *
      * @return a nil Lua value
      */
     LuaValue fromNull();
 
     /**
+     * Creates a boolean Lua value from a Java boolean.
+     *
      * @param b the boolean
      * @return a boolean Lua value
      */
     LuaValue from(boolean b);
 
     /**
+     * Creates a number Lua value from a Java double.
+     *
      * @param n the number
      * @return a number Lua value
      */
     LuaValue from(double n);
 
     /**
+     * Creates a number Lua value from a Java long.
+     *
      * @param n the number
      * @return a number Lua value
      */
     LuaValue from(long n);
 
     /**
+     * Creates a string Lua value from a Java string.
+     *
      * @param s the string
      * @return a string Lua value
      */
     LuaValue from(String s);
 
     /**
+     * Creates a raw string Lua value from a byte buffer.
+     *
      * @param buffer the content of the raw string
      * @return a raw string Lua value
      */

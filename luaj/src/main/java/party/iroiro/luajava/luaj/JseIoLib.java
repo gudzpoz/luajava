@@ -8,7 +8,9 @@ import java.nio.file.*;
 import java.util.Objects;
 
 /**
- * Copied from LuaJ libraries.
+ * JSE implementation of the I/O library.
+ * <p>Copied from LuaJ libraries.
+ * </p>
  */
 public class JseIoLib extends IoLib {
     @Override
@@ -49,6 +51,9 @@ public class JseIoLib extends IoLib {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * File implementation for JSE I/O operations.
+     */
     protected final class FileImpl extends File {
         private final InputStream in;
         private final OutputStream out;
@@ -56,12 +61,24 @@ public class JseIoLib extends IoLib {
         private boolean closed = false;
         private int peeked = -1;
 
+        /**
+         * Creates a FileImpl for input.
+         *
+         * @param in the input stream
+         * @param std whether this is a standard stream
+         */
         public FileImpl(InputStream in, boolean std) {
             this.in = in;
             out = null;
             this.std = std;
         }
 
+        /**
+         * Creates a FileImpl for output.
+         *
+         * @param out the output stream
+         * @param std whether this is a standard stream
+         */
         public FileImpl(OutputStream out, boolean std) {
             in = null;
             this.out = out;

@@ -4,16 +4,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Codecov](https://img.shields.io/codecov/c/github/gudzpoz/luajava?label=Coverage)](https://app.codecov.io/gh/gudzpoz/luajava/)
 [![Java 8](https://img.shields.io/badge/Java-8-brown)](https://www.oracle.com/java/technologies/java8.html)
-[![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/party.iroiro.luajava/luajava?server=https%3A%2F%2Fs01.oss.sonatype.org&label=Nexus&color=pink)](https://s01.oss.sonatype.org/content/repositories/snapshots/party/iroiro/luajava/)
 [![Maven Central](https://img.shields.io/maven-central/v/party.iroiro.luajava/luajava?color=blue&label=Maven%20Central)](https://mvnrepository.com/search?q=party.iroiro.luajava)
 
 [![Build Status](https://github.com/gudzpoz/luajava/actions/workflows/docs.yml/badge.svg)](https://github.com/gudzpoz/luajava/actions/workflows/docs.yml)
-[![Document Version](https://img.shields.io/github/package-json/v/gudzpoz/luajava?filename=docs%2Fpackage.json&label=Documentation)](https://gudzpoz.github.io/luajava/)
+[![Document Version](https://img.shields.io/github/package-json/v/gudzpoz/luajava?filename=docs%2Fpackage.json&label=Documentation)](https://luajava.iroiro.party/)
 
-[![Tests: macOS on M1](https://img.shields.io/github/actions/workflow/status/gudzpoz/luajava/build-natives.yml?label=macOS%20on%20M1)](https://github.com/gudzpoz/luajava/actions/workflows/build-natives.yml)
-[![Tests: Linux on arm64](https://img.shields.io/circleci/build/github/gudzpoz/luajava/main?label=Linux%20on%20arm64)](https://app.circleci.com/pipelines/github/gudzpoz/luajava)
-
-[![Hello World Example](./docs/.vuepress/public/hello.svg)](https://gudzpoz.github.io/luajava/examples/hello-world-mod.html)
+[![Hello World Example](./docs/.vuepress/public/hello.svg)](https://luajava.iroiro.party/examples/hello-world-mod.html)
 
 - [LuaJava](#luajava)
   - [About](#about)
@@ -35,7 +31,7 @@ This is yet another fork of [the original LuaJava](https://github.com/jasonsanto
 >
 > LuaJava is available under the same license as Lua 5.1, that is, it can be used at no cost for both academic and commercial purposes.
 
-Documentation is available at [LuaJava](https://gudzpoz.github.io/luajava/) along with Javadoc.
+Documentation is available at [LuaJava](https://luajava.iroiro.party/) along with Javadoc.
 You are also recommended to familiarize yourself with [the Lua C API](https://www.lua.org/manual/5.4/manual.html#4)
 since this library is more or less just a thin wrapper and requires some basic understanding of the C API.
 
@@ -55,7 +51,7 @@ since this library is more or less just a thin wrapper and requires some basic u
 
 Supported platforms: **Windows**, **Linux**, **MacOS** and **Android**. Compiled against both ARM and x32/x64. Binaries are not yet tested for iOS.
 
-Compiled natives are available for most common platforms. Check out [LuaJava Platforms](https://gudzpoz.github.io/luajava/#platforms) for a platform matrix. LuaJ bindings do not need native binaries and should run on all platforms theoretically.
+Compiled natives are available for most common platforms. Check out [LuaJava Platforms](https://luajava.iroiro.party/#platforms) for a platform matrix. LuaJ bindings do not need native binaries and should run on all platforms theoretically.
 
 ### Artifacts
 
@@ -64,17 +60,17 @@ To include LuaJava into your project, you need to include two artifacts, one for
 
 ```groovy
 // Example: LuaJIT with Desktop natives
-implementation 'party.iroiro.luajava:luajit:4.0.2'
-runtimeOnly 'party.iroiro.luajava:luajit-platform:4.0.2:natives-desktop'
+implementation 'party.iroiro.luajava:luajit:4.1.0'
+runtimeOnly 'party.iroiro.luajava:luajit-platform:4.1.0:natives-desktop'
 ```
 
-Different artifacts are provided for different Lua versions and different platforms. Check out [Getting Started](https://gudzpoz.github.io/luajava/getting-started.html) for an overview. Or you may also search in the [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava).
+Different artifacts are provided for different Lua versions and different platforms. Check out [Getting Started](https://luajava.iroiro.party/getting-started.html) for an overview. Or you may also search in the [Maven Central](https://mvnrepository.com/search?q=party.iroiro.luajava).
 
 Optionally, you may include `party.iroiro.luajava:jsr223` to provide JSR 223 functionalities. (Note that you still need the above artifacts!)
 
 ## Java module ##
 
-[The `java` module](https://gudzpoz.github.io/luajava/api.html#java-module) provides these functions:
+[The `java` module](https://luajava.iroiro.party/api.html#java-module) provides these functions:
 
 - `array`: Create a Java array.
 - `caught`: Return the latest captured Java `Throwable`
@@ -102,7 +98,7 @@ public static void main(String[] args) {
 }
 ```
 
-And [a more advanced "Hello World"](https://gudzpoz.github.io/luajava/examples/hello-world-mod.html):
+And [a more advanced "Hello World"](https://luajava.iroiro.party/examples/hello-world-mod.html):
 
 ```lua
 print = java.method(java.import('java.lang.System').out,'println','java.lang.Object')
@@ -117,7 +113,7 @@ thread:start()
 
 ### More ###
 
-Check out [AWT Example](https://gudzpoz.github.io/luajava/examples/awt.html) for a more complex example.
+Check out [AWT Example](https://luajava.iroiro.party/examples/awt.html) for a more complex example.
 
 You may also have a look at [our tests](./example/src/test/resources).
 

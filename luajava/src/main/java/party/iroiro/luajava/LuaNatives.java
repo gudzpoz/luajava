@@ -74,6 +74,8 @@ public interface LuaNatives {
     double lua_tonumber(long ptr, int index);
 
     /**
+     * Returns the Lua registry index constant.
+     *
      * @return the {@code LUA_REGISTRYINDEX} constant, which changes between versions
      */
     int getRegistryIndex();

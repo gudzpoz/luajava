@@ -23,6 +23,8 @@ public interface LuaTableTrait extends Map<LuaValue, LuaValue> {
     int size();
 
     /**
+     * Gets the value at the specified integer index from the table.
+     *
      * @param i the index
      * @return {@code thisLuaValue[i]}
      */
@@ -35,12 +37,16 @@ public interface LuaTableTrait extends Map<LuaValue, LuaValue> {
     LuaValue get(Object key);
 
     /**
+     * Gets the value at the specified string key from the table.
+     *
      * @param key the key
      * @return {@code thisLuaValue[key]}
      */
     LuaValue get(String key);
 
     /**
+     * Gets the value at the specified Lua value key from the table.
+     *
      * @param key the key
      * @return {@code thisLuaValue[key]}
      */

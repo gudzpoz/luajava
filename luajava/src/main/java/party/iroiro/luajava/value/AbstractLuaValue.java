@@ -38,9 +38,21 @@ import java.util.Set;
 public abstract class AbstractLuaValue<T extends Lua>
         extends AbstractMap<LuaValue, LuaValue>
         implements LuaValue {
+    /**
+     * The Lua state this value belongs to.
+     */
     protected final T L;
+    /**
+     * The Lua type of this value.
+     */
     protected final Lua.LuaType type;
 
+    /**
+     * Creates a new AbstractLuaValue.
+     *
+     * @param L the Lua state this value belongs to
+     * @param type the Lua type of this value
+     */
     protected AbstractLuaValue(T L, Lua.LuaType type) {
         this.L = L;
         this.type = type;

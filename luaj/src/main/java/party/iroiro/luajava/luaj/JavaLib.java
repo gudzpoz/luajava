@@ -9,13 +9,28 @@ import party.iroiro.luajava.JuaAPI;
 import party.iroiro.luajava.luaj.values.JavaClass;
 import party.iroiro.luajava.luaj.values.JavaObject;
 
+/**
+ * Library for Java interoperability in LuaJ.
+ */
 public class JavaLib extends TwoArgFunction {
     private final int address;
 
+    /**
+     * Creates a new JavaLib.
+     *
+     * @param address the Lua state address
+     */
     public JavaLib(int address) {
         this.address = address;
     }
 
+    /**
+     * Checks the result and throws an error if necessary.
+     *
+     * @param L the Lua state
+     * @param nRet the number of return values
+     * @return the return values as Varargs
+     */
     public static Varargs checkOrError(LuaJState L, int nRet) {
         if (nRet < 0) {
             LuaValue message = L.toLuaValue(-1);

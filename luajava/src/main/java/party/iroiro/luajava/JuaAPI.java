@@ -608,6 +608,8 @@ public abstract class JuaAPI {
     }
 
     /**
+     * Returns the length of a Java array.
+     *
      * @param obj the array
      * @return the array length
      */
@@ -1114,6 +1116,12 @@ public abstract class JuaAPI {
 
     private static final Pattern COMMA_SPLIT = Pattern.compile(",");
 
+    /**
+     * Converts a comma-separated string of class names to an array of Class objects.
+     *
+     * @param notSignature comma-separated class names
+     * @return array of Class objects
+     */
     public static @Nullable Class<?>[] getClasses(@Nullable String notSignature) {
         if (notSignature == null || notSignature.isEmpty()) {
             return new Class<?>[0];

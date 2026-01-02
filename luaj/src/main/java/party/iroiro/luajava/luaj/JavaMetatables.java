@@ -15,6 +15,9 @@ import party.iroiro.luajava.luaj.values.JavaObject;
 import static org.luaj.vm2.LuaValue.*;
 import static party.iroiro.luajava.luaj.JavaLib.checkOrError;
 
+/**
+ * Metatables for Java objects in Lua.
+ */
 public abstract class JavaMetatables {
     private static LuaTable objectMetatable(boolean clazz) {
         LuaTable table = tableOf();
@@ -24,10 +27,20 @@ public abstract class JavaMetatables {
         return table;
     }
 
+    /**
+     * Creates a metatable for Java objects.
+     *
+     * @return the object metatable
+     */
     public static LuaTable objectMetatable() {
         return objectMetatable(false);
     }
 
+    /**
+     * Creates a metatable for Java classes.
+     *
+     * @return the class metatable
+     */
     public static LuaTable classMetatable() {
         LuaTable table = objectMetatable(true);
         table.set(CALL, new VarArgFunction() {
@@ -44,6 +57,11 @@ public abstract class JavaMetatables {
         return table;
     }
 
+    /**
+     * Creates a metatable for Java arrays.
+     *
+     * @return the array metatable
+     */
     public static LuaTable arrayMetatable() {
         LuaTable table = LuaValue.tableOf();
         table.set(LEN, new OneArgFunction() {

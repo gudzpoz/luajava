@@ -7,8 +7,7 @@ export default defineConfig({
   lang: 'en-US',
   title: 'LuaJava',
   description: 'Lua for Java',
-  base: '/luajava/',
-  head: [['link', { rel: 'icon', href: '/luajava/favicon.png' }]],
+  head: [['link', { rel: 'icon', href: '/favicon.png' }]],
   themeConfig: {
     logo: '/lua-java.svg',
     lastUpdated: {},

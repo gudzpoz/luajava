@@ -33,8 +33,18 @@ import java.nio.charset.StandardCharsets;
  * @param <T> the value type
  */
 public abstract class ImmutableLuaValue<T extends @Nullable Object> extends AbstractLuaValue<Lua> {
+    /**
+     * The wrapped immutable value.
+     */
     protected final T value;
 
+    /**
+     * Creates a new ImmutableLuaValue.
+     *
+     * @param L the Lua state
+     * @param type the Lua type
+     * @param value the wrapped value
+     */
     protected ImmutableLuaValue(Lua L, Lua.LuaType type, T value) {
         super(L, type);
         this.value = value;
@@ -53,6 +63,12 @@ public abstract class ImmutableLuaValue<T extends @Nullable Object> extends Abst
         return value;
     }
 
+    /**
+     * Creates a nil Lua value.
+     *
+     * @param L the Lua state
+     * @return a nil Lua value
+     */
     public static LuaValue NIL(Lua L) {
         return new ImmutableLuaValue<@Nullable Void>(L, Lua.LuaType.NIL, null) {
             @Override
@@ -83,10 +99,22 @@ public abstract class ImmutableLuaValue<T extends @Nullable Object> extends Abst
         }
     }
 
+    /**
+     * Creates a true boolean Lua value.
+     *
+     * @param L the Lua state
+     * @return a true Lua value
+     */
     public static LuaValue TRUE(Lua L) {
         return new ImmutableBoolean(L, true);
     }
 
+    /**
+     * Creates a false boolean Lua value.
+     *
+     * @param L the Lua state
+     * @return a false Lua value
+     */
     public static LuaValue FALSE(Lua L) {
         return new ImmutableBoolean(L, false);
     }
@@ -178,18 +206,46 @@ public abstract class ImmutableLuaValue<T extends @Nullable Object> extends Abst
         }
     }
 
+    /**
+     * Creates a number Lua value from a double.
+     *
+     * @param L the Lua state
+     * @param n the number value
+     * @return a number Lua value
+     */
     public static LuaValue NUMBER(Lua L, double n) {
         return new ImmutableNumber(L, n);
     }
 
+    /**
+     * Creates a number Lua value from a long.
+     *
+     * @param L the Lua state
+     * @param n the number value
+     * @return a number Lua value
+     */
     public static LuaValue LONG(Lua L, long n) {
         return new ImmutableLong(L, n);
     }
 
+    /**
+     * Creates a string Lua value.
+     *
+     * @param L the Lua state
+     * @param s the string value
+     * @return a string Lua value
+     */
     public static LuaValue STRING(Lua L, String s) {
         return new ImmutableString(L, s);
     }
 
+    /**
+     * Creates a buffer/raw string Lua value.
+     *
+     * @param L the Lua state
+     * @param buffer the byte buffer
+     * @return a buffer Lua value
+     */
     public static LuaValue BUFFER(Lua L, ByteBuffer buffer) {
         ByteBuffer directBuffer = ByteBuffer.allocateDirect(buffer.limit());
         buffer.position(0);

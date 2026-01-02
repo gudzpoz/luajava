@@ -20,6 +20,13 @@
  * SOFTWARE.
  */
 
+/**
+ * Core classes for Lua-Java interoperability.
+ * <p>
+ * This package provides the main API for interacting with Lua from Java,
+ * including the {@link party.iroiro.luajava.Lua} class and related interfaces.
+ * </p>
+ */
 @NullMarked
 package party.iroiro.luajava;
 

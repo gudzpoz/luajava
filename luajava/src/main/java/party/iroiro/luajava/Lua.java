@@ -42,6 +42,9 @@ import java.util.*;
  * </p>
  */
 public interface Lua extends AutoCloseable, LuaThread {
+    /**
+     * The global key used to store Java exceptions in Lua.
+     */
     String GLOBAL_THROWABLE = "__jthrowable__";
 
     /**
@@ -465,6 +468,8 @@ public interface Lua extends AutoCloseable, LuaThread {
     boolean isUserdata(int index);
 
     /**
+     * Returns the Lua type of the element at the given index.
+     *
      * @param index the element to inspect
      * @return the lua type of the element, {@code null} if unrecognized (in, for example, incompatible lua versions)
      */
@@ -1195,21 +1200,29 @@ public interface Lua extends AutoCloseable, LuaThread {
     void loadExternal(String module) throws LuaException;
 
     /**
+     * Returns the underlying native Lua interface.
+     *
      * @return the underlying {@link LuaNatives} natives
      */
     LuaNatives getLuaNatives();
 
     /**
+     * Returns the main Lua state.
+     *
      * @return the main Lua state
      */
     Lua getMainState();
 
     /**
+     * Returns the pointer to the internal Lua state.
+     *
      * @return the pointer to the internal {@code lua_State}
      */
     long getPointer();
 
     /**
+     * Returns the unique identifier of this Lua thread.
+     *
      * @return the unique identifier to the Lua thread
      */
     int getId();
@@ -1302,15 +1315,25 @@ public interface Lua extends AutoCloseable, LuaThread {
      * Lua data types
      */
     enum LuaType {
+        /** Boolean type */
         BOOLEAN(),
+        /** Function type */
         FUNCTION(),
+        /** Light userdata type */
         LIGHTUSERDATA(),
+        /** Nil type */
         NIL(),
+        /** None/invalid type */
         NONE(),
+        /** Number type */
         NUMBER(),
+        /** String type */
         STRING(),
+        /** Table type */
         TABLE(),
+        /** Thread type */
         THREAD(),
+        /** Userdata type */
         USERDATA()
     }
 }
