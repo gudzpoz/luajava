@@ -11,7 +11,7 @@ public class PackageAccessTest {
         int test();
     }
 
-    static final class TestClass implements  TestInterface {
+    static final class TestClass implements TestInterface {
         @Override
         public int test() {
             return 42;

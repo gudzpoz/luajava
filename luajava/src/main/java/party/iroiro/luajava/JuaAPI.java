@@ -655,20 +655,10 @@ public abstract class JuaAPI {
             while (!Modifier.isPublic(publicClass.getModifiers())) {
                 publicClass = publicClass.getSuperclass();
             }
-            for (Method method : publicClass.getMethods()) {
-                if (method.getName().equals(name)) {
-                    namedMethods.add(method);
-                }
-            }
+            addNameMatching(publicClass, name, namedMethods);
             if (namedMethods.isEmpty()) {
                 for (Class<?> i : clazz.getInterfaces()) {
-                    if (Modifier.isPublic(i.getModifiers())) {
-                        for (Method method : i.getMethods()) {
-                            if (method.getName().equals(name)) {
-                                namedMethods.add(method);
-                            }
-                        }
-                    }
+                    addNameMatching(i, name, namedMethods);
                 }
             }
             methods = namedMethods.toArray(new Method[0]);
@@ -686,6 +676,15 @@ public abstract class JuaAPI {
             return -1;
         } else {
             return methodInvoke(L, method, obj, objects);
+        }
+    }
+
+    private static void addNameMatching(Class<?> clazz, String name, List<Method> namedMethods) {
+        for (Method method : clazz.getMethods()) {
+            if (Modifier.isPublic(method.getModifiers() & method.getDeclaringClass().getModifiers())
+                    && method.getName().equals(name)) {
+                namedMethods.add(method);
+            }
         }
     }
 
