@@ -22,8 +22,7 @@
 
 package party.iroiro.luajava;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import party.iroiro.luajava.value.LuaFunction;
 import party.iroiro.luajava.value.LuaThread;
 import party.iroiro.luajava.value.LuaValue;
@@ -85,7 +84,7 @@ public interface Lua extends AutoCloseable, LuaThread {
      *
      * @param number the number, whose {@link Number#doubleValue()} will be pushed
      */
-    void push(@NotNull Number number);
+    void push(Number number);
 
     /**
      * Pushes an integer onto the stack
@@ -105,7 +104,7 @@ public interface Lua extends AutoCloseable, LuaThread {
      *
      * @param string the string
      */
-    void push(@NotNull String string);
+    void push(String string);
 
     /**
      * Pushes a buffer as a raw string onto the stack
@@ -117,7 +116,7 @@ public interface Lua extends AutoCloseable, LuaThread {
      *
      * @param buffer the buffer, which might contain invalid UTF-8 characters and zeros
      */
-    void push(@NotNull ByteBuffer buffer);
+    void push(ByteBuffer buffer);
 
     /**
      * Push the element onto the stack, converted to lua tables
@@ -128,7 +127,7 @@ public interface Lua extends AutoCloseable, LuaThread {
      *
      * @param map the element to be pushed onto the stack
      */
-    void push(@NotNull Map<?, ?> map);
+    void push(Map<?, ?> map);
 
     /**
      * Push the element onto the stack, converted to lua tables (index starting from 1)
@@ -139,7 +138,7 @@ public interface Lua extends AutoCloseable, LuaThread {
      *
      * @param collection the element to be pushed onto the stack
      */
-    void push(@NotNull Collection<?> collection);
+    void push(Collection<?> collection);
 
     /**
      * Push an array onto the stack, converted to luatable
@@ -147,7 +146,7 @@ public interface Lua extends AutoCloseable, LuaThread {
      * @param array a array
      * @throws IllegalArgumentException when the object is not array
      */
-    void pushArray(@NotNull Object array) throws IllegalArgumentException;
+    void pushArray(Object array) throws IllegalArgumentException;
 
     /**
      * Push the function onto the stack, converted to a callable element
@@ -160,21 +159,21 @@ public interface Lua extends AutoCloseable, LuaThread {
      *
      * @param function the function to be pushed onto the stack
      */
-    void push(@NotNull JFunction function);
+    void push(JFunction function);
 
     /**
      * Push a class onto the stack, which may be used with `java.new` on the lua side
      *
      * @param clazz the class
      */
-    void pushJavaClass(@NotNull Class<?> clazz);
+    void pushJavaClass(Class<?> clazz);
 
     /**
      * Push a {@link LuaValue} onto the stack, equivalent to {@link LuaValue#push(Lua)}
      *
      * @param value the value
      */
-    void push(@NotNull LuaValue value);
+    void push(LuaValue value);
 
     /**
      * Push the function onto the stack, converted to a callable element
@@ -182,7 +181,7 @@ public interface Lua extends AutoCloseable, LuaThread {
      * @param value the function
      * @see #push(JFunction)
      */
-    void push(@NotNull LuaFunction value);
+    void push(LuaFunction value);
 
     /**
      * Push the element onto the stack, converted as is to Java objects
@@ -190,7 +189,7 @@ public interface Lua extends AutoCloseable, LuaThread {
      * @param object the element to be pushed onto the stack
      * @throws IllegalArgumentException when argument is {@code null} or an array
      */
-    void pushJavaObject(@NotNull Object object);
+    void pushJavaObject(Object object);
 
     /**
      * Push the element onto the stack, converted as is to Java arrays
@@ -198,7 +197,7 @@ public interface Lua extends AutoCloseable, LuaThread {
      * @param array the element to be pushed onto the stack
      * @throws IllegalArgumentException when argument is {@code null} or a non-array object
      */
-    void pushJavaArray(@NotNull Object array);
+    void pushJavaArray(Object array);
 
     /* Convert-something (into Java) functions */
 

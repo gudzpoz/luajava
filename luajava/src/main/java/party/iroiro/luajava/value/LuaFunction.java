@@ -1,5 +1,6 @@
 package party.iroiro.luajava.value;
 
+import org.jspecify.annotations.Nullable;
 import party.iroiro.luajava.Lua;
 
 /**
@@ -18,5 +19,5 @@ public interface LuaFunction {
      * @param args the arguments
      * @return the return values (nullable)
      */
-    LuaValue[] call(Lua L, LuaValue[] args);
+    LuaValue @Nullable[] call(Lua L, LuaValue[] args);
 }

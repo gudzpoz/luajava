@@ -22,8 +22,7 @@
 
 package party.iroiro.luajava;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import party.iroiro.luajava.util.ClassUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -112,7 +111,7 @@ public class ClassPathLoader implements ExternalLoader {
         }
 
         @Override
-        public void write(byte @NotNull [] bytes, int off, int len) {
+        public void write(byte[] bytes, int off, int len) {
             buffer.put(bytes, off, len);
         }
     }

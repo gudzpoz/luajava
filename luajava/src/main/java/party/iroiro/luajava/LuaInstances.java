@@ -22,10 +22,10 @@
 
 package party.iroiro.luajava;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * A collection of {@link Jua} instances, each labeled with a unique id
@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * @param <T> instance type
  */
 public class LuaInstances<T> {
-    private final ArrayList<Object> instances;
+    private final ArrayList<@Nullable Object> instances;
     private int freeEntries;
     private int lastFreeId;
 
@@ -50,7 +50,7 @@ public class LuaInstances<T> {
      * @param instance element to be added to this collection
      * @return the allocated id
      */
-    protected synchronized int add(@NotNull T instance) {
+    protected synchronized int add(T instance) {
         return addNullable(instance);
     }
 
@@ -61,7 +61,7 @@ public class LuaInstances<T> {
             instances.add(instance);
         } else {
             id = lastFreeId;
-            lastFreeId = (Integer) instances.get(lastFreeId);
+            lastFreeId = (Integer) Objects.requireNonNull(instances.get(lastFreeId));
             instances.set(id, instance);
             freeEntries--;
         }
@@ -89,8 +89,9 @@ public class LuaInstances<T> {
      * @return the element with the specified id
      */
     @SuppressWarnings("unchecked")
+    @Nullable
     protected synchronized T get(int id) {
-        return (T) instances.get(id);
+        return (T) Objects.requireNonNull(instances.get(id));
     }
 
     /**

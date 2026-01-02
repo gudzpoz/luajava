@@ -1,5 +1,6 @@
 package party.iroiro.luajava;
 
+import org.jspecify.annotations.NonNull;
 import party.iroiro.luajava.LuaException.LuaError;
 import party.iroiro.luajava.interfaces.*;
 import party.iroiro.luajava.lua51.Lua51;
@@ -270,7 +271,7 @@ public class LuaTestSuite<T extends AbstractLua> {
             //noinspection Convert2Lambda
             L.push(new JFunction() {
                 @Override
-                public int __call(Lua L) {
+                public int __call(@NonNull Lua L) {
                     L.push(L.toInteger(-1));
                     return 1;
                 }
@@ -673,25 +674,32 @@ public class LuaTestSuite<T extends AbstractLua> {
         L.run("assert(1 == testOthersTable.__index)");
         L.run("assert(1 == testOthersTable[10])");
 
-        AbstractLua lua = new AbstractLua(L.getLuaNatives()) {
+        AbstractLua lua = getFakeLua();
+        lua.push(1);
+        assertNull(lua.toObject(-1));
+        lua.close();
+    }
+
+    private AbstractLua getFakeLua() {
+        return new AbstractLua(L.getLuaNatives()) {
             @Override
-            protected AbstractLua newThread(long L, int id, AbstractLua mainThread) {
+            @SuppressWarnings({"NullableProblems", "DataFlowIssue"})
+            protected AbstractLua newThread(long L1, int id, AbstractLua mainThread) {
                 return null;
             }
 
             @Override
+            @SuppressWarnings({"NullableProblems", "DataFlowIssue"})
             public LuaError convertError(int code) {
                 return null;
             }
 
             @Override
+            @SuppressWarnings({"NullableProblems", "DataFlowIssue"})
             public LuaType convertType(int code) {
                 return null;
             }
         };
-        lua.push(1);
-        assertNull(lua.toObject(-1));
-        lua.close();
     }
 
     private void testThreads() {

@@ -18,7 +18,7 @@
 
 package party.iroiro.luajava.util;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.io.Closeable;
 import java.io.Externalizable;

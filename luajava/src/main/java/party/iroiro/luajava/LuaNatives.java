@@ -22,6 +22,8 @@
 
 package party.iroiro.luajava;
 
+import org.jspecify.annotations.NullUnmarked;
+
 import java.nio.Buffer;
 
 /**
@@ -33,6 +35,7 @@ import java.nio.Buffer;
  * Lua documentation to confirm.
  * </p>
  */
+@NullUnmarked
 public interface LuaNatives {
 
     /**

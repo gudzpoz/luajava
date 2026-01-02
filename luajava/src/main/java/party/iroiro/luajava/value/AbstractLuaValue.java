@@ -22,12 +22,12 @@
 
 package party.iroiro.luajava.value;
 
-import org.jetbrains.annotations.NotNull;
 import party.iroiro.luajava.Lua;
 import party.iroiro.luajava.LuaException;
 
 import java.nio.ByteBuffer;
 import java.util.AbstractMap;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -66,7 +66,6 @@ public abstract class AbstractLuaValue<T extends Lua>
         return System.identityHashCode(this);
     }
 
-    @NotNull
     @Override
     public Set<Entry<LuaValue, LuaValue>> entrySet() {
         throw new UnsupportedOperationException(type.toString());
@@ -136,7 +135,7 @@ public abstract class AbstractLuaValue<T extends Lua>
         push(L);
         ByteBuffer buffer = L.toBuffer(-1);
         L.pop(1);
-        return buffer;
+        return Objects.requireNonNull(buffer);
     }
 
     @Override

@@ -22,7 +22,7 @@
 
 package party.iroiro.luajava.value;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import party.iroiro.luajava.Lua;
 
 import java.nio.ByteBuffer;
@@ -32,7 +32,7 @@ import java.nio.charset.StandardCharsets;
  * Basic {@link LuaValue} implementation wrapping immutable values
  * @param <T> the value type
  */
-public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
+public abstract class ImmutableLuaValue<T extends @Nullable Object> extends AbstractLuaValue<Lua> {
     protected final T value;
 
     protected ImmutableLuaValue(Lua L, Lua.LuaType type, T value) {
@@ -54,7 +54,7 @@ public abstract class ImmutableLuaValue<T> extends AbstractLuaValue<Lua> {
     }
 
     public static LuaValue NIL(Lua L) {
-        return new ImmutableLuaValue<Void>(L, Lua.LuaType.NIL, null) {
+        return new ImmutableLuaValue<@Nullable Void>(L, Lua.LuaType.NIL, null) {
             @Override
             public void push(Lua L) {
                 L.pushNil();

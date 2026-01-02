@@ -8,7 +8,7 @@ group = rootProject.group
 version = rootProject.version
 
 dependencies {
-    implementation 'org.jetbrains:annotations:24.1.0'
+    api 'org.jspecify:jspecify:1.0.0'
     implementation 'com.badlogicgames.jnigen:jnigen-loader:3.1.1'
 }
 

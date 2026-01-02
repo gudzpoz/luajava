@@ -1,6 +1,8 @@
 package party.iroiro.luajava;
 
+import org.jspecify.annotations.NonNull;
 import party.iroiro.luajava.interfaces.LuaTestConsumer;
+import party.iroiro.luajava.interfaces.LuaTestSupplier;
 import party.iroiro.luajava.lua51.Lua51Natives;
 import party.iroiro.luajava.lua52.Lua52Natives;
 import party.iroiro.luajava.lua53.Lua53Natives;
@@ -118,7 +120,9 @@ public class LuaScriptSuite<T extends AbstractLua> {
             new ScriptTester("/suite/arrayTest.lua", L -> {
                 L.pushJavaArray(new int[]{1, 2, 3, 4, 5});
                 L.setGlobal("arr");
-                assertEquals(-1, JuaAPI.arrayNewIndex(L.getId(), null, 0));
+                @SuppressWarnings("DataFlowIssue")
+                LuaTestSupplier<Object @NonNull[]> getNull = () -> null;
+                assertEquals(-1, JuaAPI.arrayNewIndex(L.getId(), getNull.get(), 0));
                 assertEquals(-1, JuaAPI.arrayLength(""));
             }),
             new ScriptTester("/suite/invokeTest.lua", L -> {

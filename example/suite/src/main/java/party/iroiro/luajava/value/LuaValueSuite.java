@@ -1,5 +1,6 @@
 package party.iroiro.luajava.value;
 
+import org.jspecify.annotations.NonNull;
 import party.iroiro.luajava.Lua;
 import party.iroiro.luajava.LuaException;
 import party.iroiro.luajava.lua51.Lua51;
@@ -297,7 +298,7 @@ public class LuaValueSuite<T extends Lua> {
         assertNotEquals(L.from(1), L.from(2));
         assertNotEquals(K.from(1), new Object());
 
-        AbstractLuaValue<Lua> mock = new AbstractLuaValue<Lua>(L, NUMBER) {
+        AbstractLuaValue<@NonNull Lua> mock = new AbstractLuaValue<@NonNull Lua>(L, NUMBER) {
             @Override
             public void push(Lua L) {
                 L.push(2);
@@ -309,7 +310,7 @@ public class LuaValueSuite<T extends Lua> {
             }
 
             @Override
-            public Lua.LuaType type() {
+            public Lua.@NonNull LuaType type() {
                 return NUMBER;
             }
         };
@@ -324,7 +325,7 @@ public class LuaValueSuite<T extends Lua> {
         assertNotEquals(l, j);
         assertNotEquals(j, k);
         assertNotEquals(l, L.from(1));
-        AbstractLuaValue<Lua> mock1 = new AbstractLuaValue<Lua>(L, TABLE) {
+        AbstractLuaValue<@NonNull Lua> mock1 = new AbstractLuaValue<@NonNull Lua>(L, TABLE) {
             @Override
             public void push(Lua L) {
                 L.push(Collections.emptyList());
@@ -336,7 +337,7 @@ public class LuaValueSuite<T extends Lua> {
             }
 
             @Override
-            public Lua.LuaType type() {
+            public Lua.@NonNull LuaType type() {
                 return TABLE;
             }
         };

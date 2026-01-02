@@ -20,4 +20,7 @@
  * SOFTWARE.
  */
 
+@NullMarked
 package party.iroiro.luajava;
+
+import org.jspecify.annotations.NullMarked;
