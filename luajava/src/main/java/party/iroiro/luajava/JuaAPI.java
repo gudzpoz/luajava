@@ -22,8 +22,7 @@
 
 package party.iroiro.luajava;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import party.iroiro.luajava.util.ClassUtils;
 import party.iroiro.luajava.util.LRUCache;
 import party.iroiro.luajava.value.LuaValue;
@@ -295,7 +294,7 @@ public abstract class JuaAPI {
      * @see #fieldIndex(Lua, Class, Object, String)
      */
     @SuppressWarnings("unused")
-    public static int objectIndex(int index, @NotNull Object object, String name) {
+    public static int objectIndex(int index, Object object, String name) {
         return fieldIndex(Jua.get(index), object.getClass(), object, name);
     }
 
@@ -318,7 +317,7 @@ public abstract class JuaAPI {
      * @return the number result pushed on stack
      * @see #methodInvoke(int, Class, Object, String, int)
      */
-    public static int objectInvoke(int index, @NotNull Object obj, @Nullable String name, int paramCount) {
+    public static int objectInvoke(int index, Object obj, @Nullable String name, int paramCount) {
         if (name == null) {
             return juaFunctionCall(index, obj, paramCount);
         } else {
@@ -772,7 +771,7 @@ public abstract class JuaAPI {
      * @param objects the parameters
      * @return the number of values pushed onto the stack
      */
-    public static int methodInvoke(Lua L, Method method, @Nullable Object obj, Object[] objects) {
+    public static int methodInvoke(Lua L, Method method, @Nullable Object obj, Object @Nullable[] objects) {
         Object ret;
         try {
             ret = method.invoke(obj, objects);
@@ -819,7 +818,7 @@ public abstract class JuaAPI {
         }
     }
 
-    private final static LRUCache<Class<?>, String, OptionalField> OBJECT_FIELD_CACHE = new LRUCache<>(
+    private final static LRUCache<Class<?>, String, @Nullable OptionalField> OBJECT_FIELD_CACHE = new LRUCache<>(
             25,
             10,
             4
@@ -868,7 +867,7 @@ public abstract class JuaAPI {
      * @param name   the field name
      * @return 0
      */
-    private static int fieldNewIndex(int index, Class<?> clazz, Object object, String name) {
+    private static int fieldNewIndex(int index, Class<?> clazz, @Nullable Object object, String name) {
         Lua L = Jua.get(index);
         try {
             OptionalField optionalField = OBJECT_FIELD_CACHE.get(clazz, name);
@@ -903,7 +902,7 @@ public abstract class JuaAPI {
     @Nullable
     private static <T> T matchMethod(Lua L, T[] methods,
                                      ExecutableWrapper<T> wrapper,
-                                     Object[] params) {
+                                     @Nullable Object[] params) {
         for (T method : methods) {
             /*
              * This is costly since it clones the internal array.
@@ -926,13 +925,13 @@ public abstract class JuaAPI {
         return null;
     }
 
-    private final static LRUCache<Class<?>, String, Constructor<?>> CONSTRUCTOR_CACHE = new LRUCache<>(
+    private final static LRUCache<Class<?>, String, @Nullable Constructor<?>> CONSTRUCTOR_CACHE = new LRUCache<>(
             25,
             5,
             4
     );
 
-    private final static LRUCache<Class<?>, String, Method> METHOD_CACHE = new LRUCache<>(
+    private final static LRUCache<Class<?>, String, @Nullable Method> METHOD_CACHE = new LRUCache<>(
             25,
             50,
             4
@@ -951,7 +950,7 @@ public abstract class JuaAPI {
         if (cached != null) {
             return cached;
         }
-        Class<?>[] classes = getClasses(notSignature);
+        @Nullable Class<?>[] classes = getClasses(notSignature);
         try {
             Constructor<?> constructor = clazz.getConstructor(classes);
             CONSTRUCTOR_CACHE.put(clazz, notSignature, constructor);
@@ -976,7 +975,7 @@ public abstract class JuaAPI {
         if (cached != null) {
             return cached;
         }
-        Class<?>[] classes = getClasses(notSignature);
+        @Nullable Class<?>[] classes = getClasses(notSignature);
         try {
             Method method = clazz.getMethod(name, classes);
             METHOD_CACHE.put(clazz, key, method);
@@ -1115,12 +1114,12 @@ public abstract class JuaAPI {
 
     private static final Pattern COMMA_SPLIT = Pattern.compile(",");
 
-    public static Class<?>[] getClasses(String notSignature) {
+    public static @Nullable Class<?>[] getClasses(@Nullable String notSignature) {
         if (notSignature == null || notSignature.isEmpty()) {
             return new Class<?>[0];
         }
         String[] names = COMMA_SPLIT.split(notSignature);
-        Class<?>[] classes = new Class[names.length];
+        @Nullable Class<?>[] classes = new Class[names.length];
         for (int i = 0; i < names.length; i++) {
             try {
                 classes[i] = ClassUtils.forName(names[i]);

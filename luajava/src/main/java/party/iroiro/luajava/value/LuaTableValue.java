@@ -1,6 +1,6 @@
 package party.iroiro.luajava.value;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 import party.iroiro.luajava.Lua;
 
 import java.util.*;
@@ -19,7 +19,6 @@ public class LuaTableValue extends AbstractRefLuaValue implements LuaValue {
         return length;
     }
 
-    @NotNull
     @Override
     public Set<Entry<LuaValue, LuaValue>> entrySet() {
         return new AbstractLuaTableSet();
@@ -36,7 +35,7 @@ public class LuaTableValue extends AbstractRefLuaValue implements LuaValue {
         return containsKey;
     }
 
-    private LuaValue putRaw(Object key, Object value) {
+    private LuaValue putRaw(Object key, @Nullable Object value) {
         Lua L = state();
         push(L);
         L.push(key, Lua.Conversion.SEMI);
@@ -59,7 +58,6 @@ public class LuaTableValue extends AbstractRefLuaValue implements LuaValue {
         return putRaw(key, value);
     }
 
-    @NotNull
     @Override
     public LuaValue set(Object key, Object value) {
         return putRaw(key, value);
@@ -114,8 +112,6 @@ public class LuaTableValue extends AbstractRefLuaValue implements LuaValue {
     }
 
     protected class AbstractLuaTableSet extends AbstractSet<Entry<LuaValue, LuaValue>> {
-
-        @NotNull
         @Override
         public Iterator<Entry<LuaValue, LuaValue>> iterator() {
             Lua L = state();

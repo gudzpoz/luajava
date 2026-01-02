@@ -45,12 +45,6 @@ jobs:
       - name: Test
         run: |
           ./gradlew --info --stacktrace :example:test :jsr223:test :jpms-example:run
-      - name: Breakpoint if tests failed
-        if: failure()
-        uses: namespacelabs/breakpoint-action@v0
-        with:
-          duration: 30m
-          authorized-users: gudzpoz
 
   most-natives:
     environment: Codecov
@@ -202,12 +196,6 @@ jobs:
       - name: Test
         run: |
           ./gradlew --info --stacktrace :example:test :jsr223:test :jpms-example:run
-      - name: Breakpoint if tests failed
-        if: failure()
-        uses: namespacelabs/breakpoint-action@v0
-        with:
-          duration: 30m
-          authorized-users: gudzpoz
 
   android-testing:
     runs-on: ubuntu-latest

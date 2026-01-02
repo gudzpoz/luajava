@@ -22,12 +22,14 @@
 
 package party.iroiro.luajava;
 
+import org.jspecify.annotations.Nullable;
 import party.iroiro.luajava.cleaner.LuaReferable;
 import party.iroiro.luajava.util.ClassUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Class that implements the InvocationHandler interface.
@@ -52,6 +54,7 @@ public final class LuaProxy implements InvocationHandler, LuaReferable {
     }
 
     @Override
+    @Nullable
     public Object invoke(Object object, Method method, Object[] objects) throws Throwable {
         if (L.shouldSynchronize()) {
             synchronized (L.getMainState()) {
@@ -62,7 +65,8 @@ public final class LuaProxy implements InvocationHandler, LuaReferable {
         }
     }
 
-    private Object syncFreeInvoke(Object object, Method method, Object[] objects) throws Throwable {
+    @Nullable
+    private Object syncFreeInvoke(Object object, Method method, Object @Nullable[] objects) throws Throwable {
         if (L.mainThread.isClosed()) {
             throw new LuaException(LuaException.LuaError.JAVA, "lua state closed");
         }
@@ -102,19 +106,20 @@ public final class LuaProxy implements InvocationHandler, LuaReferable {
         }
     }
 
-    private Object callDefaultMethod(Object o, Method method, Object[] objects) throws Throwable {
+    @Nullable
+    private Object callDefaultMethod(Object o, Method method, Object @Nullable[] objects) throws Throwable {
         if (ClassUtils.isDefault(method)) {
             return L.invokeSpecial(o, method, objects);
         }
         return callObjectDefault(o, method, objects);
     }
 
-    private Object callObjectDefault(Object o, Method method, Object[] objects) {
+    private Object callObjectDefault(Object o, Method method, Object @Nullable[] objects) {
         if (methodEquals(method, int.class, "hashCode")) {
             return hashCode();
         }
         if (methodEquals(method, boolean.class, "equals", Object.class)) {
-            return o == objects[0];
+            return o == Objects.requireNonNull(objects)[0];
         }
         if (methodEquals(method, String.class, "toString")) {
             return "LuaProxy" + Arrays.toString(interfaces) + "@" + Integer.toHexString(hashCode());

@@ -22,8 +22,7 @@
 
 package party.iroiro.luajava;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import party.iroiro.luajava.cleaner.LuaReferable;
 import party.iroiro.luajava.cleaner.LuaReference;
 import party.iroiro.luajava.util.ClassUtils;
@@ -45,19 +44,24 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class AbstractLua implements Lua {
     private final static Object[] EMPTY = new Object[0];
     protected final static LuaInstances<AbstractLua> instances = new LuaInstances<>();
+    @Nullable
     protected volatile ExternalLoader loader;
+    @Nullable
     protected volatile LuaValue requireFunction;
+    @Nullable
     protected final ReferenceQueue<LuaReferable> recyclableReferences;
+    @Nullable
     protected final ConcurrentHashMap<Integer, LuaReference<?>> recordedReferences;
 
     static AbstractLua getInstance(int lid) {
-        return instances.get(lid);
+        return Objects.requireNonNull(instances.get(lid));
     }
 
     protected final LuaNatives C;
     protected final long L;
     protected volatile int id;
     protected final AbstractLua mainThread;
+    @Nullable
     protected final List<Lua> subThreads;
 
     /**
@@ -85,7 +89,7 @@ public abstract class AbstractLua implements Lua {
      * @param id         the Lua state id (see {@link LuaInstances})
      * @param mainThread the main state of this sub-state
      */
-    protected AbstractLua(LuaNatives luaNative, long L, int id, @NotNull AbstractLua mainThread) {
+    protected AbstractLua(LuaNatives luaNative, long L, int id, AbstractLua mainThread) {
         loader = null;
         this.C = luaNative;
         this.L = L;
@@ -190,7 +194,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void push(@NotNull Number number) {
+    public void push(Number number) {
         checkStack(1);
         C.lua_pushnumber(L, number.doubleValue());
     }
@@ -202,13 +206,13 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void push(@NotNull String string) {
+    public void push(String string) {
         checkStack(1);
         C.luaJ_pushstring(L, string);
     }
 
     @Override
-    public void push(@NotNull ByteBuffer buffer) {
+    public void push(ByteBuffer buffer) {
         checkStack(1);
         if (!buffer.isDirect()) {
             ByteBuffer directBuffer = ByteBuffer.allocateDirect(buffer.remaining());
@@ -220,7 +224,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void push(@NotNull Map<?, ?> map) {
+    public void push(Map<?, ?> map) {
         checkStack(3);
         C.lua_createtable(L, 0, map.size());
         for (Map.Entry<?, ?> entry : map.entrySet()) {
@@ -231,7 +235,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void push(@NotNull Collection<?> collection) {
+    public void push(Collection<?> collection) {
         checkStack(2);
         C.lua_createtable(L, collection.size(), 0);
         int i = 1;
@@ -243,7 +247,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void pushArray(@NotNull Object array) throws IllegalArgumentException {
+    public void pushArray(Object array) throws IllegalArgumentException {
         checkStack(2);
         if (array.getClass().isArray()) {
             int len = Array.getLength(array);
@@ -258,25 +262,25 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void push(@NotNull JFunction function) {
+    public void push(JFunction function) {
         checkStack(1);
         C.luaJ_pushfunction(L, function);
     }
 
     @Override
-    public void push(@NotNull LuaValue value) {
+    public void push(LuaValue value) {
         checkStack(1);
         value.push(this);
     }
 
     @Override
-    public void push(@NotNull LuaFunction function) {
+    public void push(LuaFunction function) {
         checkStack(1);
         push(new LuaFunctionWrapper(function));
     }
 
     @Override
-    public void pushJavaObject(@NotNull Object object) throws IllegalArgumentException {
+    public void pushJavaObject(Object object) throws IllegalArgumentException {
         if (object.getClass().isArray()) {
             throw new IllegalArgumentException("Expecting non-array argument");
         } else {
@@ -286,7 +290,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void pushJavaArray(@NotNull Object array) throws IllegalArgumentException {
+    public void pushJavaArray(Object array) throws IllegalArgumentException {
         if (array.getClass().isArray()) {
             checkStack(1);
             C.luaJ_pusharray(L, array);
@@ -296,7 +300,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
-    public void pushJavaClass(@NotNull Class<?> clazz) {
+    public void pushJavaClass(Class<?> clazz) {
         checkStack(1);
         C.luaJ_pushclass(L, clazz);
     }
@@ -425,7 +429,7 @@ public abstract class AbstractLua implements Lua {
         checkStack(1);
         if (C.lua_istable(L, index) == 1) {
             int length = rawLength(index);
-            ArrayList<Object> list = new ArrayList<>();
+            ArrayList<@Nullable Object> list = new ArrayList<>();
             list.ensureCapacity(length);
             for (int i = 1; i <= length; i++) {
                 C.luaJ_rawgeti(L, index, i);
@@ -615,6 +619,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     @Override
+    @Nullable
     public ByteBuffer dump() {
         return (ByteBuffer) C.luaJ_dumptobuffer(L);
     }
@@ -637,7 +642,7 @@ public abstract class AbstractLua implements Lua {
     }
 
     protected void addSubThread(Lua lua) {
-        synchronized (subThreads) {
+        synchronized (Objects.requireNonNull(subThreads)) {
             subThreads.add(lua);
         }
     }
@@ -826,6 +831,7 @@ public abstract class AbstractLua implements Lua {
                 case TABLE:
                     try {
                         LuaProxy proxy = new LuaProxy(ref(), this, degree, interfaces);
+                        assert mainThread.recordedReferences != null;
                         mainThread.recordedReferences.put(proxy.getReference(),
                                 new LuaReference<>(proxy, mainThread.recyclableReferences));
                         return Proxy.newProxyInstance(
@@ -927,8 +933,9 @@ public abstract class AbstractLua implements Lua {
      * @return the return value
      * @throws Throwable whenever the method call throw exceptions
      */
-    protected @Nullable Object invokeSpecial(Object object, Method method, @Nullable Object[] params) throws
-            Throwable {
+    protected @Nullable Object invokeSpecial(
+            @Nullable Object object, Method method,
+            @Nullable Object @Nullable[] params) throws Throwable {
         if (!ClassUtils.isDefault(method)) {
             throw new IncompatibleClassChangeError("Unable to invoke non-default method");
         }
@@ -987,6 +994,7 @@ public abstract class AbstractLua implements Lua {
                 if (isClosed()) {
                     return;
                 }
+                assert subThreads != null;
                 synchronized (subThreads) {
                     for (Lua lua : subThreads) {
                         instances.remove(lua.getId());
@@ -997,6 +1005,7 @@ public abstract class AbstractLua implements Lua {
                     C.lua_close(L);
                 }
             } else {
+                assert mainThread.subThreads != null;
                 synchronized (mainThread.subThreads) {
                     if (!mainThread.isClosed() && mainThread.subThreads.remove(this)) {
                         C.luaJ_removestateindex(L);
@@ -1043,7 +1052,7 @@ public abstract class AbstractLua implements Lua {
         }
         String message;
         if (type(-1) == LuaType.STRING) {
-            message = toString(-1);
+            message = Objects.requireNonNull(toString(-1));
             pop(1);
         } else {
             message = "Lua-side error";
@@ -1115,11 +1124,13 @@ public abstract class AbstractLua implements Lua {
             case STRING:
                 ByteBuffer s = toBuffer(-1);
                 pop(1);
+                assert s != null;
                 return from(s);
             default:
                 AbstractRefLuaValue ref = type == LuaType.TABLE
                         ? new LuaTableValue(this, type)
                         : new RefLuaValue(this, type);
+                assert mainThread.recordedReferences != null;
                 mainThread.recordedReferences.put(ref.getReference(),
                         new LuaReference<>(ref, mainThread.recyclableReferences));
                 return ref;
@@ -1160,6 +1171,8 @@ public abstract class AbstractLua implements Lua {
      * Do {@link #unref(int)} on all references in {@link #recyclableReferences}
      */
     private void recycleReferences() {
+        assert mainThread.recyclableReferences != null;
+        assert mainThread.recordedReferences != null;
         LuaReference<?> ref = (LuaReference<?>) mainThread.recyclableReferences.poll();
         while (ref != null) {
             mainThread.recordedReferences.remove(ref.getReference());
@@ -1196,9 +1209,9 @@ public abstract class AbstractLua implements Lua {
     }
 
     private static class LuaFunctionWrapper implements JFunction {
-        private final @NotNull LuaFunction function;
+        private final LuaFunction function;
 
-        public LuaFunctionWrapper(@NotNull LuaFunction function) {
+        public LuaFunctionWrapper(LuaFunction function) {
             this.function = function;
         }
 

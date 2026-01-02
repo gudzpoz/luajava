@@ -1,16 +1,20 @@
 package party.iroiro.luajava.util;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
 /**
- * An LRU-cache based on {@link LinkedHashMap}
+ * A two-level LRU-cache based on {@link LinkedHashMap}
  *
  * <p>
  * Basically, this class is intended for method cache with usage like
  * {@code LRUCache<Class<?>, String, Method>}.
  * </p>
+ *
+ * @param <K1> first level key
+ * @param <K2> second level key
+ * @param <V> value
  */
 public final class LRUCache<K1, K2, V> {
 

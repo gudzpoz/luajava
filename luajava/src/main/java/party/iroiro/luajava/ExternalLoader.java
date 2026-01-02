@@ -22,7 +22,8 @@
 
 package party.iroiro.luajava;
 
-import org.jetbrains.annotations.Nullable;
+
+import org.jspecify.annotations.Nullable;
 
 import java.nio.Buffer;
 

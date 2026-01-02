@@ -22,7 +22,7 @@
 
 package party.iroiro.luajava.value;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import party.iroiro.luajava.Consts;
 import party.iroiro.luajava.Lua;
 import party.iroiro.luajava.LuaException;
@@ -60,7 +60,7 @@ public abstract class AbstractRefLuaValue extends AbstractLuaValue<Lua> implemen
         return ref;
     }
 
-    public @Nullable LuaValue[] call(Object... parameters) {
+    public LuaValue[] call(Object... parameters) {
         int top = L.getTop();
         push(L);
         for (Object o : parameters) {

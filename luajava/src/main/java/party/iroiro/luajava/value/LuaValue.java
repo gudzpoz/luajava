@@ -22,7 +22,7 @@
 
 package party.iroiro.luajava.value;
 
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import party.iroiro.luajava.Lua;
 import party.iroiro.luajava.LuaException;
 

@@ -1,5 +1,6 @@
 package party.iroiro.luajava;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import party.iroiro.luajava.luaj.LuaJ;
 
@@ -13,7 +14,7 @@ public class JuaInstanceCollectionTest {
     @Test
     public void juaInstanceCollectionTest() {
         Lua L = new LuaJ();
-        LuaInstances<Lua> instances = new LuaInstances<>();
+        LuaInstances<@NonNull Lua> instances = new LuaInstances<>();
         for (int i = 0; i < 10; i++) {
             assertEquals(i, instances.add(L));
         }
@@ -42,9 +43,9 @@ public class JuaInstanceCollectionTest {
 
         assertEquals(10, instances.add(L));
         assertEquals(11, instances.size());
-        LuaInstances.Token<Lua> add = instances.add();
+        LuaInstances.Token<@NonNull Lua> add = instances.add();
         assertEquals(12, instances.size());
-        assertNull(instances.get(add.id));
+        assertThrows(NullPointerException.class, () -> instances.get(add.id));
         add.setter.accept(L);
         assertSame(L, instances.get(add.id));
     }
