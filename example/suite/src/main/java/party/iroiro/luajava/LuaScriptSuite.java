@@ -136,9 +136,11 @@ public class LuaScriptSuite<T extends AbstractLua> {
                 L.setGlobal("Private");
                 L.pushJavaClass(ThrowsClass.class);
                 L.setGlobal("Throws");
+
                 try {
                     assertEquals(-1, JuaAPI.methodInvoke(L,
                             PrivateClass.class.getDeclaredMethod("privateFunc"), null, null));
+                    L.error((Throwable) null);
                 } catch (NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }

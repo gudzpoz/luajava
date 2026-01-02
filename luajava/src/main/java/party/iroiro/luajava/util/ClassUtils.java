@@ -83,6 +83,8 @@ public abstract class ClassUtils {
      */
     private static final Map<String, Class<?>> commonClassCache = new HashMap<>(64);
 
+    private static final Map<String, Class<?>> queryClassCache = Collections.synchronizedMap(new LRUCache.Cache<>(256));
+
     static {
         primitiveWrapperTypeMap.put(Boolean.class, boolean.class);
         primitiveWrapperTypeMap.put(Byte.class, byte.class);
@@ -216,6 +218,17 @@ public abstract class ClassUtils {
         if (clazz != null) {
             return clazz;
         }
+        clazz = queryClassCache.get(name);
+        if (clazz != null) {
+            return clazz;
+        }
+        clazz = forNameSlow(name, classLoader);
+        queryClassCache.put(name, clazz);
+        return clazz;
+    }
+
+    private static Class<?> forNameSlow(String name, @Nullable ClassLoader classLoader)
+            throws ClassNotFoundException, LinkageError {
 
         // "java.lang.String[]" style arrays
         if (name.endsWith(ARRAY_SUFFIX)) {

@@ -22,6 +22,9 @@ public final class LRUCache<K1, K2, V> {
     private final List<Map<K1, Map<K2, V>>> cacheShards;
 
     public LRUCache(int level1Size, int level2Size, int shards) {
+        if (shards <= 1 || Integer.bitCount(shards) != 1) {
+            throw new IllegalArgumentException("shards must be of 2^N");
+        }
         this.innerSize = level2Size;
         ArrayList<Map<K1, Map<K2, V>>> shardList = new ArrayList<>(shards);
         for (int i = 0; i < shards; i++) {
@@ -37,7 +40,7 @@ public final class LRUCache<K1, K2, V> {
     }
 
     private Map<K2, V> getInnerCache(K1 k1) {
-        int shard = k1.hashCode() % cacheShards.size();
+        int shard = k1.hashCode() & (cacheShards.size() - 1);
         Map<K1, Map<K2, V>> cache = cacheShards.get(shard);
         Map<K2, V> inner = cache.get(k1);
         if (inner == null) {
@@ -55,10 +58,10 @@ public final class LRUCache<K1, K2, V> {
         inner.putIfAbsent(k2, v);
     }
 
-    private final static class Cache<K, V> extends LinkedHashMap<K, V> {
+    public final static class Cache<K, V> extends LinkedHashMap<K, V> {
         private final int maxEntries;
 
-        private Cache(int maxEntries) {
+        public Cache(int maxEntries) {
             super(maxEntries + 1, 0.75F, true);
             this.maxEntries = maxEntries;
         }

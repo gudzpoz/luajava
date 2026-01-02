@@ -119,6 +119,12 @@ public abstract class JuaAPI {
         return loadLib(id, module.substring(0, i), module.substring(i + 1));
     }
 
+    private final static LRUCache<String, String, Method> JAVA_LIB_CACHE = new LRUCache<>(
+            25,
+            5,
+            4
+    );
+
     /**
      * Loads a Java static method that accepts a single {@link Lua} parameter and returns an integer
      *
@@ -130,9 +136,14 @@ public abstract class JuaAPI {
     public static int loadLib(int id, String className, String methodName) {
         AbstractLua L = Jua.get(id);
         try {
-            Class<?> clazz = ClassUtils.forName(className);
-            Method method = clazz.getDeclaredMethod(methodName, Lua.class);
-            if (method.getReturnType() == int.class) {
+            Method cached = JAVA_LIB_CACHE.get(className, methodName);
+            if (cached == null) {
+                Class<?> clazz = ClassUtils.forName(className);
+                cached = clazz.getDeclaredMethod(methodName, Lua.class);
+            }
+            if (cached.getReturnType() == int.class) {
+                JAVA_LIB_CACHE.put(className, methodName, cached);
+                Method method = cached;
                 //noinspection Convert2Lambda
                 L.push(new JFunction() {
                     @Override
