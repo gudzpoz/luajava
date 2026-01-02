@@ -16,23 +16,38 @@
 
 apply plugin: 'java-library'
 
+java {
+    toolchain {
+        // We generally don't care about the toolchain version as long as
+        // it is Java 8 compatible.
+        // But older Javadoc will fail because online links are moving away
+        // from package-list to element-list.
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 javadoc {
     dependsOn jar
     group = 'documentation'
     description = 'Generates aggregated Javadoc API documentation.'
 
-    title = "${project.name} $version"
-    options.header = "$project.name"
-    options.encoding = 'UTF-8'
-    options.memberLevel = JavadocMemberLevel.PROTECTED
+    title = "${project.name} $project.version"
+    (options as StandardJavadocDocletOptions).with {
+        header = "$project.name"
+        encoding = 'UTF-8'
+        memberLevel = JavadocMemberLevel.PROTECTED
+        linksOffline(
+                "https://docs.oracle.com/javase/8/docs/api/",
+                "https://docs.oracle.com/en/java/javase/25/docs/api/",
+        )
+        linksOffline(
+                "https://javadoc.io/doc/com.badlogicgames.jnigen/jnigen-loader/3.1.1/",
+                "https://javadoc.io/doc/com.badlogicgames.jnigen/jnigen-loader/3.1.1/",
+        )
 
-    options.links([
-            rootProject.jdkJavadoc,
-            "https://javadoc.io/doc/com.badlogicgames.jnigen/jnigen-loader/latest/",
-    ] as String[])
-
-    options.tags = ['apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:',
-                    'implNote:a:Implementation Note:']
+        tags = ['apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:',
+                'implNote:a:Implementation Note:']
+    }
 
     classpath += sourceSets.main.compileClasspath
 }

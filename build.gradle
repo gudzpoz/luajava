@@ -33,12 +33,6 @@ subprojects { it ->
     }
 }
 
-ext {
-    jdk = JavaVersion.current().majorVersion
-    jdkJavadoc = "https://docs.oracle.com/javase/8/docs/api/"
-    println "JDK Javadoc link for this build is ${rootProject.jdkJavadoc}"
-}
-
 apply from: 'jacoco.gradle'
 
 configure([
@@ -55,6 +49,15 @@ configure([
     apply from: project(':').file('publish.gradle')
 }
 
+
+apply plugin: 'java'
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// Javadoc configs. See javadoc.gradle.
 tasks.register('allJavadoc', Javadoc) {
     Set<String> projects = [
             'lua51',
@@ -78,11 +81,17 @@ tasks.register('allJavadoc', Javadoc) {
     destinationDir = layout.buildDirectory.file("docs/javadoc").get().asFile
 
     title = "${project.name} $version"
-    options.header = "$project.name"
-    options.encoding = 'UTF-8'
-    options.memberLevel = JavadocMemberLevel.PROTECTED
-    options.links([
-            rootProject.jdkJavadoc,
-            "https://javadoc.io/doc/com.badlogicgames.jnigen/jnigen-loader/latest/",
-    ] as String[])
+    (options as StandardJavadocDocletOptions).with {
+        header = "$project.name"
+        encoding = 'UTF-8'
+        memberLevel = JavadocMemberLevel.PROTECTED
+        linksOffline(
+                "https://docs.oracle.com/javase/8/docs/api/",
+                "https://docs.oracle.com/en/java/javase/25/docs/api/",
+        )
+        linksOffline(
+                "https://javadoc.io/doc/com.badlogicgames.jnigen/jnigen-loader/3.1.1/",
+                "https://javadoc.io/doc/com.badlogicgames.jnigen/jnigen-loader/3.1.1/",
+        )
+    }
 }

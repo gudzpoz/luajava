@@ -22,7 +22,9 @@ afterEvaluate { project ->
                         fromResolutionResult()
                     }
                 }
+            }
 
+            withType(MavenPublication).configureEach {
                 setPom(pom, '')
             }
         }
