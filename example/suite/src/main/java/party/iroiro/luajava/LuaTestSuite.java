@@ -543,7 +543,11 @@ public class LuaTestSuite<T extends AbstractLua> {
         }
         // Java uses modified UTF-8 coding...
         L.push(ByteBuffer.wrap("🀄".getBytes(StandardCharsets.UTF_8)));
-        assertNotEquals("🀄", L.toString(-1));
+        if (!LuaScriptSuite.isAndroid()) {
+            // This crashes Android API 21, but works for Android API >= 25 from my tests.
+            System.out.println("expected: 🀄, got: " + L.toString(-1));
+            assertNotEquals("🀄", L.toString(-1));
+        }
         L.pop(1);
         // Surprise: LuaJ has some round-trip costs and converts also into
         // modified UTF-8 internally.

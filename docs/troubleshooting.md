@@ -19,6 +19,12 @@ void push(Lua L, String string) {
 }
 ```
 
+::: warning
+On some old Android API versions (reproduced on Android API 21 (a.k.a., Android 5)),
+decoding valid UTF-8 strings containing out-of-plane characters can crash the application...
+This is not ideal, but I guess we will have to live with it for now.
+:::
+
 ## Class (or Resource) Not Found
 
 ### Is a wrong classloader used?

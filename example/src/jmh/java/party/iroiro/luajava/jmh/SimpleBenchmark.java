@@ -7,6 +7,9 @@ import party.iroiro.luajava.lua54.Lua54;
 import party.iroiro.luajava.luaj.LuaJ;
 import party.iroiro.luajava.luajit.LuaJit;
 
+@Fork(1)
+@Warmup(iterations = 3)
+@Measurement(iterations = 3)
 @State(Scope.Benchmark)
 public class SimpleBenchmark {
 

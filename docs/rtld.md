@@ -28,7 +28,7 @@ We prevent loading multiple global Lua versions by some simple checks,
 so you will probably see some exceptions instead of a VM crash.
 But still, doing so is risky and will make your application hardly portable.
 
-:::warning
+::: warning
 Also, loading libraries as global is not tested on many platforms,
 since I don't want to have to port the tests over every one of them.
 
