@@ -61,6 +61,7 @@ export default defineConfig({
           { text: 'Advanced Hello World', link: '/examples/hello-world-mod.md' },
           { text: 'AWT Example', link: '/examples/awt.md' },
           { text: 'Java-Side Modules', link: '/examples/modules.md' },
+          { text: 'Debugging API', link: '/examples/debug.md' },
         ]
       },
       {

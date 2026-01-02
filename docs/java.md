@@ -49,7 +49,7 @@ See [Java-Side Modules](./examples/modules.md) for an example. Basically, to run
 2. Either run `require('path.to.module')` as Lua code or
    use [`Lua::require`](./javadoc/party/iroiro/luajava/Lua.html#require(java.lang.String)){target="_self"} to run the file.
 
-<<< ../../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java#javaSideModuleTest
+<<< ../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java#javaSideModuleTest
 
 Note that in some Lua versions, opening a library may override global bindings like the built-in
 `print` function. So make sure to make your modifications after loading all the built-in libraries.
@@ -68,7 +68,7 @@ See [Java-Side Modules](./examples/modules.md) for an example. Basically, to run
 2. Either run `require('path.to.module')` as Lua code or
    use [`Lua::require`](./javadoc/party/iroiro/luajava/Lua.html#require(java.lang.String)){target="_self"} to run the file.
 
-<<< ../../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java#javaSideModuleTest
+<<< ../example/src/test/java/party/iroiro/luajava/docs/ModuleSnippetTest.java#javaSideModuleTest
 
 ## Interact with Lua values
 

@@ -1,9 +1,3 @@
-static File jarFile(DefaultTask task) {
-    def files = task.outputs.files.files
-    assert files.size() == 1
-    files.iterator().next()
-}
-
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 

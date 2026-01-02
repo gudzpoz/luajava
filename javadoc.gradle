@@ -22,10 +22,8 @@ javadoc {
     description = 'Generates aggregated Javadoc API documentation.'
 
     title = "${project.name} $version"
-    options.addStringOption('charSet', 'UTF-8')
-    options.author = true
     options.header = "$project.name"
-
+    options.encoding = 'UTF-8'
     options.memberLevel = JavadocMemberLevel.PROTECTED
 
     options.links([

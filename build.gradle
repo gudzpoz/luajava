@@ -1,5 +1,5 @@
 group = 'party.iroiro.luajava'
-version = System.getenv('IS_RELEASE') == 'true' ? '4.0.2' : '4.0.3-SNAPSHOT'
+version = System.getenv('IS_RELEASE') == 'true' ? '4.1.0' : '4.1.0-SNAPSHOT'
 
 buildscript {
     repositories {
@@ -28,6 +28,7 @@ subprojects { it ->
         apply plugin: 'java'
         tasks.withType(JavaCompile).configureEach {
             options.release = 8
+            options.encoding = 'UTF-8'
         }
     }
 }
@@ -39,6 +40,20 @@ ext {
 }
 
 apply from: 'jacoco.gradle'
+
+configure([
+        project(':luajava'),
+        project(':lua51'),
+        project(':lua52'),
+        project(':lua53'),
+        project(':lua54'),
+        project(':lua55'),
+        project(':luajit'),
+        project(':luaj'),
+        project(':jsr223')
+]) {
+    apply from: project(':').file('publish.gradle')
+}
 
 tasks.register('allJavadoc', Javadoc) {
     Set<String> projects = [
@@ -61,18 +76,13 @@ tasks.register('allJavadoc', Javadoc) {
             '**/party/iroiro/luajava/cleaner/**',
     )
     destinationDir = layout.buildDirectory.file("docs/javadoc").get().asFile
-}
 
-configure([
-        project(':luajava'),
-        project(':lua51'),
-        project(':lua52'),
-        project(':lua53'),
-        project(':lua54'),
-        project(':lua55'),
-        project(':luajit'),
-        project(':luaj'),
-        project(':jsr223')
-]) {
-    apply from: project(':').file('publish.gradle')
+    title = "${project.name} $version"
+    options.header = "$project.name"
+    options.encoding = 'UTF-8'
+    options.memberLevel = JavadocMemberLevel.PROTECTED
+    options.links([
+            rootProject.jdkJavadoc,
+            "https://javadoc.io/doc/com.badlogicgames.jnigen/jnigen-loader/latest/",
+    ] as String[])
 }
