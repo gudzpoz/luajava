@@ -144,13 +144,13 @@ ul li {
   <li><div class="legend unsupported"></div>Not available (yet!)</li>
 </ul>
 
-<table class="matrix">
+<table class="matrix"><tbody>
 <tr><td></td><th v-for="col in columns" :key="col" v-text="col"></th></tr>
 <tr v-for="(info, platform) in matrix" :key="platform">
   <th v-html="platform"></th>
   <td v-for="(support, i) in info" :key="columns[i]" :class="classes[support]" :alt="classes[support]"></td>
 </tr>
-</table>
+</tbody></table>
 
 [^android]: Android is available on many platforms, and we provide natives for `armeabi-v7a` `arm64-v8a` `x86` `x86_64`.
             It is tested against API levels 21, 24, 27, 30 and 33 on `x86_64` architectures

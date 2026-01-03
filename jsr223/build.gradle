@@ -11,6 +11,10 @@ repositories {
 group = rootProject.group
 version = rootProject.version
 
+ext {
+    jUnitVersion = '5.10.2'
+}
+
 dependencies {
     api project(':luajava')
     compileOnly project(':lua51')
@@ -31,9 +35,9 @@ dependencies {
     testImplementation project(path: ':lua54', configuration: 'desktopNatives')
     testImplementation project(path: ':lua55', configuration: 'desktopNatives')
     testImplementation project(path: ':luajit', configuration: 'desktopNatives')
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$jUnitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$jUnitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$jUnitVersion"
 }
 
 tasks.withType(JavaCompile).configureEach {

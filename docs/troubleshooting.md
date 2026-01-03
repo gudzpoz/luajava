@@ -55,7 +55,7 @@ Try moving all `**/*/module-info.class` from your fat JAR.
 
 The crash is often followed by the following error message:
 
-``` {2}
+```txt {2}
 #
 # A fatal error has been detected by the Java Runtime Environment:
 #

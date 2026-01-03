@@ -25,6 +25,5 @@ nmcpSettings {
         username = System.getenv("MAVEN_USERNAME")
         password = System.getenv("MAVEN_PASSWORD")
         publishingType = 'USER_MANAGED'
-        publishingTimeout = Duration.ZERO
     }
 }

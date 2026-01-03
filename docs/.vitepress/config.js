@@ -67,6 +67,7 @@ export default defineConfig({
         text: 'Troubleshooting',
         items: [
           { text: 'Troubleshooting', link: '/troubleshooting.md' },
+          { text: 'Performance', link: '/perf.md' },
           { text: 'Using Binary Lua Libraries', link: '/rtld.md' },
           { text: 'GNU C Library (glibc) Compatibility', link: '/glibc.md' },
         ]

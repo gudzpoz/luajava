@@ -2,15 +2,15 @@ package party.iroiro.luajava.jmh;
 
 import org.openjdk.jmh.annotations.*;
 import party.iroiro.luajava.Lua;
-import party.iroiro.luajava.lua54.Lua54;
-import party.iroiro.luajava.luaj.LuaJ;
-import party.iroiro.luajava.luajit.LuaJit;
 
 import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
 
 @Fork(1)
 @Warmup(iterations = 3)
 @Measurement(iterations = 3)
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
 public class MethodCallBenchmark {
 
@@ -21,31 +21,30 @@ public class MethodCallBenchmark {
 
     @Setup
     public void setup() {
-        switch (lua) {
-            case "Lua 5.4":
-                L = new Lua54();
-                break;
-            case "LuaJIT":
-                L = new LuaJit();
-                break;
-            case "LuaJ":
-                L = new LuaJ();
-                break;
-            default:
-                throw new IllegalStateException();
-        }
+        L = SimpleBenchmark.getLua(lua);
         L.set("big_int", BigInteger.valueOf(1024));
         L.run("int_value = java.method(big_int, 'intValue', '')");
+        L.run("function pure()end");
+        L.run("function obj_call() assert(big_int:intValue() == 1024) end");
+        L.run("function met_call() assert(int_value() == 1024) end");
     }
 
     @Benchmark
     public void benchmarkObjectMethodCall() {
-        L.run("assert(big_int:intValue() == 1024)");
+        L.getGlobal("obj_call");
+        L.pCall(0, 0);
     }
 
     @Benchmark
     public void benchmarkModuleMethodCall() {
-        L.run("assert(int_value() == 1024)");
+        L.getGlobal("met_call");
+        L.pCall(0, 0);
+    }
+
+    @Benchmark
+    public void benchmarkPurePcall() {
+        L.getGlobal("pure");
+        L.pCall(0, 0);
     }
 
     @TearDown
