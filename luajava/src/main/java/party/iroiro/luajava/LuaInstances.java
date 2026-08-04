@@ -24,8 +24,8 @@ package party.iroiro.luajava;
 
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A collection of {@link Jua} instances, each labeled with a unique id
@@ -33,13 +33,13 @@ import java.util.Objects;
  * @param <T> instance type
  */
 public class LuaInstances<T> {
-    private final ArrayList<@Nullable Object> instances;
+    private final CopyOnWriteArrayList<@Nullable Object> instances;
     private int freeEntries;
     private int lastFreeId;
 
     /// Creates an empty collection
     protected LuaInstances() {
-        instances = new ArrayList<>();
+        instances = new CopyOnWriteArrayList<>();
         freeEntries = 0;
         lastFreeId = -1;
     }
@@ -90,7 +90,7 @@ public class LuaInstances<T> {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    protected synchronized T get(int id) {
+    protected T get(int id) {
         return (T) Objects.requireNonNull(instances.get(id));
     }
 
