@@ -165,11 +165,11 @@ public class LuaScriptEngineFactory implements ScriptEngineFactory {
     private final static String[][] ENGINES = {
             {"Lua 5.4", "5.4.8", "party.iroiro.luajava.lua54.Lua54", "54"},
             // TODO: priority changes should be breaking change?
-            {"Lua 5.5", "5.5.0", "party.iroiro.luajava.lua55.Lua55", "55"},
+            {"Lua 5.5", "5.5.1", "party.iroiro.luajava.lua55.Lua55", "55"},
             {"Lua 5.3", "5.3.6", "party.iroiro.luajava.lua53.Lua53", "53"},
             {"Lua 5.2", "5.2.4", "party.iroiro.luajava.lua52.Lua52", "52"},
             {"LuaJ", "5.2.4", "party.iroiro.luajava.luaj.LuaJ", "j"},
-            {"LuaJIT", "7152e15489d2077cd299ee23e3d51a4c599ab14f",
+            {"LuaJIT", "1edc3e52b67eaf6ce5f809be8e17d6862594b8bc",
                     "party.iroiro.luajava.luajit.LuaJit", "jit"},
             {"Lua 5.1", "5.1.5", "party.iroiro.luajava.lua51.Lua51", "51"},
     };
