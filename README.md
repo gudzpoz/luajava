@@ -111,6 +111,10 @@ end)
 thread:start()
 ```
 
+Please note, though, if there are multiple threads accessing the same Lua state (like the example above),
+one must ensure their Lua states are also `synchronized` on the Java side.
+See [Thread Safety](https://luajava.iroiro.party/threadsafety.html) for more information.
+
 ### More ###
 
 Check out [AWT Example](https://luajava.iroiro.party/examples/awt.html) for a more complex example.
