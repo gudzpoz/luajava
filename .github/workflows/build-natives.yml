@@ -23,21 +23,21 @@ jobs:
   apple-natives:
     runs-on: macos-14
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: 'recursive'
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v6
       - name: Build natives
         run: |
           ./gradlew jnigen jnigenBuildAllMacOsX jnigenBuildAllIOS
       - name: Upload macOS natives
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: apple-natives
           path: ./*/build/jnigen/libs
@@ -50,16 +50,16 @@ jobs:
     environment: Codecov
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: 'recursive'
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
       - name: Download llvm-mingw
-        uses: robinraju/release-downloader@v1.10
+        uses: robinraju/release-downloader@v1.13
         with:
           repository: 'mstorsjo/llvm-mingw'
           tag: 20251216
@@ -100,7 +100,7 @@ jobs:
           `pwd`/src/patchelf --version
           echo "`pwd`/src" >> $GITHUB_PATH
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v6
       - name: Build natives
         run: |
           export NDK_HOME=$ANDROID_NDK_LATEST_HOME
@@ -131,7 +131,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
       - name: Upload all output libs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: most-natives
           path: ./*/build/jnigen/libs
@@ -142,18 +142,18 @@ jobs:
     needs:
       - most-natives
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: 'recursive'
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v6
       - name: Download most-natives artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: most-natives
       - name: JniGen
@@ -176,18 +176,18 @@ jobs:
     needs:
       - most-natives
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: 'recursive'
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v6
       - name: Download most-natives artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: most-natives
       - name: JniGen
@@ -211,18 +211,18 @@ jobs:
     needs:
       - most-natives
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: 'recursive'
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v6
       - name: Download most-natives artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: most-natives
       - name: JniGen
@@ -274,29 +274,29 @@ jobs:
       - linux-testing
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: 'recursive'
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v6
       - name: Download apple-natives artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: apple-natives
       - name: Download most-natives artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: most-natives
       - name: JniGen
         run: |
           ./gradlew jnigen
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: natives
           path: ./*/build/jnigen/libs
@@ -310,7 +310,7 @@ jobs:
         run: |
           ./gradlew :example:shadowJar
       - name: Upload example
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: example
           path: example/build/libs/example-all.jar
@@ -348,7 +348,7 @@ jobs:
     runs-on: macos-15
     steps:
       - name: Download example tests
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: example
       - name: Run example tests
@@ -360,18 +360,18 @@ jobs:
       - pack-natives
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: 'recursive'
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v6
       - name: Download most-natives artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: most-natives
       - name: JniGen
