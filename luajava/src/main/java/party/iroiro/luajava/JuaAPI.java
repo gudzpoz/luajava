@@ -722,7 +722,7 @@ public abstract class JuaAPI {
                         return construct(L, objects, constructor);
                     }
                 }
-                L.push("no matching constructor found");
+                L.push("no matching constructor found: " + clazz.getCanonicalName());
                 return -1;
             }
             L.push("bad argument to constructor (Class<?> expected, got Object)");

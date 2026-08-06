@@ -2,17 +2,23 @@
 
 ::: tip TL;DR
 
-For now:
+For now, from the Java side:
 
 <<< ../example/src/test/java/party/iroiro/luajava/docs/ThreadExampleTest.java#synchronizedTest
+
+You will need to be `synchronized` if you access the same Lua state from multiple Java threads
+or from the Lua side (e.g., Java threads created with Lua):
+
+<<< ../example/src/test/resources/docs/threadExampleTest.lua
 
 :::
 
 
 No, we are not talking about Lua threads but OS threads.
 
-The short answer is, **no**, we do not guarantee thread safety.
-But you may safely access the Lua state across threads with a bit of external synchronization.
+The short answer is, **no**, we do not guarantee thread safety. But you may
+safely access the Lua state across threads with a bit of care and external
+synchronization.
 
 ## Different main states
 

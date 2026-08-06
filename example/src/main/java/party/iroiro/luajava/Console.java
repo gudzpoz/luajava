@@ -217,17 +217,19 @@ public class Console implements Callable<Integer> {
             startInteractive(getLua(lua));
         } else {
             try (Lua L = getLua(lua)) {
-                L.openLibraries();
-                L.setExternalLoader(new ClassPathLoader());
-                if (command.file != null) {
-                    Path path = Paths.get(command.file);
-                    byte[] bytes = Files.readAllBytes(path);
-                    ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);
-                    L.load(buffer.put(bytes).flip(), path.getFileName().toString());
-                    L.pCall(0, Consts.LUA_MULTRET);
-                } else if (command.expression != null) {
-                    L.load(command.expression);
-                    L.pCall(0, Consts.LUA_MULTRET);
+                synchronized (L.getMainState()) {
+                    L.openLibraries();
+                    L.setExternalLoader(new ClassPathLoader());
+                    if (command.file != null) {
+                        Path path = Paths.get(command.file);
+                        byte[] bytes = Files.readAllBytes(path);
+                        ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length);
+                        L.load(buffer.put(bytes).flip(), path.getFileName().toString());
+                        L.pCall(0, Consts.LUA_MULTRET);
+                    } else if (command.expression != null) {
+                        L.load(command.expression);
+                        L.pCall(0, Consts.LUA_MULTRET);
+                    }
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
