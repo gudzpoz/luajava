@@ -50,7 +50,7 @@ public class LuaInstances<T> {
      * @param instance element to be added to this collection
      * @return the allocated id
      */
-    protected synchronized int add(T instance) {
+    protected int add(T instance) {
         return addNullable(instance);
     }
 
@@ -89,7 +89,6 @@ public class LuaInstances<T> {
      * @return the element with the specified id
      */
     @SuppressWarnings("unchecked")
-    @Nullable
     protected synchronized T get(int id) {
         return (T) Objects.requireNonNull(instances.get(id));
     }
@@ -136,7 +135,7 @@ public class LuaInstances<T> {
         public final int id;
         public final Consumer<T> setter;
 
-        private Token(int id, Consumer<T> setter) {
+        public Token(int id, Consumer<T> setter) {
             this.id = id;
             this.setter = setter;
         }

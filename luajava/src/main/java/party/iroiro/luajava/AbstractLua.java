@@ -46,7 +46,8 @@ public abstract class AbstractLua implements Lua {
     /**
      * Registry of all active Lua instances.
      */
-    protected final static LuaInstances<AbstractLua> instances = new LuaInstances<>();
+    // TODO: make this final after benchmarking is done
+    protected static LuaInstances<AbstractLua> instances = new LuaInstances<>();
     /**
      * External loader for Lua modules.
      */
@@ -69,7 +70,7 @@ public abstract class AbstractLua implements Lua {
     protected final ConcurrentHashMap<Integer, LuaReference<?>> recordedReferences;
 
     static AbstractLua getInstance(int lid) {
-        return Objects.requireNonNull(instances.get(lid));
+        return instances.get(lid);
     }
 
     protected final LuaNatives C;
