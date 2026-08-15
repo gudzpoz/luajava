@@ -314,21 +314,21 @@ public abstract class JuaAPI {
      * </p>
      *
      * <p>
-     * For static fields, use {@link #classInvoke(int, Class, String, int)} instead.
+     * For static fields, use {@link #classInvoke(int, Class, String, long)} instead.
      * </p>
      *
-     * @param index      the id of {@link Jua} thread calling this method
-     * @param obj        the object
-     * @param name       the name of the field
-     * @param paramCount number of parameters (on the lua stack)
+     * @param index     the id of {@link Jua} thread calling this method
+     * @param obj       the object
+     * @param name      the name of the field
+     * @param stackInfo description of values on stack
      * @return the number result pushed on stack
-     * @see #methodInvoke(int, Class, Object, String, int)
+     * @see #methodInvoke(int, Class, Object, String, long)
      */
-    public static int objectInvoke(int index, Object obj, @Nullable String name, int paramCount) {
+    public static int objectInvoke(int index, Object obj, @Nullable String name, long stackInfo) {
         if (name == null) {
-            return juaFunctionCall(index, obj, paramCount);
+            return juaFunctionCall(index, obj);
         } else {
-            return methodInvoke(index, obj.getClass(), obj, name, paramCount);
+            return methodInvoke(index, obj.getClass(), obj, name, stackInfo);
         }
     }
 
@@ -337,10 +337,9 @@ public abstract class JuaAPI {
      *
      * @param index   the id of {@link Jua} thread calling this method
      * @param obj     the {@link JFunction} object
-     * @param ignored parameter count, but we are not using it
      * @return the number result pushed on stack
      */
-    private static int juaFunctionCall(int index, Object obj, int ignored) {
+    private static int juaFunctionCall(int index, Object obj) {
         Lua L = Jua.get(index);
         if (obj instanceof JFunction) {
             return ((JFunction) obj).__call(L);
@@ -357,21 +356,21 @@ public abstract class JuaAPI {
      * @param obj          the object
      * @param name         the method name
      * @param notSignature the method signature (not JNI signature though), comma separated
-     * @param paramCount   the parameter count
+     * @param stackInfo    description of values on stack
      * @return the number of values pushed onto the stack
      */
     @SuppressWarnings("unused")
     public static int objectInvoke(int index, Object obj, String name,
-                                   String notSignature, int paramCount) {
+                                   String notSignature, long stackInfo) {
         int colon = name.indexOf(':');
         if (colon == -1) {
-            return methodInvoke(index, obj.getClass(), obj, name, notSignature, paramCount);
+            return methodInvoke(index, obj.getClass(), obj, name, notSignature, stackInfo);
         } else {
             String iClass = name.substring(0, colon);
             String method = name.substring(colon + 1);
             try {
                 return methodInvoke(index, ClassUtils.forName(iClass), obj, method,
-                        notSignature, paramCount);
+                        notSignature, stackInfo);
             } catch (ClassNotFoundException e) {
                 return Jua.get(index).error(e);
             }
@@ -396,13 +395,13 @@ public abstract class JuaAPI {
     /**
      * Constructs an instance of a class
      *
-     * @param index      the lua state index
-     * @param oClazz     the class ({@link Object} typed to manually handle mismatched types)
-     * @param paramCount the parameter count
+     * @param index     the lua state index
+     * @param oClazz    the class ({@link Object} typed to manually handle mismatched types)
+     * @param stackInfo description of values on stack
      * @return the number of values pushed onto the stack
      */
     @SuppressWarnings("unused")
-    public static int classNew(int index, Object oClazz, int paramCount) {
+    public static int classNew(int index, Object oClazz, long stackInfo) {
         Class<?> clazz;
         Lua L = Jua.get(index);
         if (oClazz instanceof Class) {
@@ -419,13 +418,13 @@ public abstract class JuaAPI {
                 return L.error(e);
             }
         }
-        Object[] objects = new Object[paramCount];
+        Object[] objects = new Object[(int) (stackInfo & 0xFF)];
         Constructor<?>[] constructors = CONSTRUCTORS_CACHE.get(clazz);
         if (constructors == null) {
             constructors = clazz.getConstructors();
             CONSTRUCTORS_CACHE.put(clazz, constructors);
         }
-        Constructor<?> constructor = matchMethod(L, constructors, CONSTRUCTOR_WRAPPER, objects);
+        Constructor<?> constructor = matchMethod(L, constructors, CONSTRUCTOR_WRAPPER, stackInfo, objects);
         if (constructor != null) {
             return construct(L, objects, constructor);
         }
@@ -487,15 +486,15 @@ public abstract class JuaAPI {
     /**
      * Invokes a static method of a class
      *
-     * @param index      the lua state index
-     * @param clazz      the class
-     * @param name       the method name
-     * @param paramCount the parameter count
+     * @param index     the lua state index
+     * @param clazz     the class
+     * @param name      the method name
+     * @param stackInfo description of values on stack
      * @return the number of values pushed onto the stack
      */
     @SuppressWarnings("unused")
-    public static int classInvoke(int index, Class<?> clazz, String name, int paramCount) {
-        return methodInvoke(index, clazz, null, name, paramCount);
+    public static int classInvoke(int index, Class<?> clazz, String name, long stackInfo) {
+        return methodInvoke(index, clazz, null, name, stackInfo);
     }
 
     /**
@@ -505,13 +504,13 @@ public abstract class JuaAPI {
      * @param clazz        the class
      * @param name         the method name
      * @param notSignature the signature, comma separated
-     * @param paramCount   the parameter count
+     * @param stackInfo    description of values on stack
      * @return the number of values pushed onto the stack
      */
     @SuppressWarnings("unused")
     public static int classInvoke(int index, Class<?> clazz, String name,
-                                  String notSignature, int paramCount) {
-        return methodInvoke(index, clazz, null, name, notSignature, paramCount);
+                                  String notSignature, long stackInfo) {
+        return methodInvoke(index, clazz, null, name, notSignature, stackInfo);
     }
 
     /**
@@ -635,18 +634,19 @@ public abstract class JuaAPI {
      * is expected to be at -2, and the second be at -1.
      * </p>
      *
-     * @param index      the index of Java-side {@link Jua}
-     * @param clazz      the {@link Class}
-     * @param obj        the object (nullable when calling static methods)
-     * @param name       the method name
-     * @param paramCount number of supplied params
+     * @param index     the index of Java-side {@link Jua}
+     * @param clazz     the {@link Class}
+     * @param obj       the object (nullable when calling static methods)
+     * @param name      the method name
+     * @param stackInfo description of values on stack
      * @return the number result pushed on stack
+     * @see #methodInvoke(int, Class, Object, String, String, long)
      */
     public static int methodInvoke(int index, Class<?> clazz, @Nullable Object obj,
-                                   String name, int paramCount) {
+                                   String name, long stackInfo) {
         Lua L = Jua.get(index);
         /* Storage of converted params */
-        Object[] objects = new Object[paramCount];
+        Object[] objects = new Object[(int) (stackInfo & 0xFF)];
         Method[] methods = MEMBER_METHOD_CACHE.get(clazz, name);
         if (methods == null) {
             List<Method> namedMethods = new ArrayList<>();
@@ -663,12 +663,12 @@ public abstract class JuaAPI {
             methods = namedMethods.toArray(new Method[0]);
             MEMBER_METHOD_CACHE.put(clazz, name, methods);
         }
-        Method method = matchMethod(L, methods, METHOD_WRAPPER, objects);
+        Method method = matchMethod(L, methods, METHOD_WRAPPER, stackInfo, objects);
         if (method == null) {
             StringBuilder sb = new StringBuilder();
             sb.append("no matching method found: ");
             sb.append(clazz.getCanonicalName()).append(".").append(name).append(Arrays.toString(objects));
-            for (Method m: methods) {
+            for (Method m : methods) {
                 sb.append("\n").append(m.toGenericString());
             }
             L.push(sb.toString());
@@ -690,23 +690,30 @@ public abstract class JuaAPI {
     /**
      * Invokes a method
      *
+     * <p>
+     * The {@code stackInfo} parameter is prepared by the JNI C side to reduce JNI calls.
+     * The lowest 8-bit is the number of parameters (since Java methods can't have > 255 parameters).
+     * And each subsequent 8-bit is the type of the parameter (see {@link AbstractLua#convertType(int)}).
+     * </p>
+     *
      * @param index        the lua state index
      * @param clazz        the class
      * @param obj          the object, {@code null} if calling a static method
      * @param name         the method name
      * @param notSignature method signature, comma separated
-     * @param paramCount   the parameter count
+     * @param stackInfo    description of values on stack
      * @return the number of values pushed onto the stack
      */
     public static int methodInvoke(int index, Class<?> clazz, @Nullable Object obj,
-                                   String name, String notSignature, int paramCount) {
+                                   String name, String notSignature, long stackInfo) {
         AbstractLua L = Jua.get(index);
+        int paramCount = (int) (stackInfo & 0xFF);
         if ("new".equals(name)) {
             if (obj == null) {
                 Constructor<?> constructor = matchMethod(clazz, notSignature);
                 if (constructor != null) {
                     Object[] objects = new Object[paramCount];
-                    if (matchMethod(L, new Constructor[]{constructor}, CONSTRUCTOR_WRAPPER, objects) != null) {
+                    if (matchMethod(L, new Constructor[]{constructor}, CONSTRUCTOR_WRAPPER, stackInfo, objects) != null) {
                         return construct(L, objects, constructor);
                     }
                 }
@@ -720,7 +727,7 @@ public abstract class JuaAPI {
         Method method = matchMethod(clazz, name, notSignature);
         if (method != null) {
             Object[] objects = new Object[paramCount];
-            if (matchMethod(L, new Method[]{method}, METHOD_WRAPPER, objects) != null) {
+            if (matchMethod(L, new Method[]{method}, METHOD_WRAPPER, stackInfo, objects) != null) {
                 if (clazz.isInterface()) {
                     return specialInvoke(L, method, obj, objects);
                 } else {
@@ -771,7 +778,7 @@ public abstract class JuaAPI {
      * @param objects the parameters
      * @return the number of values pushed onto the stack
      */
-    public static int methodInvoke(Lua L, Method method, @Nullable Object obj, Object @Nullable[] objects) {
+    public static int methodInvoke(Lua L, Method method, @Nullable Object obj, Object @Nullable [] objects) {
         Object ret;
         try {
             ret = method.invoke(obj, objects);
@@ -893,16 +900,20 @@ public abstract class JuaAPI {
 
     /**
      * Matches methods against values on stack
-     * @param L       the lua state
-     * @param methods filtered methods that only differ in their parameters
-     * @param params  an array to store converted parameters
-     * @param <T>     either {@link Method} or {@link Constructor}
+     *
+     * @param L         the lua state
+     * @param methods   filtered methods that only differ in their parameters
+     * @param stackInfo description of values on stack
+     * @param params    an array to store converted parameters
+     * @param <T>       either {@link Method} or {@link Constructor}
      * @return a match method
      */
     @Nullable
     private static <T> T matchMethod(Lua L, T[] methods,
                                      ExecutableWrapper<T> wrapper,
+                                     long stackInfo,
                                      @Nullable Object[] params) {
+        stackInfo >>>= 8;
         for (T method : methods) {
             /*
              * This is costly since it clones the internal array.
@@ -913,8 +924,13 @@ public abstract class JuaAPI {
             Class<?>[] classes = wrapper.getParameterTypes(method);
             if (classes.length == params.length) {
                 try {
+                    long currentInfo = stackInfo;
                     for (int i = 0; i != params.length; ++i) {
-                        params[i] = convertFromLua(L, classes[i], -params.length + i);
+                        int current = (int) (currentInfo & 0xFF);
+                        params[i] = i < 7 && current != 0xFF
+                                ? convertFromHintedLua(L, classes[i], current, -params.length + i)
+                                : convertFromLua(L, classes[i], -params.length + i);
+                        currentInfo >>>= 8;
                     }
                 } catch (IllegalArgumentException e) {
                     continue;
@@ -990,6 +1006,20 @@ public abstract class JuaAPI {
     public static Object convertFromLua(Lua L, Class<?> clazz, int index)
             throws IllegalArgumentException {
         Lua.LuaType type = L.type(index);
+        return convertFromTypedLua(L, clazz, index, type);
+    }
+
+    @Nullable
+    public static Object convertFromHintedLua(Lua L, Class<?> clazz, int typeHint, int index)
+            throws IllegalArgumentException {
+        Lua.LuaType type = L instanceof AbstractLua
+                ? ((AbstractLua) L).convertType(typeHint)
+                : L.type(index);
+        return convertFromTypedLua(L, clazz, index, type);
+    }
+
+    @Nullable
+    private static Object convertFromTypedLua(Lua L, Class<?> clazz, int index, Lua.@Nullable LuaType type) {
         if (type == Lua.LuaType.NIL) {
             if (clazz.isPrimitive()) {
                 throw new IllegalArgumentException("Primitive not accepting null values");

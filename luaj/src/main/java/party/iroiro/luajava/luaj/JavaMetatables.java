@@ -51,7 +51,7 @@ public abstract class JavaMetatables {
                 J.setError(null);
                 J.pushFrame();
                 J.pushAll(args);
-                return checkOrError(J, JuaAPI.classNew(J.lid, o.m_instance, args.narg() - 1));
+                return checkOrError(J, JuaAPI.classNew(J.lid, o.m_instance, emptyStackInfo(args.narg() - 1)));
             }
         });
         return table;
@@ -103,6 +103,10 @@ public abstract class JavaMetatables {
         return table;
     }
 
+    public static long emptyStackInfo(int params) {
+        return ~0xFF | (params & 0xFF);
+    }
+
     private static class ObjectIndex extends TwoArgFunction {
         private final boolean clazz;
 
@@ -133,9 +137,10 @@ public abstract class JavaMetatables {
                             return LuaValue.error("bad argument #1");
                         }
                         J.pushAll(args);
+                        long stackInfo = emptyStackInfo(args.narg() - 1);
                         int i = clazz
-                                ? JuaAPI.classInvoke(J.lid, (Class<?>) o.m_instance, f, args.narg() - 1)
-                                : JuaAPI.objectInvoke(J.lid, o.m_instance, f, args.narg() - 1);
+                                ? JuaAPI.classInvoke(J.lid, (Class<?>) o.m_instance, f, stackInfo)
+                                : JuaAPI.objectInvoke(J.lid, o.m_instance, f, stackInfo);
                         return checkOrError(J, i);
                     }
                 };

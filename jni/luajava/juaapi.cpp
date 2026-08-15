@@ -3,18 +3,28 @@
 
 #include "jua.h"
 
+inline jlong gatherParamInfo(lua_State * L, int params) {
+  int limit = params <= 7 ? -params : -7;
+  jlong info = ~0xFF;
+  for (int i = -1; i >= limit; i--) {
+    info = (info | (lua_type(L, i) & 0xFF)) << 8;
+  }
+  return info | params;
+}
+
 inline int jInvokeObject(lua_State * L, jmethodID methodID,
                          jobject data, const char * name, int params) {
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
   jint ret;
+  jlong paramInfo = gatherParamInfo(L, params & 0xFF);
   if (name == NULL) {
     ret = env->CallStaticIntMethod(juaapi_class, methodID,
-                                   (jint) stateIndex, data, NULL, params);
+                                   (jint) stateIndex, data, NULL, paramInfo);
   } else {
     jstring str = env->NewStringUTF(name);
     ret = env->CallStaticIntMethod(juaapi_class, methodID,
-                                   (jint) stateIndex, data, str, params);
+                                   (jint) stateIndex, data, str, paramInfo);
     env->DeleteLocalRef(str);
   }
   return checkOrError(env, L, ret);
@@ -68,7 +78,7 @@ int jclassCall(lua_State * L) {
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
   return checkOrError(env, L, env->CallStaticIntMethod(juaapi_class, juaapi_classnew,
-    (jint) stateIndex, *data, lua_gettop(L) - 1));
+    (jint) stateIndex, *data, gatherParamInfo(L, (lua_gettop(L) - 1) & 0xFF)));
 }
 
 int jclassNewIndex(lua_State * L) {
@@ -175,7 +185,8 @@ inline int jSigInvoke(lua_State * L, const char * reg, jmethodID methodID) {
   jstring nameS = env->NewStringUTF(name);
   jstring signatureS = signature == NULL ? NULL : env->NewStringUTF(signature);
   int ret = env->CallStaticIntMethod(juaapi_class, methodID,
-                                     (jint) stateIndex, *data, nameS, signatureS, lua_gettop(L));
+                                     (jint) stateIndex, *data, nameS,
+                                     signatureS, gatherParamInfo(L, lua_gettop(L)));
   if (signature != NULL) {
     env->DeleteLocalRef(signatureS);
   }

@@ -129,11 +129,12 @@ public class JavaLib extends TwoArgFunction {
                         L.pushFrame();
                         L.pushAll(args);
                         String sig = signature.isnil() ? "" : signature.tojstring();
+                        long stackinfo = JavaMetatables.emptyStackInfo(args.narg());
                         return checkOrError(L, o instanceof JavaClass
                                 ? JuaAPI.classInvoke(L.lid, (Class<?>) o.m_instance,
-                                method.tojstring(), sig, args.narg())
+                                method.tojstring(), sig, stackinfo)
                                 : JuaAPI.objectInvoke(L.lid, o.m_instance,
-                                method.tojstring(), sig, args.narg()));
+                                method.tojstring(), sig, stackinfo));
                     }
                 };
             }
@@ -151,7 +152,8 @@ public class JavaLib extends TwoArgFunction {
                 }
                 L.pushFrame();
                 L.pushAll(args);
-                return checkOrError(L, JuaAPI.classNew(L.lid, o.m_instance, args.narg() - 1));
+                long stackInfo = JavaMetatables.emptyStackInfo(args.narg() - 1);
+                return checkOrError(L, JuaAPI.classNew(L.lid, o.m_instance, stackInfo));
             }
         });
         lib.set("proxy", new VarArgFunction() {
