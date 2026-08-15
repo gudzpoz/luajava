@@ -51,6 +51,11 @@ public class Lua55 extends AbstractLua {
     }
 
     private static LuaNatives getNatives() throws LinkageError {
+        Lua55Natives active = natives.get();
+        if (active != null) {
+            return active;
+        }
+
         synchronized (natives) {
             if (natives.get() == null) {
                 try {

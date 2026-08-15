@@ -8,17 +8,17 @@ final class LuaJInstances extends LuaInstances<LuaJState> {
     }
 
     @Override
-    protected synchronized Token<LuaJState> add() {
+    protected Token<LuaJState> add() {
         return super.add();
     }
 
     @Override
-    protected synchronized LuaJState get(int id) {
+    protected LuaJState get(int id) {
         return super.get(id);
     }
 
     @Override
-    protected synchronized void remove(int id) {
+    protected void remove(int id) {
         super.remove(id);
     }
 }
