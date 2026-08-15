@@ -119,11 +119,7 @@ public abstract class JuaAPI {
         return loadLib(id, module.substring(0, i), module.substring(i + 1));
     }
 
-    private final static LRUCache<String, String, Method> JAVA_LIB_CACHE = new LRUCache<>(
-            25,
-            5,
-            4
-    );
+    private final static LRUCache<String, String, Method> JAVA_LIB_CACHE = new LRUCache<>(500);
 
     /**
      * Loads a Java static method that accepts a single {@link Lua} parameter and returns an integer
@@ -395,11 +391,7 @@ public abstract class JuaAPI {
         return fieldNewIndex(index, obj.getClass(), obj, name);
     }
 
-    private final static LRUCache<Class<?>, Boolean, Constructor<?>[]> CONSTRUCTORS_CACHE = new LRUCache<>(
-            25,
-            1,
-            4
-    );
+    private final static LRUCache.Cache<Class<?>, Constructor<?>[]> CONSTRUCTORS_CACHE = new LRUCache.Cache<>(500);
 
     /**
      * Constructs an instance of a class
@@ -428,10 +420,10 @@ public abstract class JuaAPI {
             }
         }
         Object[] objects = new Object[paramCount];
-        Constructor<?>[] constructors = CONSTRUCTORS_CACHE.get(clazz, Boolean.TRUE);
+        Constructor<?>[] constructors = CONSTRUCTORS_CACHE.get(clazz);
         if (constructors == null) {
             constructors = clazz.getConstructors();
-            CONSTRUCTORS_CACHE.put(clazz, Boolean.TRUE, constructors);
+            CONSTRUCTORS_CACHE.put(clazz, constructors);
         }
         Constructor<?> constructor = matchMethod(L, constructors, CONSTRUCTOR_WRAPPER, objects);
         if (constructor != null) {
@@ -632,11 +624,7 @@ public abstract class JuaAPI {
         }
     }
 
-    private final static LRUCache<Class<?>, String, Method[]> MEMBER_METHOD_CACHE = new LRUCache<>(
-            25,
-            10,
-            4
-    );
+    private final static LRUCache<Class<?>, String, Method[]> MEMBER_METHOD_CACHE = new LRUCache<>(1000);
 
     /**
      * Calls the given method <code>{obj}.{name}(... params from stack)</code>
@@ -830,11 +818,7 @@ public abstract class JuaAPI {
         }
     }
 
-    private final static LRUCache<Class<?>, String, @Nullable OptionalField> OBJECT_FIELD_CACHE = new LRUCache<>(
-            25,
-            10,
-            4
-    );
+    private final static LRUCache<Class<?>, String, @Nullable OptionalField> OBJECT_FIELD_CACHE = new LRUCache<>(2000);
 
     /**
      * Tries to fetch field from an object
@@ -941,17 +925,9 @@ public abstract class JuaAPI {
         return null;
     }
 
-    private final static LRUCache<Class<?>, String, @Nullable Constructor<?>> CONSTRUCTOR_CACHE = new LRUCache<>(
-            25,
-            5,
-            4
-    );
+    private final static LRUCache<Class<?>, String, @Nullable Constructor<?>> CONSTRUCTOR_CACHE = new LRUCache<>(500);
 
-    private final static LRUCache<Class<?>, String, @Nullable Method> METHOD_CACHE = new LRUCache<>(
-            25,
-            50,
-            4
-    );
+    private final static LRUCache<Class<?>, String, @Nullable Method> METHOD_CACHE = new LRUCache<>(5000);
 
     /**
      * Find a certain constructor

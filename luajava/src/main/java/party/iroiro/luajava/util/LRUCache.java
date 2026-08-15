@@ -22,8 +22,8 @@ public final class LRUCache<K1, K2, V> {
 
     private final Cache<Key<K1, K2>, V> cache;
 
-    public LRUCache(int level1Size, int level2Size, int shards) {
-        this.cache = new Cache<>(level1Size * level2Size * shards);
+    public LRUCache(int maxSize) {
+        this.cache = new Cache<>(maxSize);
     }
 
     @Nullable

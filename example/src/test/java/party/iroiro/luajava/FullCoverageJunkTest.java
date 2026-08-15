@@ -85,12 +85,4 @@ public class FullCoverageJunkTest {
             L.close();
         }
     }
-
-    @Test
-    public void lruCacheTest() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new LRUCache<String, String, String>(10, 10, -1));
-        assertThrows(IllegalArgumentException.class,
-                () -> new LRUCache<String, String, String>(10, 10, 3));
-    }
 }
