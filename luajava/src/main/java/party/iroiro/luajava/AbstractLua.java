@@ -142,36 +142,40 @@ public abstract class AbstractLua implements Lua {
     @Override
     public void push(@Nullable Object object, Conversion degree) {
         checkStack(1);
+        pushUnsafe(object, degree);
+    }
+
+    @Override
+    public void pushUnsafe(@Nullable Object object, Conversion degree) {
         if (object == null) {
-            pushNil();
+            C.lua_pushnil(L);
         } else if (object instanceof LuaValue) {
             LuaValue value = (LuaValue) object;
             value.push(this);
         } else if (object instanceof LuaFunction) {
-            LuaFunction function = (LuaFunction) object;
-            this.push(function);
+            C.luaJ_pushfunction(L, new LuaFunctionWrapper((LuaFunction) object));
         } else if (degree == Conversion.NONE) {
             pushJavaObjectOrArray(object);
         } else {
             if (object instanceof Boolean) {
-                push((boolean) object);
+                C.lua_pushboolean(L, (boolean) object ? 1 : 0);
             } else if (object instanceof String) {
-                push((String) object);
+                C.luaJ_pushstring(L, (String) object);
             } else if (object instanceof Integer || object instanceof Byte || object instanceof Short) {
-                push(((Number) object).intValue());
+                C.lua_pushinteger(L, ((Number) object).intValue());
             } else if (object instanceof Character) {
-                push(((int) (Character) object));
+                C.lua_pushinteger(L, (int) (Character) object);
             } else if (object instanceof Long) {
-                push((long) object);
+                C.lua_pushinteger(L, (long) object);
             } else if (object instanceof Float || object instanceof Double) {
-                push((Number) object);
+                C.lua_pushnumber(L, ((Number) object).doubleValue());
             } else if (object instanceof JFunction) {
-                push(((JFunction) object));
+                C.luaJ_pushfunction(L, object);
             } else if (degree == Conversion.SEMI) {
                 pushJavaObjectOrArray(object);
             } else /* if (degree == Conversion.FULL) */ {
                 if (object instanceof Class) {
-                    pushJavaClass(((Class<?>) object));
+                    C.luaJ_pushclass(L, object);
                 } else if (object instanceof Map) {
                     push((Map<?, ?>) object);
                 } else if (object instanceof Collection) {
@@ -296,7 +300,7 @@ public abstract class AbstractLua implements Lua {
     @Override
     public void push(LuaFunction function) {
         checkStack(1);
-        push(new LuaFunctionWrapper(function));
+        C.luaJ_pushfunction(L, new LuaFunctionWrapper(function));
     }
 
     @Override

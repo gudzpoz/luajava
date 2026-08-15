@@ -584,7 +584,7 @@ public abstract class JuaAPI {
         Lua L = Jua.get(index);
         try {
             Object e = Array.get(obj, i - 1);
-            L.push(e, Lua.Conversion.SEMI);
+            L.pushUnsafe(e, Lua.Conversion.SEMI);
             return 1;
         } catch (Exception e) {
             return L.error(e);
@@ -764,7 +764,7 @@ public abstract class JuaAPI {
         if (ret == null) {
             return 0;
         } else {
-            L.push(ret, Lua.Conversion.SEMI);
+            L.pushUnsafe(ret, Lua.Conversion.SEMI);
             return 1;
         }
     }
@@ -790,7 +790,7 @@ public abstract class JuaAPI {
         if (ret == null) {
             return 0;
         } else {
-            L.push(ret, Lua.Conversion.SEMI);
+            L.pushUnsafe(ret, Lua.Conversion.SEMI);
             return 1;
         }
     }
@@ -853,7 +853,7 @@ public abstract class JuaAPI {
                 }
             }
             Object obj = field.get(object);
-            L.push(obj, Lua.Conversion.SEMI);
+            L.pushUnsafe(obj, Lua.Conversion.SEMI);
             return 1;
         } catch (NoSuchFieldException ignored) {
             OBJECT_FIELD_CACHE.put(clazz, name, new OptionalField(null));
@@ -1038,13 +1038,10 @@ public abstract class JuaAPI {
             }
         } else if (type == Lua.LuaType.NUMBER) {
             if (clazz.isPrimitive() || Number.class.isAssignableFrom(clazz)) {
-                Number v;
-                if (L.isInteger(index)) {
-                    v = L.toInteger(index);
-                } else {
-                    v = L.toNumber(index);
+                if (clazz == long.class && L.isInteger(index)) {
+                    return L.toInteger(index);
                 }
-                return convertNumber(v, clazz);
+                return convertNumber(L.toNumber(index), clazz);
             } else if (Character.class == clazz) {
                 return (char) L.toNumber(index);
             } else if (Boolean.class == clazz) {

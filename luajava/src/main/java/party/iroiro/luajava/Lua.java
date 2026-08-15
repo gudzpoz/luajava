@@ -71,6 +71,21 @@ public interface Lua extends AutoCloseable, LuaThread {
     void push(@Nullable Object object, Conversion degree);
 
     /**
+     * Push an object onto the stack, converting according to {@link Conversion}.
+     *
+     * <p>
+     * This method is similar to {@link #push(Object, Conversion)} but does not
+     * {@link #checkStack(int)} and might corrupt the stack.
+     * This is mostly for internal use.
+     * </p>
+     *
+     * @param object the object to be pushed onto the stack
+     * @param degree how the object is converted into lua values
+     * @see Conversion
+     */
+    void pushUnsafe(@Nullable Object object, Conversion degree);
+
+    /**
      * Pushes a {@code nil} value onto the stack
      */
     void pushNil();

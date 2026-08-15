@@ -16,6 +16,7 @@ inline int jInvokeObject(lua_State * L, jmethodID methodID,
                          jobject data, const char * name, int params) {
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
+  luaL_checkstack(L, 1, "No more stack space available");
   jint ret;
   jlong paramInfo = gatherParamInfo(L, params & 0xFF);
   if (name == NULL) {
@@ -38,6 +39,7 @@ inline int jInvoke(lua_State * L, const char * reg, jmethodID methodID) {
 
 inline int jIndex(lua_State * L, const char * reg, jmethodID methodID, lua_CFunction func, bool ret) {
   jobject * data = (jobject *) luaL_checkudata(L, 1, reg);
+  luaL_checkstack(L, 1, "No more stack space available");
   const char * name = luaL_checkstring(L, 2);
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
@@ -75,6 +77,7 @@ int jclassIndex(lua_State * L) {
 
 int jclassCall(lua_State * L) {
   jobject * data = (jobject *) lua_touserdata(L, 1);
+  luaL_checkstack(L, 1, "No more stack space available");
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
   return checkOrError(env, L, env->CallStaticIntMethod(juaapi_class, juaapi_classnew,
@@ -137,6 +140,7 @@ int jarrayLength(lua_State * L) {
 inline int jarrayJIndex(lua_State * L, jmethodID func, bool ret) {
   jobject * data = (jobject *) luaL_checkudata(L, 1, JAVA_ARRAY_META_REGISTRY);
   int i = (int) luaL_checknumber(L, 2);
+  luaL_checkstack(L, 1, "No more stack space available");
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
   int retVal = checkOrError(env, L,
@@ -178,6 +182,7 @@ inline int jSigInvoke(lua_State * L, const char * reg, jmethodID methodID) {
   jobject * data = (jobject *) luaL_checkudata(L, lua_upvalueindex(1), reg);
   const char * name = luaL_checkstring(L, lua_upvalueindex(2));
   const char * signature = luaL_optstring(L, lua_upvalueindex(3), NULL);
+  luaL_checkstack(L, 1, "No more stack space available");
 
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);

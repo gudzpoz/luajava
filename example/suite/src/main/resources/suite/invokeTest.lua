@@ -9,6 +9,7 @@ assertThrows('no matching constructor found', Throws, 'no match')
 assert(type(Throws.class) == 'userdata')
 
 assert(Abstract:returnsNull() == nil)
+assert(Abstract:manyArgs(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13) == 7 * 13)
 
 Integer = java.import('java.lang.Integer')
 assert(Integer:parseInt('1024') == 1024)
