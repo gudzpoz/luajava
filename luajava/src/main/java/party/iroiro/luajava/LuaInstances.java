@@ -24,8 +24,9 @@ package party.iroiro.luajava;
 
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  * A collection of {@link Jua} instances, each labeled with a unique id
@@ -33,15 +34,22 @@ import java.util.Objects;
  * @param <T> instance type
  */
 public class LuaInstances<T> {
-    private final ArrayList<@Nullable Object> instances;
-    private int freeEntries;
-    private int lastFreeId;
+    private static final int SEGMENT_SHIFT = 12;
+    private static final int SEGMENT_MASK = (1 << SEGMENT_SHIFT) - 1;
+
+    private final AtomicReferenceArray<@Nullable AtomicReferenceArray<@Nullable T>> segments;
+    private final AtomicInteger nextId;
+    private final AtomicReferenceArray<@Nullable Node> freeHeads;
 
     /// Creates an empty collection
     protected LuaInstances() {
-        instances = new ArrayList<>();
-        freeEntries = 0;
-        lastFreeId = -1;
+        segments = new AtomicReferenceArray<>(1 << SEGMENT_SHIFT);
+        nextId = new AtomicInteger(0);
+        freeHeads = new AtomicReferenceArray<>(Math.min(16, Runtime.getRuntime().availableProcessors()));
+    }
+
+    protected int add(T instance) {
+        return addNullable(instance);
     }
 
     /**
@@ -50,25 +58,27 @@ public class LuaInstances<T> {
      * @param instance element to be added to this collection
      * @return the allocated id
      */
-    protected int add(T instance) {
-        return addNullable(instance);
-    }
-
-    protected synchronized int addNullable(@Nullable T instance) {
-        int id;
-        if (lastFreeId == -1) {
-            id = instances.size();
-            instances.add(instance);
+    protected int addNullable(@Nullable T instance) {
+        int id = popFreeId();
+        AtomicReferenceArray<@Nullable T> segment;
+        if (id == -1) {
+            id = nextId.getAndIncrement();
+            int segmentIndex = id >> SEGMENT_SHIFT;
+            segment = segments.get(segmentIndex);
+            if (segment == null) {
+                segment = new AtomicReferenceArray<>(1 << SEGMENT_SHIFT);
+                if (!segments.compareAndSet(segmentIndex, null, segment)) {
+                    segment = Objects.requireNonNull(segments.get(segmentIndex));
+                }
+            }
         } else {
-            id = lastFreeId;
-            lastFreeId = (Integer) Objects.requireNonNull(instances.get(lastFreeId));
-            instances.set(id, instance);
-            freeEntries--;
+            segment = Objects.requireNonNull(segments.get(id >>> SEGMENT_SHIFT));
         }
+        segment.set(id & SEGMENT_MASK, instance);
         return id;
     }
 
-    protected synchronized Token<T> add() {
+    protected Token<T> add() {
         int id = addNullable(null);
         //noinspection Convert2Lambda
         return new Token<>(id, new Token.Consumer<T>() {
@@ -79,8 +89,10 @@ public class LuaInstances<T> {
         });
     }
 
-    private synchronized void set(int id, @Nullable T instance) {
-        instances.set(id, instance);
+    private void set(int id, @Nullable T instance) {
+        int segment = id >>> SEGMENT_SHIFT;
+        int offset = id & SEGMENT_MASK;
+        Objects.requireNonNull(segments.get(segment)).set(offset, instance);
     }
 
     /**
@@ -88,9 +100,12 @@ public class LuaInstances<T> {
      * @param id id of the instance to return
      * @return the element with the specified id
      */
-    @SuppressWarnings("unchecked")
-    protected synchronized T get(int id) {
-        return (T) Objects.requireNonNull(instances.get(id));
+    protected T get(int id) {
+        int segment = id >>> SEGMENT_SHIFT;
+        int offset = id & SEGMENT_MASK;
+        return Objects.requireNonNull(
+                Objects.requireNonNull(segments.get(segment)).get(offset)
+        );
     }
 
     /**
@@ -102,23 +117,63 @@ public class LuaInstances<T> {
      *
      * @param id the id of the instance to be removed
      */
-    protected synchronized void remove(int id) {
-        if (id == instances.size() - 1) {
-            instances.remove(id);
-        } else {
-            instances.set(id, lastFreeId);
-            lastFreeId = id;
-            freeEntries++;
-        }
+    protected void remove(int id) {
+        set(id, null);
+        pushFreeId(id);
     }
 
     /**
      * Returns the number of elements in this collection
      *
+     * <p>
+     * The returned number is only accurate when no concurrent modifications are being made.
+     * </p>
+     *
      * @return the number of elements in this collection
      */
-    protected synchronized int size() {
-        return instances.size() - freeEntries;
+    protected int size() {
+        int freeCount = 0;
+        for (int i = 0; i < freeHeads.length(); i++) {
+            Node head = freeHeads.get(i);
+            while (head != null) {
+                head = head.next;
+                freeCount++;
+            }
+        }
+        return nextId.get() - freeCount;
+    }
+
+    private void pushFreeId(int id) {
+        int n = Thread.currentThread().hashCode() % freeHeads.length();
+        Node oldHead, newHead;
+        do {
+            oldHead = freeHeads.get(n);
+            newHead = new Node(id, oldHead);
+        } while (!freeHeads.compareAndSet(n, oldHead, newHead));
+    }
+
+    private int popFreeId() {
+        int n = Thread.currentThread().hashCode() % freeHeads.length();
+        Node oldHead, newHead;
+        do {
+            oldHead = freeHeads.get(n);
+            if (oldHead == null) {
+                return -1;
+            }
+            newHead = oldHead.next;
+        } while (!freeHeads.compareAndSet(n, oldHead, newHead));
+        return oldHead.id;
+    }
+
+    private static class Node {
+        final int id;
+        @Nullable
+        final Node next;
+
+        Node(int id, @Nullable Node next) {
+            this.id = id;
+            this.next = next;
+        }
     }
 
     /// A place in the instance list

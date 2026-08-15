@@ -46,8 +46,7 @@ public abstract class AbstractLua implements Lua {
     /**
      * Registry of all active Lua instances.
      */
-    // TODO: make this final after benchmarking is done
-    protected static LuaInstances<AbstractLua> instances = new LuaInstances<>();
+    protected static final LuaInstances<AbstractLua> instances = new LuaInstances<>();
     /**
      * External loader for Lua modules.
      */

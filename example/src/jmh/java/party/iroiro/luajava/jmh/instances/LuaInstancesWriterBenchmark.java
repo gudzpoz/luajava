@@ -17,17 +17,11 @@ public class LuaInstancesWriterBenchmark {
     @Param({"1", "100", "10000"})
     public int instances;
 
-    @Param({"synchronized", "AtomicReference", "CopyOnWrite", "CAS"})
-    @SuppressWarnings("NotNullFieldNotInitialized")
-    public String instancesType;
-
     @SuppressWarnings("NotNullFieldNotInitialized")
     private List<Lua51> allocated;
 
     @Setup
     public void setup() {
-        LuaInstancesAccess.setInstances(instancesType);
-
         allocated = new ArrayList<>();
         for (int i = 0; i < this.instances; i++) {
             allocated.add(new Lua51());

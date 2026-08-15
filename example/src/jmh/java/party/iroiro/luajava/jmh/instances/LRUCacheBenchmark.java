@@ -5,7 +5,6 @@ import party.iroiro.luajava.Lua;
 import party.iroiro.luajava.luajit.LuaJit;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Fork(1)
 @Warmup(iterations = 3)
@@ -15,19 +14,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @State(Scope.Thread)
 public class LRUCacheBenchmark {
 
-    private static final AtomicBoolean isSetup = new AtomicBoolean(false);
-
     @SuppressWarnings("NotNullFieldNotInitialized")
     private LuaJit L;
 
     @Setup
     public void setup() {
-        synchronized (isSetup) {
-            if (!isSetup.getAndSet(true)) {
-                LuaInstancesAccess.setInstances("CAS");
-            }
-        }
-
         L = new LuaJit();
         L.push(1, Lua.Conversion.NONE);
         L.setGlobal("int");
