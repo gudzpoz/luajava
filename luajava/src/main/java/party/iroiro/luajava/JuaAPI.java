@@ -360,7 +360,7 @@ public abstract class JuaAPI {
      * @param index        the lua state index
      * @param obj          the object
      * @param name         the method name
-     * @param notSignature the method signature, comma separated
+     * @param notSignature the method signature (not JNI signature though), comma separated
      * @param paramCount   the parameter count
      * @return the number of values pushed onto the stack
      */
