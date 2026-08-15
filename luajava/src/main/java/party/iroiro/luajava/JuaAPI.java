@@ -864,8 +864,10 @@ public abstract class JuaAPI {
             Object obj = field.get(object);
             L.push(obj, Lua.Conversion.SEMI);
             return 1;
-        } catch (NoSuchFieldException | IllegalAccessException | NullPointerException ignored) {
+        } catch (NoSuchFieldException ignored) {
             OBJECT_FIELD_CACHE.put(clazz, name, new OptionalField(null));
+            return 2;
+        } catch (IllegalAccessException | NullPointerException ignored) {
             return 2;
         }
     }
@@ -897,8 +899,10 @@ public abstract class JuaAPI {
             Object o = convertFromLua(L, type, 3);
             field.set(object, o);
             return 0;
-        } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
+        } catch (NoSuchFieldException e) {
             OBJECT_FIELD_CACHE.put(clazz, name, new OptionalField(null));
+            return L.error(e);
+        } catch (IllegalAccessException | IllegalArgumentException e) {
             return L.error(e);
         }
     }
