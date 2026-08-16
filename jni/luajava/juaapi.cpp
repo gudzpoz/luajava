@@ -31,14 +31,14 @@ inline int jInvokeObject(lua_State * L, jmethodID methodID,
   return checkOrError(env, L, ret);
 }
 
-inline int jInvoke(lua_State * L, const char * reg, jmethodID methodID) {
-  jobject * data = (jobject *) luaL_checkudata(L, 1, reg);
+inline int jInvoke(lua_State * L, jmethodID methodID) {
+  jobject * data = (jobject *) luaJ_checkudata(L, 1);
   const char * name = lua_tostring(L, lua_upvalueindex(1));
   return jInvokeObject(L, methodID, *data, name, lua_gettop(L) - 1);
 }
 
-inline int jIndex(lua_State * L, const char * reg, jmethodID methodID, lua_CFunction func, bool ret) {
-  jobject * data = (jobject *) luaL_checkudata(L, 1, reg);
+inline int jIndex(lua_State * L, jmethodID methodID, lua_CFunction func, bool ret) {
+  jobject * data = (jobject *) luaJ_checkudata(L, 1);
   luaL_checkstack(L, 1, "No more stack space available");
   const char * name = luaL_checkstring(L, 2);
   JNIEnv * env = getJNIEnv(L);
@@ -59,20 +59,20 @@ inline int jIndex(lua_State * L, const char * reg, jmethodID methodID, lua_CFunc
   }
 }
 
-inline int jIndex(lua_State * L, const char * reg, jmethodID methodID, lua_CFunction func) {
-  return jIndex(L, reg, methodID, func, true);
+inline int jIndex(lua_State * L, jmethodID methodID, lua_CFunction func) {
+  return jIndex(L, methodID, func, true);
 }
 
 int jarrayInvoke(lua_State * L) {
-  return jInvoke(L, JAVA_ARRAY_META_REGISTRY, juaapi_objectinvoke);
+  return jInvoke(L, juaapi_objectinvoke);
 }
 
 int jclassInvoke(lua_State * L) {
-  return jInvoke(L, JAVA_CLASS_META_REGISTRY, juaapi_classinvoke);
+  return jInvoke(L, juaapi_classinvoke);
 }
 
 int jclassIndex(lua_State * L) {
-  return jIndex(L, JAVA_CLASS_META_REGISTRY, juaapi_classindex, &jclassInvoke);
+  return jIndex(L, juaapi_classindex, &jclassInvoke);
 }
 
 int jclassCall(lua_State * L) {
@@ -85,15 +85,15 @@ int jclassCall(lua_State * L) {
 }
 
 int jclassNewIndex(lua_State * L) {
-  return jIndex(L, JAVA_CLASS_META_REGISTRY, juaapi_classnewindex, NULL, false);
+  return jIndex(L, juaapi_classnewindex, NULL, false);
 }
 
 int jobjectInvoke(lua_State * L) {
-  return jInvoke(L, JAVA_OBJECT_META_REGISTRY, juaapi_objectinvoke);
+  return jInvoke(L, juaapi_objectinvoke);
 }
 
 int jobjectCall(lua_State * L) {
-  return jInvoke(L, JAVA_OBJECT_META_REGISTRY, juaapi_objectinvoke);
+  return jInvoke(L, juaapi_objectinvoke);
 }
 
 static void checkJobject(lua_State * L, int n) {
@@ -122,15 +122,15 @@ int jfunctionWrapper(lua_State * L) {
 }
 
 int jobjectIndex(lua_State * L) {
-  return jIndex(L, JAVA_OBJECT_META_REGISTRY, juaapi_objectindex, &jobjectInvoke);
+  return jIndex(L, juaapi_objectindex, &jobjectInvoke);
 }
 
 int jobjectNewIndex(lua_State * L) {
-  return jIndex(L, JAVA_OBJECT_META_REGISTRY, juaapi_objectnewindex, NULL, false);
+  return jIndex(L, juaapi_objectnewindex, NULL, false);
 }
 
 int jarrayLength(lua_State * L) {
-  jobject * data = (jobject *) luaL_checkudata(L, 1, JAVA_ARRAY_META_REGISTRY);
+  jobject * data = (jobject *) luaJ_checkudata(L, 1);
   JNIEnv * env = getJNIEnv(L);
   int len = (int) env->CallStaticIntMethod(juaapi_class, juaapi_arraylen, *data);
   lua_pushinteger(L, len);
@@ -138,7 +138,7 @@ int jarrayLength(lua_State * L) {
 }
 
 inline int jarrayJIndex(lua_State * L, jmethodID func, bool ret) {
-  jobject * data = (jobject *) luaL_checkudata(L, 1, JAVA_ARRAY_META_REGISTRY);
+  jobject * data = (jobject *) luaJ_checkudata(L, 1);
   int i = (int) luaL_checknumber(L, 2);
   luaL_checkstack(L, 1, "No more stack space available");
   JNIEnv * env = getJNIEnv(L);
@@ -153,7 +153,7 @@ int jarrayIndex(lua_State * L) {
     return jarrayJIndex(L, juaapi_arrayindex, true);
   }
   if (lua_isstring(L, 2)) {
-    return jIndex(L, JAVA_ARRAY_META_REGISTRY, juaapi_objectindex, &jarrayInvoke);
+    return jIndex(L, juaapi_objectindex, &jarrayInvoke);
   }
   return luaL_error(L, "bad argument #2 to __index (expecting number or string)");
 }
@@ -178,8 +178,8 @@ inline int jSigCall(lua_State * L, lua_CFunction func) {
 
 // c = jobject('methodName', 'signature') --> returns a closure
 // c(param1, param2) --> method call
-inline int jSigInvoke(lua_State * L, const char * reg, jmethodID methodID) {
-  jobject * data = (jobject *) luaL_checkudata(L, lua_upvalueindex(1), reg);
+inline int jSigInvoke(lua_State * L, jmethodID methodID) {
+  jobject * data = (jobject *) luaJ_checkudata(L, lua_upvalueindex(1));
   const char * name = luaL_checkstring(L, lua_upvalueindex(2));
   const char * signature = luaL_optstring(L, lua_upvalueindex(3), NULL);
   luaL_checkstack(L, 1, "No more stack space available");
@@ -200,11 +200,11 @@ inline int jSigInvoke(lua_State * L, const char * reg, jmethodID methodID) {
 }
 
 int jclassSigInvoke(lua_State * L) {
-  return jSigInvoke(L, JAVA_CLASS_META_REGISTRY, juaapi_classsiginvoke);
+  return jSigInvoke(L, juaapi_classsiginvoke);
 }
 
 int jobjectSigInvoke(lua_State * L) {
-  return jSigInvoke(L, JAVA_OBJECT_META_REGISTRY, juaapi_objsiginvoke);
+  return jSigInvoke(L, juaapi_objsiginvoke);
 }
 
 int jclassSigCall(lua_State * L) {

@@ -6,19 +6,6 @@
 
 #include "jua.h"
 
-/*
- * These methods are called by the lua environment
- * and thus raises errors to the lua environment.
- */
-
-template <const char *R>
-static int gc(lua_State * L) {
-  jobject * data = (jobject *) luaL_checkudata(L, 1, R);
-  JNIEnv * env = getJNIEnv(L);
-  env->DeleteGlobalRef(*data);
-  return 0;
-}
-
 /**
  * Expects the obj is a global ref
  */

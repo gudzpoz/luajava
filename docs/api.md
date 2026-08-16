@@ -9,6 +9,16 @@ We use their abbreviations in the following documentation.
 |--------------|:----------------------------:|:-----------------------------:|:----------------------------|
 | Abbreviation |   [`jclass`](#jclass-type)   |  [`jobject`](#jobject-type)   | [`jarray`](#jarray-type)    |
 
+::: danger
+Operations on `jclass`, `jobject`, and `jarray` are, of course, provided with Lua metatables.
+You may manipulate the metatables to customize the behavior of these types,
+provided that you:
+
+- know what you are doing,
+- never mix these types with other userdata types,
+- and ensure `__gc` is not overridden (or at least calls the original `__gc` function).
+:::
+
 ### `jclass` <Badge>type</Badge>
 
 For a `jclass` `clazz`:

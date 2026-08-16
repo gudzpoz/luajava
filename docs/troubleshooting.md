@@ -105,3 +105,5 @@ Try to keep the number of items in stack lower than a thousand, and you will be 
 For example, if you try to `rawGetI` on a ***boolean***, ***number*** or any other type that is ***not a table***,
 the program *will* crash.
 We do not check the type for you, neither does Lua.
+
+Also, for `jclass`, `jarray`, and `jobject` types, make sure you don't mix them up with other userdata types.

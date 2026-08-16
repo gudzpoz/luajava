@@ -68,6 +68,7 @@ jobject luaJ_dumptobuffer(lua_State * L);
 jobject luaJ_tobuffer(lua_State * L, int i);
 jobject luaJ_todirectbuffer(lua_State * L, int i);
 
+jobject * luaJ_checkudata(lua_State * L, int ud);
 int luaJ_insertloader(lua_State * L, const char * searchers);
 
 int luaJ_invokespecial(JNIEnv * env, lua_State * L,
