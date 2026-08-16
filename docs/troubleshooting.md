@@ -25,7 +25,7 @@ decoding valid UTF-8 strings containing out-of-plane characters can crash the ap
 This is not ideal, but I guess we will have to live with it for now.
 :::
 
-## Class (or Resource) Not Found
+## Class (or Resource) Not Found?
 
 ### Is a wrong classloader used?
 
@@ -51,6 +51,15 @@ But, if you plan to use this JAR as part of another application (e.g., as a plug
 this can cause problems because the module system can restrict reflective access.
 Try moving all `**/*/module-info.class` from your fat JAR.
 
+## `ArrayIndexOutOfBoundsException` When Creating Lua Instances?
+
+You might be creating way too many Lua instances.
+
+The maximum number of Lua instances is limited by the size of the internal arrays used to track them.
+You may adjust the system property `LUAJAVA_INSTANCE_ID_SHIFT` to increase the limit.
+The default value is `12`, providing an upper limit of `1 << (2 * 12) = 16,777,216` instances.
+The max allowed value is `16`, providing an upper limit of `1 << (2 * 16) = 4,294,967,296` instances.
+
 ## JVM Crashed
 
 The crash is often followed by the following error message:
@@ -63,15 +72,19 @@ The crash is often followed by the following error message:
 #
 ```
 
-This is very likely a bug in this library. But if you are using the natives `Lua**Natives` directly, you might want to take note of the following:
+This is very likely a bug in this library.
+But if you are using the natives `Lua**Natives` directly, you might want to take note of the following:
 
 ### Have you pushed too many values onto the stack?
 
-Lua imposes an initial stack size and an upper limit. You need to `lua_checkstack` (`Lua::checkStack(int extra)`)to allocate more stack slots.
+Lua imposes an initial stack size and an upper limit.
+You need to `lua_checkstack` (`Lua::checkStack(int extra)`) to allocate more stack slots.
 
-When going beyond the current stack size, Lua just overwrites any data going after the stack without any notice, which will very likely result in all kinds of memory corruption.
+When going beyond the current stack size, Lua just overwrites any data going after the stack without any notice,
+which will very likely result in all kinds of memory corruption.
 
-We try to call `checkStack` for every stack incrementing operation. If we miss any, you are welcome to report it. But if you are using the `Lua**Natives` directly, you are on your own.
+We try to call `checkStack` for every stack incrementing operation. If we miss any, you are welcome to report it.
+But if you are using the `Lua**Natives` directly, you are on your own.
 
 ### A message like `FATAL ERROR in native method: ...`
 
@@ -81,10 +94,14 @@ It means Lua captured the error, but had no way to recover from it. For example:
 FATAL ERROR in native method: error in __gc metamethod (stack overflow)
 ```
 
-This might be caused by Lua's untimely GC. When you push a value right when the stack is nearly full (the maximum slots should be over several thousand), Lua might decide that it is time for garbage collection, which might call a `__gc` metamethod, which then overflows the stack.
+This might be caused by Lua's untimely GC.
+When you push a value right when the stack is nearly full (the maximum slots should be over several thousand),
+Lua might decide that it is time for garbage collection, which might call a `__gc` metamethod, which then overflows the stack.
 
 Try to keep the number of items in stack lower than a thousand, and you will be safe.
 
 ### Have you mistaken the type of some element?
 
-For example, if you try to `rawGetI` on a ***boolean***, ***number*** or any other type that is ***not a table***, the program *will* crash. We do not check the type for you, neither does Lua.
+For example, if you try to `rawGetI` on a ***boolean***, ***number*** or any other type that is ***not a table***,
+the program *will* crash.
+We do not check the type for you, neither does Lua.

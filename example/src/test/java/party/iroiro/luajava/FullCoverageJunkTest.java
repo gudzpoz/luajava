@@ -16,7 +16,6 @@ import party.iroiro.luajava.luaj.LuaJ;
 import party.iroiro.luajava.luaj.LuaJConsts;
 import party.iroiro.luajava.luajit.LuaJit;
 import party.iroiro.luajava.luajit.LuaJitConsts;
-import party.iroiro.luajava.util.LRUCache;
 import party.iroiro.luajava.value.ImmutableLuaValue;
 import party.iroiro.luajava.value.LuaValue;
 import party.iroiro.luajava.value.AbstractRefLuaValue;
@@ -29,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FullCoverageJunkTest {
     @SuppressWarnings("unused")
     @Test
-    public void fullCoverageJunk() throws NoSuchMethodException {
+    public void fullCoverageJunk() {
         Jua J = new Jua() {};
         Consts consts = new Consts() {};
         JuaAPI api = new JuaAPI() {};
@@ -84,13 +83,5 @@ public class FullCoverageJunkTest {
             assertThrows(LuaException.class, () -> L.convertType(10000));
             L.close();
         }
-    }
-
-    @Test
-    public void lruCacheTest() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new LRUCache<String, String, String>(10, 10, -1));
-        assertThrows(IllegalArgumentException.class,
-                () -> new LRUCache<String, String, String>(10, 10, 3));
     }
 }

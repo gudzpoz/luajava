@@ -3,18 +3,29 @@
 
 #include "jua.h"
 
+inline jlong gatherParamInfo(lua_State * L, int params) {
+  int limit = params <= 7 ? -params : -7;
+  jlong info = ~0xFF;
+  for (int i = -1; i >= limit; i--) {
+    info = (info | (lua_type(L, i) & 0xFF)) << 8;
+  }
+  return info | params;
+}
+
 inline int jInvokeObject(lua_State * L, jmethodID methodID,
                          jobject data, const char * name, int params) {
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
+  luaL_checkstack(L, 1, "No more stack space available");
   jint ret;
+  jlong paramInfo = gatherParamInfo(L, params & 0xFF);
   if (name == NULL) {
     ret = env->CallStaticIntMethod(juaapi_class, methodID,
-                                   (jint) stateIndex, data, NULL, params);
+                                   (jint) stateIndex, data, NULL, paramInfo);
   } else {
     jstring str = env->NewStringUTF(name);
     ret = env->CallStaticIntMethod(juaapi_class, methodID,
-                                   (jint) stateIndex, data, str, params);
+                                   (jint) stateIndex, data, str, paramInfo);
     env->DeleteLocalRef(str);
   }
   return checkOrError(env, L, ret);
@@ -28,6 +39,7 @@ inline int jInvoke(lua_State * L, const char * reg, jmethodID methodID) {
 
 inline int jIndex(lua_State * L, const char * reg, jmethodID methodID, lua_CFunction func, bool ret) {
   jobject * data = (jobject *) luaL_checkudata(L, 1, reg);
+  luaL_checkstack(L, 1, "No more stack space available");
   const char * name = luaL_checkstring(L, 2);
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
@@ -65,10 +77,11 @@ int jclassIndex(lua_State * L) {
 
 int jclassCall(lua_State * L) {
   jobject * data = (jobject *) lua_touserdata(L, 1);
+  luaL_checkstack(L, 1, "No more stack space available");
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
   return checkOrError(env, L, env->CallStaticIntMethod(juaapi_class, juaapi_classnew,
-    (jint) stateIndex, *data, lua_gettop(L) - 1));
+    (jint) stateIndex, *data, gatherParamInfo(L, (lua_gettop(L) - 1) & 0xFF)));
 }
 
 int jclassNewIndex(lua_State * L) {
@@ -127,6 +140,7 @@ int jarrayLength(lua_State * L) {
 inline int jarrayJIndex(lua_State * L, jmethodID func, bool ret) {
   jobject * data = (jobject *) luaL_checkudata(L, 1, JAVA_ARRAY_META_REGISTRY);
   int i = (int) luaL_checknumber(L, 2);
+  luaL_checkstack(L, 1, "No more stack space available");
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
   int retVal = checkOrError(env, L,
@@ -168,6 +182,7 @@ inline int jSigInvoke(lua_State * L, const char * reg, jmethodID methodID) {
   jobject * data = (jobject *) luaL_checkudata(L, lua_upvalueindex(1), reg);
   const char * name = luaL_checkstring(L, lua_upvalueindex(2));
   const char * signature = luaL_optstring(L, lua_upvalueindex(3), NULL);
+  luaL_checkstack(L, 1, "No more stack space available");
 
   JNIEnv * env = getJNIEnv(L);
   int stateIndex = getStateIndex(L);
@@ -175,7 +190,8 @@ inline int jSigInvoke(lua_State * L, const char * reg, jmethodID methodID) {
   jstring nameS = env->NewStringUTF(name);
   jstring signatureS = signature == NULL ? NULL : env->NewStringUTF(signature);
   int ret = env->CallStaticIntMethod(juaapi_class, methodID,
-                                     (jint) stateIndex, *data, nameS, signatureS, lua_gettop(L));
+                                     (jint) stateIndex, *data, nameS,
+                                     signatureS, gatherParamInfo(L, lua_gettop(L)));
   if (signature != NULL) {
     env->DeleteLocalRef(signatureS);
   }

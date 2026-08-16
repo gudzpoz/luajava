@@ -252,6 +252,25 @@ public class LuaScriptSuite<T extends AbstractLua> {
         public static Object returnsNull() {
             return null;
         }
+
+        @SuppressWarnings("unused")
+        public static int manyArgs(
+                int a,
+                int b,
+                int c,
+                int d,
+                int e,
+                int f,
+                int g,
+                int h,
+                int i,
+                int j,
+                int l,
+                int m,
+                int n
+        ) {
+            return a + b + c + d + e + f + g + h + i + j + l + m + n;
+        }
     }
 
     public static class PrivateClass {

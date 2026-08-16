@@ -24,9 +24,17 @@ public class MethodCallBenchmark {
         L = SimpleBenchmark.getLua(lua);
         L.set("big_int", BigInteger.valueOf(1024));
         L.run("int_value = java.method(big_int, 'intValue', '')");
+        L.run("min = java.method(java.import('java.lang.Math'), 'min', 'int,int')");
         L.run("function pure()end");
         L.run("function obj_call() assert(big_int:intValue() == 1024) end");
         L.run("function met_call() assert(int_value() == 1024) end");
+        L.run("function min_call() assert(min(1, 2) == 1) end");
+    }
+
+    @Benchmark
+    public void benchmarkArgsMethodCall() {
+        L.getGlobal("min_call");
+        L.pCall(0, 0);
     }
 
     @Benchmark

@@ -142,21 +142,21 @@ int initBindings(JNIEnv * env) {
 
   juaapi_class = bindJavaClass(env, "party/iroiro/luajava/JuaAPI");
   juaapi_classnew = bindJavaStaticMethod(env, juaapi_class,
-          "classNew", "(ILjava/lang/Object;I)I");
+          "classNew", "(ILjava/lang/Object;J)I");
   juaapi_classindex = bindJavaStaticMethod(env, juaapi_class,
           "classIndex", "(ILjava/lang/Class;Ljava/lang/String;)I");
   juaapi_classinvoke = bindJavaStaticMethod(env, juaapi_class,
-          "classInvoke", "(ILjava/lang/Class;Ljava/lang/String;I)I");
+          "classInvoke", "(ILjava/lang/Class;Ljava/lang/String;J)I");
   juaapi_classsiginvoke = bindJavaStaticMethod(env, juaapi_class,
-          "classInvoke", "(ILjava/lang/Class;Ljava/lang/String;Ljava/lang/String;I)I");
+          "classInvoke", "(ILjava/lang/Class;Ljava/lang/String;Ljava/lang/String;J)I");
   juaapi_classnewindex = bindJavaStaticMethod(env, juaapi_class,
           "classNewIndex", "(ILjava/lang/Class;Ljava/lang/String;)I");
   juaapi_objectindex = bindJavaStaticMethod(env, juaapi_class,
           "objectIndex", "(ILjava/lang/Object;Ljava/lang/String;)I");
   juaapi_objectinvoke = bindJavaStaticMethod(env, juaapi_class,
-          "objectInvoke", "(ILjava/lang/Object;Ljava/lang/String;I)I");
+          "objectInvoke", "(ILjava/lang/Object;Ljava/lang/String;J)I");
   juaapi_objsiginvoke = bindJavaStaticMethod(env, juaapi_class,
-          "objectInvoke", "(ILjava/lang/Object;Ljava/lang/String;Ljava/lang/String;I)I");
+          "objectInvoke", "(ILjava/lang/Object;Ljava/lang/String;Ljava/lang/String;J)I");
   juaapi_objectnewindex = bindJavaStaticMethod(env, juaapi_class,
           "objectNewIndex", "(ILjava/lang/Object;Ljava/lang/String;)I");
   juaapi_arraynew = bindJavaStaticMethod(env, juaapi_class,

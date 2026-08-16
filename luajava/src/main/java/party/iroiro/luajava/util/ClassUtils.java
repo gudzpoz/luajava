@@ -83,7 +83,7 @@ public abstract class ClassUtils {
      */
     private static final Map<String, Class<?>> commonClassCache = new HashMap<>(64);
 
-    private static final Map<String, Class<?>> queryClassCache = Collections.synchronizedMap(new LRUCache.Cache<>(256));
+    private static final LRUCache.Cache<String, Class<?>> queryClassCache = new LRUCache.Cache<>(256);
 
     static {
         primitiveWrapperTypeMap.put(Boolean.class, boolean.class);
