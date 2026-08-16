@@ -34,8 +34,15 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  * @param <T> instance type
  */
 public class LuaInstances<T> {
-    private static final int SEGMENT_SHIFT = 12;
-    private static final int SEGMENT_MASK = (1 << SEGMENT_SHIFT) - 1;
+    private static final int SEGMENT_SHIFT;
+    private static final int SEGMENT_MASK;
+
+    static {
+        String shift = System.getProperty("LUAJAVA_INSTANCE_ID_SHIFT", "12");
+        int max = Integer.parseUnsignedInt(shift);
+        SEGMENT_SHIFT = Math.max(4, Math.min(16, max));
+        SEGMENT_MASK = (1 << SEGMENT_SHIFT) - 1;
+    }
 
     private final AtomicReferenceArray<@Nullable AtomicReferenceArray<@Nullable T>> segments;
     private final AtomicInteger nextId;
@@ -63,7 +70,7 @@ public class LuaInstances<T> {
         AtomicReferenceArray<@Nullable T> segment;
         if (id == -1) {
             id = nextId.getAndIncrement();
-            int segmentIndex = id >> SEGMENT_SHIFT;
+            int segmentIndex = id >>> SEGMENT_SHIFT;
             segment = segments.get(segmentIndex);
             if (segment == null) {
                 segment = new AtomicReferenceArray<>(1 << SEGMENT_SHIFT);
