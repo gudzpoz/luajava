@@ -227,12 +227,18 @@ int initBindings(JNIEnv * env) {
 #define LUA_METAFIELD_CALL "__call"
 #define LUA_METAFIELD_INDEX "__index"
 #define LUA_METAFIELD_NEWINDEX "__newindex"
+static int gc(lua_State * L) {
+  jobject * data = (jobject *) luaJ_checkudata(L, 1);
+  JNIEnv * env = getJNIEnv(L);
+  env->DeleteGlobalRef(*data);
+  return 0;
+}
 /**
  * Inits JAVA_CLASS_META_REGISTRY, JAVA_OBJECT_META_REGISTRY
  */
 void initMetaRegistry(lua_State * L) {
   if (luaL_newmetatable(L, JAVA_CLASS_META_REGISTRY) == 1) {
-    lua_pushcfunction(L, &gc<JAVA_CLASS_META_REGISTRY>);
+    lua_pushcfunction(L, &gc);
     lua_setfield(L, -2, LUA_METAFIELD_GC);
     lua_pushcfunction(L, &jclassIndex);
     lua_setfield(L, -2, LUA_METAFIELD_INDEX);
@@ -246,7 +252,7 @@ void initMetaRegistry(lua_State * L) {
   lua_pop(L, 1);
 
   if (luaL_newmetatable(L, JAVA_OBJECT_META_REGISTRY) == 1) {
-    lua_pushcfunction(L, &gc<JAVA_OBJECT_META_REGISTRY>);
+    lua_pushcfunction(L, &gc);
     lua_setfield(L, -2, LUA_METAFIELD_GC);
     lua_pushcfunction(L, &jobjectIndex);
     lua_setfield(L, -2, LUA_METAFIELD_INDEX);
@@ -258,7 +264,7 @@ void initMetaRegistry(lua_State * L) {
   lua_pop(L, 1);
 
   if (luaL_newmetatable(L, JAVA_ARRAY_META_REGISTRY) == 1) {
-    lua_pushcfunction(L, &gc<JAVA_ARRAY_META_REGISTRY>);
+    lua_pushcfunction(L, &gc);
     lua_setfield(L, -2, LUA_METAFIELD_GC);
     lua_pushcfunction(L, &jarrayLength);
     lua_setfield(L, -2, LUA_METAFIELD_LEN);
@@ -457,6 +463,15 @@ int luaJ_insertloader(lua_State * L, const char * searchers) {
   lua_rawseti(L, -2, len + 2);
   lua_pop(L, 2);
   return 0;
+}
+
+jobject * luaJ_checkudata(lua_State * L, int ud) {
+  void * p = lua_touserdata(L, ud);
+  if (p == NULL) {
+    luaL_argerror(L, ud, "expecting a jarray/jclass/jobject");
+    return NULL;
+  }
+  return (jobject *) p;
 }
 
 void luaJ_gc(lua_State * L) {

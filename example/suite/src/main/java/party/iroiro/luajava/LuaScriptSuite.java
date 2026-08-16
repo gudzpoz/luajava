@@ -176,6 +176,7 @@ public class LuaScriptSuite<T extends AbstractLua> {
             new ScriptTester("/suite/compatTest.lua", L ->
                     L.setExternalLoader(new ClassPathLoader())),
             new ScriptTester("/suite/coroutineTest.lua", L -> {}),
+            new ScriptTester("/suite/customMetatableTest.lua", L -> {}),
     };
 
     public void test() {
